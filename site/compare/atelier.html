@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atelier — same markup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../atelier/css/atelier.css">
+  <style>
+    /* Identical layout for every pack — only the class prefix changes. */
+    body { margin: 0; min-height: 100vh; }
+    .wrap { padding: 22px; }
+    .spec { display: flex; flex-direction: column; gap: 16px; }
+    .line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .line--start { justify-content: flex-start; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <article class="atelier-card spec">
+    <div class="line"><h3 class="atelier-card__title">Weekly report</h3><span class="atelier-badge atelier-badge--teal">Ready</span></div>
+    <p class="atelier-caption">Send the summary to your team every Monday at 9:00.</p>
+    <div class="atelier-segmented atelier-segmented--block" role="tablist" aria-label="Frequency">
+      <button class="atelier-segmented__item" role="tab" aria-selected="false" tabindex="-1">Daily</button>
+      <button class="atelier-segmented__item" role="tab" aria-selected="true">Weekly</button>
+      <button class="atelier-segmented__item" role="tab" aria-selected="false" tabindex="-1">Monthly</button>
+    </div>
+    <input class="atelier-input" value="team@northwind.com" aria-label="Recipients">
+    <label class="line">Include charts<input type="checkbox" class="atelier-toggle" checked></label>
+    <div class="line line--start"><button class="atelier-btn atelier-btn--primary" type="button">Schedule</button><button class="atelier-btn atelier-btn--tertiary" type="button">Preview</button></div>
+  </article>
+</div>
+<script src="../../atelier/js/atelier.js"></script>
+</body>
+</html>

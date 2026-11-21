@@ -8,6 +8,7 @@
 //   node scripts/snap.mjs lilac atelier      # only these languages
 //   node scripts/snap.mjs --widths=1440,768,375
 //   CHROME_PATH=/path/to/chrome node scripts/snap.mjs
+//   node scripts/snap.mjs --thumbs           # 640×400 JPEG thumbnails for the homepage → site/assets/thumbs/
 // Output: .snapshots/<language>/<page>@<width>.png (git-ignored). Exit code 1 if any page overflows.
 import { spawn } from "node:child_process";
 import { createServer } from "node:http";
@@ -21,6 +22,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
 const widths = (args.find((a) => a.startsWith("--widths="))?.slice(9) || "1280,390").split(",").map(Number);
 const only = args.filter((a) => !a.startsWith("--"));
+const thumbs = args.includes("--thumbs");
 const CHROME = process.env.CHROME_PATH || [
   "C:/Program Files/Google/Chrome/Application/chrome.exe",
   "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
@@ -52,7 +54,7 @@ const langs = (await readdir(root, { withFileTypes: true }))
   .filter((d) => d.isDirectory() && existsSync(join(root, d.name, "tokens", "tokens.json")))
   .map((d) => d.name)
   .filter((n) => !only.length || only.includes(n));
-const pages = only.length ? [] : [{ group: "_site", path: "index.html" }];
+const pages = only.length || thumbs ? [] : [{ group: "_site", path: "index.html" }];
 for (const lang of langs) {
   pages.push({ group: lang, path: `${lang}/index.html` });
   const ex = join(root, lang, "examples");
@@ -86,6 +88,25 @@ const evaluate = async (expression) => (await send("Runtime.evaluate", { express
 
 await send("Page.enable");
 let overflowing = 0;
+if (thumbs) {
+  // Viewport-only captures at half density: real renders, small enough to ship with the site.
+  try {
+    for (const page of pages) {
+      await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 800, deviceScaleFactor: 0.5, mobile: false });
+      const loaded = nextEvent("Page.loadEventFired");
+      await send("Page.navigate", { url: `${base}/${page.path}` });
+      await loaded;
+      await evaluate("document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 900)))");
+      const { data } = await send("Page.captureScreenshot", { format: "jpeg", quality: 82 });
+      const name = page.path.replace(`${page.group}/`, "").replace(/\//g, "-").replace(/\.html$/, "");
+      const out = join(root, "site", "assets", "thumbs", `${page.group}-${name}.jpg`);
+      await mkdir(dirname(out), { recursive: true });
+      await writeFile(out, Buffer.from(data, "base64"));
+      console.log(`thumb	${page.path}	→ ${relative(root, out)}`);
+    }
+  } finally { ws.close(); chrome.kill(); server.close(); }
+  process.exit(0);
+}
 try {
   for (const page of pages) {
     for (const width of widths) {

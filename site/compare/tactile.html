@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tactile — same markup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../tactile/css/tactile.css">
+  <style>
+    /* Identical layout for every pack — only the class prefix changes. */
+    body { margin: 0; min-height: 100vh; }
+    .wrap { padding: 22px; }
+    .spec { display: flex; flex-direction: column; gap: 16px; }
+    .line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .line--start { justify-content: flex-start; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <article class="tactile-card spec">
+    <div class="line"><h3 class="tactile-card__title">Weekly report</h3><span class="tactile-badge">Ready</span></div>
+    <p class="tactile-card__text">Send the summary to your team every Monday at 9:00.</p>
+    <div class="tactile-segmented tactile-segmented--block" role="tablist" aria-label="Frequency">
+      <button class="tactile-segmented__item" role="tab" aria-selected="false" tabindex="-1">Daily</button>
+      <button class="tactile-segmented__item" role="tab" aria-selected="true">Weekly</button>
+      <button class="tactile-segmented__item" role="tab" aria-selected="false" tabindex="-1">Monthly</button>
+    </div>
+    <input class="tactile-input" value="team@northwind.com" aria-label="Recipients">
+    <label class="line">Include charts<input type="checkbox" class="tactile-toggle" checked></label>
+    <div class="line line--start"><button class="tactile-btn tactile-btn--primary" type="button">Schedule</button><button class="tactile-btn" type="button">Preview</button></div>
+  </article>
+</div>
+<script src="../../tactile/js/tactile.js"></script>
+</body>
+</html>

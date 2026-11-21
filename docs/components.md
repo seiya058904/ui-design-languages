@@ -63,6 +63,10 @@ Chip: `aria-pressed="true"`/`.is-selected` glows · `--neutral` · `:disabled`. 
 ```
 `.clay-segmented--block` stretches full width. Add `aria-controls="panel-id"` and `js/clay.js` toggles the panels' `hidden` attribute.
 
+**Sliding indicator.** With `js/clay.js` loaded, every tablist gets one mint pill (segmented) or bar (underline) that glides to the active tab in 380ms with an iOS-style ease (`--clay-motion-easing-spring`); holding the active segment squeezes the pill slightly. It measures the real tab positions, so any number of tabs and any label length work, and it follows resizes and web-font loading. Without JS each tab falls back to its own static highlight.
+
+In React/Vue/Svelte, just render `aria-selected="true"` (or `.is-active`) on the active tab — the indicator follows attribute changes and picks up tablists rendered later. Manual hooks: `ClayUI.initTabs(root)`, `ClayUI.refreshTabs(list)`, `ClayUI.selectTab(tab)`. Keyboard: ←/→, Home, End.
+
 ## Alert — `alert.css`
 ```html
 <div class="clay-alert clay-alert--success" role="status"><svg class="clay-icon"><use href="#i-check-circle"/></svg>Invoice sent</div>

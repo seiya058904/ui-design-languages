@@ -11,10 +11,17 @@
      <button class="clay-tabs__item" role="tab" aria-selected="true">Overview</button>
      …
    </div>
-   Active: aria-selected="true" or .is-active */
+   Active: aria-selected="true" or .is-active
+
+   Sliding indicator: js/clay.js adds .has-indicator to every tablist and keeps
+   --clay-indicator-x / --clay-indicator-w in sync with the active tab, so one
+   mint pill (or bar) glides between tabs. Without JS each tab shows its own
+   static highlight, so the markup works either way. */
 
 /* ---------- Segmented ---------- */
 .clay-segmented {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   gap: 4px;
   padding: 5px;
@@ -26,6 +33,8 @@
 .clay-segmented--block { display: flex; width: 100%; }
 
 .clay-segmented__item {
+  position: relative;
+  z-index: 1;
   flex: 1;
   height: 38px;
   padding: 0 20px;
@@ -34,10 +43,12 @@
   background: transparent;
   color: var(--clay-color-text);
   font-size: 15px;
+  /* One weight for every state so the control never changes width on click */
   font-weight: var(--clay-font-weight-medium);
   white-space: nowrap;
   cursor: pointer;
   transition:
+    color var(--clay-motion-duration) var(--clay-motion-easing),
     background-color var(--clay-motion-duration) var(--clay-motion-easing),
     box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
 }
@@ -48,10 +59,40 @@
 .clay-segmented__item.is-active {
   background: linear-gradient(180deg, var(--clay-color-primary-light) 0%, var(--clay-color-primary) 60%);
   color: var(--clay-color-primary-ink);
-  font-weight: var(--clay-font-weight-semibold);
   box-shadow: var(--clay-shadow-raised-sm);
 }
 .clay-segmented__item[aria-selected="true"]:focus-visible { box-shadow: var(--clay-shadow-raised-sm), var(--clay-shadow-glow); }
+
+/* Sliding pill */
+.clay-segmented.has-indicator::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 5px;
+  bottom: 5px;
+  left: 0;
+  width: var(--clay-indicator-w, 0px);
+  transform: translateX(var(--clay-indicator-x, 0px));
+  border-radius: var(--clay-radius-pill);
+  background: linear-gradient(180deg, var(--clay-color-primary-light) 0%, var(--clay-color-primary) 60%);
+  box-shadow: var(--clay-shadow-raised-sm);
+}
+.clay-segmented.has-indicator.is-animated::before {
+  transition:
+    transform var(--clay-motion-duration-slide) var(--clay-motion-easing-spring),
+    width var(--clay-motion-duration-slide) var(--clay-motion-easing-spring);
+}
+/* Press-and-hold on the active tab squeezes the pill slightly, like iOS */
+.clay-segmented.has-indicator:has(.clay-segmented__item[aria-selected="true"]:active)::before,
+.clay-segmented.has-indicator:has(.clay-segmented__item.is-active:active)::before {
+  transform: translateX(var(--clay-indicator-x, 0px)) scale(0.95);
+}
+.clay-segmented.has-indicator .clay-segmented__item[aria-selected="true"],
+.clay-segmented.has-indicator .clay-segmented__item.is-active {
+  background: transparent;
+  box-shadow: none;
+}
+.clay-segmented.has-indicator .clay-segmented__item:focus-visible { box-shadow: var(--clay-shadow-glow); }
 
 /* ---------- Underline ---------- */
 .clay-tabs {
@@ -88,6 +129,7 @@
 .clay-tabs__item:hover { color: var(--clay-color-text-muted); }
 .clay-tabs__item:focus-visible { box-shadow: var(--clay-shadow-glow); }
 
+/* Static per-tab bar (fallback without JS) */
 .clay-tabs__item::after {
   content: "";
   position: absolute;
@@ -100,19 +142,33 @@
   background: var(--clay-color-primary);
   box-shadow: var(--clay-shadow-raised-sm);
   opacity: 0;
-  transform: scaleX(0.4);
-  transition:
-    opacity var(--clay-motion-duration) var(--clay-motion-easing),
-    transform var(--clay-motion-duration-slow) var(--clay-motion-easing);
 }
 
 .clay-tabs__item[aria-selected="true"],
 .clay-tabs__item.is-active {
   color: var(--clay-color-text);
-  font-weight: var(--clay-font-weight-semibold);
+  font-weight: var(--clay-font-weight-semibold); /* safe: items share width equally */
 }
 .clay-tabs__item[aria-selected="true"]::after,
-.clay-tabs__item.is-active::after {
-  opacity: 1;
-  transform: scaleX(1);
+.clay-tabs__item.is-active::after { opacity: 1; }
+
+/* Sliding bar */
+.clay-tabs.has-indicator::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  bottom: 0;
+  height: 7px;
+  width: var(--clay-indicator-w, 0px);
+  transform: translateX(var(--clay-indicator-x, 0px));
+  border-radius: var(--clay-radius-pill);
+  background: linear-gradient(180deg, var(--clay-color-primary-light), var(--clay-color-primary));
+  box-shadow: var(--clay-shadow-raised-sm);
 }
+.clay-tabs.has-indicator.is-animated::before {
+  transition:
+    transform var(--clay-motion-duration-slide) var(--clay-motion-easing-spring),
+    width var(--clay-motion-duration-slide) var(--clay-motion-easing-spring);
+}
+.clay-tabs.has-indicator .clay-tabs__item::after { display: none; }

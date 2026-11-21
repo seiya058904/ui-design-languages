@@ -84,4 +84,4 @@ Families: `--clay-font-family-sans` (Inter), `--clay-font-family-mono` (JetBrain
 
 ## Motion
 
-`--clay-motion-duration-fast` 120ms (press) · `--clay-motion-duration` 180ms (hover, color) · `--clay-motion-duration-slow` 280ms (knobs, indicators, dialogs) · `--clay-motion-easing` `cubic-bezier(0.2, 0.8, 0.2, 1)`
+`--clay-motion-duration-fast` 120ms (press) · `--clay-motion-duration` 180ms (hover, color) · `--clay-motion-duration-slow` 280ms (knobs, dialogs) · `--clay-motion-duration-slide` 380ms (sliding tab indicators) · `--clay-motion-easing` `cubic-bezier(0.2, 0.8, 0.2, 1)` · `--clay-motion-easing-spring` `cubic-bezier(0.32, 0.72, 0, 1)` (iOS-style glide, no overshoot)

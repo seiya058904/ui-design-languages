@@ -25,7 +25,7 @@ If the target stack can't use the CSS (native apps, Flutter, SwiftUI, Compose…
 | Disabled | Grey fill, grey text, `--clay-shadow-flat` (the clay loses its height) | Opacity-only disabled states on primary actions |
 | Type | Inter, bold and tight for display (−0.03em), medium for section labels, sentence case | All-caps labels, more than two families, light weights under 400 |
 | Background | `.clay-board` (paper + 64px grid) for main surfaces; `.clay-ruler` frame for showcase sheets only | Busy textures, photos behind content |
-| Motion | 180ms, `cubic-bezier(.2,.8,.2,1)`; hover lifts 1px, active presses 1px down | Bouncy springs, scattered entrance animations |
+| Motion | 180ms, `cubic-bezier(.2,.8,.2,1)`; hover lifts 1px, active presses 1px down; selection indicators glide between options (380ms, `--clay-motion-easing-spring`) instead of jumping | Bouncy springs, scattered entrance animations, indicators that blink from tab to tab |
 
 ## 3. Recipes (for porting to other platforms)
 

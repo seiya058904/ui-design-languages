@@ -69,7 +69,7 @@ code, pre { font-family: "Geist Mono", ui-monospace, "SF Mono", Consolas, monosp
 .names i { width: 8px; height: 8px; border-radius: 50%; }
 
 /* Perspective wall of real page renders */
-.wall { position: relative; height: 700px; margin: -40px -40px -40px 0; overflow: hidden; perspective: 1800px;
+.wall { position: relative; height: 700px; margin: -40px 0; overflow: hidden; perspective: 1800px;
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 80%, transparent), linear-gradient(to right, transparent, #000 16%, #000 88%, transparent);
   -webkit-mask-composite: source-in;
   mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 80%, transparent), linear-gradient(to right, transparent, #000 16%, #000 88%, transparent);

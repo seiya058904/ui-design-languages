@@ -22,7 +22,7 @@
     background-color var(--clay-motion-duration) var(--clay-motion-easing),
     box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
 }
-.clay-nav__item:hover { background: rgba(84, 74, 60, 0.06); color: var(--clay-color-text); }
+.clay-nav__item:hover { background: var(--clay-color-wash); color: var(--clay-color-text); }
 .clay-nav__item:focus-visible { box-shadow: var(--clay-shadow-glow); }
 .clay-nav__item[aria-current="page"],
 .clay-nav__item.is-active {
@@ -32,7 +32,7 @@
   box-shadow: var(--clay-shadow-raised-sm);
 }
 .clay-nav__item[aria-current="page"] .clay-icon,
-.clay-nav__item.is-active .clay-icon { color: #2E8F6B; }
+.clay-nav__item.is-active .clay-icon { color: var(--clay-color-primary-deep); }
 .clay-nav__item .clay-icon { transition: color var(--clay-motion-duration) var(--clay-motion-easing); }
 
 /* Sliding tile */
@@ -103,7 +103,7 @@
   white-space: nowrap;
 }
 .clay-table tbody tr { transition: background-color var(--clay-motion-duration-fast); }
-.clay-table tbody tr:hover { background: rgba(168, 230, 207, 0.16); }
+.clay-table tbody tr:hover { background: var(--clay-color-primary-wash); }
 .clay-table .is-num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ---------- Dialog (native <dialog class="clay-dialog">) ---------- */
@@ -116,7 +116,7 @@
   color: var(--clay-color-text);
   box-shadow: var(--clay-shadow-elevation-5);
 }
-.clay-dialog::backdrop { background: rgba(60, 54, 46, 0.28); backdrop-filter: blur(3px); }
+.clay-dialog::backdrop { background: var(--clay-color-backdrop); backdrop-filter: blur(3px); }
 .clay-dialog[open] { animation: clay-pop var(--clay-motion-duration-slow) var(--clay-motion-easing); }
 .clay-dialog__title { font-size: var(--clay-font-size-subtitle); font-weight: var(--clay-font-weight-semibold); letter-spacing: -0.01em; }
 .clay-dialog__body  { margin-top: var(--clay-space-2); color: var(--clay-color-text-muted); }
@@ -144,7 +144,7 @@
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  box-shadow: 0 6px 16px -6px rgba(40, 36, 30, 0.5);
+  box-shadow: 0 6px 16px -6px var(--clay-color-shadow-strong);
   transition: opacity var(--clay-motion-duration), transform var(--clay-motion-duration);
 }
 .clay-tooltip:hover::after,

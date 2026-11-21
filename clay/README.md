@@ -4,7 +4,9 @@ A soft, extruded clay design language for websites and apps — matte paper boar
 
 **Live styleguide:** https://seiya058904.github.io/ui-design-languages/clay/ · [App example](https://seiya058904.github.io/ui-design-languages/clay/examples/dashboard.html) · [Website example](https://seiya058904.github.io/ui-design-languages/clay/examples/landing.html)
 
-![Clay UI styleguide](assets/screenshots/styleguide.png)
+| Light | Dark |
+| --- | --- |
+| ![Clay UI styleguide, light](assets/screenshots/styleguide.png) | ![Clay UI styleguide, dark](assets/screenshots/styleguide-dark.png) |
 
 ## Quick start
 
@@ -26,12 +28,29 @@ A soft, extruded clay design language for websites and apps — matte paper boar
 
 Or clone the repo and link `css/clay.css` locally. Open `index.html` in a browser to see every component.
 
+## Dark theme
+
+Clay ships a warm-charcoal dark theme generated from `tokens/tokens.dark.json`.
+
+```html
+<html data-theme="dark">   <!-- always dark -->
+<html data-theme="auto">   <!-- follow the OS setting -->
+<html>                     <!-- light (default) -->
+```
+
+With `js/clay.js`, any `[data-theme-set="light|dark|auto"]` control (for example a `.clay-segmented`) switches themes and `[data-theme-toggle]` flips light/dark; the choice is saved in `localStorage`. Put this in `<head>` to restore it before the first paint:
+
+```html
+<script>try{var t=localStorage.getItem("clay-theme");if(t&&t!=="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+```
+
 ## What's inside
 
 | Path | Contents |
 | --- | --- |
 | `tokens/tokens.json` | Design tokens (W3C format) — the single source of truth |
-| `tokens/tokens.css` | CSS custom properties generated from the JSON |
+| `tokens/tokens.dark.json` | Dark-theme overrides |
+| `tokens/tokens.css` | CSS custom properties generated from both JSON files |
 | `css/clay.css` | Entry point: tokens + base + all components |
 | `css/base.css` | Reset, typography, board, grid, ruler, layout helpers |
 | `css/components/` | Button, input, chip & badge, tabs, alert, card, surfaces (swatch, elevation, avatar, progress), controls (toggle, checkbox, radio), navigation (nav, top bar, table, dialog, tooltip) |

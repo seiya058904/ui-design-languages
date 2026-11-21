@@ -27,6 +27,10 @@ If the target stack can't use the CSS (native apps, Flutter, SwiftUI, Compose…
 | Background | `.clay-board` (paper + 64px grid) for main surfaces; `.clay-ruler` frame for showcase sheets only | Busy textures, photos behind content |
 | Motion | 180ms, `cubic-bezier(.2,.8,.2,1)`; hover lifts 1px, active presses 1px down; selection indicators (tabs, segmented controls, sidebar nav, toggle knobs) glide between options (380ms, `--clay-motion-easing-spring`) instead of jumping | Bouncy springs, scattered entrance animations, indicators that blink from tab to tab |
 
+### Dark theme
+
+Dark Clay is warm charcoal clay, not an inverted page. Keep the same structure: raised pieces still have a top rim (now `rgba(255,255,255,.08)`) and a deep drop shadow; carved wells go nearly black. Mint, yellow and coral fills keep their **dark ink** text in both themes. Never hard-code a color in component CSS — if a value has to change between themes it must be a token (both `tokens.json` and `tokens.dark.json`).
+
 ## 3. Recipes (for porting to other platforms)
 
 **Raised clay** (buttons, cards, chips) — fill + four layers:

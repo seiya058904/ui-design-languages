@@ -13,6 +13,21 @@ Live reference: [`index.html`](../index.html).
 Typography: `.clay-display` `.clay-heading` `.clay-title` `.clay-subtitle` `.clay-lead` `.clay-body` `.clay-small` `.clay-caption` `.clay-muted` `.clay-mono` `.clay-section-title`.
 Layout: `.clay-container` `.clay-stack` (`--gap`) `.clay-row` (`--gap`) `.clay-divider` `.clay-visually-hidden`.
 
+## Theme switch — `js/clay.js`
+```html
+<div class="clay-segmented" role="tablist" aria-label="Theme">
+  <button class="clay-segmented__item" role="tab" data-theme-set="light">Light</button>
+  <button class="clay-segmented__item" role="tab" data-theme-set="dark">Dark</button>
+  <button class="clay-segmented__item" role="tab" data-theme-set="auto">Auto</button>
+</div>
+
+<button class="clay-btn clay-btn--icon" data-theme-toggle aria-label="Dark theme">
+  <svg class="clay-icon clay-theme-icon--to-dark"><use href="#i-moon"/></svg>
+  <svg class="clay-icon clay-theme-icon--to-light"><use href="#i-sun"/></svg>
+</button>
+```
+Selection is remembered in `localStorage` (`clay-theme`) and announced with a `clay:themechange` event (`detail.theme`, `detail.dark`). `ClayUI.setTheme("dark")` works too.
+
 ## Button — `button.css`
 ```html
 <button class="clay-btn clay-btn--primary">Send invoice</button>

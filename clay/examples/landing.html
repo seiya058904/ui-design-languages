@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script>try{var t=localStorage.getItem("clay-theme");if(t&&t!=="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pebble Invoices</title>
   <meta name="description" content="Clay UI example: a marketing website built only from Clay UI tokens and components.">
@@ -53,7 +54,7 @@
     .plan__price small { font-size: 15px; font-weight: 500; color: var(--clay-color-text-muted); letter-spacing: 0; }
     .plan ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 15px; }
     .plan li { display: flex; gap: 10px; align-items: center; }
-    .plan li .clay-icon { color: #2E8F6B; }
+    .plan li .clay-icon { color: var(--clay-color-primary-deep); }
     .plan .clay-btn { margin-top: auto; }
 
     .quote { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center; padding: 40px; border-radius: var(--clay-radius-xl); }
@@ -61,7 +62,7 @@
     .quote cite { display: block; margin-top: 14px; font-style: normal; font-size: 14px; color: var(--clay-color-text-muted); }
 
     .cta { text-align: center; padding: 64px 32px; border-radius: var(--clay-radius-xl); background: linear-gradient(180deg, var(--clay-color-primary-light), var(--clay-color-primary)); box-shadow: var(--clay-shadow-elevation-3); color: var(--clay-color-primary-ink); }
-    .cta h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 12px; color: var(--clay-color-text); }
+    .cta h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 12px; color: var(--clay-color-primary-ink); }
     .cta .clay-btn { margin-top: 26px; }
 
     .footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 40px 0 48px; font-size: 14px; color: var(--clay-color-text-muted); }
@@ -88,6 +89,8 @@
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
   <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4Z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></symbol>
 </svg>
 
@@ -97,6 +100,7 @@
       <a class="nav__brand" href="#"><span class="clay-swatch clay-swatch--primary"></span>Pebble</a>
       <a class="clay-btn clay-btn--ghost clay-btn--sm" href="#how">How it works</a>
       <a class="clay-btn clay-btn--ghost clay-btn--sm" href="#pricing">Pricing</a>
+<button class="clay-btn clay-btn--icon clay-btn--sm" type="button" data-theme-toggle aria-pressed="false" aria-label="Dark theme"><svg class="clay-icon clay-theme-icon--to-dark" aria-hidden="true"><use href="#i-moon"/></svg><svg class="clay-icon clay-theme-icon--to-light" aria-hidden="true"><use href="#i-sun"/></svg></button>
       <a class="clay-btn clay-btn--sm" href="dashboard.html">Sign in</a>
     </header>
 

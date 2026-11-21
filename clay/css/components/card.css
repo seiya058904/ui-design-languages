@@ -33,9 +33,9 @@
   width: 84px;
   height: 84px;
   border-radius: var(--clay-radius-lg);
-  background: linear-gradient(160deg, #D9D6D0 0%, var(--clay-color-neutral-strong) 100%);
+  background: linear-gradient(160deg, var(--clay-color-neutral-light) 0%, var(--clay-color-neutral-strong) 100%);
   box-shadow: var(--clay-shadow-raised);
-  color: #8E8981;
+  color: var(--clay-color-media-ink);
   overflow: hidden;
 }
 .clay-card__media svg { width: 70%; height: 70%; }
@@ -47,10 +47,10 @@
   margin-bottom: 14px;
   box-shadow:
     var(--clay-shadow-elevation-2),
-    0 7px 0 -3px #ECE9E4,
-    0 8px 6px -3px rgba(84, 74, 60, 0.18),
-    0 14px 0 -6px #E2DFD9,
-    0 15px 8px -6px rgba(84, 74, 60, 0.2);
+    0 7px 0 -3px var(--clay-color-stack-1),
+    0 8px 6px -3px var(--clay-color-shadow),
+    0 14px 0 -6px var(--clay-color-stack-2),
+    0 15px 8px -6px var(--clay-color-shadow);
 }
 
 .clay-card--sunken {

@@ -29,6 +29,38 @@
   --clay-color-grid: rgba(110, 100, 86, 0.09); /* Board grid lines */
   --clay-color-grid-strong: rgba(110, 100, 86, 0.22); /* Ruler ticks and spec lines */
   --clay-color-shadow: rgba(84, 74, 60, 0.20); /* Reference shadow tint (warm, never pure black) */
+  --clay-color-shadow-strong: rgba(40, 36, 30, 0.5); /* Tooltip and floating shadow */
+  --clay-color-surface-bright: #FBFAF8; /* Brightest clay (surface swatch) */
+  --clay-color-neutral-light: #DEDBD5; /* Top of grey clay gradients */
+  --clay-color-neutral-deep: #CCC8C1; /* Bottom of grey clay gradients */
+  --clay-color-control-well: #E2DED8; /* Unchecked checkbox / radio well */
+  --clay-color-media-ink: #8E8981; /* Glyphs on grey media tiles */
+  --clay-color-primary-deep: #2E8F6B; /* Mint used as an icon / line color on neutral surfaces */
+  --clay-color-primary-wash: rgba(168, 230, 207, 0.16); /* Row hover tint */
+  --clay-color-focus-soft: rgba(124, 242, 198, 0.55); /* Glow bloom */
+  --clay-color-focus-strong: rgba(124, 242, 198, 0.9); /* Glow ring line */
+  --clay-color-focus-fill: #F4FBF8; /* Body of the focus-ring swatch */
+  --clay-color-warning-light: #FAF0BC; /* Top tint of warning fills */
+  --clay-color-error-light: #F7BDBB; /* Top tint of error fills */
+  --clay-color-error-text: #A23431; /* Error text on neutral surfaces */
+  --clay-color-error-glow: rgba(242, 160, 158, 0.6); /* Invalid field bloom */
+  --clay-color-info-light: #DDE9F6; /* Top tint of info fills */
+  --clay-color-wash: rgba(84, 74, 60, 0.06); /* Hover wash on flat items */
+  --clay-color-sheen: rgba(255, 255, 255, 0.32); /* Light wash on tinted / grey items */
+  --clay-color-highlight: rgba(255, 255, 255, 0.7); /* Top-edge light on swatches and controls */
+  --clay-color-groove-dark: rgba(84, 74, 60, 0.14); /* Upper line of a carved divider */
+  --clay-color-groove-light: rgba(255, 255, 255, 0.8); /* Lower line of a carved divider */
+  --clay-color-stack-1: #ECE9E4; /* First slab under a stacked card */
+  --clay-color-stack-2: #E2DFD9; /* Second slab under a stacked card */
+  --clay-color-level-1: #F6F4F1; /* Elevation strata, front */
+  --clay-color-level-2: #E7E4DF;
+  --clay-color-level-3: #D2CEC8;
+  --clay-color-level-4: #ACA7A0;
+  --clay-color-level-5: #8C877F; /* Elevation strata, back */
+  --clay-color-level-ink-deep: #F4F2EE; /* Label color on strata levels 4–5 */
+  --clay-color-backdrop: rgba(60, 54, 46, 0.28); /* Dialog backdrop */
+
+  --clay-image-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232C2C2A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); /* Select chevron (themeable) */
 
   --clay-font-family-sans: "Inter", "SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif;
   --clay-font-family-mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
@@ -86,6 +118,9 @@
   --clay-shadow-inset-sm: inset 0 1px 2px rgba(84, 74, 60, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.7); /* Shallow well: small tracks */
   --clay-shadow-flat: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 1px 2px rgba(84, 74, 60, 0.12); /* Disabled — clay that has lost its height */
   --clay-shadow-glow: 0 0 0 2px rgba(124, 242, 198, 0.95), 0 0 16px 2px rgba(124, 242, 198, 0.55); /* Focus / hover glow ring, append to other shadows */
+  --clay-shadow-well: inset 0 2px 4px rgba(84, 74, 60, 0.24), inset 0 -1.5px 0 rgba(255, 255, 255, 0.8); /* Deeper well for checkbox / radio / toggle tracks */
+  --clay-shadow-swatch: inset 0 2px 1px rgba(255, 255, 255, 0.7), inset 0 -6px 10px rgba(84, 74, 60, 0.12), 0 3px 4px rgba(84, 74, 60, 0.1), 0 14px 24px -10px rgba(84, 74, 60, 0.35); /* Big squircle blobs */
+  --clay-shadow-slab: inset 0 1.5px 0 rgba(255, 255, 255, 0.6), inset 0 -2px 3px rgba(60, 52, 42, 0.12), 0 4px 8px -2px rgba(60, 52, 42, 0.3); /* Elevation strata slabs */
   --clay-shadow-elevation-1: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(84, 74, 60, 0.08), 0 2px 6px -2px rgba(84, 74, 60, 0.16);
   --clay-shadow-elevation-2: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 2px 4px rgba(84, 74, 60, 0.07), 0 8px 16px -6px rgba(84, 74, 60, 0.22);
   --clay-shadow-elevation-3: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 4px 8px rgba(84, 74, 60, 0.07), 0 14px 28px -10px rgba(84, 74, 60, 0.28);
@@ -98,4 +133,168 @@
   --clay-motion-duration-slide: 380ms; /* Sliding indicators (tabs, segmented controls) */
   --clay-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
   --clay-motion-easing-spring: cubic-bezier(0.32, 0.72, 0, 1); /* iOS-style glide: fast start, long soft settle, no overshoot */
+}
+
+/* Dark theme — GENERATED from clay/tokens/tokens.dark.json.
+   <html data-theme="dark"> forces it; <html data-theme="auto"> follows the OS setting. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --clay-color-canvas: #161513;
+  --clay-color-board: #1E1D1A;
+  --clay-color-surface: #2A2925;
+  --clay-color-surface-sunken: #191816;
+  --clay-color-primary: #8FDBBE;
+  --clay-color-primary-light: #B0EAD4;
+  --clay-color-primary-strong: #5FCCA3;
+  --clay-color-primary-ink: #10342A;
+  --clay-color-neutral: #3B3A35;
+  --clay-color-neutral-strong: #57554F;
+  --clay-color-border: #34322E;
+  --clay-color-text: #ECE8E1;
+  --clay-color-text-muted: #A8A39A;
+  --clay-color-text-subtle: #7C776F;
+  --clay-color-disabled: #2F2E2A;
+  --clay-color-disabled-ink: #69655E;
+  --clay-color-success: #8FDBBE;
+  --clay-color-success-ink: #10342A;
+  --clay-color-warning: #E6D27F;
+  --clay-color-warning-ink: #3D3307;
+  --clay-color-error: #E58E8C;
+  --clay-color-error-ink: #4A1311;
+  --clay-color-info: #A4C2E3;
+  --clay-color-info-ink: #142B44;
+  --clay-color-grid: rgba(255, 240, 220, 0.045);
+  --clay-color-grid-strong: rgba(255, 240, 220, 0.12);
+  --clay-color-shadow: rgba(0, 0, 0, 0.45);
+  --clay-color-shadow-strong: rgba(0, 0, 0, 0.7);
+  --clay-color-surface-bright: #36342F;
+  --clay-color-neutral-light: #45433E;
+  --clay-color-neutral-deep: #302F2B;
+  --clay-color-control-well: #151412;
+  --clay-color-media-ink: #77736B;
+  --clay-color-primary-deep: #7CDDB8;
+  --clay-color-primary-wash: rgba(143, 219, 190, 0.07);
+  --clay-color-focus-soft: rgba(124, 242, 198, 0.38);
+  --clay-color-focus-strong: rgba(124, 242, 198, 0.85);
+  --clay-color-focus-fill: #1B2924;
+  --clay-color-warning-light: #F0E2A4;
+  --clay-color-error-light: #EEABA9;
+  --clay-color-error-text: #F2A09E;
+  --clay-color-error-glow: rgba(229, 142, 140, 0.45);
+  --clay-color-info-light: #BDD3EC;
+  --clay-color-wash: rgba(255, 255, 255, 0.05);
+  --clay-color-sheen: rgba(255, 255, 255, 0.07);
+  --clay-color-highlight: rgba(255, 255, 255, 0.1);
+  --clay-color-groove-dark: rgba(0, 0, 0, 0.45);
+  --clay-color-groove-light: rgba(255, 255, 255, 0.05);
+  --clay-color-stack-1: #25241F;
+  --clay-color-stack-2: #201F1B;
+  --clay-color-level-1: #3A3834;
+  --clay-color-level-2: #312F2B;
+  --clay-color-level-3: #292824;
+  --clay-color-level-4: #22211E;
+  --clay-color-level-5: #1B1A18;
+  --clay-color-level-ink-deep: #A8A39A;
+  --clay-color-backdrop: rgba(0, 0, 0, 0.55);
+
+  --clay-image-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ECE8E1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+  --clay-shadow-raised: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -2px 3px rgba(0, 0, 0, 0.28), 0 1px 1px rgba(0, 0, 0, 0.35), 0 6px 14px -4px rgba(0, 0, 0, 0.6);
+  --clay-shadow-raised-sm: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1.5px 2px rgba(0, 0, 0, 0.28), 0 1px 1px rgba(0, 0, 0, 0.35), 0 3px 8px -2px rgba(0, 0, 0, 0.55);
+  --clay-shadow-raised-hover: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -2px 3px rgba(0, 0, 0, 0.28), 0 2px 2px rgba(0, 0, 0, 0.35), 0 12px 24px -8px rgba(0, 0, 0, 0.7);
+  --clay-shadow-pressed: inset 0 2px 6px rgba(0, 0, 0, 0.55), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  --clay-shadow-inset: inset 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  --clay-shadow-inset-sm: inset 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  --clay-shadow-flat: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 1px 2px rgba(0, 0, 0, 0.35);
+  --clay-shadow-glow: 0 0 0 2px rgba(124, 242, 198, 0.9), 0 0 14px 1px rgba(124, 242, 198, 0.4);
+  --clay-shadow-well: inset 0 2px 5px rgba(0, 0, 0, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  --clay-shadow-swatch: inset 0 2px 1px rgba(255, 255, 255, 0.12), inset 0 -6px 10px rgba(0, 0, 0, 0.3), 0 3px 4px rgba(0, 0, 0, 0.35), 0 16px 26px -10px rgba(0, 0, 0, 0.75);
+  --clay-shadow-slab: inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 -2px 3px rgba(0, 0, 0, 0.25), 0 4px 10px -2px rgba(0, 0, 0, 0.6);
+  --clay-shadow-elevation-1: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px -2px rgba(0, 0, 0, 0.4);
+  --clay-shadow-elevation-2: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 2px 4px rgba(0, 0, 0, 0.3), 0 10px 20px -8px rgba(0, 0, 0, 0.55);
+  --clay-shadow-elevation-3: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 8px rgba(0, 0, 0, 0.3), 0 16px 32px -12px rgba(0, 0, 0, 0.6);
+  --clay-shadow-elevation-4: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 6px 12px rgba(0, 0, 0, 0.32), 0 24px 44px -14px rgba(0, 0, 0, 0.65);
+  --clay-shadow-elevation-5: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 18px rgba(0, 0, 0, 0.35), 0 36px 64px -18px rgba(0, 0, 0, 0.75);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    color-scheme: dark;
+    --clay-color-canvas: #161513;
+    --clay-color-board: #1E1D1A;
+    --clay-color-surface: #2A2925;
+    --clay-color-surface-sunken: #191816;
+    --clay-color-primary: #8FDBBE;
+    --clay-color-primary-light: #B0EAD4;
+    --clay-color-primary-strong: #5FCCA3;
+    --clay-color-primary-ink: #10342A;
+    --clay-color-neutral: #3B3A35;
+    --clay-color-neutral-strong: #57554F;
+    --clay-color-border: #34322E;
+    --clay-color-text: #ECE8E1;
+    --clay-color-text-muted: #A8A39A;
+    --clay-color-text-subtle: #7C776F;
+    --clay-color-disabled: #2F2E2A;
+    --clay-color-disabled-ink: #69655E;
+    --clay-color-success: #8FDBBE;
+    --clay-color-success-ink: #10342A;
+    --clay-color-warning: #E6D27F;
+    --clay-color-warning-ink: #3D3307;
+    --clay-color-error: #E58E8C;
+    --clay-color-error-ink: #4A1311;
+    --clay-color-info: #A4C2E3;
+    --clay-color-info-ink: #142B44;
+    --clay-color-grid: rgba(255, 240, 220, 0.045);
+    --clay-color-grid-strong: rgba(255, 240, 220, 0.12);
+    --clay-color-shadow: rgba(0, 0, 0, 0.45);
+    --clay-color-shadow-strong: rgba(0, 0, 0, 0.7);
+    --clay-color-surface-bright: #36342F;
+    --clay-color-neutral-light: #45433E;
+    --clay-color-neutral-deep: #302F2B;
+    --clay-color-control-well: #151412;
+    --clay-color-media-ink: #77736B;
+    --clay-color-primary-deep: #7CDDB8;
+    --clay-color-primary-wash: rgba(143, 219, 190, 0.07);
+    --clay-color-focus-soft: rgba(124, 242, 198, 0.38);
+    --clay-color-focus-strong: rgba(124, 242, 198, 0.85);
+    --clay-color-focus-fill: #1B2924;
+    --clay-color-warning-light: #F0E2A4;
+    --clay-color-error-light: #EEABA9;
+    --clay-color-error-text: #F2A09E;
+    --clay-color-error-glow: rgba(229, 142, 140, 0.45);
+    --clay-color-info-light: #BDD3EC;
+    --clay-color-wash: rgba(255, 255, 255, 0.05);
+    --clay-color-sheen: rgba(255, 255, 255, 0.07);
+    --clay-color-highlight: rgba(255, 255, 255, 0.1);
+    --clay-color-groove-dark: rgba(0, 0, 0, 0.45);
+    --clay-color-groove-light: rgba(255, 255, 255, 0.05);
+    --clay-color-stack-1: #25241F;
+    --clay-color-stack-2: #201F1B;
+    --clay-color-level-1: #3A3834;
+    --clay-color-level-2: #312F2B;
+    --clay-color-level-3: #292824;
+    --clay-color-level-4: #22211E;
+    --clay-color-level-5: #1B1A18;
+    --clay-color-level-ink-deep: #A8A39A;
+    --clay-color-backdrop: rgba(0, 0, 0, 0.55);
+
+    --clay-image-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ECE8E1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+    --clay-shadow-raised: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -2px 3px rgba(0, 0, 0, 0.28), 0 1px 1px rgba(0, 0, 0, 0.35), 0 6px 14px -4px rgba(0, 0, 0, 0.6);
+    --clay-shadow-raised-sm: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1.5px 2px rgba(0, 0, 0, 0.28), 0 1px 1px rgba(0, 0, 0, 0.35), 0 3px 8px -2px rgba(0, 0, 0, 0.55);
+    --clay-shadow-raised-hover: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -2px 3px rgba(0, 0, 0, 0.28), 0 2px 2px rgba(0, 0, 0, 0.35), 0 12px 24px -8px rgba(0, 0, 0, 0.7);
+    --clay-shadow-pressed: inset 0 2px 6px rgba(0, 0, 0, 0.55), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    --clay-shadow-inset: inset 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+    --clay-shadow-inset-sm: inset 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    --clay-shadow-flat: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 1px 2px rgba(0, 0, 0, 0.35);
+    --clay-shadow-glow: 0 0 0 2px rgba(124, 242, 198, 0.9), 0 0 14px 1px rgba(124, 242, 198, 0.4);
+    --clay-shadow-well: inset 0 2px 5px rgba(0, 0, 0, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+    --clay-shadow-swatch: inset 0 2px 1px rgba(255, 255, 255, 0.12), inset 0 -6px 10px rgba(0, 0, 0, 0.3), 0 3px 4px rgba(0, 0, 0, 0.35), 0 16px 26px -10px rgba(0, 0, 0, 0.75);
+    --clay-shadow-slab: inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 -2px 3px rgba(0, 0, 0, 0.25), 0 4px 10px -2px rgba(0, 0, 0, 0.6);
+    --clay-shadow-elevation-1: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px -2px rgba(0, 0, 0, 0.4);
+    --clay-shadow-elevation-2: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 2px 4px rgba(0, 0, 0, 0.3), 0 10px 20px -8px rgba(0, 0, 0, 0.55);
+    --clay-shadow-elevation-3: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 8px rgba(0, 0, 0, 0.3), 0 16px 32px -12px rgba(0, 0, 0, 0.6);
+    --clay-shadow-elevation-4: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 6px 12px rgba(0, 0, 0, 0.32), 0 24px 44px -14px rgba(0, 0, 0, 0.65);
+    --clay-shadow-elevation-5: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 18px rgba(0, 0, 0, 0.35), 0 36px 64px -18px rgba(0, 0, 0, 0.75);
+  }
 }

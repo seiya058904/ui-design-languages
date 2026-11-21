@@ -106,6 +106,15 @@ a { color: inherit; }
   stroke-linejoin: round;
 }
 
+/* ---------- Theme toggle icons ----------
+   <button class="clay-btn clay-btn--icon" data-theme-toggle aria-label="Dark theme">
+     <svg class="clay-icon clay-theme-icon--to-dark">moon</svg>
+     <svg class="clay-icon clay-theme-icon--to-light">sun</svg>
+   </button> */
+.clay-theme-icon--to-light { display: none; }
+[aria-pressed="true"] > .clay-theme-icon--to-dark { display: none; }
+[aria-pressed="true"] > .clay-theme-icon--to-light { display: block; }
+
 /* ---------- Layout helpers ---------- */
 .clay-container { width: min(100% - 32px, 1120px); margin-inline: auto; }
 .clay-stack { display: flex; flex-direction: column; gap: var(--gap, var(--clay-space-4)); }
@@ -114,8 +123,8 @@ a { color: inherit; }
 .clay-divider {
   height: 0;
   border: 0;
-  border-top: 1px solid rgba(84, 74, 60, 0.14);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  border-top: 1px solid var(--clay-color-groove-dark);
+  border-bottom: 1px solid var(--clay-color-groove-light);
   margin: var(--clay-space-6) 0;
 }
 

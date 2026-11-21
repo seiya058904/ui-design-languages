@@ -69,7 +69,7 @@
   box-shadow: none;
 }
 .clay-btn--ghost:hover,
-.clay-btn--ghost.is-hover { background: rgba(84, 74, 60, 0.06); box-shadow: none; transform: none; }
+.clay-btn--ghost.is-hover { background: var(--clay-color-wash); box-shadow: none; transform: none; }
 .clay-btn--ghost:active { box-shadow: var(--clay-shadow-inset-sm); }
 
 .clay-btn--sm   { height: var(--clay-size-control-sm); padding: 0 14px; font-size: 13px; }

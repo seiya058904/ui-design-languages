@@ -21,9 +21,9 @@
 .clay-alert .clay-icon { width: 20px; height: 20px; }
 
 .clay-alert--success { background: linear-gradient(180deg, var(--clay-color-primary-light) 0%, var(--clay-color-success) 55%); color: var(--clay-color-success-ink); }
-.clay-alert--warning { background: linear-gradient(180deg, #FAF0BC 0%, var(--clay-color-warning) 55%); color: var(--clay-color-warning-ink); }
-.clay-alert--error   { background: linear-gradient(180deg, #F7BDBB 0%, var(--clay-color-error) 55%);   color: var(--clay-color-error-ink); }
-.clay-alert--info    { background: linear-gradient(180deg, #DDE9F6 0%, var(--clay-color-info) 55%);    color: var(--clay-color-info-ink); }
+.clay-alert--warning { background: linear-gradient(180deg, var(--clay-color-warning-light) 0%, var(--clay-color-warning) 55%); color: var(--clay-color-warning-ink); }
+.clay-alert--error   { background: linear-gradient(180deg, var(--clay-color-error-light) 0%, var(--clay-color-error) 55%);   color: var(--clay-color-error-ink); }
+.clay-alert--info    { background: linear-gradient(180deg, var(--clay-color-info-light) 0%, var(--clay-color-info) 55%);    color: var(--clay-color-info-ink); }
 
 .clay-alert--block {
   align-items: flex-start;
@@ -45,5 +45,5 @@
   color: inherit;
   cursor: pointer;
 }
-.clay-alert__close:hover { background: rgba(255, 255, 255, 0.35); }
+.clay-alert__close:hover { background: var(--clay-color-sheen); }
 .clay-alert__close:focus-visible { box-shadow: var(--clay-shadow-glow); }

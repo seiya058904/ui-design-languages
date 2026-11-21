@@ -26,7 +26,7 @@
   gap: 4px;
   padding: 5px;
   border-radius: var(--clay-radius-pill);
-  background: linear-gradient(180deg, #DEDBD5 0%, var(--clay-color-neutral) 100%);
+  background: linear-gradient(180deg, var(--clay-color-neutral-light) 0%, var(--clay-color-neutral) 100%);
   box-shadow: var(--clay-shadow-raised);
   max-width: 100%;
 }
@@ -52,7 +52,7 @@
     background-color var(--clay-motion-duration) var(--clay-motion-easing),
     box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
 }
-.clay-segmented__item:hover { background: rgba(255, 255, 255, 0.3); }
+.clay-segmented__item:hover { background: var(--clay-color-sheen); }
 .clay-segmented__item:focus-visible { box-shadow: var(--clay-shadow-glow); }
 
 .clay-segmented__item[aria-selected="true"],

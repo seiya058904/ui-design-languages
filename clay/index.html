@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script>try{var t=localStorage.getItem("clay-theme");if(t&&t!=="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Clay UI Styleguide</title>
   <meta name="description" content="Clay UI — a soft, extruded clay design language: tokens, components and examples in plain CSS.">
@@ -15,6 +16,7 @@
     .site-nav { width: min(100%, 1040px); margin: 0 auto 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
     .site-nav__brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.01em; margin-right: auto; text-decoration: none; }
     .site-nav__mark { width: 28px; height: 28px; --swatch-size: 28px; border-radius: 34%; }
+    .theme-opt { height: 30px; padding: 0 14px; font-size: 13px; }
 
     .sheet { width: min(100%, 1040px); margin: 0 auto; padding: 68px 64px 72px; }
     .sheet + .sheet { margin-top: 32px; }
@@ -46,8 +48,8 @@
     .spec { display: flex; flex-direction: column; align-items: stretch; }
     .spec__box-row { display: flex; align-items: stretch; gap: 6px; }
     .tile { border-radius: 10px; background: var(--clay-color-surface); box-shadow: var(--clay-shadow-raised); }
-    .tile--grey { background: #E3E0DB; }
-    .tile--dark { background: #A9A59E; }
+    .tile--grey { background: var(--clay-color-neutral-light); }
+    .tile--dark { background: var(--clay-color-neutral-strong); }
     .dim, .vdim { --line: var(--clay-color-grid-strong); font-size: 11px; color: var(--clay-color-text-muted); white-space: nowrap; }
     .dim { display: flex; align-items: center; gap: 4px; margin-top: 7px; }
     .dim::before, .dim::after { content: ""; flex: 1; height: 7px; background: linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat; }
@@ -56,8 +58,8 @@
     .vdim::before, .vdim::after { content: ""; flex: 1; width: 7px; background: linear-gradient(var(--line), var(--line)) center / 1px 100% no-repeat; }
     .vdim::before { border-top: 1px solid var(--line); } .vdim::after { border-bottom: 1px solid var(--line); }
 
-    .radius-demo { position: relative; width: 80px; height: 80px; border-radius: 20px; background: #E3E0DB; box-shadow: var(--clay-shadow-raised); }
-    .radius-demo::before { content: ""; position: absolute; top: 0; right: 0; width: 22px; height: 22px; border-top: 1px dashed #8E8981; border-right: 1px dashed #8E8981; border-top-right-radius: 20px; }
+    .radius-demo { position: relative; width: 80px; height: 80px; border-radius: 20px; background: var(--clay-color-neutral-light); box-shadow: var(--clay-shadow-raised); }
+    .radius-demo::before { content: ""; position: absolute; top: 0; right: 0; width: 22px; height: 22px; border-top: 1px dashed var(--clay-color-media-ink); border-right: 1px dashed var(--clay-color-media-ink); border-top-right-radius: 20px; }
     .radius-demo span { position: absolute; top: 12px; right: 20px; font-size: 10px; color: var(--clay-color-text-muted); transform: rotate(-35deg); }
 
     .states { display: grid; grid-template-columns: repeat(3, max-content); gap: 8px 22px; align-items: center; }
@@ -116,6 +118,11 @@
 
 <nav class="site-nav" aria-label="Site">
   <a class="site-nav__brand" href="./"><span class="clay-swatch clay-swatch--primary site-nav__mark"></span>Clay UI</a>
+  <div class="clay-segmented" role="tablist" aria-label="Theme">
+    <button class="clay-segmented__item theme-opt" role="tab" aria-selected="true" data-theme-set="light">Light</button>
+    <button class="clay-segmented__item theme-opt" role="tab" aria-selected="false" tabindex="-1" data-theme-set="dark">Dark</button>
+    <button class="clay-segmented__item theme-opt" role="tab" aria-selected="false" tabindex="-1" data-theme-set="auto">Auto</button>
+  </div>
   <a class="clay-btn clay-btn--ghost clay-btn--sm" href="examples/dashboard.html">App example</a>
   <a class="clay-btn clay-btn--ghost clay-btn--sm" href="examples/landing.html">Website example</a>
   <a class="clay-btn clay-btn--sm" href="https://github.com/seiya058904/ui-design-languages/tree/main/clay"><svg class="clay-icon" aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
@@ -130,10 +137,10 @@
       <section class="a-colors" aria-labelledby="h-colors">
         <h2 class="clay-section-title" id="h-colors">Color Tokens</h2>
         <div class="swatches">
-          <figure><div class="clay-swatch clay-swatch--primary"></div><figcaption class="clay-swatch-label"><strong>Primary</strong><span>#A8E6CF</span></figcaption></figure>
-          <figure><div class="clay-swatch clay-swatch--surface"></div><figcaption class="clay-swatch-label"><strong>Surface</strong><span>#F8F7F4</span></figcaption></figure>
-          <figure><div class="clay-swatch clay-swatch--neutral"></div><figcaption class="clay-swatch-label"><strong>Border</strong><span>#D6D3CD</span></figcaption></figure>
-          <figure><div class="clay-swatch clay-swatch--ring"></div><figcaption class="clay-swatch-label"><strong>Focus ring</strong><span>#7CF2C6</span></figcaption></figure>
+          <figure><div class="clay-swatch clay-swatch--primary"></div><figcaption class="clay-swatch-label"><strong>Primary</strong><span data-token="--clay-color-primary">#A8E6CF</span></figcaption></figure>
+          <figure><div class="clay-swatch clay-swatch--surface"></div><figcaption class="clay-swatch-label"><strong>Surface</strong><span data-token="--clay-color-surface">#F8F7F4</span></figcaption></figure>
+          <figure><div class="clay-swatch clay-swatch--neutral"></div><figcaption class="clay-swatch-label"><strong>Border</strong><span data-token="--clay-color-neutral">#D6D3CD</span></figcaption></figure>
+          <figure><div class="clay-swatch clay-swatch--ring"></div><figcaption class="clay-swatch-label"><strong>Focus ring</strong><span data-token="--clay-color-focus">#7CF2C6</span></figcaption></figure>
         </div>
       </section>
 
@@ -403,5 +410,17 @@
 </footer>
 
 <script src="js/clay.js"></script>
+<script>
+  /* Swatch labels show the live token value, so they stay true in dark mode. */
+  function syncTokenLabels() {
+    var cs = getComputedStyle(document.documentElement);
+    document.querySelectorAll("[data-token]").forEach(function (el) {
+      var v = cs.getPropertyValue(el.getAttribute("data-token")).trim();
+      if (v) el.textContent = v.toUpperCase();
+    });
+  }
+  document.addEventListener("clay:themechange", syncTokenLabels);
+  syncTokenLabels();
+</script>
 </body>
 </html>

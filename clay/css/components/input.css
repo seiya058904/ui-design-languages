@@ -15,7 +15,7 @@
   display: flex;
   padding: 9px;
   border-radius: var(--clay-radius-pill);
-  background: linear-gradient(180deg, #DCD9D3 0%, #CCC8C1 100%);
+  background: linear-gradient(180deg, var(--clay-color-neutral-light) 0%, var(--clay-color-neutral-deep) 100%);
   box-shadow: var(--clay-shadow-raised);
 }
 
@@ -54,9 +54,9 @@
   box-shadow:
     var(--clay-shadow-inset),
     inset 0 0 0 2px var(--clay-color-focus),
-    inset 0 0 10px rgba(124, 242, 198, 0.45),
-    0 0 0 1.5px rgba(124, 242, 198, 0.9),
-    0 0 8px 1px rgba(124, 242, 198, 0.55);
+    inset 0 0 10px var(--clay-color-focus-soft),
+    0 0 0 1.5px var(--clay-color-focus-strong),
+    0 0 8px 1px var(--clay-color-focus-soft);
 }
 
 /* Plain carved input */
@@ -86,7 +86,7 @@ textarea.clay-input {
 select.clay-input {
   padding-right: 44px;
   cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232C2C2A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: var(--clay-image-chevron);
   background-repeat: no-repeat;
   background-position: right 16px center;
   background-size: 18px;
@@ -98,7 +98,7 @@ select.clay-input {
 .clay-input[aria-invalid="true"],
 .clay-input.is-invalid,
 .clay-field.is-invalid .clay-field__control {
-  box-shadow: var(--clay-shadow-inset), 0 0 0 2px var(--clay-color-error), 0 0 14px rgba(242, 160, 158, 0.6);
+  box-shadow: var(--clay-shadow-inset), 0 0 0 2px var(--clay-color-error), 0 0 14px var(--clay-color-error-glow);
 }
 
 .clay-input:disabled,
@@ -113,4 +113,4 @@ select.clay-input {
 .clay-form-row { display: flex; flex-direction: column; gap: var(--clay-space-2); }
 .clay-label { font-size: var(--clay-font-size-small); font-weight: var(--clay-font-weight-semibold); padding-left: 6px; }
 .clay-hint  { font-size: var(--clay-font-size-caption); color: var(--clay-color-text-muted); padding-left: 6px; }
-.clay-hint--error { color: #A23431; }
+.clay-hint--error { color: var(--clay-color-error-text); }

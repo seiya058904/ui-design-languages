@@ -9,6 +9,19 @@ node scripts/build-tokens.mjs --check  # fail if tokens.css is stale
 
 Naming: the JSON path joined by `-`, prefixed with `--clay-`. `color.primary` → `--clay-color-primary`, `font.size.body` → `--clay-font-size-body`.
 
+## Themes
+
+`tokens/tokens.dark.json` overrides colors, the select chevron image and every shadow for the dark theme; it is emitted under `:root[data-theme="dark"]` and under `:root[data-theme="auto"]` when the OS prefers dark. Supporting tokens added so components never hard-code a color: `surface-bright`, `neutral-light`, `neutral-deep`, `control-well`, `media-ink`, `primary-deep`, `primary-wash`, `focus-soft`, `focus-strong`, `focus-fill`, `warning-light`, `error-light`, `error-text`, `error-glow`, `info-light`, `wash`, `sheen`, `highlight`, `groove-dark`, `groove-light`, `stack-1/2`, `level-1…5`, `level-ink-deep`, `backdrop`, `shadow-strong`, plus shadows `well`, `swatch`, `slab` and `--clay-image-chevron`.
+
+| Role | Light | Dark |
+| --- | --- | --- |
+| Board | `#F1EFEB` | `#1E1D1A` |
+| Surface | `#F8F7F4` | `#2A2925` |
+| Well | `#EAE7E2` | `#191816` |
+| Primary | `#A8E6CF` | `#8FDBBE` |
+| Text | `#2C2C2A` | `#ECE8E1` |
+| Muted text | `#67635D` | `#A8A39A` |
+
 ## Color
 
 | Token | Value | Use |

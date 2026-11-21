@@ -6,6 +6,10 @@
    - nav (.clay-nav): click moves aria-current="page"
    - toggle chips (.clay-chip[aria-pressed]): click flips aria-pressed
    - dialogs: [data-clay-open="#id"] opens a <dialog>, [data-clay-close] closes it
+   - theme: [data-theme-set="light|dark|auto"] picks a theme, [data-theme-toggle] flips
+     light/dark; the choice is remembered (localStorage "clay-theme") and fires a
+     "clay:themechange" event. Add the one-line restore script from the README to <head>
+     to avoid a flash of the wrong theme.
 
    Frameworks (React, Vue, Svelte…): just render aria-selected="true" / aria-current="page"
    (or .is-active) on the active item. Groups added later are picked up automatically and
@@ -95,6 +99,47 @@
     refresh(list);
   }
 
+  /* ---------- Theme ---------- */
+  var THEME_KEY = "clay-theme";
+  var darkQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+
+  function currentTheme() { return document.documentElement.getAttribute("data-theme") || "light"; }
+  function isDark() {
+    var t = currentTheme();
+    return t === "dark" || (t === "auto" && !!darkQuery && darkQuery.matches);
+  }
+  function syncThemeControls() {
+    var t = currentTheme();
+    document.querySelectorAll("[data-theme-set]").forEach(function (b) {
+      var on = b.getAttribute("data-theme-set") === t;
+      if (b.matches(TAB_ITEM)) {
+        b.setAttribute("aria-selected", on ? "true" : "false");
+        b.classList.toggle("is-active", on);
+        b.tabIndex = on ? 0 : -1;
+      } else {
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      }
+    });
+    document.querySelectorAll("[data-theme-toggle]").forEach(function (b) {
+      b.setAttribute("aria-pressed", isDark() ? "true" : "false");
+    });
+  }
+  function setTheme(t) {
+    var el = document.documentElement;
+    if (t === "light") el.removeAttribute("data-theme");
+    else el.setAttribute("data-theme", t);
+    try { localStorage.setItem(THEME_KEY, t); } catch (err) { /* private mode: theme just isn't remembered */ }
+    syncThemeControls();
+    document.dispatchEvent(new CustomEvent("clay:themechange", { detail: { theme: t, dark: isDark() } }));
+  }
+  if (darkQuery && darkQuery.addEventListener) {
+    darkQuery.addEventListener("change", function () {
+      if (currentTheme() !== "auto") return;
+      syncThemeControls();
+      document.dispatchEvent(new CustomEvent("clay:themechange", { detail: { theme: "auto", dark: isDark() } }));
+    });
+  }
+
   function selectNavItem(link) {
     var list = link.closest(".clay-nav");
     if (!list) return;
@@ -116,6 +161,11 @@
       selectNavItem(navItem);
       if (navItem.getAttribute("href") === "#") e.preventDefault();
     }
+
+    var themeSet = e.target.closest("[data-theme-set]");
+    if (themeSet) setTheme(themeSet.getAttribute("data-theme-set"));
+    var themeToggle = e.target.closest("[data-theme-toggle]");
+    if (themeToggle) setTheme(isDark() ? "light" : "dark");
 
     var chip = e.target.closest(".clay-chip[aria-pressed]");
     if (chip && !chip.disabled) {
@@ -150,6 +200,7 @@
   });
 
   function boot() {
+    syncThemeControls();
     initIndicators(document);
     // Pick up groups rendered later (SPAs, dialogs, templates). Batched to one pass per frame.
     var queued = false;
@@ -168,6 +219,8 @@
     refresh: refresh,
     selectTab: selectTab,
     selectNavItem: selectNavItem,
+    setTheme: setTheme,
+    isDark: isDark,
     // Aliases kept for the earlier tabs-only API
     initTabs: initIndicators,
     refreshTabs: refresh

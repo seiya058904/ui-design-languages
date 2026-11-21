@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script>try{var t=localStorage.getItem("clay-theme");if(t&&t!=="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pebble Billing</title>
   <meta name="description" content="Clay UI example: an invoicing dashboard built only from Clay UI tokens and components.">
@@ -34,7 +35,7 @@
     .panel__title { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
     .bars { display: flex; align-items: flex-end; gap: 14px; height: 200px; padding: 16px 16px 0; border-radius: var(--clay-radius-lg); background: var(--clay-color-surface-sunken); box-shadow: var(--clay-shadow-inset); }
     .bar { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 8px; height: 100%; font-size: 12px; color: var(--clay-color-text-muted); padding-bottom: 10px; }
-    .bar i { display: block; width: 100%; max-width: 38px; height: var(--h); border-radius: 12px 12px 8px 8px; background: linear-gradient(180deg, var(--clay-color-surface), #E7E4DF); box-shadow: var(--clay-shadow-raised-sm); }
+    .bar i { display: block; width: 100%; max-width: 38px; height: var(--h); border-radius: 12px 12px 8px 8px; background: linear-gradient(180deg, var(--clay-color-surface), var(--clay-color-level-2)); box-shadow: var(--clay-shadow-raised-sm); }
     .bar.is-now i { background: linear-gradient(180deg, var(--clay-color-primary-light), var(--clay-color-primary)); }
     .activity { display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; list-style: none; }
     .activity li { display: flex; align-items: center; gap: 12px; font-size: 14px; }
@@ -72,6 +73,8 @@
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4Z"/></symbol>
   <symbol id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h3"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
   <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
 </svg>
 
@@ -105,6 +108,7 @@
         </label>
       </div>
       <div class="clay-row" style="margin-left:auto;--gap:10px">
+<button class="clay-btn clay-btn--icon" type="button" data-theme-toggle aria-pressed="false" aria-label="Dark theme"><svg class="clay-icon clay-theme-icon--to-dark" aria-hidden="true"><use href="#i-moon"/></svg><svg class="clay-icon clay-theme-icon--to-light" aria-hidden="true"><use href="#i-sun"/></svg></button>
         <button class="clay-btn clay-btn--icon topbar-hide" type="button" aria-label="Notifications"><svg class="clay-icon" aria-hidden="true"><use href="#i-bell"/></svg></button>
         <span class="clay-avatar" style="--avatar-size:42px">AM</span>
       </div>

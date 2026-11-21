@@ -1,0 +1,634 @@
+/* Atelier — components
+   Shared anatomy with the other languages: btn · input · checkbox/radio/toggle · slider · pills/segmented ·
+   breadcrumb · pagination · nav · card · badge · toast/alert · dialog · progress · empty · avatar ·
+   board/column/task · swatch · table · tooltip */
+
+/* =========================================================================
+   Button
+   <button class="atelier-btn atelier-btn--primary">Primary</button>
+   Variants: --primary · --secondary (accent outline) · --tertiary (neutral outline) · --destructive · --ghost
+   Sizes: --sm · --lg · --icon · --block   States: :hover · :active/.is-active (pressed) · :focus-visible · :disabled
+   ========================================================================= */
+.atelier-btn {
+  --btn-bg: var(--atelier-color-surface);
+  --btn-ink: var(--atelier-color-text);
+  --btn-border: var(--atelier-color-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: var(--atelier-size-control);
+  padding: 0 18px;
+  border: 1px solid var(--btn-border);
+  border-radius: var(--atelier-radius-pill);
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  font-size: var(--atelier-font-size-body);
+  font-weight: var(--atelier-font-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: var(--atelier-shadow-subtle);
+  transition:
+    background-color var(--atelier-motion-duration) var(--atelier-motion-easing),
+    border-color var(--atelier-motion-duration) var(--atelier-motion-easing),
+    box-shadow var(--atelier-motion-duration) var(--atelier-motion-easing),
+    transform var(--atelier-motion-duration) var(--atelier-motion-easing);
+}
+.atelier-btn:hover { border-color: var(--atelier-color-border-strong); }
+.atelier-btn:active,
+.atelier-btn.is-active { transform: translateY(1px); box-shadow: var(--atelier-shadow-inset); }
+.atelier-btn:focus-visible { box-shadow: var(--atelier-shadow-subtle), var(--atelier-shadow-focus); }
+
+.atelier-btn--primary {
+  --btn-ink: var(--atelier-color-primary-ink);
+  --btn-border: transparent;
+  background: linear-gradient(180deg, var(--atelier-color-primary-light), var(--atelier-color-primary));
+  box-shadow: var(--atelier-shadow-primary);
+}
+.atelier-btn--primary:hover { --btn-border: transparent; filter: brightness(1.04); }
+.atelier-btn--primary:active,
+.atelier-btn--primary.is-active { background: var(--atelier-color-primary-strong); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.18); }
+.atelier-btn--primary:focus-visible { box-shadow: var(--atelier-shadow-primary), var(--atelier-shadow-focus); }
+
+.atelier-btn--secondary { --btn-ink: var(--atelier-color-primary); --btn-border: color-mix(in srgb, var(--atelier-color-primary) 45%, var(--atelier-color-border)); }
+.atelier-btn--secondary:hover { --btn-border: var(--atelier-color-primary); --btn-bg: var(--atelier-color-primary-soft); }
+.atelier-btn--tertiary { --btn-ink: var(--atelier-color-ink); }
+.atelier-btn--destructive { --btn-bg: var(--atelier-color-danger); --btn-ink: #fff; --btn-border: transparent; box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--atelier-color-danger) 70%, transparent); }
+.atelier-btn--destructive:hover { --btn-bg: var(--atelier-color-danger-strong); --btn-border: transparent; }
+.atelier-btn--ghost { --btn-bg: transparent; --btn-border: transparent; box-shadow: none; }
+.atelier-btn--ghost:hover { --btn-bg: var(--atelier-color-surface-sunken); --btn-border: transparent; }
+
+.atelier-btn--sm   { height: var(--atelier-size-control-sm); padding: 0 12px; font-size: var(--atelier-font-size-small); }
+.atelier-btn--lg   { height: var(--atelier-size-control-lg); padding: 0 24px; font-size: 15px; }
+.atelier-btn--icon { width: var(--atelier-size-control); padding: 0; }
+.atelier-btn--icon.atelier-btn--sm { width: var(--atelier-size-control-sm); }
+.atelier-btn--block { display: flex; width: 100%; }
+
+.atelier-btn:disabled,
+.atelier-btn.is-disabled {
+  background: var(--atelier-color-disabled);
+  color: var(--atelier-color-disabled-ink);
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+  filter: none;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* =========================================================================
+   Input
+   <div class="atelier-form-row"><label class="atelier-field-label" for="p">Project name</label>
+     <input class="atelier-input" id="p" placeholder="Enter a project name"></div>
+   Search: <label class="atelier-search"><svg class="atelier-icon">…</svg><input type="search" placeholder="Search anything…"></label>
+   ========================================================================= */
+.atelier-input,
+.atelier-search {
+  width: 100%;
+  height: var(--atelier-size-control);
+  border: 1px solid var(--atelier-color-border);
+  border-radius: var(--atelier-radius-md);
+  background: var(--atelier-color-surface);
+  color: var(--atelier-color-text);
+  box-shadow: var(--atelier-shadow-inset);
+  transition: border-color var(--atelier-motion-duration), box-shadow var(--atelier-motion-duration);
+}
+.atelier-input { display: block; padding: 0 14px; font-size: var(--atelier-font-size-body); outline: none; appearance: none; }
+.atelier-input::placeholder,
+.atelier-search input::placeholder { color: var(--atelier-color-text-subtle); }
+textarea.atelier-input { height: auto; min-height: 96px; padding: 10px 14px; line-height: 1.5; resize: vertical; }
+select.atelier-input {
+  padding-right: 38px;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--atelier-color-text-muted) 50%), linear-gradient(135deg, var(--atelier-color-text-muted) 50%, transparent 50%);
+  background-position: right 18px center, right 13px center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+.atelier-input:hover,
+.atelier-search:hover { border-color: var(--atelier-color-border-strong); }
+.atelier-input:focus,
+.atelier-input.is-focus,
+.atelier-search:focus-within { border-color: var(--atelier-color-primary); box-shadow: var(--atelier-shadow-focus); }
+.atelier-input[aria-invalid="true"] { border-color: var(--atelier-color-danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--atelier-color-danger) 22%, transparent); }
+.atelier-input:disabled { background: var(--atelier-color-disabled); color: var(--atelier-color-disabled-ink); box-shadow: none; cursor: not-allowed; }
+
+.atelier-search { display: flex; align-items: center; gap: 10px; padding: 0 14px; border-radius: var(--atelier-radius-pill); background: var(--atelier-color-surface-sunken); }
+.atelier-search input { flex: 1; min-width: 0; height: 100%; border: 0; padding: 0; background: transparent; outline: none; font-size: var(--atelier-font-size-body); }
+.atelier-search input::-webkit-search-cancel-button { display: none; }
+.atelier-search .atelier-icon { color: var(--atelier-color-text-muted); }
+
+.atelier-form-row { display: flex; flex-direction: column; gap: 6px; }
+.atelier-field-label { font-size: var(--atelier-font-size-small); color: var(--atelier-color-text); }
+.atelier-hint { font-size: var(--atelier-font-size-caption); color: var(--atelier-color-text-muted); }
+.atelier-hint--error { color: var(--atelier-color-danger-ink); }
+
+/* =========================================================================
+   Checkbox, radio, switch
+   <label class="atelier-check"><input type="checkbox" class="atelier-checkbox" checked> Remember me</label>
+   <label class="atelier-check"><input type="checkbox" class="atelier-toggle"> Reduce motion</label>
+   ========================================================================= */
+.atelier-check { display: inline-flex; align-items: center; gap: 10px; font-size: var(--atelier-font-size-body); cursor: pointer; user-select: none; }
+.atelier-check--between { display: flex; justify-content: space-between; }
+.atelier-checkbox,
+.atelier-radio,
+.atelier-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  margin: 0;
+  cursor: pointer;
+  border: 1.5px solid var(--atelier-color-border-strong);
+  background-color: var(--atelier-color-surface);
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: background-color var(--atelier-motion-duration), border-color var(--atelier-motion-duration), box-shadow var(--atelier-motion-duration);
+}
+.atelier-checkbox { width: 18px; height: 18px; border-radius: calc(var(--atelier-radius-sm) * 0.6); background-size: 12px; }
+.atelier-radio { width: 18px; height: 18px; border-radius: 50%; }
+.atelier-checkbox:checked {
+  border-color: var(--atelier-color-primary);
+  background-color: var(--atelier-color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17 19 7'/%3E%3C/svg%3E");
+}
+.atelier-radio:checked { border-color: var(--atelier-color-primary); border-width: 5px; }
+.atelier-toggle {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  border: 0;
+  border-radius: var(--atelier-radius-pill);
+  background: var(--atelier-color-border);
+}
+.atelier-toggle::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--atelier-radius-pill);
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(20, 28, 45, 0.3);
+  transition: transform var(--atelier-motion-duration-slide) var(--atelier-motion-easing-spring), width var(--atelier-motion-duration) var(--atelier-motion-easing-spring);
+}
+.atelier-toggle:active::before { width: 23px; }
+.atelier-toggle:checked { background: var(--atelier-color-primary); box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--atelier-color-primary) 70%, transparent); }
+.atelier-toggle:checked::before { transform: translateX(18px); }
+.atelier-toggle:checked:active::before { transform: translateX(13px); }
+.atelier-checkbox:focus-visible,
+.atelier-radio:focus-visible,
+.atelier-toggle:focus-visible { box-shadow: var(--atelier-shadow-focus); }
+.atelier-checkbox:disabled,
+.atelier-radio:disabled,
+.atelier-toggle:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* =========================================================================
+   Slider — <input type="range" class="atelier-slider" style="--fill:72%">; js keeps --fill and <output for> in sync.
+   Labelled stops: <div class="atelier-slider-stops"><span>Cozy</span><span>Balanced</span><span>Compact</span></div>
+   ========================================================================= */
+.atelier-slider {
+  --fill: 50%;
+  width: 100%;
+  height: 22px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.atelier-slider::-webkit-slider-runnable-track {
+  height: 5px;
+  border-radius: var(--atelier-radius-pill);
+  background: linear-gradient(var(--atelier-color-primary), var(--atelier-color-primary)) 0 0 / var(--fill) 100% no-repeat, var(--atelier-color-border);
+}
+.atelier-slider::-moz-range-track { height: 5px; border-radius: var(--atelier-radius-pill); background: var(--atelier-color-border); }
+.atelier-slider::-moz-range-progress { height: 5px; border-radius: var(--atelier-radius-pill); background: var(--atelier-color-primary); }
+.atelier-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -6.5px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--atelier-color-primary);
+  box-shadow: 0 1px 4px rgba(20, 28, 45, 0.35);
+  transition: box-shadow var(--atelier-motion-duration);
+}
+.atelier-slider::-moz-range-thumb { width: 12px; height: 12px; border: 3px solid #fff; border-radius: 50%; background: var(--atelier-color-primary); box-shadow: 0 1px 4px rgba(20, 28, 45, 0.35); }
+.atelier-slider:focus-visible::-webkit-slider-thumb,
+.atelier-slider:active::-webkit-slider-thumb { box-shadow: 0 1px 4px rgba(20, 28, 45, 0.35), var(--atelier-shadow-focus); }
+.atelier-slider:focus-visible::-moz-range-thumb { box-shadow: var(--atelier-shadow-focus); }
+.atelier-slider-row { display: flex; align-items: center; gap: 16px; }
+.atelier-slider-row > span:first-child { min-width: 64px; font-size: var(--atelier-font-size-small); color: var(--atelier-color-text); }
+.atelier-slider-row output { min-width: 3ch; font-weight: var(--atelier-font-weight-semibold); font-variant-numeric: tabular-nums; color: var(--atelier-color-ink); text-align: right; }
+.atelier-slider-stops { display: flex; justify-content: space-between; font-size: var(--atelier-font-size-caption); color: var(--atelier-color-text-muted); margin-bottom: 2px; }
+.atelier-slider-stops .is-current { color: var(--atelier-color-ink); font-weight: var(--atelier-font-weight-semibold); }
+
+/* =========================================================================
+   Pill tabs and segmented control — one indicator glides to the active item (js/atelier.js)
+   <div class="atelier-pills" role="tablist"><button class="atelier-pills__item" role="tab" aria-selected="true">Overview</button> …</div>
+   <div class="atelier-segmented" role="tablist"><button class="atelier-segmented__item" role="tab" aria-selected="true">Light</button> …</div>
+   ========================================================================= */
+.atelier-pills { position: relative; isolation: isolate; display: flex; flex-wrap: wrap; gap: 8px; }
+.atelier-pills__item {
+  position: relative;
+  z-index: 1;
+  height: var(--atelier-size-control-sm);
+  padding: 0 16px;
+  border: 1px solid var(--atelier-color-border);
+  border-radius: var(--atelier-radius-pill);
+  background: transparent;
+  color: var(--atelier-color-text);
+  font-size: var(--atelier-font-size-small);
+  font-weight: var(--atelier-font-weight-medium);
+  cursor: pointer;
+  transition: color var(--atelier-motion-duration), border-color var(--atelier-motion-duration), background-color var(--atelier-motion-duration);
+}
+.atelier-pills__item:hover { border-color: var(--atelier-color-border-strong); }
+.atelier-pills__item:focus-visible { box-shadow: var(--atelier-shadow-focus); }
+.atelier-pills__item[aria-selected="true"],
+.atelier-pills__item.is-active { border-color: transparent; background: var(--atelier-color-primary); color: var(--atelier-color-primary-ink); }
+.atelier-pills.has-indicator .atelier-pills__item[aria-selected="true"],
+.atelier-pills.has-indicator .atelier-pills__item.is-active { background: transparent; }
+
+.atelier-segmented {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--atelier-color-border);
+  border-radius: var(--atelier-radius-md);
+  background: var(--atelier-color-surface-sunken);
+}
+.atelier-segmented--block { display: flex; width: 100%; }
+.atelier-segmented__item {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: calc(var(--atelier-size-control) - 6px);
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: calc(var(--atelier-radius-md) - 3px);
+  background: transparent;
+  color: var(--atelier-color-text-muted);
+  font-size: var(--atelier-font-size-body);
+  font-weight: var(--atelier-font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--atelier-motion-duration);
+}
+.atelier-segmented__item:hover { color: var(--atelier-color-text); }
+.atelier-segmented__item:focus-visible { box-shadow: var(--atelier-shadow-focus); }
+.atelier-segmented__item[aria-selected="true"],
+.atelier-segmented__item.is-active { color: var(--atelier-color-on-soft); border-color: var(--atelier-color-primary); background: var(--atelier-color-primary-soft); }
+.atelier-segmented.has-indicator .atelier-segmented__item[aria-selected="true"],
+.atelier-segmented.has-indicator .atelier-segmented__item.is-active { border-color: transparent; background: transparent; }
+
+.atelier-pills.has-indicator::before,
+.atelier-segmented.has-indicator::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: var(--atelier-indicator-w, 0px);
+  height: var(--atelier-indicator-h, 0px);
+  transform: translate(var(--atelier-indicator-x, 0px), var(--atelier-indicator-y, 0px));
+  opacity: var(--atelier-indicator-o, 1);
+  border-radius: var(--atelier-radius-pill);
+  background: var(--atelier-color-primary);
+  box-shadow: var(--atelier-shadow-primary);
+}
+.atelier-segmented.has-indicator::before {
+  border: 1px solid var(--atelier-color-primary);
+  border-radius: calc(var(--atelier-radius-md) - 3px);
+  background: var(--atelier-color-primary-soft);
+  box-shadow: var(--atelier-shadow-subtle);
+}
+.atelier-pills.has-indicator.is-animated::before,
+.atelier-segmented.has-indicator.is-animated::before {
+  transition:
+    transform var(--atelier-motion-duration-slide) var(--atelier-motion-easing-spring),
+    width var(--atelier-motion-duration-slide) var(--atelier-motion-easing-spring),
+    height var(--atelier-motion-duration-slide) var(--atelier-motion-easing-spring);
+}
+
+/* =========================================================================
+   Breadcrumb & pagination
+   <nav class="atelier-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Workspace</a></li><li aria-current="page">Atlas</li></ol></nav>
+   <nav class="atelier-pagination" aria-label="Pages"><a href="#" aria-current="page">1</a><a href="#">2</a><span>…</span></nav>
+   ========================================================================= */
+.atelier-breadcrumb ol { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0; list-style: none; font-size: var(--atelier-font-size-body); }
+.atelier-breadcrumb li { display: inline-flex; align-items: center; gap: 6px; color: var(--atelier-color-text); }
+.atelier-breadcrumb li + li::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-right: 4px;
+  border-top: 1.5px solid var(--atelier-color-text-subtle);
+  border-right: 1.5px solid var(--atelier-color-text-subtle);
+  transform: rotate(45deg);
+}
+.atelier-breadcrumb a { text-decoration: none; border-radius: 4px; }
+.atelier-breadcrumb a:hover { color: var(--atelier-color-primary); }
+.atelier-breadcrumb a:focus-visible { box-shadow: var(--atelier-shadow-focus); }
+.atelier-breadcrumb [aria-current="page"] { font-weight: var(--atelier-font-weight-bold); color: var(--atelier-color-ink); }
+
+.atelier-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.atelier-pagination > a,
+.atelier-pagination > button {
+  display: inline-grid;
+  place-items: center;
+  min-width: var(--atelier-size-control-sm);
+  height: var(--atelier-size-control-sm);
+  padding: 0 8px;
+  border: 1px solid var(--atelier-color-border);
+  border-radius: var(--atelier-radius-sm);
+  background: var(--atelier-color-surface-sunken);
+  color: var(--atelier-color-text);
+  font-size: var(--atelier-font-size-small);
+  font-weight: var(--atelier-font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color var(--atelier-motion-duration), background-color var(--atelier-motion-duration);
+}
+.atelier-pagination > a:hover,
+.atelier-pagination > button:hover { border-color: var(--atelier-color-border-strong); background: var(--atelier-color-surface); }
+.atelier-pagination > a:focus-visible,
+.atelier-pagination > button:focus-visible { box-shadow: var(--atelier-shadow-focus); }
+.atelier-pagination > [aria-current="page"] { border-color: transparent; background: var(--atelier-color-primary); color: var(--atelier-color-primary-ink); box-shadow: var(--atelier-shadow-primary); }
+.atelier-pagination > span { padding: 0 4px; color: var(--atelier-color-text-muted); }
+
+/* =========================================================================
+   Sidebar nav — <nav class="atelier-nav"><a class="atelier-nav__item" aria-current="page" href="#"><svg class="atelier-icon">…</svg>Home</a></nav>
+   ========================================================================= */
+.atelier-nav { position: relative; isolation: isolate; display: flex; flex-direction: column; gap: 2px; }
+.atelier-nav__item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: var(--atelier-size-row);
+  padding: 0 12px;
+  border-radius: var(--atelier-radius-md);
+  color: var(--atelier-color-text);
+  font-size: var(--atelier-font-size-body);
+  font-weight: var(--atelier-font-weight-medium);
+  text-decoration: none;
+  transition: color var(--atelier-motion-duration), background-color var(--atelier-motion-duration);
+}
+.atelier-nav__item .atelier-icon { width: 20px; height: 20px; color: var(--atelier-color-text-muted); transition: color var(--atelier-motion-duration); }
+.atelier-nav__item:hover { background: color-mix(in srgb, var(--atelier-color-ink) 4%, transparent); }
+.atelier-nav__item:focus-visible { box-shadow: var(--atelier-shadow-focus); }
+.atelier-nav__item[aria-current="page"],
+.atelier-nav__item.is-active { color: var(--atelier-color-on-soft); background: var(--atelier-color-primary-soft); font-weight: var(--atelier-font-weight-semibold); }
+.atelier-nav__item[aria-current="page"] .atelier-icon,
+.atelier-nav__item.is-active .atelier-icon { color: var(--atelier-color-primary); }
+.atelier-nav__count { margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: var(--atelier-radius-pill); background: var(--atelier-color-danger); color: #fff; font-size: 11px; font-weight: var(--atelier-font-weight-bold); line-height: 20px; text-align: center; }
+.atelier-nav.has-indicator::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: var(--atelier-indicator-w, 0px);
+  height: var(--atelier-indicator-h, 0px);
+  transform: translate(var(--atelier-indicator-x, 0px), var(--atelier-indicator-y, 0px));
+  opacity: var(--atelier-indicator-o, 1);
+  border-radius: var(--atelier-radius-md);
+  background: var(--atelier-color-primary-soft);
+}
+.atelier-nav.has-indicator.is-animated::before {
+  transition:
+    transform var(--atelier-motion-duration-slide) var(--atelier-motion-easing-spring),
+    height var(--atelier-motion-duration-slide) var(--atelier-motion-easing-spring),
+    width var(--atelier-motion-duration-slide) var(--atelier-motion-easing-spring);
+}
+.atelier-nav.has-indicator .atelier-nav__item[aria-current="page"],
+.atelier-nav.has-indicator .atelier-nav__item.is-active { background: transparent; }
+
+/* =========================================================================
+   Card, badge, avatar
+   <article class="atelier-card">…</article>
+   <span class="atelier-badge atelier-badge--primary">New</span>  (--primary · --soft · --teal · --amber · --danger · --violet)
+   <span class="atelier-avatar" style="--avatar-bg:#…">AC</span>  ·  <span class="atelier-avatars">…</span>
+   ========================================================================= */
+.atelier-card {
+  position: relative;
+  padding: 16px;
+  border: 1px solid var(--atelier-color-border);
+  border-radius: var(--atelier-radius-md);
+  background: var(--atelier-color-surface);
+  box-shadow: var(--atelier-shadow-subtle);
+}
+.atelier-card--interactive { cursor: pointer; transition: box-shadow var(--atelier-motion-duration), transform var(--atelier-motion-duration), border-color var(--atelier-motion-duration); }
+.atelier-card--interactive:hover { transform: translateY(-1px); border-color: var(--atelier-color-border-strong); box-shadow: var(--atelier-shadow-floating); }
+.atelier-card__title { font-size: var(--atelier-font-size-body); font-weight: var(--atelier-font-weight-semibold); color: var(--atelier-color-ink); }
+.atelier-card__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: var(--atelier-font-size-caption); color: var(--atelier-color-text-muted); }
+.atelier-card__meta span { display: inline-flex; align-items: center; gap: 5px; }
+.atelier-logo { display: grid; place-items: center; width: 44px; height: 44px; flex: none; color: var(--atelier-color-primary); }
+
+.atelier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: var(--atelier-radius-pill);
+  background: var(--atelier-color-surface-sunken);
+  color: var(--atelier-color-text);
+  font-size: var(--atelier-font-size-caption);
+  font-weight: var(--atelier-font-weight-medium);
+  white-space: nowrap;
+}
+.atelier-badge--primary { background: var(--atelier-color-primary); color: var(--atelier-color-primary-ink); }
+.atelier-badge--soft    { background: var(--atelier-color-primary-soft); color: var(--atelier-color-on-soft); }
+.atelier-badge--teal    { background: var(--atelier-color-teal-soft); color: var(--atelier-color-teal-ink); }
+.atelier-badge--amber   { background: var(--atelier-color-amber-soft); color: var(--atelier-color-amber-ink); }
+.atelier-badge--danger  { background: var(--atelier-color-danger-soft); color: var(--atelier-color-danger-ink); }
+.atelier-badge--violet  { background: var(--atelier-color-violet-soft); color: var(--atelier-color-violet-ink); }
+
+.atelier-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--avatar-size, 28px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--avatar-bg, var(--atelier-color-primary-soft));
+  color: var(--avatar-ink, var(--atelier-color-on-soft));
+  font-size: calc(var(--avatar-size, 28px) * 0.38);
+  font-weight: var(--atelier-font-weight-bold);
+  box-shadow: 0 0 0 2px var(--atelier-color-surface);
+  overflow: hidden;
+}
+.atelier-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.atelier-avatars { display: inline-flex; }
+.atelier-avatars .atelier-avatar + .atelier-avatar { margin-left: -5px; }
+
+/* =========================================================================
+   Toast, alert, confirm, empty state
+   <div class="atelier-toast atelier-toast--success" role="status"><svg class="atelier-icon">…</svg>Changes saved<button class="atelier-toast__close" aria-label="Dismiss">…</button></div>
+   <div class="atelier-toast atelier-toast--inverse" role="status">…Invite sent…</div>
+   <div class="atelier-confirm"><h3>Delete project?</h3><p>This action cannot be undone.</p><div class="atelier-confirm__actions">…</div></div>
+   <div class="atelier-empty"><svg class="atelier-icon">…</svg>Nothing here yet</div>
+   ========================================================================= */
+.atelier-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--atelier-size-control-lg);
+  padding: 8px 10px 8px 14px;
+  border: 1px solid var(--atelier-color-border);
+  border-radius: var(--atelier-radius-md);
+  background: var(--atelier-color-surface);
+  color: var(--atelier-color-text);
+  font-size: var(--atelier-font-size-body);
+  font-weight: var(--atelier-font-weight-medium);
+  box-shadow: var(--atelier-shadow-floating);
+}
+.atelier-toast .atelier-icon { width: 18px; height: 18px; }
+.atelier-toast--success { border-color: color-mix(in srgb, var(--atelier-color-teal) 30%, transparent); background: var(--atelier-color-teal-soft); color: var(--atelier-color-teal-ink); box-shadow: none; }
+.atelier-toast--warning { border-color: color-mix(in srgb, var(--atelier-color-amber) 35%, transparent); background: var(--atelier-color-amber-soft); color: var(--atelier-color-amber-ink); box-shadow: none; }
+.atelier-toast--danger  { border-color: color-mix(in srgb, var(--atelier-color-danger) 30%, transparent); background: var(--atelier-color-danger-soft); color: var(--atelier-color-danger-ink); box-shadow: none; }
+.atelier-toast--inverse { border-color: transparent; background: var(--atelier-color-inverse); color: var(--atelier-color-inverse-text); }
+.atelier-toast__close {
+  display: grid;
+  place-items: center;
+  margin-left: auto;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: var(--atelier-radius-sm);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.8;
+}
+.atelier-toast__close:hover { opacity: 1; background: color-mix(in srgb, currentColor 10%, transparent); }
+.atelier-toast__close:focus-visible { box-shadow: var(--atelier-shadow-focus); }
+
+.atelier-confirm { padding: 16px; border: 1px solid var(--atelier-color-border); border-radius: var(--atelier-radius-md); background: var(--atelier-color-surface); box-shadow: var(--atelier-shadow-floating); }
+.atelier-confirm h3 { font-size: 15px; font-weight: var(--atelier-font-weight-bold); color: var(--atelier-color-ink); }
+.atelier-confirm p { margin-top: 4px; font-size: var(--atelier-font-size-small); color: var(--atelier-color-text-muted); }
+.atelier-confirm__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+
+.atelier-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid var(--atelier-color-border);
+  border-radius: var(--atelier-radius-md);
+  background: var(--atelier-color-surface-sunken);
+  color: var(--atelier-color-text-muted);
+  font-size: var(--atelier-font-size-small);
+  text-align: center;
+}
+.atelier-empty .atelier-icon { width: 24px; height: 24px; }
+
+/* =========================================================================
+   Progress — <div class="atelier-progress"><div class="atelier-progress__bar"><span style="--value:68%"></span></div><output>68%</output></div>
+   ========================================================================= */
+.atelier-progress { display: flex; align-items: center; gap: 14px; }
+.atelier-progress__bar { position: relative; flex: 1; height: 5px; border-radius: var(--atelier-radius-pill); background: var(--atelier-color-border); }
+.atelier-progress__bar > span { position: absolute; inset: 0 auto 0 0; width: var(--value, 0%); border-radius: inherit; background: var(--atelier-color-primary); transition: width var(--atelier-motion-duration-slide) var(--atelier-motion-easing-spring); }
+.atelier-progress__bar > span::after { content: ""; position: absolute; right: -7px; top: 50%; width: 14px; height: 14px; border: 3px solid #fff; border-radius: 50%; background: var(--atelier-color-primary); box-shadow: 0 1px 4px rgba(20, 28, 45, 0.35); transform: translateY(-50%); }
+.atelier-progress output { font-weight: var(--atelier-font-weight-semibold); font-variant-numeric: tabular-nums; color: var(--atelier-color-ink); }
+
+/* =========================================================================
+   Board — kanban columns and task cards
+   <section class="atelier-column"><header class="atelier-column__head"><h3>To do</h3><span class="atelier-column__count">4</span>
+     <button class="atelier-btn atelier-btn--ghost atelier-btn--icon atelier-btn--sm" aria-label="Add task">+</button></header>
+     <article class="atelier-task"><h4>Website refresh</h4><div class="atelier-task__foot"><span class="atelier-badge atelier-badge--soft">Design</span><span class="atelier-avatar">AC</span></div></article>
+   </section>
+   ========================================================================= */
+.atelier-board { display: grid; grid-template-columns: repeat(var(--columns, 3), minmax(200px, 1fr)); gap: 14px; overflow-x: auto; padding-bottom: 4px; }
+.atelier-column { display: flex; flex-direction: column; gap: 10px; min-width: 0; padding: 10px; border: 1px solid var(--atelier-color-border); border-radius: var(--atelier-radius-md); background: var(--atelier-color-surface-sunken); }
+.atelier-column__head { display: flex; align-items: center; gap: 8px; padding: 2px 2px 4px 4px; }
+.atelier-column__head h3 { font-size: var(--atelier-font-size-body); font-weight: var(--atelier-font-weight-semibold); color: var(--atelier-color-ink); }
+.atelier-column__count { font-size: var(--atelier-font-size-caption); color: var(--atelier-color-text-muted); }
+.atelier-column__head .atelier-btn { margin-left: auto; }
+.atelier-task { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1px solid var(--atelier-color-border); border-radius: calc(var(--atelier-radius-md) * 0.75); background: var(--atelier-color-surface); box-shadow: var(--atelier-shadow-subtle); cursor: grab; transition: box-shadow var(--atelier-motion-duration), transform var(--atelier-motion-duration); }
+.atelier-task:hover { box-shadow: var(--atelier-shadow-floating); transform: translateY(-1px); }
+.atelier-task h4 { font-size: var(--atelier-font-size-small); font-weight: var(--atelier-font-weight-medium); color: var(--atelier-color-ink); }
+.atelier-task__foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.atelier-done { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--atelier-color-teal); color: #fff; }
+.atelier-done .atelier-icon { width: 12px; height: 12px; stroke-width: 3; }
+
+/* =========================================================================
+   Swatch & accent picker
+   <span class="atelier-swatch" style="--swatch:#2F7BF5"></span>
+   <button class="atelier-swatch atelier-swatch--pick" data-appearance="accent" data-value="cobalt" aria-pressed="true" aria-label="Cobalt"></button>
+   ========================================================================= */
+.atelier-swatch {
+  display: inline-block;
+  flex: none;
+  width: var(--swatch-size, 28px);
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 50%;
+  background: var(--swatch, var(--atelier-color-primary));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--atelier-color-ink) 10%, transparent), 0 2px 6px -2px rgba(20, 28, 45, 0.3);
+}
+.atelier-swatch--pick { cursor: pointer; transition: box-shadow var(--atelier-motion-duration), transform var(--atelier-motion-duration); }
+.atelier-swatch--pick:hover { transform: scale(1.08); }
+.atelier-swatch--pick[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--atelier-color-surface), 0 0 0 5px var(--swatch); }
+.atelier-swatch--pick:focus-visible { box-shadow: 0 0 0 3px var(--atelier-color-surface), 0 0 0 5px var(--atelier-color-focus); }
+
+/* =========================================================================
+   Table, dialog, tooltip
+   ========================================================================= */
+.atelier-table-wrap { overflow-x: auto; border: 1px solid var(--atelier-color-border); border-radius: var(--atelier-radius-md); background: var(--atelier-color-surface); }
+.atelier-table { width: 100%; border-collapse: collapse; font-size: var(--atelier-font-size-body); }
+.atelier-table th { height: var(--atelier-size-row); padding: 0 14px; text-align: left; font-size: var(--atelier-font-size-caption); font-weight: var(--atelier-font-weight-semibold); color: var(--atelier-color-text-muted); background: var(--atelier-color-surface-sunken); white-space: nowrap; }
+.atelier-table td { height: var(--atelier-size-row); padding: 0 14px; border-top: 1px solid var(--atelier-color-border); white-space: nowrap; }
+.atelier-table tbody tr:hover { background: color-mix(in srgb, var(--atelier-color-primary) 4%, transparent); }
+.atelier-table .is-num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.atelier-dialog {
+  width: min(100% - 32px, 420px);
+  padding: 22px;
+  border: 1px solid var(--atelier-color-border);
+  border-radius: var(--atelier-radius-xl);
+  background: var(--atelier-color-surface);
+  color: var(--atelier-color-text);
+  box-shadow: var(--atelier-shadow-modal);
+}
+.atelier-dialog::backdrop { background: var(--atelier-color-backdrop); backdrop-filter: blur(3px); }
+.atelier-dialog[open] { animation: atelier-pop var(--atelier-motion-duration-slide) var(--atelier-motion-easing-spring); }
+.atelier-dialog__title { font-size: 18px; font-weight: var(--atelier-font-weight-bold); color: var(--atelier-color-ink); }
+.atelier-dialog__body { margin-top: 6px; color: var(--atelier-color-text-muted); }
+.atelier-dialog__actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+@keyframes atelier-pop { from { opacity: 0; transform: translateY(6px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+.atelier-tooltip { position: relative; display: inline-flex; }
+.atelier-tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translate(-50%, 3px);
+  padding: 6px 10px;
+  border-radius: var(--atelier-radius-sm);
+  background: var(--atelier-color-inverse);
+  color: var(--atelier-color-inverse-text);
+  font-size: var(--atelier-font-size-caption);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--atelier-motion-duration), transform var(--atelier-motion-duration);
+}
+.atelier-tooltip:hover::after,
+.atelier-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0); }

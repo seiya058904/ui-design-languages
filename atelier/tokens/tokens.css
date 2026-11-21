@@ -1,0 +1,230 @@
+/* atelier tokens — GENERATED from atelier/tokens/tokens.json. Do not edit by hand.
+   Regenerate with: node scripts/build-tokens.mjs atelier */
+:root {
+  --atelier-color-canvas: #EDF1F6; /* Page background */
+  --atelier-color-panel: rgba(255, 255, 255, 0.72); /* Frosted panel fill (used with backdrop blur) */
+  --atelier-color-panel-edge: rgba(255, 255, 255, 0.85); /* Bright rim of frosted panels */
+  --atelier-color-surface: #FFFFFF; /* Cards, inputs, raised controls */
+  --atelier-color-surface-sunken: #F2F5F9; /* Inset areas, tracks, empty states */
+  --atelier-color-border: #DCE2EB; /* Default 1px border */
+  --atelier-color-border-strong: #C3CDDA; /* Hover / emphasis border */
+  --atelier-color-hairline: rgba(28, 35, 51, 0.08); /* Dividers inside panels */
+  --atelier-color-ink: #1B2232; /* Headings, Ink swatch */
+  --atelier-color-text: #283143; /* Body text */
+  --atelier-color-text-muted: #5B6678; /* Secondary text (≥ 4.5:1) */
+  --atelier-color-text-subtle: #8F99AA; /* Placeholders, meta */
+  --atelier-color-primary: #2F7BF5; /* Cobalt — the accent */
+  --atelier-color-primary-strong: #1E62D8; /* Pressed accent */
+  --atelier-color-primary-light: #4C91FF; /* Top of accent gradients */
+  --atelier-color-primary-ink: #FFFFFF; /* Text on accent */
+  --atelier-color-primary-soft: color-mix(in srgb, var(--atelier-color-primary) 14%, var(--atelier-color-surface)); /* Selected nav item, soft badge */
+  --atelier-color-on-soft: color-mix(in srgb, var(--atelier-color-primary) 78%, var(--atelier-color-ink)); /* Text on primary-soft */
+  --atelier-color-focus: color-mix(in srgb, var(--atelier-color-primary) 30%, transparent); /* Focus ring */
+  --atelier-color-teal: #1FB196; /* Teal swatch, success */
+  --atelier-color-amber: #F4A23A; /* Amber swatch, warning */
+  --atelier-color-danger: #EA5B5B; /* Destructive */
+  --atelier-color-danger-strong: #D24242;
+  --atelier-color-violet: #7C4DE8; /* Review tag */
+  --atelier-color-teal-soft: color-mix(in srgb, var(--atelier-color-teal) 15%, var(--atelier-color-surface));
+  --atelier-color-teal-ink: color-mix(in srgb, var(--atelier-color-teal) 62%, var(--atelier-color-ink));
+  --atelier-color-amber-soft: color-mix(in srgb, var(--atelier-color-amber) 18%, var(--atelier-color-surface));
+  --atelier-color-amber-ink: color-mix(in srgb, var(--atelier-color-amber) 55%, var(--atelier-color-ink));
+  --atelier-color-danger-soft: color-mix(in srgb, var(--atelier-color-danger) 14%, var(--atelier-color-surface));
+  --atelier-color-danger-ink: color-mix(in srgb, var(--atelier-color-danger) 72%, var(--atelier-color-ink));
+  --atelier-color-violet-soft: color-mix(in srgb, var(--atelier-color-violet) 14%, var(--atelier-color-surface));
+  --atelier-color-violet-ink: color-mix(in srgb, var(--atelier-color-violet) 78%, var(--atelier-color-ink));
+  --atelier-color-inverse: #1E2738; /* Dark toast, preview header */
+  --atelier-color-inverse-text: #F1F4F9;
+  --atelier-color-disabled: #E2E7EE;
+  --atelier-color-disabled-ink: #A1ABBA;
+  --atelier-color-checker: #E3E8EF; /* Overlay surface checkerboard */
+  --atelier-color-backdrop: rgba(18, 26, 42, 0.36);
+
+  --atelier-font-family-sans: "Archivo", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+
+  --atelier-font-stretch-display: 112%; /* Semi-expanded caps for titles (Archivo width axis) */
+
+  --atelier-font-size-display: 40px;
+  --atelier-font-size-title: 28px;
+  --atelier-font-size-section: 19px;
+  --atelier-font-size-heading: 16px;
+  --atelier-font-size-body: 14px;
+  --atelier-font-size-small: 13px;
+  --atelier-font-size-caption: 12px;
+  --atelier-font-size-kicker: 11px;
+
+  --atelier-font-weight-regular: 400;
+  --atelier-font-weight-medium: 500;
+  --atelier-font-weight-semibold: 600;
+  --atelier-font-weight-bold: 700;
+  --atelier-font-weight-black: 800;
+
+  --atelier-space-1: 4px;
+  --atelier-space-2: 8px;
+  --atelier-space-3: 12px;
+  --atelier-space-4: 16px;
+  --atelier-space-5: 20px;
+  --atelier-space-6: 24px;
+  --atelier-space-8: 32px;
+  --atelier-space-panel: 24px; /* Panel padding (density-aware) */
+  --atelier-space-gap: 16px; /* Default gap between rows (density-aware) */
+
+  --atelier-radius-base: 16px; /* Drives the whole radius scale; the appearance panel slides it from 8 to 24 */
+  --atelier-radius-sm: calc(var(--atelier-radius-base) * 0.5); /* 8 — checkboxes, pagination */
+  --atelier-radius-md: calc(var(--atelier-radius-base) * 0.75); /* 12 — inputs, cards */
+  --atelier-radius-lg: var(--atelier-radius-base); /* 16 — panels */
+  --atelier-radius-xl: calc(var(--atelier-radius-base) * 1.5); /* 24 — dialogs, preview frame */
+  --atelier-radius-pill: 999px; /* Buttons, tabs, badges, switches */
+
+  --atelier-border-thin: 1px;
+  --atelier-border-regular: 1.5px;
+  --atelier-border-thick: 2px;
+
+  --atelier-size-control-sm: 30px;
+  --atelier-size-control: 36px;
+  --atelier-size-control-lg: 44px;
+  --atelier-size-row: 40px; /* Nav items, table rows */
+
+  --atelier-shadow-subtle: 0 1px 1px rgba(28, 35, 51, 0.04), 0 1px 3px rgba(28, 35, 51, 0.06);
+  --atelier-shadow-panel: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 1px 2px rgba(28, 35, 51, 0.04), 0 12px 32px -14px rgba(28, 35, 51, 0.16);
+  --atelier-shadow-floating: 0 4px 10px rgba(28, 35, 51, 0.06), 0 16px 32px -12px rgba(28, 35, 51, 0.22);
+  --atelier-shadow-modal: 0 10px 24px rgba(28, 35, 51, 0.1), 0 32px 64px -20px rgba(28, 35, 51, 0.32);
+  --atelier-shadow-inset: inset 0 1px 2px rgba(28, 35, 51, 0.08);
+  --atelier-shadow-primary: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 1px 2px color-mix(in srgb, var(--atelier-color-primary-strong) 40%, transparent), 0 6px 16px -6px color-mix(in srgb, var(--atelier-color-primary) 65%, transparent);
+  --atelier-shadow-focus: 0 0 0 3px var(--atelier-color-focus);
+
+  --atelier-motion-duration: 160ms;
+  --atelier-motion-duration-slide: 340ms;
+  --atelier-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --atelier-motion-easing-spring: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Dark theme — GENERATED from atelier/tokens/tokens.dark.json.
+   <html data-theme="dark"> forces it; <html data-theme="auto"> follows the OS setting. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --atelier-color-canvas: #0D1219;
+  --atelier-color-panel: rgba(24, 31, 43, 0.74);
+  --atelier-color-panel-edge: rgba(255, 255, 255, 0.06);
+  --atelier-color-surface: #1A2130;
+  --atelier-color-surface-sunken: #121823;
+  --atelier-color-border: #2A3343;
+  --atelier-color-border-strong: #3B4659;
+  --atelier-color-hairline: rgba(255, 255, 255, 0.07);
+  --atelier-color-ink: #F1F4F9;
+  --atelier-color-text: #DCE2EB;
+  --atelier-color-text-muted: #9AA5B7;
+  --atelier-color-text-subtle: #6C778A;
+  --atelier-color-primary: #4B8DFF;
+  --atelier-color-primary-strong: #3576EC;
+  --atelier-color-primary-light: #69A1FF;
+  --atelier-color-inverse: #E6EBF2;
+  --atelier-color-inverse-text: #141A25;
+  --atelier-color-disabled: #232B39;
+  --atelier-color-disabled-ink: #5F6B7E;
+  --atelier-color-checker: #222A38;
+  --atelier-color-backdrop: rgba(0, 0, 0, 0.55);
+
+  --atelier-shadow-subtle: 0 1px 1px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --atelier-shadow-panel: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 1px 2px rgba(0, 0, 0, 0.3), 0 14px 34px -14px rgba(0, 0, 0, 0.6);
+  --atelier-shadow-floating: 0 4px 10px rgba(0, 0, 0, 0.3), 0 18px 36px -12px rgba(0, 0, 0, 0.6);
+  --atelier-shadow-modal: 0 10px 24px rgba(0, 0, 0, 0.35), 0 34px 68px -20px rgba(0, 0, 0, 0.7);
+  --atelier-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    color-scheme: dark;
+    --atelier-color-canvas: #0D1219;
+    --atelier-color-panel: rgba(24, 31, 43, 0.74);
+    --atelier-color-panel-edge: rgba(255, 255, 255, 0.06);
+    --atelier-color-surface: #1A2130;
+    --atelier-color-surface-sunken: #121823;
+    --atelier-color-border: #2A3343;
+    --atelier-color-border-strong: #3B4659;
+    --atelier-color-hairline: rgba(255, 255, 255, 0.07);
+    --atelier-color-ink: #F1F4F9;
+    --atelier-color-text: #DCE2EB;
+    --atelier-color-text-muted: #9AA5B7;
+    --atelier-color-text-subtle: #6C778A;
+    --atelier-color-primary: #4B8DFF;
+    --atelier-color-primary-strong: #3576EC;
+    --atelier-color-primary-light: #69A1FF;
+    --atelier-color-inverse: #E6EBF2;
+    --atelier-color-inverse-text: #141A25;
+    --atelier-color-disabled: #232B39;
+    --atelier-color-disabled-ink: #5F6B7E;
+    --atelier-color-checker: #222A38;
+    --atelier-color-backdrop: rgba(0, 0, 0, 0.55);
+
+    --atelier-shadow-subtle: 0 1px 1px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
+    --atelier-shadow-panel: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 1px 2px rgba(0, 0, 0, 0.3), 0 14px 34px -14px rgba(0, 0, 0, 0.6);
+    --atelier-shadow-floating: 0 4px 10px rgba(0, 0, 0, 0.3), 0 18px 36px -12px rgba(0, 0, 0, 0.6);
+    --atelier-shadow-modal: 0 10px 24px rgba(0, 0, 0, 0.35), 0 34px 68px -20px rgba(0, 0, 0, 0.7);
+    --atelier-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+}
+
+/* Variant — GENERATED from atelier/tokens/tokens.accent-cyan.json. Opt in with <html data-accent="cyan">. */
+:root[data-accent="cyan"] {
+  --atelier-color-primary: #0EA5C6;
+  --atelier-color-primary-strong: #0B88A5;
+  --atelier-color-primary-light: #2DBDDD;
+}
+
+/* Variant — GENERATED from atelier/tokens/tokens.accent-green.json. Opt in with <html data-accent="green">. */
+:root[data-accent="green"] {
+  --atelier-color-primary: #1FA971;
+  --atelier-color-primary-strong: #178C5D;
+  --atelier-color-primary-light: #34C287;
+}
+
+/* Variant — GENERATED from atelier/tokens/tokens.accent-orange.json. Opt in with <html data-accent="orange">. */
+:root[data-accent="orange"] {
+  --atelier-color-primary: #F08A24;
+  --atelier-color-primary-strong: #D6721A;
+  --atelier-color-primary-light: #FFA040;
+}
+
+/* Variant — GENERATED from atelier/tokens/tokens.accent-violet.json. Opt in with <html data-accent="violet">. */
+:root[data-accent="violet"] {
+  --atelier-color-primary: #7A4DF0;
+  --atelier-color-primary-strong: #6236DA;
+  --atelier-color-primary-light: #9168FF;
+}
+
+/* Variant — GENERATED from atelier/tokens/tokens.contrast-high.json. Opt in with <html data-contrast="high">. */
+:root[data-contrast="high"] {
+  --atelier-color-text-muted: var(--atelier-color-text);
+  --atelier-color-text-subtle: color-mix(in srgb, var(--atelier-color-text) 80%, transparent);
+  --atelier-color-border: var(--atelier-color-border-strong);
+  --atelier-color-hairline: color-mix(in srgb, var(--atelier-color-ink) 24%, transparent);
+}
+
+/* Variant — GENERATED from atelier/tokens/tokens.density-compact.json. Opt in with <html data-density="compact">. */
+:root[data-density="compact"] {
+  --atelier-space-panel: 16px;
+  --atelier-space-gap: 10px;
+
+  --atelier-size-control-sm: 26px;
+  --atelier-size-control: 30px;
+  --atelier-size-control-lg: 36px;
+  --atelier-size-row: 32px;
+}
+
+/* Variant — GENERATED from atelier/tokens/tokens.density-cozy.json. Opt in with <html data-density="cozy">. */
+:root[data-density="cozy"] {
+  --atelier-space-panel: 32px;
+  --atelier-space-gap: 22px;
+
+  --atelier-size-control-sm: 34px;
+  --atelier-size-control: 42px;
+  --atelier-size-control-lg: 50px;
+  --atelier-size-row: 48px;
+}
+
+/* Variant — GENERATED from atelier/tokens/tokens.motion-reduced.json. Opt in with <html data-motion="reduced">. */
+:root[data-motion="reduced"] {
+  --atelier-motion-duration: 0ms;
+  --atelier-motion-duration-slide: 0ms;
+}

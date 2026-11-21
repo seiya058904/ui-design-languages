@@ -1,0 +1,1 @@
+{ "$description": "Reduced motion", "motion": { "duration": { "$value": "0ms" }, "duration-slide": { "$value": "0ms" } } }

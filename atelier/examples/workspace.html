@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var s=JSON.parse(localStorage.getItem("atelier-appearance")||"{}"),d=document.documentElement;s.theme&&s.theme!=="light"&&d.setAttribute("data-theme",s.theme);s.accent&&s.accent!=="cobalt"&&d.setAttribute("data-accent",s.accent);s.density&&s.density!=="balanced"&&d.setAttribute("data-density",s.density);s.radius&&s.radius!=16&&d.style.setProperty("--atelier-radius-base",s.radius+"px");s.motion==="reduced"&&d.setAttribute("data-motion","reduced");s.contrast==="high"&&d.setAttribute("data-contrast","high")}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atlas Workspace</title>
+  <meta name="description" content="Atelier example: a team workspace with sidebar, search and a kanban board.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/atelier.css">
+  <style>
+    /* Page layout only — visuals come from Atelier classes and tokens. */
+    body { min-height: 100vh; }
+    .app { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100vh; }
+    .side { display: flex; flex-direction: column; gap: 22px; padding: 20px 14px; border-right: 1px solid var(--atelier-color-border); background: var(--atelier-color-panel); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+    .side__logo { padding: 4px 8px; color: var(--atelier-color-primary); }
+    .side__user { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 12px 8px 0; border-top: 1px solid var(--atelier-color-hairline); }
+    .side__user div { flex: 1; min-width: 0; line-height: 1.25; }
+    .main { display: flex; flex-direction: column; gap: 22px; padding: 18px 28px 28px; min-width: 0; }
+    .bar { display: flex; align-items: center; gap: 12px; }
+    .bar .atelier-search { max-width: 460px; }
+    .bar__end { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .hello { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .hello p { margin-top: 4px; }
+    .atelier-board { --columns: 3; }
+    .menu-btn { display: none; }
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; }
+      .side { display: none; }
+      .main { padding: 14px 16px 24px; }
+      .menu-btn { display: inline-flex; }
+      .atelier-board { grid-template-columns: repeat(3, minmax(240px, 1fr)); }
+    }
+    @media (max-width: 520px) { .bar__end .atelier-btn--primary span { display: none; } }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1Z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-logo" viewBox="0 0 48 40"><path d="M15 4 2 36h26Z" fill="currentColor" opacity=".55" stroke="none"/><path d="M28 6 12 36h34Z" fill="currentColor" stroke="none"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="side" aria-label="Workspace navigation">
+    <div class="side__logo"><svg viewBox="0 0 48 40" width="40" aria-label="Atlas"><use href="#i-logo"/></svg></div>
+    <nav class="atelier-nav" aria-label="Main">
+      <a class="atelier-nav__item" href="#" aria-current="page"><svg class="atelier-icon" aria-hidden="true"><use href="#i-home"/></svg>Home</a>
+      <a class="atelier-nav__item" href="#"><svg class="atelier-icon" aria-hidden="true"><use href="#i-folder"/></svg>Projects</a>
+      <a class="atelier-nav__item" href="#"><svg class="atelier-icon" aria-hidden="true"><use href="#i-mail"/></svg>Inbox<span class="atelier-nav__count">3</span></a>
+      <a class="atelier-nav__item" href="#"><svg class="atelier-icon" aria-hidden="true"><use href="#i-settings"/></svg>Settings</a>
+    </nav>
+    <div class="side__user">
+      <span class="atelier-avatar" style="--avatar-size:34px;--avatar-bg:#F6C9A8;--avatar-ink:#6B3A16">AC</span>
+      <div><div class="atelier-label atelier-small">Alex Chen</div><div class="atelier-caption">Design lead</div></div>
+      <svg class="atelier-icon atelier-muted" aria-hidden="true"><use href="#i-chev"/></svg>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="bar">
+      <button class="atelier-btn atelier-btn--ghost atelier-btn--icon menu-btn" type="button" aria-label="Open menu"><svg class="atelier-icon" aria-hidden="true"><use href="#i-menu"/></svg></button>
+      <label class="atelier-search"><svg class="atelier-icon" aria-hidden="true"><use href="#i-search"/></svg><input type="search" placeholder="Search anything…" aria-label="Search"></label>
+      <div class="bar__end">
+        <button class="atelier-btn atelier-btn--ghost atelier-btn--icon" type="button" aria-label="Notifications"><svg class="atelier-icon" aria-hidden="true"><use href="#i-bell"/></svg></button>
+        <button class="atelier-btn atelier-btn--primary" type="button" data-atelier-open="#new"><svg class="atelier-icon" aria-hidden="true"><use href="#i-plus"/></svg><span>New task</span></button>
+      </div>
+    </div>
+
+    <div class="hello">
+      <div>
+        <h1 class="atelier-title">Good morning, Alex</h1>
+        <p class="atelier-muted">Your team workspace</p>
+      </div>
+      <div class="atelier-pills" role="tablist" aria-label="Board filter">
+        <button class="atelier-pills__item" role="tab" aria-selected="true">All tasks</button>
+        <button class="atelier-pills__item" role="tab" aria-selected="false" tabindex="-1">Mine</button>
+        <button class="atelier-pills__item" role="tab" aria-selected="false" tabindex="-1">Due this week</button>
+      </div>
+    </div>
+
+    <div class="atelier-board">
+      <section class="atelier-column" aria-label="To do">
+        <header class="atelier-column__head"><h3>To do</h3><span class="atelier-column__count">4</span><button class="atelier-btn atelier-btn--ghost atelier-btn--icon atelier-btn--sm" type="button" aria-label="Add to To do"><svg class="atelier-icon" aria-hidden="true"><use href="#i-plus"/></svg></button></header>
+        <article class="atelier-task"><h4>Website refresh</h4><div class="atelier-task__foot"><span class="atelier-badge atelier-badge--soft">Design</span><span class="atelier-avatar" style="--avatar-bg:#BFD7F7;--avatar-ink:#1C4A86">MJ</span></div></article>
+        <article class="atelier-task"><h4>Mobile onboarding</h4><div class="atelier-task__foot"><span class="atelier-badge atelier-badge--violet">Review</span><span class="atelier-avatar" style="--avatar-bg:#F6C9A8;--avatar-ink:#6B3A16">AC</span></div></article>
+        <article class="atelier-task"><h4>Pricing page copy</h4><div class="atelier-task__foot"><span class="atelier-badge atelier-badge--amber">Copy</span><span class="atelier-avatar" style="--avatar-bg:#C9EBDD;--avatar-ink:#16614A">SK</span></div></article>
+      </section>
+      <section class="atelier-column" aria-label="In progress">
+        <header class="atelier-column__head"><h3>In progress</h3><span class="atelier-column__count">3</span><button class="atelier-btn atelier-btn--ghost atelier-btn--icon atelier-btn--sm" type="button" aria-label="Add to In progress"><svg class="atelier-icon" aria-hidden="true"><use href="#i-plus"/></svg></button></header>
+        <article class="atelier-task"><h4>Design system</h4><div class="atelier-task__foot"><span class="atelier-badge atelier-badge--danger">High priority</span><span class="atelier-avatar" style="--avatar-bg:#F6C9A8;--avatar-ink:#6B3A16">AC</span></div></article>
+        <article class="atelier-task"><h4>Launch checklist</h4><div class="atelier-task__foot"><span class="atelier-badge atelier-badge--soft">Design</span><span class="atelier-avatar" style="--avatar-bg:#BFD7F7;--avatar-ink:#1C4A86">MJ</span></div></article>
+      </section>
+      <section class="atelier-column" aria-label="Done">
+        <header class="atelier-column__head"><h3>Done</h3><span class="atelier-column__count">6</span><button class="atelier-btn atelier-btn--ghost atelier-btn--icon atelier-btn--sm" type="button" aria-label="Add to Done"><svg class="atelier-icon" aria-hidden="true"><use href="#i-plus"/></svg></button></header>
+        <article class="atelier-task"><h4>API integration</h4><div class="atelier-task__foot"><span class="atelier-done" aria-label="Done"><svg class="atelier-icon" aria-hidden="true"><use href="#i-check"/></svg></span><span class="atelier-avatar" style="--avatar-bg:#C9EBDD;--avatar-ink:#16614A">SK</span></div></article>
+        <article class="atelier-task"><h4>Marketing site</h4><div class="atelier-task__foot"><span class="atelier-done" aria-label="Done"><svg class="atelier-icon" aria-hidden="true"><use href="#i-check"/></svg></span><span class="atelier-avatar" style="--avatar-bg:#BFD7F7;--avatar-ink:#1C4A86">MJ</span></div></article>
+      </section>
+    </div>
+
+    <div class="atelier-panel">
+      <div class="atelier-row" style="justify-content:space-between;margin-bottom:14px"><h2 class="atelier-heading">Projects</h2><nav class="atelier-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Workspace</a></li><li aria-current="page">Projects</li></ol></nav></div>
+      <div class="atelier-table-wrap">
+        <table class="atelier-table">
+          <thead><tr><th>Project</th><th>Owner</th><th>Status</th><th>Progress</th><th class="is-num">Tasks</th></tr></thead>
+          <tbody>
+            <tr><td>Atlas</td><td>Alex Chen</td><td><span class="atelier-badge atelier-badge--soft">In progress</span></td><td style="min-width:160px"><div class="atelier-progress"><div class="atelier-progress__bar"><span style="--value:68%"></span></div></div></td><td class="is-num">12</td></tr>
+            <tr><td>Northwind portal</td><td>Mia Jones</td><td><span class="atelier-badge atelier-badge--teal">Approved</span></td><td><div class="atelier-progress"><div class="atelier-progress__bar"><span style="--value:92%"></span></div></div></td><td class="is-num">31</td></tr>
+            <tr><td>Field app</td><td>Sam Kim</td><td><span class="atelier-badge atelier-badge--amber">At risk</span></td><td><div class="atelier-progress"><div class="atelier-progress__bar"><span style="--value:34%"></span></div></div></td><td class="is-num">18</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<dialog class="atelier-dialog" id="new" aria-labelledby="new-t">
+  <form method="dialog" class="atelier-stack">
+    <h2 class="atelier-dialog__title" id="new-t">New task</h2>
+    <div class="atelier-form-row"><label class="atelier-field-label" for="t-name">Title</label><input class="atelier-input" id="t-name" placeholder="Write release notes"></div>
+    <div class="atelier-form-row"><label class="atelier-field-label" for="t-col">Column</label><select class="atelier-input" id="t-col"><option>To do</option><option>In progress</option></select></div>
+    <label class="atelier-check"><input type="checkbox" class="atelier-checkbox" checked> Notify assignees</label>
+    <div class="atelier-dialog__actions"><button class="atelier-btn atelier-btn--tertiary" value="cancel">Cancel</button><button class="atelier-btn atelier-btn--primary" value="create">Create task</button></div>
+  </form>
+</dialog>
+
+<script src="../js/atelier.js"></script>
+</body>
+</html>

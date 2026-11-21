@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var s=JSON.parse(localStorage.getItem("atelier-appearance")||"{}"),d=document.documentElement;s.theme&&s.theme!=="light"&&d.setAttribute("data-theme",s.theme);s.accent&&s.accent!=="cobalt"&&d.setAttribute("data-accent",s.accent);s.density&&s.density!=="balanced"&&d.setAttribute("data-density",s.density);s.radius&&s.radius!=16&&d.style.setProperty("--atelier-radius-base",s.radius+"px");s.motion==="reduced"&&d.setAttribute("data-motion","reduced");s.contrast==="high"&&d.setAttribute("data-contrast","high")}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atelier Product UI</title>
+  <meta name="description" content="Atelier — a tactile, precise product UI language with frosted panels, one accent and appearance settings that really work.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/atelier.css">
+  <style>
+    /* Page layout only — visuals come from Atelier classes and tokens. */
+    body { padding: 28px 16px 40px; }
+    .sheet { width: min(100%, 1180px); margin: 0 auto; }
+    .head { display: grid; grid-template-columns: 1fr auto; gap: 8px 24px; align-items: start; }
+    .head .atelier-kicker { padding-top: 10px; }
+    .head nav { grid-column: 1 / -1; display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .head .atelier-rule { grid-column: 1 / -1; margin-top: 18px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+    .split { display: grid; grid-template-columns: 1fr auto; gap: 24px; }
+    .split > div + div { padding-left: 24px; border-left: 1px solid var(--atelier-color-hairline); }
+    .surf { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; text-align: center; font-size: var(--atelier-font-size-small); }
+    .surf div { height: 46px; margin-bottom: 8px; border-radius: var(--atelier-radius-md); }
+    .surf .s-base { background: var(--atelier-color-surface); border: 1px solid var(--atelier-color-border); }
+    .surf .s-raised { background: var(--atelier-color-surface); box-shadow: var(--atelier-shadow-floating); }
+    .surf .s-inset { background: var(--atelier-color-surface-sunken); box-shadow: var(--atelier-shadow-inset); border: 1px solid var(--atelier-color-border); }
+    .surf .s-overlay { background: repeating-conic-gradient(var(--atelier-color-checker) 0 25%, var(--atelier-color-surface) 0 50%) 0 0 / 12px 12px; border: 1px solid var(--atelier-color-border); opacity: .9; }
+    .chips5 { display: grid; grid-template-columns: repeat(5, auto); justify-content: start; gap: 14px; text-align: center; font-size: var(--atelier-font-size-small); }
+    .chips5 .atelier-swatch { --swatch-size: 30px; display: block; margin: 0 auto 6px; }
+    .shadows, .radii { display: flex; gap: 14px; align-items: flex-end; font-size: var(--atelier-font-size-caption); text-align: center; color: var(--atelier-color-text-muted); }
+    .shadows div, .radii div { width: 36px; height: 36px; margin: 0 auto 6px; background: var(--atelier-color-surface); border: 1px solid var(--atelier-color-border); }
+    .borders { display: flex; gap: 18px; font-size: var(--atelier-font-size-caption); color: var(--atelier-color-text-muted); text-align: center; }
+    .borders i { display: block; width: 44px; margin: 8px auto 8px; border-top: 1px solid var(--atelier-color-ink); }
+    .btn-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+    .controls-row { display: grid; grid-template-columns: 1.3fr 1fr auto; gap: 20px; }
+    .controls-row > div + div { padding-left: 20px; border-left: 1px solid var(--atelier-color-hairline); }
+    .nav-split { display: grid; grid-template-columns: 1fr 220px; gap: 24px; }
+    .nav-split > div + div { padding-left: 20px; border-left: 1px solid var(--atelier-color-hairline); }
+    .data-split { display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; }
+    .bottom { display: grid; grid-template-columns: minmax(0, 2.6fr) minmax(280px, 1fr); gap: 20px; margin-top: 20px; }
+    .preview { padding: 0; overflow: hidden; }
+    .preview__bar { padding: 12px 16px; background: var(--atelier-color-inverse); color: var(--atelier-color-inverse-text); }
+    .preview__bar .atelier-section-title { color: inherit; }
+    .preview__frame { position: relative; height: 420px; overflow: hidden; }
+    .preview__frame iframe { position: absolute; top: 0; left: 0; width: 1180px; height: 760px; border: 0; transform-origin: 0 0; background: var(--atelier-color-canvas); }
+    .settings { display: flex; flex-direction: column; gap: 18px; }
+    .settings .atelier-section-title { margin-bottom: 0; }
+    .accents { display: flex; gap: 14px; flex-wrap: wrap; padding: 4px 2px; }
+    .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--atelier-color-hairline); }
+
+    @media (max-width: 1000px) {
+      .grid, .bottom { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .head { grid-template-columns: 1fr; }
+      .split, .controls-row, .nav-split, .data-split { grid-template-columns: 1fr; }
+      .split > div + div, .controls-row > div + div, .nav-split > div + div { padding-left: 0; border-left: 0; padding-top: 16px; border-top: 1px solid var(--atelier-color-hairline); }
+      .surf { grid-template-columns: repeat(2, 1fr); }
+      .chips5 { grid-template-columns: repeat(3, auto); }
+      .preview__frame { height: 300px; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1Z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h4"/></symbol>
+  <symbol id="i-tray" viewBox="0 0 24 24"><path d="M3 13h5l1.5 3h5L16 13h5M5 5h14l2 8v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5Z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-logo" viewBox="0 0 48 40"><path d="M15 4 2 36h26Z" fill="currentColor" opacity=".55" stroke="none"/><path d="M28 6 12 36h34Z" fill="currentColor" stroke="none"/></symbol>
+</svg>
+
+<div class="sheet">
+  <header class="head">
+    <div>
+      <h1 class="atelier-display">Atelier<span class="atelier-display__slash">/</span>Product UI system</h1>
+      <p class="atelier-tagline">A tactile, precise interface language</p>
+    </div>
+    <p class="atelier-kicker">Design language 01.26</p>
+    <nav aria-label="Pages">
+      <a class="atelier-btn atelier-btn--tertiary atelier-btn--sm" href="../index.html">All languages</a>
+      <a class="atelier-btn atelier-btn--secondary atelier-btn--sm" href="examples/workspace.html">Open the workspace example</a>
+    </nav>
+    <div class="atelier-rule" aria-hidden="true"><span style="--value:12%"></span></div>
+  </header>
+
+  <div class="grid">
+    <!-- 01 -->
+    <section class="atelier-panel" aria-labelledby="s1">
+      <h2 class="atelier-section-title" id="s1">01. Foundations</h2>
+      <span class="atelier-group-label">Surfaces</span>
+      <div class="surf">
+        <figure><div class="s-base"></div>Base</figure>
+        <figure><div class="s-raised"></div>Raised</figure>
+        <figure><div class="s-inset"></div>Inset</figure>
+        <figure><div class="s-overlay"></div>Overlay</figure>
+      </div>
+      <hr class="atelier-divider">
+      <div class="split">
+        <div>
+          <span class="atelier-group-label">Colors</span>
+          <div class="chips5">
+            <figure><span class="atelier-swatch" style="--swatch:var(--atelier-color-ink)"></span>Ink</figure>
+            <figure><span class="atelier-swatch" style="--swatch:var(--atelier-color-canvas)"></span>Canvas</figure>
+            <figure><span class="atelier-swatch" style="--swatch:var(--atelier-color-primary)"></span>Accent</figure>
+            <figure><span class="atelier-swatch" style="--swatch:var(--atelier-color-teal)"></span>Teal</figure>
+            <figure><span class="atelier-swatch" style="--swatch:var(--atelier-color-amber)"></span>Amber</figure>
+          </div>
+          <span class="atelier-group-label" style="margin-top:18px">Radius</span>
+          <div class="radii">
+            <figure><div style="border-radius:var(--atelier-radius-sm)"></div>sm</figure>
+            <figure><div style="border-radius:var(--atelier-radius-md)"></div>md</figure>
+            <figure><div style="border-radius:var(--atelier-radius-lg)"></div>lg</figure>
+            <figure><div style="border-radius:var(--atelier-radius-xl)"></div>xl</figure>
+            <figure><div style="border-radius:999px;width:52px"></div>pill</figure>
+          </div>
+        </div>
+        <div>
+          <span class="atelier-group-label">Shadows</span>
+          <div class="shadows">
+            <figure><div style="border-radius:var(--atelier-radius-sm);box-shadow:var(--atelier-shadow-subtle)"></div>Subtle</figure>
+            <figure><div style="border-radius:var(--atelier-radius-sm);box-shadow:var(--atelier-shadow-floating)"></div>Floating</figure>
+            <figure><div style="border-radius:var(--atelier-radius-sm);box-shadow:var(--atelier-shadow-modal)"></div>Modal</figure>
+          </div>
+          <span class="atelier-group-label" style="margin-top:18px">Borders</span>
+          <div class="borders">
+            <figure><i></i>1px</figure>
+            <figure><i style="border-top-width:1.5px"></i>1.5px</figure>
+            <figure><i style="border-top-width:2px"></i>2px</figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="atelier-panel" aria-labelledby="s2">
+      <h2 class="atelier-section-title" id="s2">02. Controls</h2>
+      <span class="atelier-group-label">Buttons</span>
+      <div class="btn-grid">
+        <button class="atelier-btn atelier-btn--primary" type="button">Primary</button>
+        <button class="atelier-btn atelier-btn--secondary" type="button">Secondary</button>
+        <button class="atelier-btn atelier-btn--tertiary" type="button">Tertiary</button>
+        <button class="atelier-btn atelier-btn--destructive" type="button">Destructive</button>
+      </div>
+      <div class="btn-grid" style="margin-top:12px">
+        <button class="atelier-btn atelier-btn--primary is-active" type="button">Primary</button>
+        <button class="atelier-btn atelier-btn--primary" type="button" disabled>Primary</button>
+      </div>
+      <hr class="atelier-divider">
+      <div class="controls-row">
+        <div class="atelier-form-row">
+          <span class="atelier-group-label" style="margin-bottom:4px">Input field</span>
+          <label class="atelier-field-label" for="pn">Project name</label>
+          <input class="atelier-input" id="pn" placeholder="Enter a project name">
+        </div>
+        <div>
+          <span class="atelier-group-label">Checkbox &amp; radio</span>
+          <div class="atelier-stack" style="--gap:12px">
+            <label class="atelier-check"><input type="checkbox" class="atelier-checkbox" checked> Remember me</label>
+            <div class="atelier-row" style="--gap:16px">
+              <label class="atelier-check"><input type="radio" class="atelier-radio" name="bill" checked> Monthly</label>
+              <label class="atelier-check"><input type="radio" class="atelier-radio" name="bill"> Yearly</label>
+            </div>
+          </div>
+        </div>
+        <div>
+          <span class="atelier-group-label">Switch</span>
+          <input type="checkbox" class="atelier-toggle" checked aria-label="Demo switch">
+        </div>
+      </div>
+      <hr class="atelier-divider">
+      <span class="atelier-group-label">Slider</span>
+      <div class="atelier-slider-row"><span>Density</span><input class="atelier-slider" id="dens" type="range" min="0" max="100" value="72" aria-label="Density"><output for="dens">72</output></div>
+    </section>
+
+    <!-- 03 -->
+    <section class="atelier-panel" aria-labelledby="s3">
+      <h2 class="atelier-section-title" id="s3">03. Navigation</h2>
+      <div class="nav-split">
+        <div class="atelier-stack" style="--gap:20px">
+          <div>
+            <span class="atelier-group-label">Tabs</span>
+            <div class="atelier-pills" role="tablist" aria-label="Project view">
+              <button class="atelier-pills__item" role="tab" aria-selected="true">Overview</button>
+              <button class="atelier-pills__item" role="tab" aria-selected="false" tabindex="-1">Projects</button>
+              <button class="atelier-pills__item" role="tab" aria-selected="false" tabindex="-1">Activity</button>
+            </div>
+          </div>
+          <hr class="atelier-divider" style="margin:0">
+          <div>
+            <span class="atelier-group-label">Breadcrumb</span>
+            <nav class="atelier-breadcrumb" aria-label="Breadcrumb"><ol>
+              <li><a href="#" aria-label="Home"><svg class="atelier-icon" aria-hidden="true"><use href="#i-home"/></svg></a></li>
+              <li><a href="#">Workspace</a></li><li><a href="#">Projects</a></li><li aria-current="page">Atlas</li>
+            </ol></nav>
+          </div>
+          <hr class="atelier-divider" style="margin:0">
+          <div>
+            <span class="atelier-group-label">Pagination</span>
+            <nav class="atelier-pagination" aria-label="Pages">
+              <a href="#" aria-current="page">1</a><a href="#">2</a><a href="#">3</a><span>…</span><a href="#">8</a>
+              <a href="#" aria-label="Next page"><svg class="atelier-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+            </nav>
+          </div>
+        </div>
+        <div>
+          <span class="atelier-group-label">Sidebar</span>
+          <nav class="atelier-nav" aria-label="Demo sidebar">
+            <a class="atelier-nav__item" href="#" aria-current="page"><svg class="atelier-icon" aria-hidden="true"><use href="#i-home"/></svg>Home</a>
+            <a class="atelier-nav__item" href="#"><svg class="atelier-icon" aria-hidden="true"><use href="#i-folder"/></svg>Projects</a>
+            <a class="atelier-nav__item" href="#"><svg class="atelier-icon" aria-hidden="true"><use href="#i-mail"/></svg>Inbox</a>
+            <a class="atelier-nav__item" href="#"><svg class="atelier-icon" aria-hidden="true"><use href="#i-settings"/></svg>Settings</a>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="atelier-panel" aria-labelledby="s4">
+      <h2 class="atelier-section-title" id="s4">04. Data &amp; feedback</h2>
+      <div class="data-split">
+        <div class="atelier-stack" style="--gap:14px">
+          <span class="atelier-group-label" style="margin:0">Project card</span>
+          <article class="atelier-card atelier-card--interactive">
+            <div class="atelier-row" style="--gap:12px;align-items:flex-start">
+              <span class="atelier-logo"><svg viewBox="0 0 48 40" width="40" aria-hidden="true"><use href="#i-logo"/></svg></span>
+              <div class="atelier-stack" style="--gap:6px">
+                <h3 class="atelier-card__title">Project Atlas</h3>
+                <span><span class="atelier-badge atelier-badge--soft">In progress</span></span>
+              </div>
+            </div>
+            <div class="atelier-row" style="justify-content:space-between;margin-top:12px">
+              <div class="atelier-card__meta"><span><svg class="atelier-icon" aria-hidden="true"><use href="#i-calendar"/></svg>Oct 30</span><span><svg class="atelier-icon" aria-hidden="true"><use href="#i-clip"/></svg>12 tasks</span></div>
+              <span class="atelier-avatars"><span class="atelier-avatar" style="--avatar-bg:#F6C9A8;--avatar-ink:#6B3A16">AC</span><span class="atelier-avatar" style="--avatar-bg:#BFD7F7;--avatar-ink:#1C4A86">MJ</span><span class="atelier-avatar" style="--avatar-bg:#C9EBDD;--avatar-ink:#16614A">SK</span></span>
+            </div>
+          </article>
+          <div class="atelier-toast atelier-toast--success" role="status"><svg class="atelier-icon" aria-hidden="true"><use href="#i-check-circle"/></svg>Changes saved successfully<button class="atelier-toast__close" type="button" aria-label="Dismiss"><svg class="atelier-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+          <div class="atelier-confirm">
+            <h3>Delete project?</h3>
+            <p>This action cannot be undone.</p>
+            <div class="atelier-confirm__actions"><button class="atelier-btn atelier-btn--tertiary" type="button">Cancel</button><button class="atelier-btn atelier-btn--destructive" type="button" data-atelier-open="#dlg">Delete</button></div>
+          </div>
+        </div>
+        <div class="atelier-stack" style="--gap:14px">
+          <span class="atelier-group-label" style="margin:0">Status badges</span>
+          <div class="atelier-row" style="--gap:8px"><span class="atelier-badge atelier-badge--primary">New</span><span class="atelier-badge atelier-badge--teal">Approved</span><span class="atelier-badge atelier-badge--amber">At risk</span></div>
+          <div class="atelier-toast atelier-toast--inverse" role="status" style="margin-top:12px"><svg class="atelier-icon" aria-hidden="true"><use href="#i-mail"/></svg>Invite sent<button class="atelier-toast__close" type="button" aria-label="Dismiss"><svg class="atelier-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+          <span class="atelier-group-label" style="margin:10px 0 0">Progress</span>
+          <div class="atelier-progress" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress"><div class="atelier-progress__bar"><span style="--value:68%"></span></div><output>68%</output></div>
+          <div class="atelier-empty"><svg class="atelier-icon" aria-hidden="true"><use href="#i-tray"/></svg>Nothing here yet</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="bottom">
+    <section class="atelier-panel preview" aria-labelledby="s5">
+      <div class="preview__bar"><h2 class="atelier-section-title" id="s5">Live product preview</h2></div>
+      <div class="preview__frame" id="pf"><iframe src="examples/workspace.html" title="Workspace example" loading="lazy" tabindex="-1"></iframe></div>
+    </section>
+
+    <section class="atelier-panel settings" aria-labelledby="s6">
+      <h2 class="atelier-section-title" id="s6">Appearance settings</h2>
+      <div>
+        <span class="atelier-group-label">Theme</span>
+        <div class="atelier-segmented atelier-segmented--block" role="tablist" aria-label="Theme">
+          <button class="atelier-segmented__item" role="tab" aria-selected="true" data-appearance="theme" data-value="light"><svg class="atelier-icon" aria-hidden="true"><use href="#i-sun"/></svg>Light</button>
+          <button class="atelier-segmented__item" role="tab" aria-selected="false" tabindex="-1" data-appearance="theme" data-value="dark"><svg class="atelier-icon" aria-hidden="true"><use href="#i-moon"/></svg>Dark</button>
+        </div>
+      </div>
+      <div>
+        <span class="atelier-group-label">Accent color</span>
+        <div class="accents">
+          <button class="atelier-swatch atelier-swatch--pick" type="button" style="--swatch:#2F7BF5" data-appearance="accent" data-value="cobalt" aria-pressed="true" aria-label="Cobalt"></button>
+          <button class="atelier-swatch atelier-swatch--pick" type="button" style="--swatch:#7A4DF0" data-appearance="accent" data-value="violet" aria-pressed="false" aria-label="Violet"></button>
+          <button class="atelier-swatch atelier-swatch--pick" type="button" style="--swatch:#0EA5C6" data-appearance="accent" data-value="cyan" aria-pressed="false" aria-label="Cyan"></button>
+          <button class="atelier-swatch atelier-swatch--pick" type="button" style="--swatch:#1FA971" data-appearance="accent" data-value="green" aria-pressed="false" aria-label="Green"></button>
+          <button class="atelier-swatch atelier-swatch--pick" type="button" style="--swatch:#F08A24" data-appearance="accent" data-value="orange" aria-pressed="false" aria-label="Orange"></button>
+        </div>
+      </div>
+      <div>
+        <span class="atelier-group-label">Density</span>
+        <div class="atelier-slider-stops" id="density-stops"><span>Cozy</span><span class="is-current">Balanced</span><span>Compact</span></div>
+        <input class="atelier-slider" type="range" min="0" max="2" step="1" value="1" data-appearance="density" aria-label="Density" aria-describedby="density-stops">
+      </div>
+      <div>
+        <span class="atelier-group-label">Radius</span>
+        <input class="atelier-slider" type="range" min="8" max="24" step="4" value="16" data-appearance="radius" aria-label="Corner radius" aria-describedby="radius-stops">
+        <div class="atelier-slider-stops" id="radius-stops"><span>8</span><span>12</span><span class="is-current">16</span><span>20</span><span>24</span></div>
+      </div>
+      <hr class="atelier-divider" style="margin:0">
+      <label class="atelier-check atelier-check--between">Reduce motion<input type="checkbox" class="atelier-toggle" data-appearance="motion"></label>
+      <label class="atelier-check atelier-check--between">High contrast<input type="checkbox" class="atelier-toggle" data-appearance="contrast"></label>
+    </section>
+  </div>
+
+  <footer class="foot"><span class="atelier-kicker">Built for clarity · Crafted for momentum</span><span class="atelier-kicker">Tokens / Components / Patterns</span></footer>
+</div>
+
+<dialog class="atelier-dialog" id="dlg" aria-labelledby="dlg-t">
+  <h2 class="atelier-dialog__title" id="dlg-t">Delete Project Atlas?</h2>
+  <p class="atelier-dialog__body">12 tasks and their history will be removed for everyone in the workspace. This can't be undone.</p>
+  <div class="atelier-dialog__actions"><button class="atelier-btn atelier-btn--tertiary" type="button" data-atelier-close>Cancel</button><button class="atelier-btn atelier-btn--destructive" type="button" data-atelier-close>Delete project</button></div>
+</dialog>
+
+<script src="js/atelier.js"></script>
+<script>
+  /* Scale the live preview so the full desktop workspace fits the panel. */
+  (function () {
+    var frame = document.getElementById("pf"), iframe = frame.querySelector("iframe");
+    function fit() { var s = frame.clientWidth / 1180; iframe.style.transform = "scale(" + s + ")"; frame.style.height = Math.round(760 * s) + "px"; }
+    fit();
+    if ("ResizeObserver" in window) new ResizeObserver(fit).observe(frame);
+  })();
+</script>
+</body>
+</html>

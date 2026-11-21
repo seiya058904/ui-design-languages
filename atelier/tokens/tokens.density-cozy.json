@@ -1,0 +1,1 @@
+{ "$description": "Cozy density", "space": { "panel": { "$value": "32px" }, "gap": { "$value": "22px" } }, "size": { "control-sm": { "$value": "34px" }, "control": { "$value": "42px" }, "control-lg": { "$value": "50px" }, "row": { "$value": "48px" } } }

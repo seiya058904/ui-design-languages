@@ -24,7 +24,7 @@
     .sheet__subtitle { font-size: clamp(30px, 4.6vw, 48px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 12px; }
     .sheet__intro { color: var(--clay-color-text-muted); max-width: 60ch; margin-bottom: 44px; }
 
-    .guide { display: grid; grid-template-columns: 1fr 1fr; column-gap: 56px; row-gap: 48px;
+    .guide { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 56px; row-gap: 48px;
       grid-template-areas:
         "colors  type"
         "spacing radel"
@@ -69,7 +69,7 @@
     .alerts { display: flex; flex-direction: column; gap: 16px; }
 
     /* Extended sheet */
-    .ext { display: grid; grid-template-columns: repeat(12, 1fr); gap: 48px 40px; }
+    .ext { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 48px 40px; }
     .ext > section { grid-column: span 6; }
     .ext > .wide { grid-column: span 12; }
     .ext > .third { grid-column: span 4; }
@@ -85,8 +85,9 @@
 
     @media (max-width: 860px) {
       .sheet { padding: 48px 28px 52px; }
-      .guide { grid-template-columns: 1fr; grid-template-areas: "colors" "type" "spacing" "radel" "buttons" "inputs" "chips" "tabs1" "tabs2" "alerts" "cards"; }
-      .ext > section, .ext > .third, .ext > .two-thirds { grid-column: span 12; }
+      .guide { grid-template-columns: minmax(0, 1fr); grid-template-areas: "colors" "type" "spacing" "radel" "buttons" "inputs" "chips" "tabs1" "tabs2" "alerts" "cards"; }
+      .ext { grid-template-columns: minmax(0, 1fr); }
+      .ext > section, .ext > .third, .ext > .two-thirds { grid-column: auto; }
     }
     @media (max-width: 480px) {
       .sheet { padding: 40px 22px 44px; }
@@ -123,6 +124,7 @@
     <button class="clay-segmented__item theme-opt" role="tab" aria-selected="false" tabindex="-1" data-theme-set="dark">Dark</button>
     <button class="clay-segmented__item theme-opt" role="tab" aria-selected="false" tabindex="-1" data-theme-set="auto">Auto</button>
   </div>
+  <a class="clay-btn clay-btn--ghost clay-btn--sm" href="../index.html">All languages</a>
   <a class="clay-btn clay-btn--ghost clay-btn--sm" href="examples/dashboard.html">App example</a>
   <a class="clay-btn clay-btn--ghost clay-btn--sm" href="examples/landing.html">Website example</a>
   <a class="clay-btn clay-btn--sm" href="https://github.com/seiya058904/ui-design-languages/tree/main/clay"><svg class="clay-icon" aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
@@ -410,6 +412,8 @@
 </footer>
 
 <script src="js/clay.js"></script>
+<!-- Site chrome (not part of the pack): preview + code toggle for each specimen -->
+<script src="../site/code-view.js" data-selector="main section[aria-labelledby]" data-skip=".clay-section-title"></script>
 <script>
   /* Swatch labels show the live token value, so they stay true in dark mode. */
   function syncTokenLabels() {

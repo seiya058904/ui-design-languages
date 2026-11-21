@@ -50,7 +50,7 @@ Usage snippets are at the top of each block in [`css/components.css`](css/compon
 
 | Role | Token | Value |
 | --- | --- | --- |
-| Canvas / tile / raised | `--lilac-color-canvas` / `-tile` / `-surface` | `#F3F0EA` / `#FAF8F4` / `#FDFCFA` |
+| Canvas / tile / raised | `--lilac-color-canvas` / `-tile` / `-surface` | `#F3F0EA` / `#FAF8F4` / `#FCFAF6` |
 | Accent | `--lilac-color-primary` | `#5B2DFF` (cobalt `#1556E8`) |
 | Lilac | `--lilac-color-primary-soft` | `#C8B4FF` |
 | Wash / on wash | `--lilac-color-primary-wash` / `--lilac-color-on-wash` | `#EFE9FF` / `#4320D6` |

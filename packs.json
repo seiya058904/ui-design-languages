@@ -1,0 +1,72 @@
+{
+  "name": "ui-design-languages",
+  "description": "Machine-readable index of the Style Packs in this repository. Each pack is self-contained: copy its folder or link its entry files. Paths are relative to the repository root; CDN base: https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/",
+  "license": "MIT",
+  "stack": "HTML + CSS custom properties + optional vanilla JS. No build step, no runtime dependencies.",
+  "tokenBuild": "node scripts/build-tokens.mjs [pack]",
+  "visualCheck": "node scripts/snap.mjs [pack]",
+  "packs": [
+    {
+      "id": "clay",
+      "name": "Clay",
+      "status": "stable",
+      "summary": "Soft extruded clay on a matte grid board, mint accent, light and dark.",
+      "prefix": "clay",
+      "entry": { "css": "clay/css/clay.css", "js": "clay/js/clay.js" },
+      "tokens": ["clay/tokens/tokens.json", "clay/tokens/tokens.dark.json"],
+      "variants": { "theme": ["light", "dark", "auto"] },
+      "fonts": [{ "family": "Inter", "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap", "license": "OFL-1.1" }],
+      "pages": { "styleguide": "clay/index.html", "examples": ["clay/examples/dashboard.html", "clay/examples/landing.html"] },
+      "docs": { "design": "clay/DESIGN.md", "agents": "clay/AGENTS.md", "readme": "clay/README.md" }
+    },
+    {
+      "id": "lilac",
+      "name": "Lilac",
+      "status": "stable",
+      "summary": "Ivory component-study tiles, one glowing accent, editorial serif headlines.",
+      "prefix": "lilac",
+      "entry": { "css": "lilac/css/lilac.css", "js": "lilac/js/lilac.js" },
+      "tokens": ["lilac/tokens/tokens.json", "lilac/tokens/tokens.accent-cobalt.json"],
+      "variants": { "accent": ["violet", "cobalt"] },
+      "fonts": [
+        { "family": "Cormorant Garamond", "url": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap", "license": "OFL-1.1" },
+        { "family": "Manrope", "url": "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap", "license": "OFL-1.1" }
+      ],
+      "pages": { "styleguide": "lilac/index.html", "examples": ["lilac/examples/app.html"] },
+      "docs": { "design": "lilac/DESIGN.md", "agents": "lilac/AGENTS.md", "readme": "lilac/README.md" }
+    },
+    {
+      "id": "atelier",
+      "name": "Atelier",
+      "status": "stable",
+      "summary": "Precise, cool product UI with frosted panels, one accent and working appearance settings.",
+      "prefix": "atelier",
+      "entry": { "css": "atelier/css/atelier.css", "js": "atelier/js/atelier.js" },
+      "tokens": ["atelier/tokens/tokens.json", "atelier/tokens/tokens.dark.json", "atelier/tokens/tokens.accent-violet.json", "atelier/tokens/tokens.accent-cyan.json", "atelier/tokens/tokens.accent-green.json", "atelier/tokens/tokens.accent-orange.json", "atelier/tokens/tokens.density-compact.json", "atelier/tokens/tokens.density-cozy.json", "atelier/tokens/tokens.motion-reduced.json", "atelier/tokens/tokens.contrast-high.json"],
+      "variants": { "theme": ["light", "dark", "auto"], "accent": ["cobalt", "violet", "cyan", "green", "orange"], "density": ["cozy", "balanced", "compact"], "radius": "8-24px", "motion": ["full", "reduced"], "contrast": ["normal", "high"] },
+      "fonts": [{ "family": "Archivo", "url": "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap", "license": "OFL-1.1" }],
+      "pages": { "styleguide": "atelier/index.html", "examples": ["atelier/examples/workspace.html"] },
+      "docs": { "design": "atelier/DESIGN.md", "agents": "atelier/AGENTS.md", "readme": "atelier/README.md" }
+    },
+    {
+      "id": "tactile",
+      "name": "Tactile",
+      "status": "stable",
+      "summary": "Warm sand neumorphism: base, raised, inset and pressed layers with a deep teal accent.",
+      "prefix": "tactile",
+      "entry": { "css": "tactile/css/tactile.css", "js": "tactile/js/tactile.js" },
+      "tokens": ["tactile/tokens/tokens.json", "tactile/tokens/tokens.tone-stone.json"],
+      "variants": { "tone": ["sand", "stone"] },
+      "fonts": [{ "family": "Plus Jakarta Sans", "url": "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap", "license": "OFL-1.1" }],
+      "pages": { "styleguide": "tactile/index.html", "examples": ["tactile/examples/home.html"] },
+      "docs": { "design": "tactile/DESIGN.md", "agents": "tactile/AGENTS.md", "readme": "tactile/README.md" }
+    },
+    {
+      "id": "sketch",
+      "name": "Sketch",
+      "status": "planned",
+      "summary": "Hand-drawn ink on cream paper, hatched fills, wireframe honesty.",
+      "prefix": "sketch"
+    }
+  ]
+}

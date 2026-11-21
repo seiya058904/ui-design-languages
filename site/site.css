@@ -1,0 +1,75 @@
+/* Site chrome for the library homepage. Deliberately neutral (system type, greys, hairlines)
+   so the Style Packs are the only "designed" things on the page. Not part of any pack. */
+:root {
+  --site-bg: #F2F2F0;
+  --site-panel: #FFFFFF;
+  --site-ink: #151515;
+  --site-muted: #5C5C58;
+  --site-line: #DCDCD7;
+  --site-focus: #2F6FED;
+  --site-radius: 14px;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--site-bg); color: var(--site-ink); font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+h1, h2, h3, p { margin: 0; }
+:focus-visible { outline: 2px solid var(--site-focus); outline-offset: 2px; }
+.wrap { width: min(100% - 32px, 1240px); margin: 0 auto; }
+
+.masthead { padding: 56px 0 40px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 32px; align-items: end; border-bottom: 1px solid var(--site-line); }
+.masthead h1 { font-size: clamp(40px, 6.4vw, 84px); line-height: 0.95; letter-spacing: -0.045em; font-weight: 750; }
+.masthead p { color: var(--site-muted); font-size: 17px; max-width: 46ch; }
+.masthead nav { display: flex; gap: 18px; margin-top: 18px; font-size: 14px; }
+.masthead nav a { text-decoration: none; border-bottom: 1px solid var(--site-line); }
+.masthead nav a:hover { border-color: currentColor; }
+
+.packs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 32px; padding: 40px 0 56px; }
+.pack { display: flex; flex-direction: column; gap: 18px; }
+.pack__frame { position: relative; overflow: hidden; border-radius: var(--site-radius); border: 1px solid var(--site-line); background: #fff; aspect-ratio: 16 / 10; }
+.pack__frame iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 800px; border: 0; transform-origin: 0 0; pointer-events: none; background: #fff; }
+.pack__open { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: flex-end; padding: 14px; text-decoration: none; }
+.pack__open span { padding: 7px 12px; border-radius: 999px; background: rgba(20, 20, 20, 0.86); color: #fff; font-size: 13px; font-weight: 600; opacity: 0; transform: translateY(4px); transition: opacity 0.18s, transform 0.18s; }
+.pack__open:hover span, .pack__open:focus-visible span { opacity: 1; transform: none; }
+.pack__head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.pack__head h2 { font-size: 30px; letter-spacing: -0.03em; font-weight: 750; }
+.views { display: inline-flex; border: 1px solid var(--site-line); border-radius: 999px; padding: 2px; background: var(--site-panel); }
+.views button { border: 0; background: transparent; padding: 5px 12px; border-radius: 999px; font: 600 12.5px/1 inherit; font-family: inherit; color: var(--site-muted); cursor: pointer; }
+.views button[aria-pressed="true"] { background: var(--site-ink); color: #fff; }
+.pack__lede { color: var(--site-muted); max-width: 60ch; }
+.traits { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 0; font-size: 14px; }
+.traits dt { color: var(--site-muted); }
+.traits dd { margin: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border: 1px solid var(--site-line); border-radius: 999px; background: var(--site-panel); color: var(--site-ink); font-size: 13px; font-weight: 600; text-decoration: none; }
+.btn--text { border-color: transparent; background: transparent; padding: 0 6px; text-decoration: underline; text-underline-offset: 3px; }
+.btn:hover { border-color: var(--site-ink); }
+.btn--ink { background: var(--site-ink); border-color: var(--site-ink); color: #fff; }
+.pack--soon .pack__frame { display: grid; place-items: center; color: var(--site-muted); background: repeating-linear-gradient(-45deg, #fff 0 10px, #F4F4F1 10px 20px); }
+
+.section { padding: 48px 0; border-top: 1px solid var(--site-line); }
+.section h2 { font-size: 28px; letter-spacing: -0.025em; font-weight: 750; margin-bottom: 8px; }
+.section > p { color: var(--site-muted); max-width: 70ch; margin-bottom: 24px; }
+.compare-wrap { overflow-x: auto; border: 1px solid var(--site-line); border-radius: var(--site-radius); background: var(--site-panel); }
+.compare { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 860px; }
+.compare th, .compare td { padding: 12px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--site-line); }
+.compare thead th { font-size: 13px; color: var(--site-muted); font-weight: 600; background: #FAFAF8; }
+.compare tbody th { font-weight: 700; white-space: nowrap; }
+.compare tr:last-child td, .compare tr:last-child th { border-bottom: 0; }
+.dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
+.ways { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.way { min-width: 0; padding: 22px; border: 1px solid var(--site-line); border-radius: var(--site-radius); background: var(--site-panel); }
+.way h3 { font-size: 17px; margin-bottom: 6px; }
+.way p { color: var(--site-muted); font-size: 14px; }
+.way code, .section code { font: 12.5px/1.5 ui-monospace, "SF Mono", Consolas, monospace; background: #F1F1EE; padding: 1px 5px; border-radius: 4px; }
+.way pre { margin: 12px 0 0; padding: 12px; overflow-x: auto; border-radius: 8px; background: #15171C; color: #E6E7EA; font: 12px/1.5 ui-monospace, "SF Mono", Consolas, monospace; }
+.legal { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 32px; font-size: 14px; color: var(--site-muted); }
+.legal strong { color: var(--site-ink); }
+.foot { padding: 28px 0 48px; border-top: 1px solid var(--site-line); color: var(--site-muted); font-size: 13px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+@media (max-width: 920px) {
+  .masthead { grid-template-columns: 1fr; padding-top: 36px; }
+  .packs { grid-template-columns: minmax(0, 1fr); }
+  .ways, .legal { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

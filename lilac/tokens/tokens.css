@@ -3,7 +3,7 @@
 :root {
   --lilac-color-canvas: #F3F0EA; /* Page behind the tiles */
   --lilac-color-tile: #FAF8F4; /* Component-study tiles and cards */
-  --lilac-color-surface: #FDFCFA; /* Raised ivory: secondary buttons, search pill, knobs */
+  --lilac-color-surface: #FCFAF6; /* Raised ivory: secondary buttons, search pill, knobs (printed on the reference) */
   --lilac-color-surface-sunken: #EEEAE3; /* Tracks and wells */
   --lilac-color-track: #E2DED7; /* Off toggle, empty slider and ring track */
   --lilac-color-primary: #5B2DFF; /* Violet — the single accent */

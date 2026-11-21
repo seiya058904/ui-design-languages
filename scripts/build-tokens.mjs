@@ -3,6 +3,7 @@
 // A language is any top-level folder containing tokens/tokens.json; its folder name is the CSS prefix
 // (clay/ → --clay-*). An optional tokens/tokens.dark.json holds dark-theme overrides (same shape,
 // only the leaves that change) and is emitted for [data-theme="dark"] and [data-theme="auto"] + OS dark.
+// Any other tokens.<attr>-<value>.json (e.g. tokens.accent-cobalt.json) is emitted for :root[data-<attr>="<value>"].
 //
 // Usage:
 //   node scripts/build-tokens.mjs            # build every language
@@ -69,6 +70,18 @@ ${indent(dark, "    ")}
 }
 `;
     count += dark.filter(Boolean).length;
+  }
+  const variants = readdirSync(dir).filter((f) => /^tokens\.[a-z]+-[a-z0-9]+\.json$/.test(f)).sort();
+  for (const file of variants) {
+    const [, attr, value] = file.match(/^tokens\.([a-z]+)-([a-z0-9]+)\.json$/);
+    const lines = flatten(lang, JSON.parse(readFileSync(join(dir, file), "utf8")));
+    css += `
+/* Variant — GENERATED from ${lang}/tokens/${file}. Opt in with <html data-${attr}="${value}">. */
+:root[data-${attr}="${value}"] {
+${indent(lines, "  ")}
+}
+`;
+    count += lines.filter(Boolean).length;
   }
   const out = join(dir, "tokens.css");
   if (check) {

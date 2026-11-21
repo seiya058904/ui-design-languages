@@ -1,0 +1,780 @@
+/* Lilac — components
+   Every block starts with a usage comment. Shared anatomy with the other languages in this repo:
+   btn · field/input · chip/badge · segmented · tabs · toggle/checkbox/radio · slider · progress/ring/steps ·
+   toast/alert · card/profile/avatar · nav/bottom-nav · table · dialog · tooltip */
+
+/* =========================================================================
+   Button
+   <button class="lilac-btn lilac-btn--primary">Start <svg class="lilac-icon">…</svg></button>
+   Variants: --primary (violet, glows) · default (ivory) · --soft (lilac wash) · --ghost
+   Sizes: --sm · --lg · --icon · --block   States: :hover/.is-hover · :active · :focus-visible · :disabled
+   ========================================================================= */
+.lilac-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: var(--lilac-size-control);
+  padding: 0 26px;
+  border: 0;
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-surface);
+  color: var(--lilac-color-text);
+  font-size: 16px;
+  font-weight: var(--lilac-font-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: var(--lilac-shadow-raised);
+  transition:
+    transform var(--lilac-motion-duration) var(--lilac-motion-easing),
+    box-shadow var(--lilac-motion-duration) var(--lilac-motion-easing),
+    background-color var(--lilac-motion-duration) var(--lilac-motion-easing);
+}
+.lilac-btn .lilac-icon { transition: transform var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring); }
+.lilac-btn:hover,
+.lilac-btn.is-hover { transform: translateY(-1px); box-shadow: var(--lilac-shadow-raised-hover); }
+.lilac-btn:hover .lilac-icon:last-child:not(:first-child) { transform: translateX(3px); }
+.lilac-btn:active { transform: translateY(0); box-shadow: var(--lilac-shadow-pressed); }
+.lilac-btn:focus-visible { box-shadow: var(--lilac-shadow-raised), var(--lilac-shadow-focus); }
+
+.lilac-btn--primary {
+  background: linear-gradient(180deg, var(--lilac-color-primary-light) 0%, var(--lilac-color-primary) 70%);
+  color: var(--lilac-color-primary-ink);
+  box-shadow: var(--lilac-shadow-accent);
+}
+.lilac-btn--primary:hover,
+.lilac-btn--primary.is-hover { box-shadow: var(--lilac-shadow-accent-hover); }
+.lilac-btn--primary:active { background: var(--lilac-color-primary-hover); box-shadow: inset 0 2px 6px rgba(20, 0, 80, 0.3); }
+.lilac-btn--primary:focus-visible { box-shadow: var(--lilac-shadow-accent), var(--lilac-shadow-focus); }
+
+.lilac-btn--soft { background: var(--lilac-color-primary-wash); color: var(--lilac-color-on-wash); box-shadow: none; }
+.lilac-btn--soft:hover { box-shadow: 0 6px 16px -8px var(--lilac-color-glow); }
+.lilac-btn--ghost { background: transparent; box-shadow: none; }
+.lilac-btn--ghost:hover { background: var(--lilac-color-primary-wash); box-shadow: none; transform: none; }
+
+.lilac-btn--sm   { height: var(--lilac-size-control-sm); padding: 0 18px; font-size: 14px; }
+.lilac-btn--lg   { height: var(--lilac-size-control-lg); padding: 0 36px; font-size: 18px; }
+.lilac-btn--icon { width: var(--lilac-size-control); padding: 0; }
+.lilac-btn--icon.lilac-btn--sm { width: var(--lilac-size-control-sm); }
+.lilac-btn--block { display: flex; width: 100%; }
+
+.lilac-btn:disabled,
+.lilac-btn.is-disabled {
+  background: var(--lilac-color-disabled);
+  color: var(--lilac-color-disabled-ink);
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* =========================================================================
+   Search field — raised ivory pill with an optional lilac action disc
+   <label class="lilac-field">
+     <svg class="lilac-icon">search</svg>
+     <input type="search" placeholder="Search your space" aria-label="Search">
+     <button class="lilac-field__action" type="button" aria-label="Filters"><svg class="lilac-icon">…</svg></button>
+   </label>
+   Plain inputs: <input class="lilac-input"> · <textarea class="lilac-input"> · <select class="lilac-input">
+   ========================================================================= */
+.lilac-field {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: var(--lilac-size-control-lg);
+  padding: 0 8px 0 22px;
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-surface);
+  box-shadow: var(--lilac-shadow-raised);
+  color: var(--lilac-color-text);
+  transition: box-shadow var(--lilac-motion-duration) var(--lilac-motion-easing);
+}
+.lilac-field > .lilac-icon { width: 22px; height: 22px; color: var(--lilac-color-text); }
+.lilac-field input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  outline: none;
+  font-size: 16px;
+}
+.lilac-field input::placeholder { color: var(--lilac-color-text-subtle); }
+.lilac-field input::-webkit-search-cancel-button { display: none; }
+.lilac-field:focus-within,
+.lilac-field.is-focus { box-shadow: var(--lilac-shadow-raised), var(--lilac-shadow-focus); }
+.lilac-field__action {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--lilac-color-primary-wash);
+  color: var(--lilac-color-primary);
+  box-shadow: 0 6px 16px -6px var(--lilac-color-glow);
+  cursor: pointer;
+  transition: transform var(--lilac-motion-duration) var(--lilac-motion-easing);
+}
+.lilac-field__action:hover { transform: scale(1.05); }
+.lilac-field__action:focus-visible { box-shadow: var(--lilac-shadow-focus); }
+
+.lilac-input {
+  display: block;
+  width: 100%;
+  height: var(--lilac-size-control);
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-surface-sunken);
+  box-shadow: var(--lilac-shadow-inset);
+  font-size: 15px;
+  outline: none;
+  appearance: none;
+  transition: box-shadow var(--lilac-motion-duration) var(--lilac-motion-easing), background-color var(--lilac-motion-duration);
+}
+.lilac-input::placeholder { color: var(--lilac-color-text-subtle); }
+textarea.lilac-input { height: auto; min-height: 112px; padding: 14px 20px; border-radius: var(--lilac-radius-md); line-height: 1.55; resize: vertical; }
+select.lilac-input {
+  padding-right: 46px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2324232D' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  background-size: 18px;
+}
+.lilac-input:focus,
+.lilac-input.is-focus { background-color: var(--lilac-color-surface); box-shadow: var(--lilac-shadow-raised), var(--lilac-shadow-focus); }
+.lilac-input[aria-invalid="true"] { box-shadow: var(--lilac-shadow-inset), 0 0 0 2px var(--lilac-color-error-ink); }
+.lilac-input:disabled { color: var(--lilac-color-disabled-ink); background: var(--lilac-color-disabled); box-shadow: none; cursor: not-allowed; }
+
+.lilac-form-row { display: flex; flex-direction: column; gap: 8px; }
+.lilac-label { font-size: var(--lilac-font-size-small); font-weight: var(--lilac-font-weight-semibold); padding-left: 8px; }
+.lilac-hint  { font-size: var(--lilac-font-size-caption); color: var(--lilac-color-text-muted); padding-left: 8px; }
+.lilac-hint--error { color: var(--lilac-color-error-ink); }
+
+/* =========================================================================
+   Chip & badge
+   <button class="lilac-chip" aria-pressed="true">Design</button>
+   <span class="lilac-badge lilac-badge--success">Paid</span>
+   ========================================================================= */
+.lilac-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--lilac-size-control-sm);
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-surface);
+  color: var(--lilac-color-text);
+  font-size: 14px;
+  font-weight: var(--lilac-font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--lilac-shadow-raised);
+  transition: background-color var(--lilac-motion-duration), color var(--lilac-motion-duration), box-shadow var(--lilac-motion-duration);
+}
+.lilac-chip .lilac-icon { width: 16px; height: 16px; }
+.lilac-chip:hover { box-shadow: var(--lilac-shadow-raised-hover); }
+.lilac-chip:focus-visible { box-shadow: var(--lilac-shadow-raised), var(--lilac-shadow-focus); }
+.lilac-chip[aria-pressed="true"],
+.lilac-chip.is-selected {
+  background: var(--lilac-color-primary-wash);
+  color: var(--lilac-color-on-wash);
+  box-shadow: inset 0 0 0 1px var(--lilac-color-glow-soft);
+}
+.lilac-chip:disabled { background: var(--lilac-color-disabled); color: var(--lilac-color-disabled-ink); box-shadow: none; cursor: not-allowed; }
+
+.lilac-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-primary-wash);
+  color: var(--lilac-color-on-wash);
+  font-size: var(--lilac-font-size-caption);
+  font-weight: var(--lilac-font-weight-semibold);
+  white-space: nowrap;
+}
+.lilac-badge--success { background: var(--lilac-color-success); color: var(--lilac-color-success-ink); }
+.lilac-badge--warning { background: var(--lilac-color-warning); color: var(--lilac-color-warning-ink); }
+.lilac-badge--error   { background: var(--lilac-color-error);   color: var(--lilac-color-error-ink); }
+.lilac-badge--neutral { background: var(--lilac-color-surface-sunken); color: var(--lilac-color-text-muted); }
+
+/* =========================================================================
+   Segmented tabs — ivory pill with hairline dividers; the active tab is a lilac wash
+   that slides (js/lilac.js) between items.
+   <div class="lilac-segmented" role="tablist" aria-label="Section">
+     <button class="lilac-segmented__item" role="tab" aria-selected="true">Overview</button> …
+   </div>
+   ========================================================================= */
+.lilac-segmented {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  padding: 5px;
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-surface);
+  box-shadow: var(--lilac-shadow-raised);
+  max-width: 100%;
+}
+.lilac-segmented--block { display: flex; width: 100%; }
+.lilac-segmented__item {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  height: 46px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: var(--lilac-radius-pill);
+  background: transparent;
+  color: var(--lilac-color-text);
+  font-size: 15px;
+  font-weight: var(--lilac-font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--lilac-motion-duration) var(--lilac-motion-easing), background-color var(--lilac-motion-duration);
+}
+.lilac-segmented__item + .lilac-segmented__item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 28%;
+  bottom: 28%;
+  width: 1px;
+  background: var(--lilac-color-hairline);
+  transition: opacity var(--lilac-motion-duration);
+}
+.lilac-segmented__item[aria-selected="true"]::before,
+.lilac-segmented__item[aria-selected="true"] + .lilac-segmented__item::before,
+.lilac-segmented__item.is-active::before,
+.lilac-segmented__item.is-active + .lilac-segmented__item::before { opacity: 0; }
+.lilac-segmented__item:focus-visible { box-shadow: var(--lilac-shadow-focus); }
+.lilac-segmented__item[aria-selected="true"],
+.lilac-segmented__item.is-active {
+  background: var(--lilac-color-primary-wash);
+  color: var(--lilac-color-on-wash);
+}
+.lilac-segmented.has-indicator::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 5px;
+  bottom: 5px;
+  left: 0;
+  width: var(--lilac-indicator-w, 0px);
+  transform: translateX(var(--lilac-indicator-x, 0px));
+  opacity: var(--lilac-indicator-o, 1);
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-primary-wash);
+  box-shadow: inset 0 0 0 1px var(--lilac-color-glow-soft);
+}
+.lilac-segmented.has-indicator.is-animated::after {
+  transition:
+    transform var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring),
+    width var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring);
+}
+.lilac-segmented.has-indicator .lilac-segmented__item[aria-selected="true"],
+.lilac-segmented.has-indicator .lilac-segmented__item.is-active { background: transparent; }
+
+/* =========================================================================
+   Underline tabs (from SOFT / SYSTEM) — accent bar glides under the active tab
+   <div class="lilac-tabs" role="tablist"><button class="lilac-tabs__item" role="tab" aria-selected="true">Overview</button> …</div>
+   ========================================================================= */
+.lilac-tabs {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--lilac-color-hairline);
+}
+.lilac-tabs__item {
+  position: relative;
+  flex: 1;
+  padding: 10px 6px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--lilac-color-text-muted);
+  font-size: 15px;
+  font-weight: var(--lilac-font-weight-medium);
+  cursor: pointer;
+  border-radius: 10px 10px 0 0;
+  transition: color var(--lilac-motion-duration) var(--lilac-motion-easing);
+}
+.lilac-tabs__item:hover { color: var(--lilac-color-text); }
+.lilac-tabs__item:focus-visible { box-shadow: var(--lilac-shadow-focus); }
+.lilac-tabs__item[aria-selected="true"],
+.lilac-tabs__item.is-active { color: var(--lilac-color-primary); font-weight: var(--lilac-font-weight-semibold); }
+.lilac-tabs__item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-primary);
+  opacity: 0;
+}
+.lilac-tabs__item[aria-selected="true"]::after,
+.lilac-tabs__item.is-active::after { opacity: 1; }
+.lilac-tabs.has-indicator::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  bottom: -1px;
+  height: 3px;
+  width: var(--lilac-indicator-w, 0px);
+  transform: translateX(var(--lilac-indicator-x, 0px));
+  opacity: var(--lilac-indicator-o, 1);
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-primary);
+  box-shadow: 0 2px 8px -1px var(--lilac-color-glow);
+}
+.lilac-tabs.has-indicator.is-animated::before {
+  transition:
+    transform var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring),
+    width var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring);
+}
+.lilac-tabs.has-indicator .lilac-tabs__item::after { display: none; }
+
+/* =========================================================================
+   Toggle, checkbox, radio
+   <label class="lilac-check"><input type="checkbox" class="lilac-toggle" checked>
+     <span><span class="lilac-check__title">Notifications</span><span class="lilac-check__hint">Get updates on your space</span></span></label>
+   ========================================================================= */
+.lilac-check { display: inline-flex; align-items: center; gap: 16px; font-size: 15px; cursor: pointer; user-select: none; }
+.lilac-check__title { display: block; font-weight: var(--lilac-font-weight-medium); }
+.lilac-check__hint  { display: block; font-size: var(--lilac-font-size-small); color: var(--lilac-color-text-muted); }
+
+.lilac-toggle,
+.lilac-checkbox,
+.lilac-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  margin: 0;
+  cursor: pointer;
+  transition: background-color var(--lilac-motion-duration), box-shadow var(--lilac-motion-duration);
+}
+
+.lilac-toggle {
+  position: relative;
+  width: 60px;
+  height: 34px;
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-track);
+  box-shadow: var(--lilac-shadow-inset);
+}
+.lilac-toggle::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-surface);
+  box-shadow: var(--lilac-shadow-knob);
+  transition:
+    transform var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring),
+    width var(--lilac-motion-duration) var(--lilac-motion-easing-spring);
+}
+.lilac-toggle:active::before { width: 34px; }
+.lilac-toggle:checked {
+  background: linear-gradient(180deg, var(--lilac-color-primary-light), var(--lilac-color-primary));
+  box-shadow: inset 0 1px 2px rgba(20, 0, 80, 0.25), 0 8px 18px -8px var(--lilac-color-glow);
+}
+.lilac-toggle:checked::before { transform: translateX(26px); }
+.lilac-toggle:checked:active::before { transform: translateX(20px); }
+
+.lilac-checkbox,
+.lilac-radio {
+  width: 28px;
+  height: 28px;
+  background-color: var(--lilac-color-surface);
+  background-repeat: no-repeat;
+  background-position: center;
+  box-shadow: var(--lilac-shadow-raised), inset 0 0 0 1.5px var(--lilac-color-control-edge);
+}
+.lilac-checkbox { border-radius: var(--lilac-radius-sm); background-size: 16px; }
+.lilac-radio { border-radius: 50%; }
+.lilac-checkbox:checked {
+  background-color: var(--lilac-color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17 19 7'/%3E%3C/svg%3E");
+  box-shadow: var(--lilac-shadow-accent);
+}
+.lilac-radio:checked {
+  background-color: var(--lilac-color-primary);
+  background-image: radial-gradient(circle, #fff 0 4px, transparent 4.5px);
+  box-shadow: var(--lilac-shadow-accent);
+}
+.lilac-toggle:focus-visible,
+.lilac-checkbox:focus-visible,
+.lilac-radio:focus-visible { box-shadow: var(--lilac-shadow-raised), var(--lilac-shadow-focus); }
+.lilac-toggle:disabled,
+.lilac-checkbox:disabled,
+.lilac-radio:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* =========================================================================
+   Slider — <input type="range" class="lilac-slider" style="--fill:60%">
+   js/lilac.js keeps --fill in sync while dragging.
+   ========================================================================= */
+.lilac-slider {
+  --fill: 50%;
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.lilac-slider::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: var(--lilac-radius-pill);
+  background: linear-gradient(90deg, var(--lilac-color-primary-light), var(--lilac-color-primary)) 0 0 / var(--fill) 100% no-repeat, var(--lilac-color-track);
+  box-shadow: var(--lilac-shadow-inset);
+}
+.lilac-slider::-moz-range-track { height: 10px; border-radius: var(--lilac-radius-pill); background: var(--lilac-color-track); box-shadow: var(--lilac-shadow-inset); }
+.lilac-slider::-moz-range-progress { height: 10px; border-radius: var(--lilac-radius-pill); background: linear-gradient(90deg, var(--lilac-color-primary-light), var(--lilac-color-primary)); }
+.lilac-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  margin-top: -8px;
+  border: 3px solid var(--lilac-color-surface);
+  border-radius: 50%;
+  background: var(--lilac-color-primary-soft);
+  box-shadow: var(--lilac-shadow-knob), 0 0 0 0 var(--lilac-color-glow-soft);
+  transition: box-shadow var(--lilac-motion-duration), transform var(--lilac-motion-duration);
+}
+.lilac-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--lilac-color-surface);
+  border-radius: 50%;
+  background: var(--lilac-color-primary-soft);
+  box-shadow: var(--lilac-shadow-knob);
+}
+.lilac-slider:hover::-webkit-slider-thumb { transform: scale(1.08); }
+.lilac-slider:active::-webkit-slider-thumb,
+.lilac-slider:focus-visible::-webkit-slider-thumb { box-shadow: var(--lilac-shadow-knob), 0 0 0 6px var(--lilac-color-glow-soft); }
+.lilac-slider:focus-visible::-moz-range-thumb { box-shadow: var(--lilac-shadow-knob), 0 0 0 6px var(--lilac-color-glow-soft); }
+.lilac-slider-row { display: flex; align-items: center; gap: 18px; }
+.lilac-slider-row output { min-width: 3ch; white-space: nowrap; font-size: 15px; color: var(--lilac-color-text-muted); font-variant-numeric: tabular-nums; }
+
+/* =========================================================================
+   Progress — linear bar, ring and step checklist
+   <div class="lilac-progress" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"><span style="--value:72%"></span></div>
+   <div class="lilac-ring" style="--value:72" role="img" aria-label="72% complete">
+     <svg viewBox="0 0 120 120"><circle class="lilac-ring__track" cx="60" cy="60" r="52" pathLength="100"/>
+       <circle class="lilac-ring__bar" cx="60" cy="60" r="52" pathLength="100"/></svg>
+     <div class="lilac-ring__label"><strong>72%</strong><span>Complete</span></div>
+   </div>
+   <ol class="lilac-steps"><li class="is-done">Plan</li><li>Build</li></ol>
+   ========================================================================= */
+.lilac-progress {
+  height: 10px;
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-track);
+  box-shadow: var(--lilac-shadow-inset);
+  overflow: hidden;
+}
+.lilac-progress > span {
+  display: block;
+  height: 100%;
+  width: var(--value, 0%);
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--lilac-color-primary-light), var(--lilac-color-primary));
+  box-shadow: 0 0 12px var(--lilac-color-glow);
+  transition: width var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring);
+}
+
+.lilac-ring { position: relative; width: var(--ring-size, 180px); aspect-ratio: 1; flex: none; }
+.lilac-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+.lilac-ring circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+.lilac-ring__track { stroke: var(--lilac-color-track); }
+.lilac-ring__bar {
+  stroke: var(--lilac-color-primary);
+  stroke-dasharray: var(--value, 0) 100;
+  filter: drop-shadow(0 0 6px var(--lilac-color-glow));
+  transition: stroke-dasharray var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring);
+}
+.lilac-ring__label { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.lilac-ring__label strong { font-family: var(--lilac-font-family-serif); font-variant-numeric: lining-nums; font-size: calc(var(--ring-size, 180px) * 0.22); font-weight: var(--lilac-font-weight-medium); line-height: 1; color: var(--lilac-color-ink); }
+.lilac-ring__label span { margin-top: 6px; font-size: var(--lilac-font-size-small); color: var(--lilac-color-text-muted); }
+
+.lilac-steps { display: flex; flex-direction: column; gap: 18px; margin: 0; padding: 0; list-style: none; }
+.lilac-steps li { display: flex; align-items: center; gap: 14px; font-size: 15px; color: var(--lilac-color-text); }
+.lilac-steps li::before {
+  content: "";
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--lilac-color-track);
+  background: var(--lilac-color-surface) no-repeat center / 13px;
+}
+.lilac-steps li.is-done::before {
+  border-color: transparent;
+  background-color: var(--lilac-color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17 19 7'/%3E%3C/svg%3E");
+  box-shadow: 0 4px 10px -3px var(--lilac-color-glow);
+}
+.lilac-steps li.is-current::before { border-color: var(--lilac-color-primary); box-shadow: 0 0 0 4px var(--lilac-color-glow-soft); }
+
+/* =========================================================================
+   Toast & alert
+   <div class="lilac-toast" role="status">
+     <span class="lilac-toast__icon"><svg class="lilac-icon">check</svg></span>
+     <div><div class="lilac-toast__title">Saved successfully</div><div class="lilac-toast__text">Your changes have been saved.</div></div>
+     <button class="lilac-toast__close" aria-label="Dismiss"><svg class="lilac-icon">x</svg></button>
+   </div>
+   <div class="lilac-alert lilac-alert--warning" role="status"><svg class="lilac-icon">…</svg>Text</div>
+   ========================================================================= */
+.lilac-toast {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: var(--lilac-radius-lg);
+  background: var(--lilac-color-surface);
+  box-shadow: var(--lilac-shadow-raised);
+}
+.lilac-toast__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--lilac-color-primary-wash);
+  color: var(--lilac-color-primary);
+  box-shadow: 0 8px 18px -8px var(--lilac-color-glow);
+}
+.lilac-toast__icon .lilac-icon { width: 24px; height: 24px; stroke-width: 2.2; }
+.lilac-toast__title { font-size: 17px; font-weight: var(--lilac-font-weight-semibold); line-height: 1.3; }
+.lilac-toast__text  { font-size: var(--lilac-font-size-small); color: var(--lilac-color-text-muted); }
+.lilac-toast__close {
+  display: grid;
+  place-items: center;
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--lilac-color-text-muted);
+  cursor: pointer;
+}
+.lilac-toast__close:hover { background: var(--lilac-color-primary-wash); color: var(--lilac-color-on-wash); }
+.lilac-toast__close:focus-visible { box-shadow: var(--lilac-shadow-focus); }
+
+.lilac-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--lilac-radius-md);
+  background: var(--lilac-color-primary-wash);
+  color: var(--lilac-color-on-wash);
+  font-size: 15px;
+  font-weight: var(--lilac-font-weight-medium);
+}
+.lilac-alert--success { background: var(--lilac-color-success); color: var(--lilac-color-success-ink); }
+.lilac-alert--warning { background: var(--lilac-color-warning); color: var(--lilac-color-warning-ink); }
+.lilac-alert--error   { background: var(--lilac-color-error);   color: var(--lilac-color-error-ink); }
+
+/* =========================================================================
+   Card, profile card, avatar
+   <article class="lilac-card">…</article>
+   <article class="lilac-profile">
+     <span class="lilac-avatar lilac-avatar--xl">AR</span>
+     <div><h3 class="lilac-profile__name">Alex Rivera</h3><p class="lilac-profile__role">Product Designer</p>
+       <p class="lilac-profile__bio">Thoughtful tools for a kinder internet.</p></div>
+     <button class="lilac-btn lilac-btn--ghost lilac-btn--icon lilac-btn--sm lilac-profile__menu" aria-label="More">…</button>
+   </article>
+   ========================================================================= */
+.lilac-card {
+  position: relative;
+  padding: 22px;
+  border-radius: var(--lilac-radius-md);
+  background: var(--lilac-color-surface);
+  box-shadow: var(--lilac-shadow-raised);
+}
+.lilac-card--interactive { cursor: pointer; transition: transform var(--lilac-motion-duration), box-shadow var(--lilac-motion-duration); }
+.lilac-card--interactive:hover { transform: translateY(-2px); box-shadow: var(--lilac-shadow-raised-hover); }
+.lilac-card__title { font-size: 17px; font-weight: var(--lilac-font-weight-semibold); }
+.lilac-card__text  { font-size: var(--lilac-font-size-small); color: var(--lilac-color-text-muted); }
+
+.lilac-profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 22px 24px;
+  border-radius: var(--lilac-radius-lg);
+  background: var(--lilac-color-surface);
+  box-shadow: var(--lilac-shadow-raised);
+}
+.lilac-profile__name { font-size: 19px; font-weight: var(--lilac-font-weight-semibold); line-height: 1.25; }
+.lilac-profile__role { font-size: var(--lilac-font-size-small); color: var(--lilac-color-text-muted); }
+.lilac-profile__bio  { margin-top: 10px; font-size: 14px; color: var(--lilac-color-text-muted); line-height: 1.45; }
+.lilac-profile__menu { position: absolute; top: 12px; right: 12px; }
+
+.lilac-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--avatar-size, 44px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--avatar-bg, var(--lilac-color-primary-wash));
+  color: var(--lilac-color-on-wash);
+  font-size: calc(var(--avatar-size, 44px) * 0.36);
+  font-weight: var(--lilac-font-weight-semibold);
+  box-shadow: inset 0 0 0 3px var(--lilac-color-surface), 0 6px 14px -8px rgba(60, 50, 40, 0.35);
+  overflow: hidden;
+}
+.lilac-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.lilac-avatar--xl { --avatar-size: 96px; }
+
+/* =========================================================================
+   Navigation — sidebar list and mobile bottom bar. Active: aria-current="page" / .is-active.
+   A lilac wash glides to the active item (js/lilac.js).
+   <nav class="lilac-nav"><a class="lilac-nav__item" href="#" aria-current="page"><svg class="lilac-icon">…</svg>Home</a></nav>
+   <nav class="lilac-bottom-nav"><a class="lilac-bottom-nav__item" href="#" aria-current="page"><svg class="lilac-icon">…</svg>Home</a></nav>
+   ========================================================================= */
+.lilac-nav { position: relative; isolation: isolate; display: flex; flex-direction: column; gap: 4px; }
+.lilac-nav__item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 46px;
+  padding: 0 16px;
+  border-radius: var(--lilac-radius-pill);
+  color: var(--lilac-color-text-muted);
+  font-size: 15px;
+  font-weight: var(--lilac-font-weight-medium);
+  text-decoration: none;
+  transition: color var(--lilac-motion-duration), background-color var(--lilac-motion-duration);
+}
+.lilac-nav__item:hover { color: var(--lilac-color-text); }
+.lilac-nav__item:focus-visible { box-shadow: var(--lilac-shadow-focus); }
+.lilac-nav__item[aria-current="page"],
+.lilac-nav__item.is-active { color: var(--lilac-color-on-wash); background: var(--lilac-color-primary-wash); }
+.lilac-nav__count { margin-left: auto; min-width: 24px; padding: 2px 8px; border-radius: var(--lilac-radius-pill); background: var(--lilac-color-primary); color: var(--lilac-color-primary-ink); font-size: 11px; font-weight: var(--lilac-font-weight-bold); text-align: center; }
+
+.lilac-bottom-nav {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-radius: var(--lilac-radius-xl);
+  background: var(--lilac-color-surface);
+  box-shadow: var(--lilac-shadow-raised);
+}
+.lilac-bottom-nav__item {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px 8px;
+  border-radius: var(--lilac-radius-lg);
+  color: var(--lilac-color-text-muted);
+  font-size: 12px;
+  font-weight: var(--lilac-font-weight-medium);
+  text-decoration: none;
+  transition: color var(--lilac-motion-duration);
+}
+.lilac-bottom-nav__item .lilac-icon { width: 24px; height: 24px; }
+.lilac-bottom-nav__item:focus-visible { box-shadow: var(--lilac-shadow-focus); }
+.lilac-bottom-nav__item[aria-current="page"],
+.lilac-bottom-nav__item.is-active { color: var(--lilac-color-primary); font-weight: var(--lilac-font-weight-semibold); background: var(--lilac-color-primary-wash); }
+
+.lilac-nav.has-indicator::before,
+.lilac-bottom-nav.has-indicator::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: var(--lilac-indicator-w, 0px);
+  height: var(--lilac-indicator-h, 0px);
+  transform: translate(var(--lilac-indicator-x, 0px), var(--lilac-indicator-y, 0px));
+  opacity: var(--lilac-indicator-o, 1);
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-primary-wash);
+}
+.lilac-bottom-nav.has-indicator::before { border-radius: var(--lilac-radius-lg); }
+.lilac-nav.has-indicator.is-animated::before,
+.lilac-bottom-nav.has-indicator.is-animated::before {
+  transition:
+    transform var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring),
+    width var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring),
+    height var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring);
+}
+.lilac-nav.has-indicator .lilac-nav__item[aria-current="page"],
+.lilac-nav.has-indicator .lilac-nav__item.is-active,
+.lilac-bottom-nav.has-indicator .lilac-bottom-nav__item[aria-current="page"],
+.lilac-bottom-nav.has-indicator .lilac-bottom-nav__item.is-active { background: transparent; }
+
+/* =========================================================================
+   Table, dialog, tooltip
+   ========================================================================= */
+.lilac-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.lilac-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.lilac-table th { padding: 10px 14px; text-align: left; font-size: var(--lilac-font-size-caption); font-weight: var(--lilac-font-weight-semibold); color: var(--lilac-color-text-muted); white-space: nowrap; }
+.lilac-table td { padding: 14px; border-top: 1px solid var(--lilac-color-hairline); white-space: nowrap; }
+.lilac-table tbody tr:hover { background: var(--lilac-color-primary-wash); }
+.lilac-table .is-num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.lilac-dialog {
+  width: min(100% - 32px, 440px);
+  padding: 28px;
+  border: 0;
+  border-radius: var(--lilac-radius-xl);
+  background: var(--lilac-color-tile);
+  color: var(--lilac-color-text);
+  box-shadow: var(--lilac-shadow-float);
+}
+.lilac-dialog::backdrop { background: var(--lilac-color-backdrop); backdrop-filter: blur(4px); }
+.lilac-dialog[open] { animation: lilac-rise var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring); }
+.lilac-dialog__title { font-family: var(--lilac-font-family-serif); font-size: 30px; font-weight: var(--lilac-font-weight-medium); line-height: 1.1; color: var(--lilac-color-ink); }
+.lilac-dialog__body { margin-top: 10px; color: var(--lilac-color-text-muted); }
+.lilac-dialog__actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+@keyframes lilac-rise { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+.lilac-tooltip { position: relative; display: inline-flex; }
+.lilac-tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translate(-50%, 4px);
+  padding: 7px 14px;
+  border-radius: var(--lilac-radius-pill);
+  background: var(--lilac-color-ink);
+  color: var(--lilac-color-tile);
+  font-size: var(--lilac-font-size-caption);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--lilac-motion-duration), transform var(--lilac-motion-duration);
+}
+.lilac-tooltip:hover::after,
+.lilac-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0); }

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var a=localStorage.getItem("lilac-accent");if(a&&a!=="violet")document.documentElement.setAttribute("data-accent",a)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flow Planner</title>
+  <meta name="description" content="Lilac example: a calm focus planner built only from Lilac tokens and components.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/lilac.css">
+  <style>
+    /* Page layout only — visuals come from Lilac classes and tokens. */
+    body { padding: 24px 16px 120px; }
+    .shell { width: min(100%, 1040px); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; align-items: start; }
+    .head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    .head p { margin-top: 6px; }
+    .today { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center; }
+    .today__meta { display: flex; flex-direction: column; gap: 14px; }
+    .blocks { display: flex; flex-direction: column; gap: 14px; margin-top: 22px; }
+    .block { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; padding: 18px 20px; }
+    .block__time { font-family: var(--lilac-font-family-serif); font-variant-numeric: lining-nums; font-size: 22px; font-weight: 500; color: var(--lilac-color-ink); min-width: 64px; }
+    .block__title { font-weight: 600; }
+    .block__meta { display: flex; gap: 8px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+    .block.is-now { box-shadow: var(--lilac-shadow-raised), 0 0 0 2px var(--lilac-color-glow-soft); }
+    .side { display: flex; flex-direction: column; gap: 22px; position: sticky; top: 24px; }
+    .week { display: flex; flex-direction: column; gap: 14px; }
+    .week__row { display: grid; grid-template-columns: 40px 1fr 40px; gap: 12px; align-items: center; font-size: 14px; }
+    .week__row span:last-child { text-align: right; color: var(--lilac-color-text-muted); font-variant-numeric: tabular-nums; }
+    .dock { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); width: min(100% - 32px, 440px); z-index: 10; }
+    .section-title { display: flex; align-items: center; justify-content: space-between; margin-top: 30px; }
+
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 1fr; }
+      .side { position: static; }
+    }
+    @media (max-width: 520px) {
+      .today { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+      .today__meta { align-items: center; }
+      .block { grid-template-columns: 1fr auto; }
+      .block__time { grid-column: 1 / -1; font-size: 19px; }
+      .lilac-segmented__item { padding: 0 12px; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1Z"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7Z"/></symbol>
+</svg>
+
+<div class="shell">
+  <main>
+    <header class="head">
+      <div>
+        <h1 class="lilac-title">Good morning, Mira</h1>
+        <p class="lilac-muted">Thursday, November 22. Four focus blocks planned.</p>
+      </div>
+      <div class="lilac-row" style="--gap:10px">
+        <button class="lilac-btn lilac-btn--icon" type="button" aria-label="Notifications"><svg class="lilac-icon" aria-hidden="true"><use href="#i-bell"/></svg></button>
+        <span class="lilac-avatar" style="--avatar-size:48px">MK</span>
+      </div>
+    </header>
+
+    <section class="lilac-tile today" aria-label="Today's focus">
+      <div class="lilac-ring" style="--value:72;--ring-size:168px" role="img" aria-label="72% of today's focus time done">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="lilac-ring__track" cx="60" cy="60" r="52" pathLength="100"/><circle class="lilac-ring__bar" cx="60" cy="60" r="52" pathLength="100"/></svg>
+        <div class="lilac-ring__label"><strong>72%</strong><span>of 4h focus</span></div>
+      </div>
+      <div class="today__meta">
+        <p class="lilac-eyebrow">Today</p>
+        <p class="lilac-subtitle">2h 53m done. One block to go before lunch.</p>
+        <div class="lilac-row">
+          <button class="lilac-btn lilac-btn--primary" type="button"><svg class="lilac-icon" aria-hidden="true"><use href="#i-play"/></svg>Start next block</button>
+          <button class="lilac-btn" type="button" data-lilac-open="#add">Add block</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <h2 class="lilac-subtitle">Schedule</h2>
+      <div class="lilac-segmented" role="tablist" aria-label="Range">
+        <button class="lilac-segmented__item" role="tab" aria-selected="true" style="height:38px">Today</button>
+        <button class="lilac-segmented__item" role="tab" aria-selected="false" tabindex="-1" style="height:38px">Week</button>
+        <button class="lilac-segmented__item" role="tab" aria-selected="false" tabindex="-1" style="height:38px">Month</button>
+      </div>
+    </div>
+
+    <div class="blocks">
+      <article class="lilac-card block">
+        <span class="block__time">08:30</span>
+        <div><div class="block__title">Moodboard review</div><div class="block__meta"><span class="lilac-badge lilac-badge--success">Done</span><span class="lilac-caption">45 min</span></div></div>
+        <input type="checkbox" class="lilac-checkbox" checked aria-label="Moodboard review done">
+      </article>
+      <article class="lilac-card block">
+        <span class="block__time">09:30</span>
+        <div><div class="block__title">Type exploration</div><div class="block__meta"><span class="lilac-badge lilac-badge--success">Done</span><span class="lilac-caption">90 min</span></div></div>
+        <input type="checkbox" class="lilac-checkbox" checked aria-label="Type exploration done">
+      </article>
+      <article class="lilac-card block is-now">
+        <span class="block__time">11:15</span>
+        <div><div class="block__title">Landing page layout</div><div class="block__meta"><span class="lilac-badge">In focus</span><span class="lilac-caption">60 min, 22 min left</span></div></div>
+        <input type="checkbox" class="lilac-checkbox" aria-label="Landing page layout done">
+      </article>
+      <article class="lilac-card block">
+        <span class="block__time">14:00</span>
+        <div><div class="block__title">Client call with Northwind</div><div class="block__meta"><span class="lilac-badge lilac-badge--warning">Waiting on agenda</span><span class="lilac-caption">30 min</span></div></div>
+        <input type="checkbox" class="lilac-checkbox" aria-label="Client call done">
+      </article>
+    </div>
+  </main>
+
+  <aside class="side" aria-label="Week and settings">
+    <div class="lilac-toast" role="status">
+      <span class="lilac-toast__icon"><svg class="lilac-icon" aria-hidden="true"><use href="#i-check"/></svg></span>
+      <div><div class="lilac-toast__title">Two blocks done</div><div class="lilac-toast__text">You are ahead of last Thursday.</div></div>
+      <button class="lilac-toast__close" type="button" aria-label="Dismiss"><svg class="lilac-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+
+    <section class="lilac-tile" aria-labelledby="wk">
+      <h2 class="lilac-eyebrow" id="wk" style="margin-bottom:22px">This week</h2>
+      <div class="week">
+        <div class="week__row"><span>Mon</span><div class="lilac-progress"><span style="--value:100%"></span></div><span>4h</span></div>
+        <div class="week__row"><span>Tue</span><div class="lilac-progress"><span style="--value:80%"></span></div><span>3h</span></div>
+        <div class="week__row"><span>Wed</span><div class="lilac-progress"><span style="--value:55%"></span></div><span>2h</span></div>
+        <div class="week__row"><span>Thu</span><div class="lilac-progress"><span style="--value:72%"></span></div><span>3h</span></div>
+        <div class="week__row"><span>Fri</span><div class="lilac-progress"><span style="--value:0%"></span></div><span>0h</span></div>
+      </div>
+    </section>
+
+    <section class="lilac-tile" aria-labelledby="pref">
+      <h2 class="lilac-eyebrow" id="pref" style="margin-bottom:22px">Focus settings</h2>
+      <div class="lilac-stack" style="--gap:20px">
+        <label class="lilac-check"><input type="checkbox" class="lilac-toggle" checked><span><span class="lilac-check__title">Silence notifications</span><span class="lilac-check__hint">While a block is running</span></span></label>
+        <label class="lilac-check"><input type="checkbox" class="lilac-toggle"><span><span class="lilac-check__title">Soft chime</span><span class="lilac-check__hint">When a block ends</span></span></label>
+        <div class="lilac-stack" style="--gap:8px">
+          <label class="lilac-small" for="len">Default block length</label>
+          <div class="lilac-slider-row"><input class="lilac-slider" id="len" type="range" min="15" max="120" step="15" value="60" aria-label="Default block length"><output for="len" data-suffix=" min">60 min</output></div>
+        </div>
+      </div>
+    </section>
+  </aside>
+</div>
+
+<nav class="lilac-bottom-nav dock" aria-label="Main">
+  <a class="lilac-bottom-nav__item" href="#" aria-current="page"><svg class="lilac-icon" aria-hidden="true"><use href="#i-home"/></svg>Today</a>
+  <a class="lilac-bottom-nav__item" href="#"><svg class="lilac-icon" aria-hidden="true"><use href="#i-calendar"/></svg>Plan</a>
+  <a class="lilac-bottom-nav__item" href="#"><svg class="lilac-icon" aria-hidden="true"><use href="#i-chart"/></svg>Insights</a>
+  <a class="lilac-bottom-nav__item" href="#"><svg class="lilac-icon" aria-hidden="true"><use href="#i-user"/></svg>Profile</a>
+</nav>
+
+<dialog class="lilac-dialog" id="add" aria-labelledby="add-title">
+  <form method="dialog" class="lilac-stack" style="--gap:18px">
+    <h2 class="lilac-dialog__title" id="add-title">Add a focus block</h2>
+    <div class="lilac-form-row"><label class="lilac-label" for="b-name">What will you work on?</label><input class="lilac-input" id="b-name" placeholder="Landing page copy"></div>
+    <div class="lilac-form-row"><label class="lilac-label" for="b-time">Start</label><select class="lilac-input" id="b-time"><option>15:00</option><option>15:30</option><option>16:00</option></select></div>
+    <div class="lilac-dialog__actions">
+      <button class="lilac-btn" value="cancel">Cancel</button>
+      <button class="lilac-btn lilac-btn--primary" value="add">Add block</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="../js/lilac.js"></script>
+</body>
+</html>

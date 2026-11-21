@@ -1,0 +1,109 @@
+/* lilac tokens — GENERATED from lilac/tokens/tokens.json. Do not edit by hand.
+   Regenerate with: node scripts/build-tokens.mjs lilac */
+:root {
+  --lilac-color-canvas: #F3F0EA; /* Page behind the tiles */
+  --lilac-color-tile: #FAF8F4; /* Component-study tiles and cards */
+  --lilac-color-surface: #FDFCFA; /* Raised ivory: secondary buttons, search pill, knobs */
+  --lilac-color-surface-sunken: #EEEAE3; /* Tracks and wells */
+  --lilac-color-track: #E2DED7; /* Off toggle, empty slider and ring track */
+  --lilac-color-primary: #5B2DFF; /* Violet — the single accent */
+  --lilac-color-primary-hover: #4C1EF2; /* Pressed / hover violet */
+  --lilac-color-primary-light: #7C55FF; /* Top of primary gradients */
+  --lilac-color-primary-soft: #C8B4FF; /* Lilac — secondary accent, slider knob, icon discs */
+  --lilac-color-primary-wash: #EFE9FF; /* Selected tab, icon backgrounds */
+  --lilac-color-primary-ink: #FFFFFF; /* Text on violet */
+  --lilac-color-on-wash: #4320D6; /* Text on lilac wash */
+  --lilac-color-glow: rgba(91, 45, 255, 0.45); /* Accent glow */
+  --lilac-color-glow-soft: rgba(91, 45, 255, 0.18); /* Focus halo */
+  --lilac-color-ink: #1F1F28; /* Ink swatch, headlines */
+  --lilac-color-text: #24232D; /* Body text */
+  --lilac-color-text-muted: #6E6C78; /* Secondary text (≥ 4.5:1 on tile) */
+  --lilac-color-text-subtle: #A5A2AC; /* Placeholder, eyebrow numbers */
+  --lilac-color-hairline: rgba(36, 35, 45, 0.08); /* Dividers inside tiles */
+  --lilac-color-control-edge: rgba(36, 35, 45, 0.18); /* Outline of unchecked checkboxes and radios */
+  --lilac-color-edge: rgba(255, 255, 255, 0.9); /* Bright top edge on raised ivory */
+  --lilac-color-disabled: #ECE9E3;
+  --lilac-color-disabled-ink: #B3B0B8;
+  --lilac-color-success: #E3F4EC;
+  --lilac-color-success-ink: #1D6A4E;
+  --lilac-color-warning: #FBF0D9;
+  --lilac-color-warning-ink: #7A5A13;
+  --lilac-color-error: #FCE6E5;
+  --lilac-color-error-ink: #9E2D2B;
+  --lilac-color-backdrop: rgba(40, 34, 60, 0.28);
+
+  --lilac-font-family-serif: "Cormorant Garamond", "Cormorant", Garamond, "Times New Roman", serif; /* Display, numerals, headlines */
+  --lilac-font-family-sans: "Manrope", "Avenir Next", "Segoe UI", system-ui, sans-serif; /* Interface text */
+
+  --lilac-font-size-display: 72px;
+  --lilac-font-size-heading: 48px;
+  --lilac-font-size-title: 34px;
+  --lilac-font-size-subtitle: 22px;
+  --lilac-font-size-body: 15px;
+  --lilac-font-size-small: 13px;
+  --lilac-font-size-caption: 12px;
+  --lilac-font-size-eyebrow: 11px;
+
+  --lilac-font-weight-light: 300;
+  --lilac-font-weight-regular: 400;
+  --lilac-font-weight-medium: 500;
+  --lilac-font-weight-semibold: 600;
+  --lilac-font-weight-bold: 700;
+
+  --lilac-font-tracking-eyebrow: 0.28em; /* Spaced small-caps labels */
+  --lilac-font-tracking-display: 0.04em; /* Serif caps titles */
+  --lilac-font-tracking-tight: -0.01em;
+
+  --lilac-space-1: 4px;
+  --lilac-space-2: 8px;
+  --lilac-space-3: 12px;
+  --lilac-space-4: 16px;
+  --lilac-space-5: 20px;
+  --lilac-space-6: 24px;
+  --lilac-space-8: 32px;
+  --lilac-space-10: 40px;
+  --lilac-space-12: 48px;
+  --lilac-space-16: 64px;
+
+  --lilac-radius-sm: 9px; /* Checkboxes */
+  --lilac-radius-md: 16px; /* Inner cards, list items */
+  --lilac-radius-lg: 24px; /* Tiles */
+  --lilac-radius-xl: 32px; /* Dialogs, hero panels */
+  --lilac-radius-pill: 999px; /* Buttons, fields, toggles, tabs */
+
+  --lilac-size-control-sm: 36px;
+  --lilac-size-control: 48px;
+  --lilac-size-control-lg: 60px;
+
+  --lilac-shadow-tile: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(60, 50, 40, 0.04), 0 14px 34px -14px rgba(60, 50, 40, 0.16); /* Study tiles */
+  --lilac-shadow-raised: inset 0 1px 0 rgba(255, 255, 255, 1), 0 1px 2px rgba(60, 50, 40, 0.06), 0 8px 18px -8px rgba(60, 50, 40, 0.22); /* Ivory pieces that sit on a tile */
+  --lilac-shadow-raised-hover: inset 0 1px 0 rgba(255, 255, 255, 1), 0 2px 4px rgba(60, 50, 40, 0.06), 0 14px 26px -10px rgba(60, 50, 40, 0.26);
+  --lilac-shadow-pressed: inset 0 2px 5px rgba(60, 50, 40, 0.14), inset 0 -1px 0 rgba(255, 255, 255, 0.8);
+  --lilac-shadow-inset: inset 0 1px 3px rgba(60, 50, 40, 0.12), inset 0 -1px 0 rgba(255, 255, 255, 0.7); /* Tracks and wells */
+  --lilac-shadow-accent: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 2px 6px rgba(91, 45, 255, 0.25), 0 12px 26px -8px rgba(91, 45, 255, 0.55); /* Violet pieces glow onto the ivory */
+  --lilac-shadow-accent-hover: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 3px 8px rgba(91, 45, 255, 0.3), 0 18px 34px -10px rgba(91, 45, 255, 0.6);
+  --lilac-shadow-knob: 0 1px 1px rgba(30, 20, 60, 0.1), 0 3px 8px rgba(30, 20, 60, 0.2); /* Toggle and slider knobs */
+  --lilac-shadow-focus: 0 0 0 3px rgba(91, 45, 255, 0.22); /* Focus halo (append) */
+  --lilac-shadow-float: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 10px rgba(60, 50, 40, 0.06), 0 30px 60px -20px rgba(60, 50, 40, 0.3); /* Dialogs, toasts */
+
+  --lilac-motion-duration: 200ms;
+  --lilac-motion-duration-slide: 380ms;
+  --lilac-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --lilac-motion-easing-spring: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Variant — GENERATED from lilac/tokens/tokens.accent-cobalt.json. Opt in with <html data-accent="cobalt">. */
+:root[data-accent="cobalt"] {
+  --lilac-color-primary: #1556E8;
+  --lilac-color-primary-hover: #0F47CC;
+  --lilac-color-primary-light: #3A76FF;
+  --lilac-color-primary-soft: #A9C3FF;
+  --lilac-color-primary-wash: #E7EEFF;
+  --lilac-color-on-wash: #1243B8;
+  --lilac-color-glow: rgba(21, 86, 232, 0.42);
+  --lilac-color-glow-soft: rgba(21, 86, 232, 0.18);
+
+  --lilac-shadow-accent: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 2px 6px rgba(21, 86, 232, 0.25), 0 12px 26px -8px rgba(21, 86, 232, 0.5);
+  --lilac-shadow-accent-hover: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 3px 8px rgba(21, 86, 232, 0.3), 0 18px 34px -10px rgba(21, 86, 232, 0.55);
+  --lilac-shadow-focus: 0 0 0 3px rgba(21, 86, 232, 0.22);
+}

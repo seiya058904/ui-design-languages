@@ -1,9 +1,9 @@
 # Tokens
 
-Source of truth: [`tokens/tokens.json`](../tokens/tokens.json) (W3C Design Tokens format). `tokens/tokens.css` is generated from it:
+Source of truth: [`clay/tokens/tokens.json`](../tokens/tokens.json) (W3C Design Tokens format). `tokens/tokens.css` is generated from it:
 
 ```bash
-node scripts/build-tokens.mjs          # regenerate tokens.css
+node scripts/build-tokens.mjs clay     # regenerate clay/tokens/tokens.css (from the repo root)
 node scripts/build-tokens.mjs --check  # fail if tokens.css is stale
 ```
 

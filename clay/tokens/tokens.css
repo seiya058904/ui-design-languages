@@ -1,5 +1,5 @@
-/* Clay UI tokens — GENERATED from tokens/tokens.json. Do not edit by hand.
-   Regenerate with: node scripts/build-tokens.mjs */
+/* clay tokens — GENERATED from clay/tokens/tokens.json. Do not edit by hand.
+   Regenerate with: node scripts/build-tokens.mjs clay */
 :root {
   --clay-color-canvas: #E6E3DE; /* Page background behind boards */
   --clay-color-board: #F1EFEB; /* Matte paper board that carries content and the grid */

@@ -2,7 +2,7 @@
 
 A soft, extruded clay design language for websites and apps — matte paper boards, mint clay accents, carved inputs and a glowing focus ring. Plain CSS, design tokens and copy-paste HTML. No build step, no dependencies.
 
-**Live styleguide:** https://seiya058904.github.io/clay-ui/ · [App example](https://seiya058904.github.io/clay-ui/examples/dashboard.html) · [Website example](https://seiya058904.github.io/clay-ui/examples/landing.html)
+**Live styleguide:** https://seiya058904.github.io/ui-design-languages/clay/ · [App example](https://seiya058904.github.io/ui-design-languages/clay/examples/dashboard.html) · [Website example](https://seiya058904.github.io/ui-design-languages/clay/examples/landing.html)
 
 ![Clay UI styleguide](assets/screenshots/styleguide.png)
 
@@ -11,7 +11,7 @@ A soft, extruded clay design language for websites and apps — matte paper boar
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/seiya058904/clay-ui@main/css/clay.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/clay/css/clay.css">
 
 <main class="clay-board" style="padding:48px">
   <label class="clay-field">
@@ -21,7 +21,7 @@ A soft, extruded clay design language for websites and apps — matte paper boar
 </main>
 
 <!-- optional: tabs, toggle chips, dialogs -->
-<script src="https://cdn.jsdelivr.net/gh/seiya058904/clay-ui@main/js/clay.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/clay/js/clay.js"></script>
 ```
 
 Or clone the repo and link `css/clay.css` locally. Open `index.html` in a browser to see every component.
@@ -61,8 +61,8 @@ Point your assistant at [AGENTS.md](AGENTS.md), or paste a prompt from [docs/ai-
 
 ```bash
 # edit tokens/tokens.json, then
-node scripts/build-tokens.mjs          # regenerate tokens/tokens.css
-node scripts/build-tokens.mjs --check  # verify they are in sync
+node scripts/build-tokens.mjs clay     # regenerate clay/tokens/tokens.css (run from the repo root)
+node scripts/build-tokens.mjs --check  # verify every language is in sync
 ```
 
 ## Examples

@@ -1,0 +1,530 @@
+/* Tactile — components
+   Rule of the material: things you press are raised, things you fill are inset, things you
+   have pressed are sunk and darker. Teal is the only color; everything else is sand.
+   Shared anatomy: btn · input/field · checkbox/radio/toggle · slider · segmented · breadcrumb ·
+   pagination · steps · nav · card · list · badge · avatar · tooltip · table · dialog · toast ·
+   alert · progress · spinner · skeleton · empty · note */
+
+/* =========================================================================
+   Button
+   <button class="tactile-btn tactile-btn--primary">Submit now</button>
+   Variants: --primary (teal) · default (sand, raised) · --ghost   Sizes: --sm · --lg · --icon · --block
+   Busy: aria-busy="true" (+ <span class="tactile-spinner"></span>) sinks the button   Disabled: :disabled
+   ========================================================================= */
+.tactile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: var(--tactile-size-control);
+  padding: 0 22px;
+  border: 0;
+  border-radius: var(--tactile-radius-md);
+  background: var(--tactile-color-surface);
+  color: var(--tactile-color-ink);
+  font-size: var(--tactile-font-size-body);
+  font-weight: var(--tactile-font-weight-bold);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: var(--tactile-shadow-level-3);
+  transition: box-shadow var(--tactile-motion-duration) var(--tactile-motion-easing), background-color var(--tactile-motion-duration), transform var(--tactile-motion-duration);
+}
+.tactile-btn:hover { box-shadow: var(--tactile-shadow-level-2); }
+.tactile-btn:active,
+.tactile-btn.is-active,
+.tactile-btn[aria-busy="true"] { box-shadow: var(--tactile-shadow-pressed); background: var(--tactile-color-surface-pressed); }
+.tactile-btn:focus-visible { box-shadow: var(--tactile-shadow-level-3), var(--tactile-shadow-focus); }
+
+.tactile-btn--primary {
+  background: linear-gradient(180deg, var(--tactile-color-primary-light), var(--tactile-color-primary));
+  color: var(--tactile-color-primary-ink);
+  box-shadow: var(--tactile-shadow-accent);
+}
+.tactile-btn--primary:hover { box-shadow: -2px -2px 6px var(--tactile-color-light), 3px 4px 10px var(--tactile-color-glow); }
+.tactile-btn--primary:active,
+.tactile-btn--primary.is-active,
+.tactile-btn--primary[aria-busy="true"] {
+  background: var(--tactile-color-primary-strong);
+  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.35), inset -2px -2px 6px rgba(255, 255, 255, 0.08), 0 0 0 4px var(--tactile-color-surface), -4px -4px 10px var(--tactile-color-light);
+}
+.tactile-btn--primary:focus-visible { box-shadow: var(--tactile-shadow-accent), var(--tactile-shadow-focus); }
+.tactile-btn--ghost { background: transparent; box-shadow: none; }
+.tactile-btn--ghost:hover { box-shadow: var(--tactile-shadow-level-1); }
+
+.tactile-btn--sm   { height: var(--tactile-size-control-sm); padding: 0 14px; font-size: var(--tactile-font-size-small); border-radius: var(--tactile-radius-sm); }
+.tactile-btn--lg   { height: var(--tactile-size-control-lg); padding: 0 28px; font-size: 15px; }
+.tactile-btn--icon { width: var(--tactile-size-control); padding: 0; }
+.tactile-btn--icon.tactile-btn--sm { width: var(--tactile-size-control-sm); }
+.tactile-btn--block { display: flex; width: 100%; }
+.tactile-btn--round { border-radius: 50%; }
+
+/* Disabled pieces lose their shadow and contrast */
+.tactile-btn:disabled,
+.tactile-btn.is-disabled {
+  background: var(--tactile-color-disabled);
+  color: var(--tactile-color-disabled-ink);
+  box-shadow: none;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* =========================================================================
+   Inputs
+   Inset field: <input class="tactile-input" placeholder="Email address">
+   Grooved field (front-faced): <label class="tactile-field"><input placeholder="Search"><button class="tactile-btn tactile-btn--sm">Go</button></label>
+   States: :focus/.is-focus (teal ring) · aria-invalid="true" (red ring) · :disabled
+   ========================================================================= */
+.tactile-input {
+  display: block;
+  width: 100%;
+  height: var(--tactile-size-control);
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--tactile-radius-sm);
+  background: var(--tactile-color-well);
+  box-shadow: var(--tactile-shadow-inset);
+  font-size: var(--tactile-font-size-body);
+  outline: none;
+  appearance: none;
+  transition: box-shadow var(--tactile-motion-duration);
+}
+.tactile-input::placeholder { color: var(--tactile-color-text-subtle); }
+textarea.tactile-input { height: auto; min-height: 96px; padding: 12px 14px; line-height: 1.5; resize: vertical; }
+select.tactile-input {
+  padding-right: 38px;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--tactile-color-text-muted) 50%), linear-gradient(135deg, var(--tactile-color-text-muted) 50%, transparent 50%);
+  background-position: right 19px center, right 14px center;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+.tactile-input:focus,
+.tactile-input.is-focus { box-shadow: var(--tactile-shadow-inset-sm), var(--tactile-shadow-focus); }
+.tactile-input[aria-invalid="true"] { box-shadow: var(--tactile-shadow-inset-sm), 0 0 0 1.5px var(--tactile-color-danger); }
+.tactile-input:disabled { background: var(--tactile-color-disabled); color: var(--tactile-color-disabled-ink); box-shadow: none; cursor: not-allowed; }
+
+.tactile-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: var(--tactile-radius-pill);
+  background: var(--tactile-color-surface);
+  box-shadow: var(--tactile-shadow-level-3);
+}
+.tactile-field input:not([type="checkbox"]):not([type="radio"]) {
+  flex: 1;
+  min-width: 0;
+  height: calc(var(--tactile-size-control) - 4px);
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--tactile-radius-pill);
+  background: var(--tactile-color-well);
+  box-shadow: var(--tactile-shadow-inset);
+  outline: none;
+  font-size: var(--tactile-font-size-body);
+}
+.tactile-field input:not([type="checkbox"])::placeholder { color: var(--tactile-color-text-subtle); }
+.tactile-field:focus-within { box-shadow: var(--tactile-shadow-level-3), var(--tactile-shadow-focus); }
+.tactile-field .tactile-btn { border-radius: var(--tactile-radius-pill); }
+
+.tactile-form-row { display: flex; flex-direction: column; gap: 6px; }
+.tactile-field-label { font-size: var(--tactile-font-size-small); font-weight: var(--tactile-font-weight-semibold); color: var(--tactile-color-ink); }
+.tactile-hint { font-size: var(--tactile-font-size-caption); color: var(--tactile-color-text-muted); }
+.tactile-hint--error { color: var(--tactile-color-danger); }
+
+/* =========================================================================
+   Checkbox, radio, toggle
+   <label class="tactile-check"><input type="checkbox" class="tactile-checkbox" checked> Option 1</label>
+   <label class="tactile-check"><input type="checkbox" class="tactile-toggle tactile-toggle--label" checked> Wi-Fi</label>
+   ========================================================================= */
+.tactile-check { display: inline-flex; align-items: center; gap: 10px; font-size: var(--tactile-font-size-body); cursor: pointer; user-select: none; }
+.tactile-check--between { display: flex; justify-content: space-between; }
+.tactile-checkbox,
+.tactile-radio,
+.tactile-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  margin: 0;
+  cursor: pointer;
+  background-color: var(--tactile-color-well);
+  background-repeat: no-repeat;
+  background-position: center;
+  box-shadow: var(--tactile-shadow-inset);
+  transition: background-color var(--tactile-motion-duration), box-shadow var(--tactile-motion-duration);
+}
+.tactile-checkbox { width: 22px; height: 22px; border-radius: 6px; background-size: 14px; }
+.tactile-radio { width: 22px; height: 22px; border-radius: 50%; }
+.tactile-checkbox:checked {
+  background-color: var(--tactile-color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17 19 7'/%3E%3C/svg%3E");
+  box-shadow: -2px -2px 5px var(--tactile-color-light), 2px 3px 6px var(--tactile-color-glow);
+}
+.tactile-radio:checked {
+  background-image: radial-gradient(circle, var(--tactile-color-primary) 0 5px, transparent 5.5px);
+  box-shadow: var(--tactile-shadow-level-2), inset 0 0 0 2px var(--tactile-color-primary);
+  background-color: var(--tactile-color-surface);
+}
+.tactile-toggle { position: relative; width: 52px; height: 28px; border-radius: var(--tactile-radius-pill); box-shadow: var(--tactile-shadow-inset); }
+.tactile-toggle::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--tactile-radius-pill);
+  background: var(--tactile-color-surface);
+  box-shadow: -1px -1px 2px var(--tactile-color-light), 2px 2px 5px var(--tactile-color-dark);
+  transition: transform var(--tactile-motion-duration-slide) var(--tactile-motion-easing-spring), width var(--tactile-motion-duration) var(--tactile-motion-easing-spring);
+  z-index: 1;
+}
+.tactile-toggle:active::before { width: 28px; }
+.tactile-toggle:checked { background-color: var(--tactile-color-primary); box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3), -2px -2px 5px var(--tactile-color-light), 2px 3px 8px var(--tactile-color-glow); }
+.tactile-toggle:checked::before { transform: translateX(24px); }
+.tactile-toggle:checked:active::before { transform: translateX(18px); }
+/* Labeled toggle: "ON" sits in the teal track, "OFF" in the empty one */
+.tactile-toggle--label { width: 66px; }
+.tactile-toggle--label::after { content: "OFF"; position: absolute; right: 9px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: var(--tactile-font-weight-black); letter-spacing: 0.04em; color: var(--tactile-color-text-subtle); }
+.tactile-toggle--label:checked::before { transform: translateX(38px); }
+.tactile-toggle--label:checked:active::before { transform: translateX(32px); }
+.tactile-toggle--label:checked::after { content: "ON"; right: auto; left: 10px; color: var(--tactile-color-primary-ink); }
+.tactile-checkbox:focus-visible,
+.tactile-radio:focus-visible,
+.tactile-toggle:focus-visible { box-shadow: var(--tactile-shadow-inset-sm), var(--tactile-shadow-focus); }
+.tactile-checkbox:disabled,
+.tactile-radio:disabled,
+.tactile-toggle:disabled { opacity: 0.45; box-shadow: none; cursor: not-allowed; }
+
+/* =========================================================================
+   Slider with value bubble and ticks
+   <div class="tactile-range" style="--fill:75%">
+     <output class="tactile-range__bubble" for="vol">75%</output>
+     <input class="tactile-slider" id="vol" type="range" value="75">
+     <div class="tactile-range__ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+   </div>
+   js/tactile.js keeps --fill (percent), --fill-n (0–1) and the bubble text in sync.
+   ========================================================================= */
+.tactile-range { --fill: 50%; --fill-n: 0.5; position: relative; padding-top: 34px; }
+.tactile-range__bubble {
+  position: absolute;
+  top: 0;
+  left: calc(11px + (100% - 22px) * var(--fill-n, 0.5));
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--tactile-color-tip);
+  color: var(--tactile-color-tip-ink);
+  font-size: var(--tactile-font-size-caption);
+  font-weight: var(--tactile-font-weight-bold);
+  white-space: nowrap;
+}
+.tactile-range__bubble::after { content: ""; position: absolute; left: 50%; bottom: -4px; width: 8px; height: 8px; background: inherit; transform: translateX(-50%) rotate(45deg); }
+.tactile-slider { --fill: inherit; width: 100%; height: 22px; margin: 0; background: transparent; appearance: none; -webkit-appearance: none; cursor: pointer; }
+.tactile-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: var(--tactile-radius-pill);
+  background: linear-gradient(var(--tactile-color-primary), var(--tactile-color-primary)) 0 0 / var(--fill) 100% no-repeat, var(--tactile-color-well);
+  box-shadow: var(--tactile-shadow-inset-sm);
+}
+.tactile-slider::-moz-range-track { height: 8px; border-radius: var(--tactile-radius-pill); background: var(--tactile-color-well); box-shadow: var(--tactile-shadow-inset-sm); }
+.tactile-slider::-moz-range-progress { height: 8px; border-radius: var(--tactile-radius-pill); background: var(--tactile-color-primary); }
+.tactile-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: var(--tactile-color-surface);
+  box-shadow: -2px -2px 5px var(--tactile-color-light), 2px 2px 6px var(--tactile-color-dark);
+}
+.tactile-slider::-moz-range-thumb { width: 22px; height: 22px; border: 0; border-radius: 50%; background: var(--tactile-color-surface); box-shadow: -2px -2px 5px var(--tactile-color-light), 2px 2px 6px var(--tactile-color-dark); }
+.tactile-slider:focus-visible::-webkit-slider-thumb { box-shadow: -2px -2px 5px var(--tactile-color-light), 2px 2px 6px var(--tactile-color-dark), var(--tactile-shadow-focus); }
+.tactile-range__ticks { display: flex; justify-content: space-between; margin-top: 8px; font-size: var(--tactile-font-size-caption); color: var(--tactile-color-text-muted); }
+
+/* =========================================================================
+   Segmented tabs — inset track; the active tab is a raised tile with a teal bar that glides (js)
+   <div class="tactile-segmented" role="tablist"><button class="tactile-segmented__item" role="tab" aria-selected="true">Overview</button> …</div>
+   ========================================================================= */
+.tactile-segmented {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  gap: 4px;
+  padding: 5px;
+  border-radius: var(--tactile-radius-md);
+  background: var(--tactile-color-well);
+  box-shadow: var(--tactile-shadow-inset);
+  max-width: 100%;
+}
+.tactile-segmented--block { display: flex; width: 100%; }
+.tactile-segmented__item {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  height: calc(var(--tactile-size-control) - 6px);
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--tactile-radius-sm);
+  background: transparent;
+  color: var(--tactile-color-text-muted);
+  font-size: var(--tactile-font-size-small);
+  font-weight: var(--tactile-font-weight-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--tactile-motion-duration);
+}
+.tactile-segmented__item:hover { color: var(--tactile-color-ink); }
+.tactile-segmented__item:focus-visible { box-shadow: var(--tactile-shadow-focus); }
+.tactile-segmented__item[aria-selected="true"],
+.tactile-segmented__item.is-active { color: var(--tactile-color-ink); background: var(--tactile-color-surface); box-shadow: var(--tactile-shadow-level-2), inset 0 -3px 0 var(--tactile-color-primary); }
+.tactile-segmented.has-indicator .tactile-segmented__item[aria-selected="true"],
+.tactile-segmented.has-indicator .tactile-segmented__item.is-active { background: transparent; box-shadow: none; }
+.tactile-segmented.has-indicator::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: var(--tactile-indicator-w, 0px);
+  height: var(--tactile-indicator-h, 0px);
+  transform: translate(var(--tactile-indicator-x, 0px), var(--tactile-indicator-y, 0px));
+  opacity: var(--tactile-indicator-o, 1);
+  border-radius: var(--tactile-radius-sm);
+  background: var(--tactile-color-surface);
+  box-shadow: var(--tactile-shadow-level-2), inset 0 -3px 0 var(--tactile-color-primary);
+}
+.tactile-segmented.has-indicator.is-animated::before {
+  transition: transform var(--tactile-motion-duration-slide) var(--tactile-motion-easing-spring), width var(--tactile-motion-duration-slide) var(--tactile-motion-easing-spring);
+}
+
+/* =========================================================================
+   Breadcrumb, pagination, steps
+   <nav class="tactile-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Home</a></li><li aria-current="page">Edit</li></ol></nav>
+   <nav class="tactile-pagination" aria-label="Pages"><a href="#">Prev</a><a href="#" aria-current="page">2</a>…</nav>
+   <ol class="tactile-steps"><li class="is-done">Account</li><li aria-current="step">Details</li><li>Review</li></ol>
+   ========================================================================= */
+.tactile-breadcrumb ol {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  list-style: none;
+  border-radius: var(--tactile-radius-md);
+  background: var(--tactile-color-well);
+  box-shadow: var(--tactile-shadow-inset-sm);
+  font-size: var(--tactile-font-size-small);
+}
+.tactile-breadcrumb li + li::before { content: "/"; margin-right: 8px; color: var(--tactile-color-text-subtle); }
+.tactile-breadcrumb a { text-decoration: none; color: var(--tactile-color-text); }
+.tactile-breadcrumb a:hover { color: var(--tactile-color-primary); }
+.tactile-breadcrumb a:focus-visible { box-shadow: var(--tactile-shadow-focus); border-radius: 4px; }
+.tactile-breadcrumb [aria-current="page"] { font-weight: var(--tactile-font-weight-bold); color: var(--tactile-color-ink); }
+
+.tactile-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.tactile-pagination > a {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: var(--tactile-radius-sm);
+  color: var(--tactile-color-text);
+  font-size: var(--tactile-font-size-small);
+  font-weight: var(--tactile-font-weight-semibold);
+  text-decoration: none;
+  transition: box-shadow var(--tactile-motion-duration);
+}
+.tactile-pagination > a:hover { box-shadow: var(--tactile-shadow-level-2); }
+.tactile-pagination > a:focus-visible { box-shadow: var(--tactile-shadow-focus); }
+.tactile-pagination > a[aria-current="page"] { background: var(--tactile-color-primary); color: var(--tactile-color-primary-ink); box-shadow: var(--tactile-shadow-accent); }
+.tactile-pagination > .is-edge { color: var(--tactile-color-text-muted); letter-spacing: 0.06em; text-transform: uppercase; font-size: var(--tactile-font-size-caption); }
+
+.tactile-steps { position: relative; display: flex; justify-content: space-between; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.tactile-steps::before { content: ""; position: absolute; left: 18px; right: 18px; top: 17px; height: 4px; border-radius: 4px; background: var(--tactile-color-well); box-shadow: var(--tactile-shadow-inset-sm); }
+.tactile-steps li { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; font-size: var(--tactile-font-size-caption); color: var(--tactile-color-text-muted); counter-increment: step; text-align: center; }
+.tactile-steps li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--tactile-color-surface);
+  box-shadow: var(--tactile-shadow-level-2), inset 0 0 0 2px var(--tactile-color-line);
+  font-size: var(--tactile-font-size-body);
+  font-weight: var(--tactile-font-weight-bold);
+  color: var(--tactile-color-text);
+}
+.tactile-steps li.is-done::before { box-shadow: var(--tactile-shadow-level-2), inset 0 0 0 2px var(--tactile-color-primary); color: var(--tactile-color-primary); }
+.tactile-steps li[aria-current="step"] { color: var(--tactile-color-ink); font-weight: var(--tactile-font-weight-bold); }
+.tactile-steps li[aria-current="step"]::before { background: var(--tactile-color-primary); color: var(--tactile-color-primary-ink); box-shadow: var(--tactile-shadow-accent); }
+.tactile-steps li:first-child { align-items: flex-start; text-align: left; }
+.tactile-steps li:last-child { align-items: flex-end; text-align: right; }
+
+/* =========================================================================
+   Sidebar nav — <nav class="tactile-nav"><a class="tactile-nav__item" href="#" aria-current="page"><svg class="tactile-icon">…</svg>Living room</a></nav>
+   The active item is pressed in; the pressed well glides (js).
+   ========================================================================= */
+.tactile-nav { position: relative; isolation: isolate; display: flex; flex-direction: column; gap: 6px; }
+.tactile-nav__item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: var(--tactile-radius-md);
+  color: var(--tactile-color-text-muted);
+  font-weight: var(--tactile-font-weight-semibold);
+  text-decoration: none;
+  transition: color var(--tactile-motion-duration);
+}
+.tactile-nav__item:hover { color: var(--tactile-color-ink); }
+.tactile-nav__item:focus-visible { box-shadow: var(--tactile-shadow-focus); }
+.tactile-nav__item[aria-current="page"],
+.tactile-nav__item.is-active { color: var(--tactile-color-primary); background: var(--tactile-color-surface-pressed); box-shadow: var(--tactile-shadow-pressed); }
+.tactile-nav.has-indicator .tactile-nav__item[aria-current="page"],
+.tactile-nav.has-indicator .tactile-nav__item.is-active { background: transparent; box-shadow: none; }
+.tactile-nav.has-indicator::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: var(--tactile-indicator-w, 0px);
+  height: var(--tactile-indicator-h, 0px);
+  transform: translate(var(--tactile-indicator-x, 0px), var(--tactile-indicator-y, 0px));
+  opacity: var(--tactile-indicator-o, 1);
+  border-radius: var(--tactile-radius-md);
+  background: var(--tactile-color-surface-pressed);
+  box-shadow: var(--tactile-shadow-pressed);
+}
+.tactile-nav.has-indicator.is-animated::before {
+  transition: transform var(--tactile-motion-duration-slide) var(--tactile-motion-easing-spring), height var(--tactile-motion-duration-slide) var(--tactile-motion-easing-spring);
+}
+
+/* =========================================================================
+   Card, list, badge, avatar
+   <article class="tactile-card">…</article>
+   <ul class="tactile-list"><li class="tactile-list__item" aria-selected="true">…</li></ul>
+   <span class="tactile-badge">New</span>   <span class="tactile-avatar is-active">AK</span>
+   ========================================================================= */
+.tactile-card { padding: 20px; border-radius: var(--tactile-radius-lg); background: var(--tactile-color-surface); box-shadow: var(--tactile-shadow-level-3); }
+.tactile-card--interactive { cursor: pointer; transition: box-shadow var(--tactile-motion-duration); }
+.tactile-card--interactive:hover { box-shadow: var(--tactile-shadow-level-4); }
+.tactile-card__icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--tactile-radius-md); color: var(--tactile-color-primary); box-shadow: var(--tactile-shadow-inset-sm); }
+.tactile-card__title { font-size: var(--tactile-font-size-heading); font-weight: var(--tactile-font-weight-bold); color: var(--tactile-color-ink); }
+.tactile-card__text { font-size: var(--tactile-font-size-small); color: var(--tactile-color-text-muted); }
+
+.tactile-list { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 8px; list-style: none; border-radius: var(--tactile-radius-lg); box-shadow: var(--tactile-shadow-level-3); }
+.tactile-list__item { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: var(--tactile-radius-md); cursor: pointer; transition: box-shadow var(--tactile-motion-duration), background-color var(--tactile-motion-duration); }
+.tactile-list__item:hover { box-shadow: var(--tactile-shadow-level-1); }
+.tactile-list__item[aria-selected="true"],
+.tactile-list__item.is-selected { background: var(--tactile-color-surface-pressed); box-shadow: var(--tactile-shadow-inset-sm); }
+.tactile-list__title { font-size: var(--tactile-font-size-small); font-weight: var(--tactile-font-weight-bold); color: var(--tactile-color-ink); line-height: 1.3; }
+.tactile-list__text { font-size: var(--tactile-font-size-caption); color: var(--tactile-color-text-muted); }
+
+.tactile-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: var(--tactile-radius-sm); background: var(--tactile-color-primary); color: var(--tactile-color-primary-ink); font-size: var(--tactile-font-size-caption); font-weight: var(--tactile-font-weight-bold); white-space: nowrap; box-shadow: 1px 2px 4px var(--tactile-color-glow); }
+.tactile-badge--soft { background: var(--tactile-color-surface); color: var(--tactile-color-ink); box-shadow: var(--tactile-shadow-level-1); }
+.tactile-badge--danger { background: var(--tactile-color-danger-soft); color: var(--tactile-color-danger); box-shadow: none; }
+.tactile-badge--warning { background: var(--tactile-color-warning-soft); color: var(--tactile-color-warning); box-shadow: none; }
+
+.tactile-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--avatar-size, 40px);
+  aspect-ratio: 1;
+  border: 3px solid var(--tactile-color-surface);
+  border-radius: 50%;
+  background: var(--avatar-bg, var(--tactile-color-well));
+  color: var(--tactile-color-ink);
+  font-size: calc(var(--avatar-size, 40px) * 0.34);
+  font-weight: var(--tactile-font-weight-bold);
+  box-shadow: var(--tactile-shadow-level-2);
+  overflow: hidden;
+}
+.tactile-avatar.is-active { box-shadow: var(--tactile-shadow-level-2), 0 0 0 2px var(--tactile-color-primary); }
+
+/* =========================================================================
+   Tooltip — static bubble or on hover
+   <span class="tactile-tip">More info</span>      <span class="tactile-tooltip" data-tip="More info"><button>…</button></span>
+   ========================================================================= */
+.tactile-tip { position: relative; display: inline-block; padding: 6px 10px; border-radius: 6px; background: var(--tactile-color-tip); color: var(--tactile-color-tip-ink); font-size: var(--tactile-font-size-caption); font-weight: var(--tactile-font-weight-semibold); line-height: 1.3; }
+.tactile-tip::after { content: ""; position: absolute; left: 50%; bottom: -4px; width: 8px; height: 8px; background: inherit; transform: translateX(-50%) rotate(45deg); }
+.tactile-tooltip { position: relative; display: inline-flex; }
+.tactile-tooltip::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translate(-50%, 3px); padding: 6px 10px; border-radius: 6px; background: var(--tactile-color-tip); color: var(--tactile-color-tip-ink); font-size: var(--tactile-font-size-caption); white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity var(--tactile-motion-duration), transform var(--tactile-motion-duration); }
+.tactile-tooltip:hover::after,
+.tactile-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0); }
+
+/* =========================================================================
+   Table (raised compact header) — <div class="tactile-table-wrap"><table class="tactile-table">…</table></div>
+   ========================================================================= */
+.tactile-table-wrap { overflow-x: auto; padding: 6px; }
+.tactile-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--tactile-font-size-small); }
+.tactile-table thead tr { box-shadow: var(--tactile-shadow-level-2); border-radius: var(--tactile-radius-md); }
+.tactile-table th { padding: 10px 14px; text-align: left; font-weight: var(--tactile-font-weight-bold); color: var(--tactile-color-ink); white-space: nowrap; }
+.tactile-table th:first-child { border-radius: var(--tactile-radius-md) 0 0 var(--tactile-radius-md); }
+.tactile-table th:last-child { border-radius: 0 var(--tactile-radius-md) var(--tactile-radius-md) 0; }
+.tactile-table td { padding: 12px 14px; border-bottom: 1px solid var(--tactile-color-line); white-space: nowrap; }
+.tactile-table .is-num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* =========================================================================
+   Feedback: dialog, toast, alert banner, progress, spinner, skeleton, empty state
+   ========================================================================= */
+.tactile-dialog { width: min(100% - 32px, 380px); padding: 26px; border: 0; border-radius: var(--tactile-radius-xl); background: var(--tactile-color-surface); color: var(--tactile-color-text); box-shadow: var(--tactile-shadow-level-5); text-align: center; }
+.tactile-dialog::backdrop { background: var(--tactile-color-backdrop); }
+.tactile-dialog[open] { animation: tactile-rise var(--tactile-motion-duration-slide) var(--tactile-motion-easing-spring); }
+.tactile-dialog__title { font-size: 19px; font-weight: var(--tactile-font-weight-bold); color: var(--tactile-color-ink); }
+.tactile-dialog__body { margin-top: 6px; color: var(--tactile-color-text-muted); }
+.tactile-dialog__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px; }
+@keyframes tactile-rise { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+.tactile-warning-mark { display: grid; place-items: center; width: 72px; height: 72px; margin: 6px auto 16px; border-radius: 50%; color: var(--tactile-color-warning); box-shadow: var(--tactile-shadow-inset); }
+.tactile-warning-mark .tactile-icon { width: 34px; height: 34px; }
+
+.tactile-toast { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--tactile-radius-md); background: var(--tactile-color-surface); box-shadow: var(--tactile-shadow-level-3); font-size: var(--tactile-font-size-small); }
+.tactile-toast b { font-weight: var(--tactile-font-weight-bold); color: var(--tactile-color-ink); }
+.tactile-toast > .tactile-icon:last-child { margin-left: auto; color: var(--tactile-color-primary); }
+.tactile-toast-stack { display: flex; flex-direction: column; gap: 10px; }
+
+.tactile-alert { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--tactile-radius-sm); background: var(--tactile-color-primary); color: var(--tactile-color-primary-ink); font-size: var(--tactile-font-size-small); font-weight: var(--tactile-font-weight-semibold); box-shadow: var(--tactile-shadow-accent); }
+.tactile-alert--danger { background: var(--tactile-color-danger); box-shadow: -4px -4px 10px var(--tactile-color-light), 4px 5px 12px rgba(188, 67, 57, 0.3); }
+
+.tactile-progress { height: 10px; border-radius: var(--tactile-radius-pill); background: var(--tactile-color-well); box-shadow: var(--tactile-shadow-inset-sm); overflow: hidden; }
+.tactile-progress > span { display: block; width: var(--value, 0%); height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--tactile-color-primary-light), var(--tactile-color-primary)); transition: width var(--tactile-motion-duration-slide) var(--tactile-motion-easing-spring); }
+
+.tactile-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 10%, currentColor 10% 18%, transparent 18% 35%, currentColor 35% 43%, transparent 43% 60%, currentColor 60% 68%, transparent 68% 85%, currentColor 85% 93%, transparent 93%);
+  -webkit-mask: radial-gradient(circle, transparent 42%, #000 44%);
+  mask: radial-gradient(circle, transparent 42%, #000 44%);
+  animation: tactile-spin 1s linear infinite;
+}
+@keyframes tactile-spin { to { transform: rotate(360deg); } }
+
+.tactile-skeleton { display: flex; flex-direction: column; gap: 10px; }
+.tactile-skeleton > span { display: block; height: 12px; border-radius: var(--tactile-radius-pill); background: linear-gradient(90deg, var(--tactile-color-skeleton) 0%, var(--tactile-color-surface) 50%, var(--tactile-color-skeleton) 100%) 0 0 / 200% 100%; box-shadow: var(--tactile-shadow-inset-sm); animation: tactile-shimmer 1.6s ease-in-out infinite; }
+@keyframes tactile-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+.tactile-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px; border: 2px dashed var(--tactile-color-line); border-radius: var(--tactile-radius-lg); text-align: center; }
+.tactile-empty__art { display: grid; place-items: center; width: 84px; height: 84px; border-radius: 50%; color: var(--tactile-color-text-muted); box-shadow: var(--tactile-shadow-inset); }
+.tactile-empty__art .tactile-icon { width: 40px; height: 40px; stroke-width: 1.6; }
+
+/* =========================================================================
+   Note — spec annotation (dot + dashed leader + text), from the front-faced study
+   <p class="tactile-note">Focus ring is always visible</p>
+   ========================================================================= */
+.tactile-note { position: relative; display: flex; align-items: flex-start; gap: 8px; padding-left: 46px; font-size: var(--tactile-font-size-small); color: var(--tactile-color-text); line-height: 1.35; }
+.tactile-note::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 36px; border-top: 1.5px dashed var(--tactile-color-annotation); }
+.tactile-note::after { content: ""; position: absolute; left: 34px; top: calc(0.62em - 3px); width: 7px; height: 7px; border-radius: 50%; background: var(--tactile-color-annotation); }

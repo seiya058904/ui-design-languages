@@ -1,0 +1,78 @@
+/* Tactile — base: reset, type, layers, section headers, layout helpers */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--tactile-font-family-sans);
+  font-size: var(--tactile-font-size-body);
+  line-height: 1.5;
+  color: var(--tactile-color-text);
+  background: var(--tactile-color-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--tactile-motion-duration);
+}
+
+img, svg, video { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+h1, h2, h3, h4, h5, h6, p, figure, ol, ul { margin: 0; }
+a { color: inherit; }
+:focus { outline: none; }
+::selection { background: var(--tactile-color-primary); color: var(--tactile-color-primary-ink); }
+
+/* ---------- Typography ---------- */
+.tactile-display { font-size: clamp(28px, 5vw, var(--tactile-font-size-display)); font-weight: var(--tactile-font-weight-black); letter-spacing: -0.02em; line-height: 1.05; color: var(--tactile-color-ink); }
+.tactile-title   { font-size: var(--tactile-font-size-title); font-weight: var(--tactile-font-weight-bold); letter-spacing: -0.01em; line-height: 1.2; color: var(--tactile-color-ink); }
+.tactile-heading { font-size: var(--tactile-font-size-heading); font-weight: var(--tactile-font-weight-bold); color: var(--tactile-color-ink); }
+/* Label: small bold caps naming a specimen ("PRIMARY BUTTON") */
+.tactile-label   { display: block; font-size: var(--tactile-font-size-label); font-weight: var(--tactile-font-weight-bold); letter-spacing: 0.06em; text-transform: uppercase; color: var(--tactile-color-ink); }
+.tactile-small   { font-size: var(--tactile-font-size-small); }
+.tactile-caption { font-size: var(--tactile-font-size-caption); color: var(--tactile-color-text-muted); }
+.tactile-muted   { color: var(--tactile-color-text-muted); }
+
+/* Section header: bold caps title on a hairline rule with an optional spec note on the right
+   <header class="tactile-section"><h2>Controls</h2><span>Spacing: 16px</span></header> */
+.tactile-section {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 8px;
+  margin-bottom: var(--tactile-space-5);
+  border-bottom: 1px solid var(--tactile-color-line);
+}
+.tactile-section h2 { font-size: var(--tactile-font-size-section); font-weight: var(--tactile-font-weight-black); letter-spacing: 0.04em; text-transform: uppercase; color: var(--tactile-color-ink); }
+.tactile-section span { font-size: 10px; font-weight: var(--tactile-font-weight-bold); letter-spacing: 0.08em; text-transform: uppercase; color: var(--tactile-color-text-muted); }
+
+/* ---------- Layers: the four material states ---------- */
+.tactile-layer { border-radius: var(--tactile-radius-xl); background: var(--tactile-color-surface); }
+.tactile-layer--base    { box-shadow: var(--tactile-shadow-level-1); }
+.tactile-layer--raised  { box-shadow: var(--tactile-shadow-level-3); }
+.tactile-layer--inset   { box-shadow: var(--tactile-shadow-inset); background: var(--tactile-color-well); }
+.tactile-layer--pressed { box-shadow: var(--tactile-shadow-pressed); background: var(--tactile-color-surface-pressed); }
+.tactile-level-1 { box-shadow: var(--tactile-shadow-level-1); }
+.tactile-level-2 { box-shadow: var(--tactile-shadow-level-2); }
+.tactile-level-3 { box-shadow: var(--tactile-shadow-level-3); }
+.tactile-level-4 { box-shadow: var(--tactile-shadow-level-4); }
+.tactile-level-5 { box-shadow: var(--tactile-shadow-level-5); }
+
+/* Panel: a raised area that groups content */
+.tactile-panel { padding: var(--tactile-space-6); border-radius: var(--tactile-radius-xl); background: var(--tactile-color-surface); box-shadow: var(--tactile-shadow-level-3); }
+
+/* ---------- Icons ---------- */
+.tactile-icon { width: 1.25em; height: 1.25em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Layout helpers ---------- */
+.tactile-container { width: min(100% - 32px, 1120px); margin-inline: auto; }
+.tactile-stack { display: flex; flex-direction: column; gap: var(--gap, var(--tactile-space-4)); }
+.tactile-row   { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap, var(--tactile-space-3)); }
+.tactile-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}

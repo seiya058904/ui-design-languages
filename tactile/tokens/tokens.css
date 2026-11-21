@@ -1,0 +1,116 @@
+/* tactile tokens — GENERATED from tactile/tokens/tokens.json. Do not edit by hand.
+   Regenerate with: node scripts/build-tokens.mjs tactile */
+:root {
+  --tactile-color-surface: #EEE6D9; /* The material: page and every raised piece */
+  --tactile-color-surface-pressed: #E5DACA; /* Pressed pieces sink and darken */
+  --tactile-color-well: #E9E0D2; /* Inset fields and tracks */
+  --tactile-color-light: rgba(255, 252, 246, 0.9); /* Highlight half of every shadow */
+  --tactile-color-dark: rgba(166, 140, 104, 0.42); /* Shade half of every shadow */
+  --tactile-color-dark-soft: rgba(166, 140, 104, 0.26); /* Shade for low levels */
+  --tactile-color-line: #DCD0BD; /* Hairlines and section rules */
+  --tactile-color-primary: #0E5357; /* Deep teal — the accent */
+  --tactile-color-primary-strong: #093D40; /* Pressed teal */
+  --tactile-color-primary-light: #1A6B70; /* Top of teal gradients */
+  --tactile-color-primary-ink: #F2FAF9; /* Text on teal */
+  --tactile-color-primary-soft: #D8E2DA; /* Teal wash (selected rows) */
+  --tactile-color-glow: rgba(14, 83, 87, 0.32); /* Teal cast shadow and focus bloom */
+  --tactile-color-ink: #1C2828; /* Headings */
+  --tactile-color-text: #2D3635; /* Body text */
+  --tactile-color-text-muted: #6A665D; /* Secondary text (≥ 4.5:1 on sand) */
+  --tactile-color-text-subtle: #9F978A; /* Placeholders, ticks */
+  --tactile-color-danger: #BC4339;
+  --tactile-color-danger-soft: #F1DBD3;
+  --tactile-color-warning: #A8761F;
+  --tactile-color-warning-soft: #F1E3C6;
+  --tactile-color-tip: #2F3231; /* Tooltip and value bubbles */
+  --tactile-color-tip-ink: #F4EFE7;
+  --tactile-color-skeleton: #DBCFBC;
+  --tactile-color-disabled: #DED5C7;
+  --tactile-color-disabled-ink: #A39A8C;
+  --tactile-color-annotation: #3E7BD8; /* Spec callouts (dots and dashed leaders) */
+  --tactile-color-backdrop: rgba(60, 48, 30, 0.3);
+
+  --tactile-font-family-sans: "Plus Jakarta Sans", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+
+  --tactile-font-size-display: 40px;
+  --tactile-font-size-title: 24px;
+  --tactile-font-size-section: 15px;
+  --tactile-font-size-heading: 17px;
+  --tactile-font-size-body: 14px;
+  --tactile-font-size-small: 13px;
+  --tactile-font-size-caption: 12px;
+  --tactile-font-size-label: 11px;
+
+  --tactile-font-weight-regular: 400;
+  --tactile-font-weight-medium: 500;
+  --tactile-font-weight-semibold: 600;
+  --tactile-font-weight-bold: 700;
+  --tactile-font-weight-black: 800;
+
+  --tactile-space-1: 4px;
+  --tactile-space-2: 8px;
+  --tactile-space-3: 12px;
+  --tactile-space-4: 16px;
+  --tactile-space-5: 20px;
+  --tactile-space-6: 24px;
+  --tactile-space-8: 32px;
+  --tactile-space-10: 40px;
+
+  --tactile-radius-xs: 4px;
+  --tactile-radius-sm: 8px; /* Fields, tags */
+  --tactile-radius-md: 12px; /* Buttons, list items */
+  --tactile-radius-lg: 16px; /* Cards */
+  --tactile-radius-xl: 24px; /* Panels, dialogs, layer tiles */
+  --tactile-radius-pill: 999px; /* Toggles, steps, badges */
+
+  --tactile-border-thin: 1px;
+  --tactile-border-regular: 2px;
+  --tactile-border-thick: 4px;
+
+  --tactile-size-control-sm: 32px;
+  --tactile-size-control: 40px;
+  --tactile-size-control-lg: 48px;
+
+  --tactile-shadow-level-1: -1px -1px 2px var(--tactile-color-light), 1px 1px 3px var(--tactile-color-dark-soft); /* Flat */
+  --tactile-shadow-level-2: -3px -3px 7px var(--tactile-color-light), 3px 3px 8px var(--tactile-color-dark-soft); /* Hover */
+  --tactile-shadow-level-3: -6px -6px 14px var(--tactile-color-light), 6px 6px 14px var(--tactile-color-dark); /* Raised */
+  --tactile-shadow-level-4: -10px -10px 24px var(--tactile-color-light), 10px 12px 26px var(--tactile-color-dark); /* Modal */
+  --tactile-shadow-level-5: -16px -16px 36px var(--tactile-color-light), 16px 18px 40px var(--tactile-color-dark); /* Popover */
+  --tactile-shadow-inset: inset 3px 3px 7px var(--tactile-color-dark), inset -3px -3px 7px var(--tactile-color-light); /* Carved fields and tracks */
+  --tactile-shadow-inset-sm: inset 2px 2px 4px var(--tactile-color-dark-soft), inset -2px -2px 4px var(--tactile-color-light);
+  --tactile-shadow-pressed: inset 4px 4px 10px var(--tactile-color-dark), inset -4px -4px 10px var(--tactile-color-light); /* Pushed-in pieces */
+  --tactile-shadow-accent: -4px -4px 10px var(--tactile-color-light), 5px 6px 14px var(--tactile-color-glow), inset 0 1px 0 rgba(255, 255, 255, 0.14); /* Teal pieces cast a teal shadow */
+  --tactile-shadow-focus: 0 0 0 2px var(--tactile-color-primary-light), 0 0 12px 2px var(--tactile-color-glow);
+
+  --tactile-motion-duration: 180ms;
+  --tactile-motion-duration-slide: 360ms;
+  --tactile-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --tactile-motion-easing-spring: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Variant — GENERATED from tactile/tokens/tokens.tone-stone.json. Opt in with <html data-tone="stone">. */
+:root[data-tone="stone"] {
+  --tactile-color-surface: #E7E8EB;
+  --tactile-color-surface-pressed: #DCDEE2;
+  --tactile-color-well: #E1E3E6;
+  --tactile-color-light: rgba(255, 255, 255, 0.92);
+  --tactile-color-dark: rgba(134, 141, 154, 0.45);
+  --tactile-color-dark-soft: rgba(134, 141, 154, 0.28);
+  --tactile-color-line: #D2D5DA;
+  --tactile-color-primary: #2B5BD3;
+  --tactile-color-primary-strong: #1F47AE;
+  --tactile-color-primary-light: #4775E6;
+  --tactile-color-primary-ink: #F5F8FF;
+  --tactile-color-primary-soft: #D8DFEE;
+  --tactile-color-glow: rgba(43, 91, 211, 0.3);
+  --tactile-color-ink: #1C1F25;
+  --tactile-color-text: #2C3038;
+  --tactile-color-text-muted: #626873;
+  --tactile-color-text-subtle: #959BA6;
+  --tactile-color-tip: #2C3038;
+  --tactile-color-tip-ink: #F1F3F6;
+  --tactile-color-skeleton: #D9DCE0;
+  --tactile-color-disabled: #DADCE0;
+  --tactile-color-disabled-ink: #9CA1AA;
+  --tactile-color-backdrop: rgba(30, 34, 42, 0.3);
+}

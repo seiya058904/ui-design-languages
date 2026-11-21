@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var t=localStorage.getItem("tactile-tone");if(t&&t!=="sand")document.documentElement.setAttribute("data-tone",t)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tactile Styleguide</title>
+  <meta name="description" content="Tactile — warm sand neumorphism with base, raised, inset and pressed layers and a deep teal accent.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tactile.css">
+  <style>
+    /* Page layout only — visuals come from Tactile classes and tokens. */
+    body { padding: 28px 16px 56px; }
+    .sheet { width: min(100%, 1080px); margin: 0 auto; }
+    .top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 36px; }
+    .top__title { margin-right: auto; }
+    .top__title p { margin-top: 6px; }
+    .tone-opt { height: 30px; padding: 0 14px; font-size: 12px; }
+    section + section { margin-top: 44px; }
+    .found { display: grid; grid-template-columns: 2fr 1fr; gap: 36px; }
+    .layers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+    .layers figure { display: flex; flex-direction: column; gap: 14px; }
+    .layers .tactile-layer { aspect-ratio: 1; max-width: 100px; display: grid; place-items: center; }
+    .layers .is-inset span { width: 60%; height: 60%; border-radius: 16px; box-shadow: var(--tactile-shadow-inset); }
+    .layers .tactile-layer--pressed span { width: 66%; height: 66%; border-radius: 16px; box-shadow: var(--tactile-shadow-pressed); }
+    .levels { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 22px; }
+    .levels div { padding: 9px 16px; border-radius: 10px; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--tactile-color-ink); line-height: 1.3; }
+    .tokens-row { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 26px; }
+    .borders { display: flex; flex-direction: column; gap: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--tactile-color-ink); }
+    .borders div { display: flex; align-items: center; gap: 14px; }
+    .borders span { min-width: 92px; }
+    .borders i { flex: 1; border-top: 1px solid var(--tactile-color-primary); }
+    .radii { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+    .radii div { display: grid; place-items: center; width: 44px; height: 44px; font-size: 10px; font-weight: 800; box-shadow: var(--tactile-shadow-level-3); }
+    .radii div:last-child { width: 52px; height: 52px; }
+    .icons { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 12px 30px; align-items: end; color: var(--tactile-color-primary); text-align: center; font-size: 11px; font-weight: 700; }
+    .icons span { color: var(--tactile-color-ink); }
+    .ctrl { display: grid; grid-template-columns: 1.6fr 1fr; gap: 36px; }
+    .btn-states { display: grid; grid-template-columns: repeat(3, auto); gap: 10px 22px; justify-content: start; align-items: center; }
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; margin-top: 24px; }
+    .mini { display: grid; grid-template-columns: repeat(3, auto); gap: 24px; justify-content: start; }
+    .navs { display: grid; grid-template-columns: auto auto 1.2fr; gap: 26px 36px; align-items: start; }
+    .navs > div:nth-child(3) { grid-row: span 2; }
+    .step-tip { display: flex; justify-content: center; margin: 0 0 12px 8%; }
+    .data { display: grid; grid-template-columns: 0.9fr 1.1fr 0.9fr 1.1fr; gap: 26px; }
+    .feed { display: grid; grid-template-columns: 1fr 1fr 1.1fr 1fr; gap: 26px; align-items: start; }
+    .faced { display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; align-items: start; }
+    .states4 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .notes { display: flex; flex-direction: column; gap: 14px; justify-content: center; }
+    @media (max-width: 900px) {
+      .found, .ctrl, .faced { grid-template-columns: 1fr; }
+      .navs { grid-template-columns: 1fr 1fr; } .navs > div:nth-child(3) { grid-column: 1 / -1; grid-row: auto; }
+      .data, .feed { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .layers { grid-template-columns: repeat(2, 1fr); }
+      .tokens-row, .fields, .navs, .data, .feed, .states4 { grid-template-columns: 1fr; }
+      .btn-states, .mini { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol>
+  <symbol id="i-warning" viewBox="0 0 24 24"><path d="M10.3 4.2 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0Z"/><path d="M12 9.5v4M12 17h.01"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" stroke="none"/><path d="M12 7.5v5M12 16.5h.01" stroke="var(--tactile-color-primary)"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+  <symbol id="i-sort" viewBox="0 0 24 24"><path d="M7 4v16M3 8l4-4 4 4M17 20V4M13 16l4 4 4-4"/></symbol>
+</svg>
+
+<div class="sheet">
+  <header class="top">
+    <div class="top__title">
+      <h1 class="tactile-display">Tactile</h1>
+      <p class="tactile-muted">Base, raised, inset and pressed: one material, four states.</p>
+    </div>
+    <div class="tactile-segmented" role="tablist" aria-label="Tone">
+      <button class="tactile-segmented__item tone-opt" role="tab" aria-selected="true" data-tone-set="sand">Sand</button>
+      <button class="tactile-segmented__item tone-opt" role="tab" aria-selected="false" tabindex="-1" data-tone-set="stone">Stone</button>
+    </div>
+    <a class="tactile-btn tactile-btn--sm" href="examples/home.html">Home app example</a>
+    <a class="tactile-btn tactile-btn--sm tactile-btn--ghost" href="../index.html">All languages</a>
+  </header>
+
+  <section aria-labelledby="h-found">
+    <header class="tactile-section"><h2 id="h-found">Foundations</h2><span>Grid: 8px</span></header>
+    <div class="found">
+      <div>
+        <div class="layers">
+          <figure><span class="tactile-label">Base layer</span><div class="tactile-layer tactile-layer--base"></div></figure>
+          <figure><span class="tactile-label">Raised layer</span><div class="tactile-layer tactile-layer--raised"></div></figure>
+          <figure><span class="tactile-label">Inset layer</span><div class="tactile-layer tactile-layer--raised is-inset"><span></span></div></figure>
+          <figure><span class="tactile-label">Pressed layer</span><div class="tactile-layer tactile-layer--pressed"><span></span></div></figure>
+        </div>
+        <span class="tactile-label" style="margin-top:28px">Elevation levels</span>
+        <div class="levels">
+          <div class="tactile-level-1">Level 1<br>(flat)</div>
+          <div class="tactile-level-2">Level 2<br>(hover)</div>
+          <div class="tactile-level-3">Level 3<br>(raised)</div>
+          <div class="tactile-level-4">Level 4<br>(modal)</div>
+          <div class="tactile-level-5">Level 5<br>(popover)</div>
+        </div>
+        <div class="tokens-row">
+          <div>
+            <span class="tactile-label" style="margin-bottom:14px">Border thickness tokens</span>
+            <div class="borders">
+              <div><span>1px thin</span><i></i></div>
+              <div><span>2px regular</span><i style="border-top-width:2px"></i></div>
+              <div><span>4px thick</span><i style="border-top-width:4px;border-radius:4px"></i></div>
+            </div>
+          </div>
+          <div>
+            <span class="tactile-label" style="margin-bottom:14px">Radius scale</span>
+            <div class="radii">
+              <div style="border-radius:4px">4PX</div><div style="border-radius:8px">8PX</div><div style="border-radius:12px">12PX</div><div style="border-radius:16px">16PX</div><div style="border-radius:24px">24PX</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <span class="tactile-label" style="margin-bottom:16px">Iconography rules</span>
+        <div class="icons">
+          <span>16px</span><span>20px</span><span>24px</span>
+          <svg class="tactile-icon" style="width:16px;height:16px;margin:auto" aria-hidden="true"><use href="#i-gear"/></svg>
+          <svg class="tactile-icon" style="width:20px;height:20px;margin:auto" aria-hidden="true"><use href="#i-user"/></svg>
+          <svg class="tactile-icon" style="width:24px;height:24px;margin:auto" aria-hidden="true"><use href="#i-search"/></svg>
+          <svg class="tactile-icon" style="width:24px;height:24px;margin:auto" aria-hidden="true"><use href="#i-gear"/></svg>
+          <svg class="tactile-icon" style="width:28px;height:28px;margin:auto" aria-hidden="true"><use href="#i-user"/></svg>
+          <svg class="tactile-icon" style="width:34px;height:34px;margin:auto" aria-hidden="true"><use href="#i-search"/></svg>
+        </div>
+        <span class="tactile-label" style="margin-top:22px">Stroke weight: 2px · round caps</span>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-ctrl">
+    <header class="tactile-section"><h2 id="h-ctrl">Controls</h2><span>Spacing: 16px</span></header>
+    <div class="ctrl">
+      <div>
+        <div class="btn-states">
+          <span class="tactile-label">Primary button</span><span class="tactile-label">Pressed state</span><span class="tactile-label">Disabled state</span>
+          <button class="tactile-btn tactile-btn--primary" type="button">Submit now</button>
+          <button class="tactile-btn tactile-btn--primary" type="button" aria-busy="true"><span class="tactile-spinner" aria-hidden="true"></span>Sending…</button>
+          <button class="tactile-btn" type="button" disabled>Not available</button>
+        </div>
+        <span class="tactile-label" style="margin-top:26px">Text field</span>
+        <div class="fields">
+          <div class="tactile-form-row"><input class="tactile-input" placeholder="Email address" aria-label="Email address"><span class="tactile-hint">Helper: enter a valid email</span></div>
+          <div class="tactile-form-row"><input class="tactile-input" placeholder="Email address" aria-label="Email address, disabled" disabled><span class="tactile-hint">Disabled: no shadow, low contrast</span></div>
+          <div class="tactile-form-row"><input class="tactile-input" value="mira@" aria-label="Email address with error" aria-invalid="true"><span class="tactile-hint tactile-hint--error">Error: invalid email format</span></div>
+          <div class="tactile-form-row"><input class="tactile-input is-focus" value="mira@studio.com" aria-label="Email address focused"><span class="tactile-hint">Focused: teal ring</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="mini">
+          <div class="tactile-stack" style="--gap:12px"><span class="tactile-label">Checkbox</span>
+            <label class="tactile-check"><input type="checkbox" class="tactile-checkbox" checked> Option 1</label>
+            <label class="tactile-check"><input type="checkbox" class="tactile-checkbox"> Option 2</label></div>
+          <div class="tactile-stack" style="--gap:12px"><span class="tactile-label">Radio</span>
+            <label class="tactile-check"><input type="radio" name="opt" class="tactile-radio" checked> Option 1</label>
+            <label class="tactile-check"><input type="radio" name="opt" class="tactile-radio"> Option 2</label></div>
+          <div class="tactile-stack" style="--gap:12px"><span class="tactile-label">Switch</span>
+            <input type="checkbox" class="tactile-toggle tactile-toggle--label" checked aria-label="Switch on">
+            <input type="checkbox" class="tactile-toggle tactile-toggle--label" aria-label="Switch off"></div>
+        </div>
+        <span class="tactile-label" style="margin-top:26px">Slider</span>
+        <div class="tactile-range" style="--fill:75%;--fill-n:.75">
+          <output class="tactile-range__bubble" for="vol" data-suffix="%">75%</output>
+          <input class="tactile-slider" id="vol" type="range" min="0" max="100" value="75" aria-label="Volume">
+          <div class="tactile-range__ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-nav">
+    <header class="tactile-section"><h2 id="h-nav">Navigation</h2><span>Spacing: 24px</span></header>
+    <div class="navs">
+      <div><span class="tactile-label" style="margin-bottom:12px">Tabs</span>
+        <div class="tactile-segmented" role="tablist" aria-label="Product">
+          <button class="tactile-segmented__item" role="tab" aria-selected="true">Overview</button>
+          <button class="tactile-segmented__item" role="tab" aria-selected="false" tabindex="-1">Details</button>
+          <button class="tactile-segmented__item" role="tab" aria-selected="false" tabindex="-1">Settings</button>
+        </div></div>
+      <div><span class="tactile-label" style="margin-bottom:12px">Breadcrumbs</span>
+        <nav class="tactile-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Home</a></li><li><a href="#">Categories</a></li><li><a href="#">Product details</a></li><li aria-current="page">Edit</li></ol></nav></div>
+      <div><span class="tactile-label" style="margin-bottom:8px">4-step process</span>
+        <div class="step-tip"><span class="tactile-tip">Current step:<br>Enter information</span></div>
+        <ol class="tactile-steps" aria-label="Checkout progress"><li class="is-done">Account</li><li aria-current="step">Details</li><li>Review</li><li>Payment</li></ol></div>
+      <div style="grid-column:span 2"><span class="tactile-label" style="margin-bottom:12px">Pagination</span>
+        <nav class="tactile-pagination" aria-label="Pages"><a class="is-edge" href="#">Prev</a><a href="#">1</a><a href="#" aria-current="page">2</a><a href="#">3</a><a href="#">4</a><a class="is-edge" href="#">Next</a></nav></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-data">
+    <header class="tactile-section"><h2 id="h-data">Data display</h2><span>Spacing: 24px</span></header>
+    <div class="data">
+      <div><span class="tactile-label" style="margin-bottom:12px">Cards</span>
+        <article class="tactile-card tactile-stack" style="--gap:10px">
+          <span class="tactile-card__icon"><svg class="tactile-icon" aria-hidden="true"><use href="#i-box"/></svg></span>
+          <h3 class="tactile-card__title">Product name</h3><p class="tactile-card__text">Hand-thrown stoneware, set of four.</p>
+          <span><button class="tactile-btn tactile-btn--primary tactile-btn--sm" type="button">View more</button></span>
+        </article></div>
+      <div><span class="tactile-label" style="margin-bottom:12px">List items</span>
+        <ul class="tactile-list" role="listbox" aria-label="Members">
+          <li class="tactile-list__item" role="option" aria-selected="true"><span class="tactile-avatar" style="--avatar-size:34px;--avatar-bg:#E3C9A6">MK</span><div><div class="tactile-list__title">Mira Kovač</div><div class="tactile-list__text">Owner</div></div></li>
+          <li class="tactile-list__item" role="option" aria-selected="false"><span class="tactile-avatar" style="--avatar-size:34px;--avatar-bg:#C9D7CF">JS</span><div><div class="tactile-list__title">Jun Sato</div><div class="tactile-list__text">Editor</div></div></li>
+          <li class="tactile-list__item" role="option" aria-selected="false"><span class="tactile-avatar" style="--avatar-size:34px;--avatar-bg:#D9CBB8">AL</span><div><div class="tactile-list__title">Ana Lima</div><div class="tactile-list__text">Viewer</div></div></li>
+        </ul></div>
+      <div class="tactile-stack" style="--gap:12px">
+        <span class="tactile-label">Badges</span>
+        <div class="tactile-row" style="--gap:8px"><span class="tactile-badge">New</span><span class="tactile-badge">Beta</span><span class="tactile-badge">24</span><span class="tactile-badge tactile-badge--soft">Draft</span></div>
+        <span class="tactile-label" style="margin-top:14px">Tooltip</span>
+        <span><span class="tactile-tip">More info</span></span>
+      </div>
+      <div class="tactile-stack" style="--gap:12px">
+        <span class="tactile-label">Avatars</span>
+        <div class="tactile-row" style="--gap:14px"><span class="tactile-avatar is-active" style="--avatar-size:52px;--avatar-bg:#E3C9A6">MK</span><span class="tactile-avatar" style="--avatar-size:52px;--avatar-bg:#D9CBB8">AL</span><span class="tactile-avatar" style="--avatar-size:52px;--avatar-bg:#C9D7CF">JS</span></div>
+        <span class="tactile-label" style="margin-top:10px">Compact table header</span>
+        <div class="tactile-table-wrap" style="padding:6px 2px"><table class="tactile-table"><thead><tr><th>Name (A–Z)</th><th>Date</th><th>Status</th></tr></thead></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-feed">
+    <header class="tactile-section"><h2 id="h-feed">Feedback</h2><span>Spacing: 8px</span></header>
+    <div class="feed">
+      <div><span class="tactile-label" style="margin-bottom:12px">Modal confirmation</span>
+        <div class="tactile-card" style="text-align:center">
+          <div class="tactile-warning-mark"><svg class="tactile-icon" aria-hidden="true"><use href="#i-warning"/></svg></div>
+          <h3 class="tactile-dialog__title">Delete account?</h3><p class="tactile-dialog__body">Are you sure?</p>
+          <div class="tactile-dialog__actions"><button class="tactile-btn tactile-btn--sm" type="button">Cancel</button><button class="tactile-btn tactile-btn--primary tactile-btn--sm" type="button" data-tactile-open="#dlg">Delete</button></div>
+        </div></div>
+      <div class="tactile-stack" style="--gap:12px"><span class="tactile-label">Toast stack</span>
+        <div class="tactile-toast-stack">
+          <div class="tactile-toast" role="status"><b>Success:</b> File uploaded<svg class="tactile-icon" aria-hidden="true"><use href="#i-check"/></svg></div>
+          <div class="tactile-toast" role="status"><b>Info:</b> Updates available</div>
+        </div>
+        <span class="tactile-label" style="margin-top:16px">Spinner</span>
+        <span class="tactile-spinner" style="color:var(--tactile-color-primary);width:28px;height:28px" role="img" aria-label="Loading"></span>
+      </div>
+      <div class="tactile-stack" style="--gap:12px"><span class="tactile-label">Alert banner</span>
+        <div class="tactile-alert" role="alert"><svg class="tactile-icon" aria-hidden="true"><use href="#i-alert"/></svg>Important: system maintenance scheduled</div>
+        <div class="tactile-row" style="justify-content:space-between;margin-top:8px"><span class="tactile-label">Linear progress</span><span class="tactile-label">50%</span></div>
+        <div class="tactile-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Upload"><span style="--value:50%"></span></div>
+        <span class="tactile-label" style="margin-top:8px">Skeleton rows</span>
+        <div class="tactile-skeleton" aria-hidden="true"><span></span><span></span><span style="width:70%"></span></div>
+      </div>
+      <div><span class="tactile-label" style="margin-bottom:12px">Empty state</span>
+        <div class="tactile-empty">
+          <div class="tactile-empty__art"><svg class="tactile-icon" aria-hidden="true"><use href="#i-search"/></svg></div>
+          <strong class="tactile-heading">No results found</strong>
+          <button class="tactile-btn tactile-btn--primary tactile-btn--sm" type="button">Clear filters</button>
+        </div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-faced">
+    <header class="tactile-section"><h2 id="h-faced">Front-faced details</h2><span>From the stone study</span></header>
+    <div class="faced">
+      <div class="tactile-stack" style="--gap:22px">
+        <label class="tactile-field"><input placeholder="Inputs clear focus" aria-label="Search"><button class="tactile-btn tactile-btn--primary tactile-btn--sm" type="button">Go</button></label>
+        <div class="tactile-field"><input value="Living room" aria-label="Room"><input type="checkbox" class="tactile-toggle" checked aria-label="Room enabled" style="margin-right:6px"></div>
+        <div class="states4">
+          <button class="tactile-btn" type="button">Default</button>
+          <button class="tactile-btn" type="button" style="box-shadow:var(--tactile-shadow-level-2)">Hover</button>
+          <button class="tactile-btn is-active" type="button">Pressed</button>
+          <button class="tactile-btn" type="button" disabled>Disabled</button>
+        </div>
+      </div>
+      <div class="notes">
+        <p class="tactile-note">Focus ring is always visible</p>
+        <p class="tactile-note">Border thickness 1, 2, 4px</p>
+        <p class="tactile-note">Five shadow levels, one light source (top left)</p>
+        <p class="tactile-note">Disabled reduces contrast and removes shadow</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<dialog class="tactile-dialog" id="dlg" aria-labelledby="dlg-t">
+  <div class="tactile-warning-mark"><svg class="tactile-icon" aria-hidden="true"><use href="#i-warning"/></svg></div>
+  <h2 class="tactile-dialog__title" id="dlg-t">Delete account?</h2>
+  <p class="tactile-dialog__body">Your devices, rooms and scenes will be removed. This can't be undone.</p>
+  <div class="tactile-dialog__actions"><button class="tactile-btn" type="button" data-tactile-close>Cancel</button><button class="tactile-btn tactile-btn--primary" type="button" data-tactile-close>Delete</button></div>
+</dialog>
+
+<script src="js/tactile.js"></script>
+</body>
+</html>

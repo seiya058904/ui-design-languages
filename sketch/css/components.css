@@ -1,0 +1,484 @@
+/* Sketch — components
+   Ink lines carry hierarchy; hatching marks emphasis (primary, pressed, selected, on);
+   watercolor washes carry meaning; drawn offset outlines replace blurred shadows. */
+
+/* =========================================================================
+   Button
+   <button class="sketch-btn sketch-btn--primary">Save</button>
+   Variants: --primary (brand wash + hatching) · default/secondary · --tertiary (light hatching) · --ghost (dashed) · --destructive
+   Sizes: --sm · --lg · --icon · --block   States: :hover/.is-hover · :active/.is-active · :focus-visible/.is-focus · :disabled
+   Loading: aria-busy="true" + <span class="sketch-spinner"></span>
+   ========================================================================= */
+.sketch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: var(--sketch-size-control);
+  padding: 0 18px;
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-md);
+  background-color: var(--sketch-color-panel);
+  color: var(--sketch-color-ink);
+  font-size: var(--sketch-font-size-body);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: var(--sketch-shadow-1);
+  transition: transform var(--sketch-motion-duration) var(--sketch-motion-easing), box-shadow var(--sketch-motion-duration) var(--sketch-motion-easing);
+}
+.sketch-btn:hover,
+.sketch-btn.is-hover { transform: translate(-1px, -1px); box-shadow: var(--sketch-shadow-2); }
+.sketch-btn:active,
+.sketch-btn.is-active { transform: translate(2px, 2px); box-shadow: none; background-image: var(--sketch-hatch-default); }
+.sketch-btn:focus-visible,
+.sketch-btn.is-focus { outline: 2px dashed var(--sketch-color-ink); outline-offset: 4px; }
+
+.sketch-btn--primary {
+  border-width: var(--sketch-line-bold);
+  background-color: var(--sketch-color-brand-wash);
+  background-image: var(--sketch-hatch-default);
+  text-shadow: 0 0 3px var(--sketch-color-panel), 0 0 2px var(--sketch-color-panel), 0 0 1px var(--sketch-color-panel);
+  font-weight: 700;
+}
+.sketch-btn--primary:active,
+.sketch-btn--primary.is-active { background-image: var(--sketch-hatch-dense); }
+.sketch-btn--tertiary { background-image: var(--sketch-hatch-light); box-shadow: none; }
+.sketch-btn--ghost { border-style: dashed; background-color: transparent; box-shadow: none; }
+.sketch-btn--ghost:hover { box-shadow: none; transform: none; background-color: var(--sketch-color-panel); }
+.sketch-btn--destructive { background-color: var(--sketch-color-danger-wash); }
+.sketch-btn--sm   { height: var(--sketch-size-control-sm); padding: 0 12px; font-size: var(--sketch-font-size-small); border-radius: var(--sketch-radius-sm); }
+.sketch-btn--lg   { height: var(--sketch-size-control-lg); padding: 0 24px; font-size: 18px; }
+.sketch-btn--icon { width: var(--sketch-size-control); padding: 0; }
+.sketch-btn--icon.sketch-btn--sm { width: var(--sketch-size-control-sm); }
+.sketch-btn--block { display: flex; width: 100%; }
+.sketch-btn[aria-busy="true"] { cursor: progress; }
+.sketch-btn:disabled,
+.sketch-btn.is-disabled {
+  border-style: dashed;
+  border-color: var(--sketch-color-ink-faint);
+  background: transparent;
+  color: var(--sketch-color-ink-faint);
+  text-shadow: none;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* =========================================================================
+   Inputs
+   <input class="sketch-input" placeholder="Placeholder">       (also textarea / select)
+   <label class="sketch-input-icon"><input placeholder="Search"><svg class="sketch-icon">…</svg></label>
+   <div class="sketch-tags"><span class="sketch-tag">Tag <button aria-label="Remove">×</button></span><input aria-label="Add tag"></div>
+   ========================================================================= */
+.sketch-input,
+.sketch-input-icon,
+.sketch-tags {
+  width: 100%;
+  min-height: var(--sketch-size-control);
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-sm);
+  background: var(--sketch-color-panel);
+  font-size: var(--sketch-font-size-body);
+  transition: box-shadow var(--sketch-motion-duration);
+}
+.sketch-input { display: block; height: var(--sketch-size-control); padding: 0 12px; outline: none; appearance: none; }
+.sketch-input::placeholder,
+.sketch-input-icon input::placeholder,
+.sketch-tags input::placeholder { color: var(--sketch-color-ink-faint); }
+textarea.sketch-input { height: auto; min-height: 84px; padding: 8px 12px; line-height: 1.35; resize: vertical; }
+select.sketch-input {
+  padding-right: 36px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232B2A27' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.5 9.5c2 1.6 3.6 3.4 5.4 5.6 1.9-2.4 3.5-4.1 5.6-5.8'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 18px;
+}
+.sketch-input:focus,
+.sketch-input.is-focus,
+.sketch-input-icon:focus-within,
+.sketch-tags:focus-within { box-shadow: var(--sketch-shadow-1); outline: 2px dashed var(--sketch-color-ink); outline-offset: 3px; }
+.sketch-input[aria-invalid="true"] { border-color: var(--sketch-color-danger-ink); background: var(--sketch-color-danger-wash); }
+.sketch-input:disabled { border-style: dashed; border-color: var(--sketch-color-ink-faint); color: var(--sketch-color-ink-faint); background: transparent; cursor: not-allowed; }
+
+.sketch-input-icon { display: flex; align-items: center; gap: 8px; padding: 0 12px; }
+.sketch-input-icon input { flex: 1; min-width: 0; height: calc(var(--sketch-size-control) - 4px); border: 0; padding: 0; background: transparent; outline: none; }
+.sketch-input-icon input::-webkit-search-cancel-button,
+.sketch-input-icon input::-webkit-calendar-picker-indicator { opacity: 0.6; }
+.sketch-input-icon .sketch-icon { color: var(--sketch-color-ink-soft); }
+
+.sketch-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 5px 8px; }
+.sketch-tags input { flex: 1; min-width: 60px; height: 26px; border: 0; padding: 0 4px; background: transparent; outline: none; }
+
+.sketch-form-row { display: flex; flex-direction: column; gap: 6px; }
+.sketch-field-label { display: block; font-size: var(--sketch-font-size-small); color: var(--sketch-color-ink); }
+.sketch-hint { font-size: var(--sketch-font-size-caption); color: var(--sketch-color-ink-soft); }
+.sketch-hint--error { color: var(--sketch-color-danger-ink); }
+
+/* =========================================================================
+   Checkbox, radio, toggle, stepper
+   <label class="sketch-check"><input type="checkbox" class="sketch-checkbox" checked> Remember me</label>
+   <label class="sketch-check"><input type="checkbox" class="sketch-toggle" checked> Reduce motion</label>
+   <div class="sketch-stepper"><button aria-label="Decrease">−</button><output>1</output><button aria-label="Increase">+</button></div>
+   ========================================================================= */
+.sketch-check { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+.sketch-check--between { display: flex; justify-content: space-between; align-items: flex-start; }
+.sketch-check__title { display: block; }
+.sketch-check__hint { display: block; font-size: var(--sketch-font-size-caption); color: var(--sketch-color-ink-soft); }
+.sketch-checkbox,
+.sketch-radio,
+.sketch-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  margin: 0;
+  cursor: pointer;
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  background-color: var(--sketch-color-panel);
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: background-color var(--sketch-motion-duration);
+}
+.sketch-checkbox { width: 20px; height: 20px; border-radius: var(--sketch-radius-sm); background-size: 17px; }
+.sketch-checkbox:checked { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232B2A27' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12.8c1.6 1.2 3 2.6 4.6 4.6 3-4.8 6.2-8.6 10.6-12'/%3E%3C/svg%3E"); }
+.sketch-checkbox:indeterminate { background-image: linear-gradient(var(--sketch-color-ink), var(--sketch-color-ink)); background-size: 10px 2.4px; }
+.sketch-radio { width: 20px; height: 20px; border-radius: 50%; }
+.sketch-radio:checked { background-image: radial-gradient(circle, var(--sketch-color-ink) 0 4.5px, transparent 5px); }
+.sketch-toggle { position: relative; width: 46px; height: 26px; border-radius: var(--sketch-radius-pill); }
+.sketch-toggle::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: 50%;
+  background: var(--sketch-color-panel);
+  transition: transform var(--sketch-motion-duration-slide) var(--sketch-motion-easing-spring);
+}
+.sketch-toggle:checked { background-color: var(--sketch-color-brand-wash); background-image: var(--sketch-hatch-dense); }
+.sketch-toggle:checked::before { transform: translateX(20px); }
+.sketch-checkbox:focus-visible,
+.sketch-radio:focus-visible,
+.sketch-toggle:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 3px; }
+.sketch-checkbox:disabled,
+.sketch-radio:disabled,
+.sketch-toggle:disabled { border-style: dashed; border-color: var(--sketch-color-ink-faint); cursor: not-allowed; }
+
+.sketch-stepper { display: inline-flex; align-items: stretch; height: var(--sketch-size-control-sm); border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); }
+.sketch-stepper button { width: 32px; border: 0; background: transparent; font-size: 18px; cursor: pointer; }
+.sketch-stepper button:hover { background-image: var(--sketch-hatch-light); }
+.sketch-stepper button:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: -4px; }
+.sketch-stepper output { display: grid; place-items: center; min-width: 36px; border-inline: var(--sketch-line-regular) solid var(--sketch-color-ink); font-variant-numeric: tabular-nums; }
+
+/* =========================================================================
+   Slider with value bubble
+   <div class="sketch-range" style="--fill-n:.75"><output class="sketch-range__bubble" for="s">75</output>
+     <input class="sketch-slider" id="s" type="range" value="75"><div class="sketch-range__ticks"><span>0</span><span>100</span></div></div>
+   ========================================================================= */
+.sketch-range { --fill-n: 0.5; position: relative; padding-top: 34px; }
+.sketch-range__bubble {
+  position: absolute;
+  top: 0;
+  left: calc(10px + (100% - 20px) * var(--fill-n));
+  transform: translateX(-50%);
+  min-width: 34px;
+  padding: 1px 6px;
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-sm);
+  background: var(--sketch-color-panel);
+  font-size: var(--sketch-font-size-small);
+  text-align: center;
+}
+.sketch-slider { --fill: calc(var(--fill-n) * 100%); width: 100%; height: 22px; margin: 0; background: transparent; appearance: none; -webkit-appearance: none; cursor: pointer; }
+.sketch-slider::-webkit-slider-runnable-track { height: 8px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-hatch-dense) 0 0 / var(--fill) 100% no-repeat, var(--sketch-color-panel); }
+.sketch-slider::-moz-range-track { height: 6px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-color-panel); }
+.sketch-slider::-moz-range-progress { height: 6px; background: var(--sketch-hatch-dense); }
+.sketch-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -8px; border: var(--sketch-line-bold) solid var(--sketch-color-ink); border-radius: 50%; background: var(--sketch-color-panel); }
+.sketch-slider::-moz-range-thumb { width: 16px; height: 16px; border: var(--sketch-line-bold) solid var(--sketch-color-ink); border-radius: 50%; background: var(--sketch-color-panel); }
+.sketch-slider:focus-visible::-webkit-slider-thumb { outline: 2px dashed var(--sketch-color-ink); outline-offset: 2px; }
+.sketch-range__ticks { display: flex; justify-content: space-between; margin-top: 4px; font-size: var(--sketch-font-size-caption); color: var(--sketch-color-ink-soft); }
+.sketch-range__ticks .is-current { color: var(--sketch-color-ink); font-weight: 700; }
+
+/* =========================================================================
+   Tag, badge, chip, status
+   <span class="sketch-tag">Tag</span> (--active hatched)   <span class="sketch-badge sketch-badge--new">New</span>
+   <button class="sketch-chip" aria-pressed="false">Filter</button>   <span class="sketch-status sketch-status--online">Online</span>
+   ========================================================================= */
+.sketch-tag { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 10px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); font-size: var(--sketch-font-size-small); white-space: nowrap; }
+.sketch-tag--active { background-image: var(--sketch-hatch-default); }
+.sketch-tag button { border: 0; background: none; padding: 0 2px; cursor: pointer; font-size: 15px; line-height: 1; }
+.sketch-badge { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 10px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-color-panel); font-size: var(--sketch-font-size-caption); white-space: nowrap; }
+.sketch-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; border: 1.3px solid var(--sketch-color-ink); background: var(--badge-dot, var(--sketch-color-panel)); }
+.sketch-badge--plain::before { display: none; }
+.sketch-badge--new     { background: var(--sketch-color-brand-wash);   --badge-dot: var(--sketch-color-brand); }
+.sketch-badge--updated { background: var(--sketch-color-success-wash); --badge-dot: var(--sketch-color-success); }
+.sketch-badge--beta    { background: var(--sketch-color-warning-wash); --badge-dot: var(--sketch-color-warning); }
+.sketch-badge--hot     { background: var(--sketch-color-danger-wash);  --badge-dot: var(--sketch-color-danger); }
+.sketch-badge--info    { background: var(--sketch-color-info-wash);    --badge-dot: var(--sketch-color-info); }
+.sketch-chip { display: inline-flex; align-items: center; gap: 6px; height: var(--sketch-size-control-sm); padding: 0 14px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-color-panel); font-size: var(--sketch-font-size-small); cursor: pointer; transition: transform var(--sketch-motion-duration); }
+.sketch-chip:hover { transform: translate(-1px, -1px); }
+.sketch-chip:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 3px; }
+.sketch-chip[aria-pressed="true"] { background-image: var(--sketch-hatch-default); }
+.sketch-chip--add { border-style: dashed; }
+.sketch-status { display: inline-flex; align-items: center; gap: 8px; font-size: var(--sketch-font-size-small); }
+.sketch-status::before { content: ""; width: 10px; height: 10px; border-radius: 50%; border: 1.4px solid var(--sketch-color-ink); background: var(--status, var(--sketch-color-offline)); }
+.sketch-status--online { --status: var(--sketch-color-online); }
+.sketch-status--busy { --status: var(--sketch-color-busy); }
+.sketch-status--offline { --status: var(--sketch-color-offline); }
+.sketch-status--error { --status: var(--sketch-color-error); }
+.sketch-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border: 1.4px solid var(--sketch-color-ink); border-radius: 50%; font-size: 12px; }
+
+/* =========================================================================
+   Tabs, pills, segmented — a drawn box / hatched pill glides to the active item (js)
+   <div class="sketch-tabs" role="tablist"><button class="sketch-tabs__item" role="tab" aria-selected="true">Tab 1</button>…</div>
+   <div class="sketch-pills" role="tablist"><button class="sketch-pills__item" role="tab" aria-selected="true">All</button>…</div>
+   <div class="sketch-segmented" role="tablist"><button class="sketch-segmented__item" role="tab" aria-selected="true">Light</button>…</div>
+   Folder tabs (static): .sketch-tabs--folder
+   ========================================================================= */
+.sketch-tabs,
+.sketch-pills,
+.sketch-segmented { position: relative; isolation: isolate; display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.sketch-tabs { padding: 3px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); }
+.sketch-segmented { padding: 3px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-color-panel); flex-wrap: nowrap; }
+.sketch-segmented--block { display: flex; width: 100%; }
+.sketch-pills { gap: 8px; }
+.sketch-tabs__item,
+.sketch-pills__item,
+.sketch-segmented__item {
+  position: relative;
+  z-index: 1;
+  height: calc(var(--sketch-size-control-sm) - 2px);
+  padding: 0 14px;
+  border: var(--sketch-line-regular) solid transparent;
+  background: transparent;
+  font-size: var(--sketch-font-size-body);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.sketch-tabs__item { border-radius: var(--sketch-radius-sm); }
+.sketch-pills__item { border-color: var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-color-panel); }
+.sketch-segmented__item { flex: 1; border-radius: var(--sketch-radius-pill); }
+.sketch-tabs__item:focus-visible,
+.sketch-pills__item:focus-visible,
+.sketch-segmented__item:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 2px; }
+.sketch-tabs__item[aria-selected="true"],
+.sketch-tabs__item.is-active { border-color: var(--sketch-color-ink); background: var(--sketch-color-panel); }
+.sketch-pills__item[aria-selected="true"],
+.sketch-pills__item.is-active { background-image: var(--sketch-hatch-default); }
+.sketch-segmented__item[aria-selected="true"],
+.sketch-segmented__item.is-active { border-color: var(--sketch-color-ink); background: var(--sketch-color-panel); }
+.sketch-segmented__item[aria-selected="true"]::before { content: "✓ "; }
+.sketch-pills.has-indicator .sketch-pills__item[aria-selected="true"],
+.sketch-pills.has-indicator .sketch-pills__item.is-active { background-image: none; background-color: transparent; }
+.sketch-tabs.has-indicator .sketch-tabs__item[aria-selected="true"],
+.sketch-tabs.has-indicator .sketch-tabs__item.is-active,
+.sketch-segmented.has-indicator .sketch-segmented__item[aria-selected="true"],
+.sketch-segmented.has-indicator .sketch-segmented__item.is-active { border-color: transparent; background: transparent; }
+.sketch-tabs.has-indicator::before,
+.sketch-pills.has-indicator::before,
+.sketch-segmented.has-indicator::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: var(--sketch-indicator-w, 0px);
+  height: var(--sketch-indicator-h, 0px);
+  transform: translate(var(--sketch-indicator-x, 0px), var(--sketch-indicator-y, 0px));
+  opacity: var(--sketch-indicator-o, 1);
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-sm);
+  background: var(--sketch-color-panel);
+}
+.sketch-tabs.has-indicator::before { box-shadow: var(--sketch-shadow-1); }
+.sketch-pills.has-indicator::before { border-radius: var(--sketch-radius-pill); background: var(--sketch-hatch-default), var(--sketch-color-panel); }
+.sketch-segmented.has-indicator::before { border-radius: var(--sketch-radius-pill); }
+.sketch-tabs.has-indicator.is-animated::before,
+.sketch-pills.has-indicator.is-animated::before,
+.sketch-segmented.has-indicator.is-animated::before {
+  transition: transform var(--sketch-motion-duration-slide) var(--sketch-motion-easing-spring), width var(--sketch-motion-duration-slide) var(--sketch-motion-easing-spring);
+}
+.sketch-tabs--folder { padding: 0; border: 0; border-bottom: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: 0; gap: 2px; }
+.sketch-tabs--folder .sketch-tabs__item { border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-bottom: 0; border-radius: 12px 14px 0 0 / 10px 12px 0 0; margin-bottom: -1.6px; background: var(--sketch-color-well); }
+.sketch-tabs--folder .sketch-tabs__item[aria-selected="true"] { background: var(--sketch-color-panel); }
+.sketch-tabs--folder.has-indicator::before { display: none; }
+.sketch-tabs--folder.has-indicator .sketch-tabs__item[aria-selected="true"] { border-color: var(--sketch-color-ink); background: var(--sketch-color-panel); }
+
+/* =========================================================================
+   Breadcrumb, pagination, sidebar nav
+   <nav class="sketch-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Home</a></li><li aria-current="page">Data</li></ol></nav>
+   <nav class="sketch-pagination" aria-label="Pages"><a href="#" aria-current="page">2</a>…</nav>
+   <nav class="sketch-nav"><a class="sketch-nav__item" href="#" aria-current="page">…</a></nav>
+   ========================================================================= */
+.sketch-breadcrumb ol { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0; list-style: none; }
+.sketch-breadcrumb li { display: inline-flex; align-items: center; gap: 6px; }
+.sketch-breadcrumb li + li::before { content: "›"; color: var(--sketch-color-ink-soft); font-size: 1.2em; }
+.sketch-breadcrumb a { text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.sketch-breadcrumb [aria-current="page"] { font-weight: 700; }
+.sketch-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.sketch-pagination > a { display: inline-grid; place-items: center; min-width: 32px; height: 32px; padding: 0 6px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); text-decoration: none; }
+.sketch-pagination > a:hover { transform: translate(-1px, -1px); box-shadow: var(--sketch-shadow-1); }
+.sketch-pagination > a:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 2px; }
+.sketch-pagination > a[aria-current="page"] { background-image: var(--sketch-hatch-default); font-weight: 700; }
+.sketch-pagination > span { color: var(--sketch-color-ink-soft); }
+
+.sketch-nav { position: relative; isolation: isolate; display: flex; flex-direction: column; gap: 4px; }
+.sketch-nav__item { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; border: var(--sketch-line-regular) solid transparent; border-radius: var(--sketch-radius-sm); text-decoration: none; }
+.sketch-nav__item:hover { background-image: var(--sketch-hatch-light); }
+.sketch-nav__item:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 2px; }
+.sketch-nav__item .sketch-count { margin-left: auto; }
+.sketch-nav__item[aria-current="page"],
+.sketch-nav__item.is-active { border-color: var(--sketch-color-ink); background: var(--sketch-color-panel); }
+.sketch-nav.has-indicator .sketch-nav__item[aria-current="page"],
+.sketch-nav.has-indicator .sketch-nav__item.is-active { border-color: transparent; background: transparent; }
+/* Active item: a drawn box with corner brackets (from the Settings sketch) */
+.sketch-nav.has-indicator::before,
+.sketch-nav.has-indicator::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--sketch-indicator-w, 0px);
+  height: var(--sketch-indicator-h, 0px);
+  transform: translate(var(--sketch-indicator-x, 0px), var(--sketch-indicator-y, 0px));
+  opacity: var(--sketch-indicator-o, 1);
+  pointer-events: none;
+}
+.sketch-nav.has-indicator::before { z-index: 0; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); }
+.sketch-nav.has-indicator::after {
+  z-index: 2;
+  margin: -5px;
+  width: calc(var(--sketch-indicator-w, 0px) + 10px);
+  height: calc(var(--sketch-indicator-h, 0px) + 10px);
+  background:
+    linear-gradient(var(--sketch-color-ink), var(--sketch-color-ink)) top left / 9px 1.6px no-repeat,
+    linear-gradient(var(--sketch-color-ink), var(--sketch-color-ink)) top left / 1.6px 9px no-repeat,
+    linear-gradient(var(--sketch-color-ink), var(--sketch-color-ink)) bottom right / 9px 1.6px no-repeat,
+    linear-gradient(var(--sketch-color-ink), var(--sketch-color-ink)) bottom right / 1.6px 9px no-repeat;
+}
+.sketch-nav.has-indicator.is-animated::before,
+.sketch-nav.has-indicator.is-animated::after { transition: transform var(--sketch-motion-duration-slide) var(--sketch-motion-easing-spring), height var(--sketch-motion-duration-slide) var(--sketch-motion-easing-spring); }
+
+/* =========================================================================
+   Alert, toast, dialog, tooltip, popover
+   <div class="sketch-alert sketch-alert--success" role="status"><svg class="sketch-icon">…</svg><span><b>Success</b> Operation completed.</span><button class="sketch-close" aria-label="Dismiss">×</button></div>
+   <div class="sketch-toast" role="status"><svg class="sketch-icon">…</svg>[Saved to this device]</div>
+   ========================================================================= */
+.sketch-alert { display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 12px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); font-size: var(--sketch-font-size-small); }
+.sketch-alert b { margin-right: 6px; }
+.sketch-alert--success { background: var(--sketch-color-success-wash); }
+.sketch-alert--warning { background: var(--sketch-color-warning-wash); }
+.sketch-alert--danger  { background: var(--sketch-color-danger-wash); }
+.sketch-alert--info    { background: var(--sketch-color-brand-wash); }
+.sketch-close { display: grid; place-items: center; margin-left: auto; width: 26px; height: 26px; border: 0; border-radius: 50%; background: transparent; font-size: 18px; line-height: 1; cursor: pointer; }
+.sketch-close:hover { background-image: var(--sketch-hatch-light); }
+.sketch-close:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 1px; }
+.sketch-toast { display: inline-flex; align-items: center; gap: 10px; padding: 9px 14px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); box-shadow: inset 0 0 0 3px var(--sketch-color-panel), inset 0 0 0 4.6px var(--sketch-color-ink), var(--sketch-shadow-2); }
+.sketch-toast .sketch-icon:first-child { width: 22px; height: 22px; padding: 2px; border: 1.4px solid var(--sketch-color-ink); border-radius: 50%; background: var(--sketch-color-brand-wash); }
+
+.sketch-dialog { width: min(100% - 32px, 380px); padding: 22px; border: var(--sketch-line-bold) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-lg); background: var(--sketch-color-panel); color: var(--sketch-color-ink); box-shadow: var(--sketch-shadow-3); text-align: center; }
+.sketch-dialog::backdrop { background: var(--sketch-color-backdrop); }
+.sketch-dialog[open] { animation: sketch-pop var(--sketch-motion-duration-slide) var(--sketch-motion-easing-spring); }
+.sketch-dialog__title { font-family: var(--sketch-font-family-display); font-size: var(--sketch-font-size-h3); font-weight: 700; }
+.sketch-dialog__body { margin-top: 4px; color: var(--sketch-color-ink-soft); }
+.sketch-dialog__actions { display: flex; justify-content: center; gap: 12px; margin-top: 18px; }
+.sketch-dialog__mark { display: inline-grid; place-items: center; width: 34px; height: 34px; margin-bottom: 8px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: 50%; font-family: var(--sketch-font-family-display); font-weight: 700; }
+@keyframes sketch-pop { from { opacity: 0; transform: translateY(6px) rotate(-0.6deg); } to { opacity: 1; transform: none; } }
+
+.sketch-tip,
+.sketch-popover { position: relative; display: inline-block; padding: 6px 12px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); font-size: var(--sketch-font-size-small); }
+.sketch-tip { background: var(--sketch-color-ink); color: var(--sketch-color-panel); }
+.sketch-popover { padding: 12px 16px; box-shadow: var(--sketch-shadow-1); }
+.sketch-tip::after,
+.sketch-popover::after { content: ""; position: absolute; left: 22px; bottom: -7px; width: 11px; height: 11px; border-right: inherit; border-bottom: inherit; background: inherit; transform: rotate(45deg); }
+.sketch-tooltip { position: relative; display: inline-flex; }
+.sketch-tooltip::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translate(-50%, 3px); padding: 4px 10px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-ink); color: var(--sketch-color-panel); font-size: var(--sketch-font-size-caption); white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity var(--sketch-motion-duration), transform var(--sketch-motion-duration); }
+.sketch-tooltip:hover::after,
+.sketch-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0); }
+
+/* =========================================================================
+   Card, image placeholder, list, table, empty state
+   <article class="sketch-card"><div class="sketch-placeholder"></div><h3 class="sketch-card__title">Card title</h3>…</article>
+   ========================================================================= */
+.sketch-card { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-md); background: var(--sketch-color-panel); box-shadow: var(--sketch-shadow-1); }
+.sketch-card--interactive { cursor: pointer; transition: transform var(--sketch-motion-duration), box-shadow var(--sketch-motion-duration); }
+.sketch-card--interactive:hover { transform: translate(-1px, -1px); box-shadow: var(--sketch-shadow-2); }
+.sketch-card__title { font-family: var(--sketch-font-family-display); font-size: 17px; font-weight: 700; }
+.sketch-card__text { font-size: var(--sketch-font-size-small); color: var(--sketch-color-ink-soft); }
+/* Classic wireframe image: a box with a cross */
+.sketch-placeholder {
+  position: relative;
+  aspect-ratio: var(--ratio, 16 / 9);
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-sm);
+  background:
+    linear-gradient(to top right, transparent calc(50% - 0.8px), var(--sketch-color-ink-faint) calc(50% - 0.8px) calc(50% + 0.8px), transparent calc(50% + 0.8px)),
+    linear-gradient(to bottom right, transparent calc(50% - 0.8px), var(--sketch-color-ink-faint) calc(50% - 0.8px) calc(50% + 0.8px), transparent calc(50% + 0.8px)),
+    var(--sketch-color-well);
+}
+.sketch-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); }
+.sketch-list > li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; }
+.sketch-list > li + li { border-top: 1.4px dashed var(--sketch-color-ink-faint); }
+.sketch-list__icon { display: grid; place-items: center; width: 30px; height: 30px; flex: none; border: 1.4px solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); }
+.sketch-list__title { line-height: 1.15; }
+.sketch-list__text { font-size: var(--sketch-font-size-caption); color: var(--sketch-color-ink-soft); }
+.sketch-list__chev { margin-left: auto; color: var(--sketch-color-ink-soft); }
+.sketch-table-wrap { overflow-x: auto; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); }
+.sketch-table { width: 100%; border-collapse: collapse; font-size: var(--sketch-font-size-small); }
+.sketch-table th { padding: 8px 10px; text-align: left; font-weight: 700; border-bottom: var(--sketch-line-regular) solid var(--sketch-color-ink); white-space: nowrap; }
+.sketch-table td { padding: 8px 10px; border-bottom: 1.4px dashed var(--sketch-color-ink-faint); white-space: nowrap; }
+.sketch-table tr:last-child td { border-bottom: 0; }
+.sketch-table .is-num { text-align: right; font-variant-numeric: tabular-nums; }
+.sketch-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 20px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-md); background: var(--sketch-color-panel); text-align: center; }
+.sketch-empty .sketch-icon { width: 40px; height: 40px; stroke-width: 1.4; }
+
+/* =========================================================================
+   Progress: bar, steps, ring, skeleton, spinner
+   <div class="sketch-progress"><div class="sketch-progress__bar"><span style="--value:60%"></span></div><output>60%</output></div>
+   <ol class="sketch-steps"><li class="is-done">Configure</li><li aria-current="step">Review</li><li>Confirm</li></ol>
+   <div class="sketch-ring" style="--value:75" role="img" aria-label="75%"><svg viewBox="0 0 100 100"><circle class="sketch-ring__track" cx="50" cy="50" r="40" pathLength="100"/><circle class="sketch-ring__bar" cx="50" cy="50" r="40" pathLength="100"/></svg><span>75%</span></div>
+   ========================================================================= */
+.sketch-progress { display: flex; align-items: center; gap: 10px; }
+.sketch-progress__bar { flex: 1; height: 14px; padding: 2px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-color-panel); }
+.sketch-progress__bar > span { display: block; width: var(--value, 0%); height: 100%; border-radius: var(--sketch-radius-pill); background: var(--sketch-hatch-dense), var(--sketch-color-brand-wash); transition: width var(--sketch-motion-duration-slide) var(--sketch-motion-easing-spring); }
+.sketch-steps { position: relative; display: flex; justify-content: space-between; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.sketch-steps::before { content: ""; position: absolute; left: 16px; right: 16px; top: 15px; border-top: var(--sketch-line-regular) solid var(--sketch-color-ink); }
+.sketch-steps li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; font-size: var(--sketch-font-size-caption); color: var(--sketch-color-ink-soft); counter-increment: step; }
+.sketch-steps li::before { content: counter(step); display: grid; place-items: center; width: 30px; height: 30px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: 50%; background: var(--sketch-color-panel); font-size: var(--sketch-font-size-body); color: var(--sketch-color-ink); }
+.sketch-steps li.is-done::before { content: "✓"; background: var(--sketch-color-well); }
+.sketch-steps li[aria-current="step"] { color: var(--sketch-color-ink); font-weight: 700; }
+.sketch-steps li[aria-current="step"]::before { border-width: var(--sketch-line-thick); }
+.sketch-steps li:first-child { align-items: flex-start; }
+.sketch-steps li:last-child { align-items: flex-end; }
+.sketch-ring { position: relative; display: inline-grid; place-items: center; width: var(--ring-size, 84px); aspect-ratio: 1; }
+.sketch-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.sketch-ring circle { fill: none; stroke-linecap: round; }
+.sketch-ring__track { stroke: var(--sketch-color-ink-faint); stroke-width: 1.6; stroke-dasharray: 2 3; }
+.sketch-ring__bar { stroke: var(--sketch-color-ink); stroke-width: 6; stroke-dasharray: var(--value, 0) 100; transition: stroke-dasharray var(--sketch-motion-duration-slide) var(--sketch-motion-easing-spring); }
+.sketch-ring span { font-family: var(--sketch-font-family-display); font-weight: 700; font-size: calc(var(--ring-size, 84px) * 0.22); }
+.sketch-skeleton { display: flex; flex-direction: column; gap: 8px; }
+.sketch-skeleton > span { display: block; height: 12px; border: 1.4px dashed var(--sketch-color-ink-faint); border-radius: var(--sketch-radius-pill); background: var(--sketch-hatch-light); }
+.sketch-spinner { display: inline-block; width: 18px; height: 18px; flex: none; border: 2px dashed currentColor; border-radius: 50%; animation: sketch-spin 1.4s linear infinite; }
+@keyframes sketch-spin { to { transform: rotate(360deg); } }
+
+/* =========================================================================
+   Swatches: color ramps and accent picker
+   <span class="sketch-swatch" style="--swatch:var(--sketch-color-brand)"></span>
+   <button class="sketch-swatch sketch-swatch--pick" style="--swatch:#A9C7EC" aria-pressed="true" data-label="Ocean" aria-label="Ocean"></button>
+   ========================================================================= */
+.sketch-swatch { position: relative; display: inline-block; flex: none; width: var(--swatch-size, 26px); aspect-ratio: 1; padding: 0; border: 1.5px solid var(--sketch-color-ink); border-radius: 50%; background: var(--sketch-hatch-light), var(--swatch, var(--sketch-color-panel)); }
+.sketch-swatch--pick { --swatch-size: 38px; cursor: pointer; transition: transform var(--sketch-motion-duration); }
+.sketch-swatch--pick:hover { transform: scale(1.06); }
+.sketch-swatch--pick:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 4px; }
+.sketch-swatch--pick[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--sketch-color-paper), 0 0 0 5px var(--sketch-color-ink); }
+.sketch-swatch--pick[aria-pressed="true"]::after { content: attr(data-label); position: absolute; left: 50%; top: calc(100% + 8px); transform: translateX(-50%); padding: 0 8px; border: 1.4px solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); font-size: var(--sketch-font-size-caption); white-space: nowrap; }
+.sketch-ramp { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+/* Code block for token overrides */
+.sketch-code { margin: 0; padding: 12px 14px; overflow-x: auto; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); font-family: var(--sketch-font-family-mono); font-size: 12.5px; line-height: 1.55; white-space: pre; }

@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sketch Style Guide</title>
+  <meta name="description" content="Sketch — a hand-drawn design language: ink lines on cream paper, hatching for emphasis, watercolor tints for meaning.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/sketch.css">
+  <style>
+    /* Page layout only — visuals come from Sketch classes and tokens. */
+    body { padding: 22px 16px 40px; }
+    .page { width: min(100%, 1240px); margin: 0 auto; }
+    .head { display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; padding: 14px 18px; margin-bottom: 18px; }
+    .head__logo { width: 54px; height: 54px; }
+    .head__title { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .head__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; text-align: right; }
+    .platforms { display: flex; gap: 10px; padding-left: 18px; border-left: 1.6px solid var(--sketch-color-ink); }
+    .edition { height: 30px; padding: 0 14px; font-size: 15px; }
+    .layout { display: grid; grid-template-columns: 210px minmax(0, 1fr) 260px; gap: 18px; align-items: start; }
+    .toc { position: sticky; top: 16px; padding: 10px; }
+    .center, .right { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+    .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .overview { display: grid; grid-template-columns: 1fr 200px; gap: 18px; align-items: center; }
+    .tokens { display: grid; grid-template-columns: 1.5fr 1fr 0.8fr; gap: 18px; }
+    .ramp-row { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 6px; }
+    .type-list { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+    .type-list div { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1.4px dashed var(--sketch-color-grid); padding-bottom: 2px; }
+    .spacing { display: grid; grid-template-columns: repeat(2, auto); justify-content: start; gap: 6px 18px; font-size: 13px; align-items: center; }
+    .spacing i { display: inline-block; border: 1.4px solid var(--sketch-color-ink); border-radius: 3px; vertical-align: middle; margin-right: 8px; }
+    .radii { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; text-align: center; }
+    .radii i { display: block; width: 34px; height: 34px; margin-bottom: 2px; border: 1.6px solid var(--sketch-color-ink); border-bottom: 0; border-left: 0; }
+    .elev { display: flex; flex-direction: column; gap: 14px; }
+    .elev div { padding: 6px 10px; border: 1.6px solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); font-size: 13px; }
+    .row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: start; padding: 14px 0; border-top: 1.4px dashed var(--sketch-color-ink-faint); }
+    .row:first-of-type { border-top: 0; padding-top: 4px; }
+    .row > h3 { font-family: var(--sketch-font-family-display); font-size: 17px; font-weight: 700; }
+    .specimens { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: flex-end; }
+    .specimens figure { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; color: var(--sketch-color-ink-soft); }
+    .forms { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px 16px; }
+    .forms2 { display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: flex-end; margin-top: 16px; }
+    .forms2 > :nth-child(4) { flex: 1 1 200px; max-width: 280px; }
+    .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; align-items: start; }
+    .side-list { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .side-list li { display: grid; grid-template-columns: 26px 1fr; gap: 8px; line-height: 1.2; }
+    .side-list small { display: block; font-size: 13px; color: var(--sketch-color-ink-soft); }
+    .patterns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .patterns div { padding: 6px 8px; border: 1.4px solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); font-size: 14px; }
+    .patterns i { display: block; height: 22px; margin-top: 4px; background: repeating-linear-gradient(var(--sketch-color-ink-faint) 0 1.4px, transparent 1.4px 6px); }
+    .cols { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; height: 90px; }
+    .cols span { border: 1.4px solid var(--sketch-color-ink); border-radius: 3px; background: var(--sketch-hatch-light); }
+    .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 18px; padding: 12px 18px; }
+    @media (max-width: 1180px) { .layout { grid-template-columns: 190px minmax(0, 1fr); } .right { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); } }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: minmax(0, 1fr); } .toc { position: static; }
+      .toc .sketch-nav { flex-direction: row; flex-wrap: wrap; }
+      .tokens, .two, .overview { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .head { grid-template-columns: auto 1fr; } .head__meta { grid-column: 1 / -1; justify-content: space-between; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-layers" viewBox="0 0 48 48"><path d="M24 6 4 15.5 24 25l20-9.5Z"/><path d="m4 24 20 9.5L44 24"/><path d="m4 32.5 20 9.5 20-9.5"/></symbol>
+  <symbol id="i-desktop" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M9 20h6M12 16v4"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="10" rx="1.2"/><path d="M2.5 19h19l-2-4h-15Z"/></symbol>
+  <symbol id="i-tablet" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4.3l8 6.9V19a1 1 0 0 1-1 1h-4v-5.6H9V20H5a1 1 0 0 1-1-1Z"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3Z"/></symbol>
+  <symbol id="i-swatch" viewBox="0 0 24 24"><circle cx="8" cy="9" r="4"/><circle cx="16" cy="9" r="4"/><circle cx="12" cy="16" r="4"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1"/></symbol>
+  <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M10 4h4v3a2 2 0 1 0 0 0h3v4a2 2 0 1 1 0 4v4h-4a2 2 0 1 0-4 0H5v-4a2 2 0 1 0 0-4V7h5Z"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11m0-1V4.5a1.5 1.5 0 0 1 3 0V11m0-4.5a1.5 1.5 0 0 1 3 0V13c0 4-2.5 7-6 7-2.4 0-3.8-1-5.2-3L4 13.5a1.5 1.5 0 0 1 2.5-1.6L8 13.5"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5c3-1 5.5-1 8 1 2.5-2 5-2 8-1V19c-3-1-5.5-1-8 1-2.5-2-5-2-8-1Z"/><path d="M12 6.5V20"/></symbol>
+  <symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M5 9h14M12 9v6m-3 6 3-6 3 6"/></symbol>
+  <symbol id="i-brush" viewBox="0 0 24 24"><path d="M14 4 20 10 11 19a3 3 0 0 1-4 0 3 3 0 0 1 0-4Z"/><path d="M7 15c-2 0-3 1.5-3 5 3 0 5-1 5-3"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M4 19h16"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+  <symbol id="i-check-c" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.7L16.5 9"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M10.3 4.4 2.8 17.6A2 2 0 0 0 4.5 20.5h15a2 2 0 0 0 1.7-2.9L13.7 4.4a2 2 0 0 0-3.4 0Z"/><path d="M12 9.5v4.2M12 17h.01"/></symbol>
+  <symbol id="i-err" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8h.01"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 0 1-.5-9A6 6 0 0 1 18 8a4.5 4.5 0 0 1-.5 10Z"/><path d="M12 15V10m-2.3 2.2L12 10l2.3 2.2"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16l-6 7.5V19l-4-2v-4.5Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9-8.6C1.6 8.3 3.6 5 7 5c2 0 3.3 1.2 5 3 1.7-1.8 3-3 5-3 3.4 0 5.4 3.3 4 6.4-2 4.2-9 8.6-9 8.6Z"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9Z"/></symbol>
+</svg>
+
+<div class="page">
+  <header class="sketch-box head">
+    <svg class="sketch-icon head__logo" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-layers"/></svg>
+    <div>
+      <div class="head__title"><h1 class="sketch-display">Product UI Style Guide</h1><span class="sketch-badge sketch-badge--plain edition">Master · Flagship Edition</span></div>
+      <p class="sketch-muted">A complete, scalable and production-ready UI design system for modern products.</p>
+    </div>
+    <div class="head__meta">
+      <div><div class="sketch-h3">v1.0.0</div><div class="sketch-caption">Design System</div></div>
+      <div class="platforms" aria-label="Platforms: desktop, laptop, tablet, mobile">
+        <svg class="sketch-icon" aria-hidden="true"><use href="#i-desktop"/></svg><svg class="sketch-icon" aria-hidden="true"><use href="#i-laptop"/></svg><svg class="sketch-icon" aria-hidden="true"><use href="#i-tablet"/></svg><svg class="sketch-icon" aria-hidden="true"><use href="#i-phone"/></svg>
+      </div>
+      <a class="sketch-btn sketch-btn--sm" href="examples/settings.html">Settings example</a>
+      <a class="sketch-btn sketch-btn--sm sketch-btn--ghost" href="../index.html">All languages</a>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sketch-box toc" aria-label="Contents">
+      <nav class="sketch-nav" aria-label="Style guide sections">
+        <a class="sketch-nav__item" href="#overview" aria-current="page"><svg class="sketch-icon" aria-hidden="true"><use href="#i-home"/></svg>Overview</a>
+        <a class="sketch-nav__item" href="#principles"><svg class="sketch-icon" aria-hidden="true"><use href="#i-bulb"/></svg>Design principles</a>
+        <a class="sketch-nav__item" href="#tokens"><svg class="sketch-icon" aria-hidden="true"><use href="#i-swatch"/></svg>Design tokens</a>
+        <a class="sketch-nav__item" href="#iconography"><svg class="sketch-icon" aria-hidden="true"><use href="#i-grid"/></svg>Foundation</a>
+        <a class="sketch-nav__item" href="#components"><svg class="sketch-icon" aria-hidden="true"><use href="#i-puzzle"/></svg>Components</a>
+        <a class="sketch-nav__item" href="#patterns"><svg class="sketch-icon" aria-hidden="true"><use href="#i-grid"/></svg>Patterns</a>
+        <a class="sketch-nav__item" href="#interaction"><svg class="sketch-icon" aria-hidden="true"><use href="#i-hand"/></svg>Interactions</a>
+        <a class="sketch-nav__item" href="#accessibility"><svg class="sketch-icon" aria-hidden="true"><use href="#i-person"/></svg>Accessibility</a>
+        <a class="sketch-nav__item" href="#theming"><svg class="sketch-icon" aria-hidden="true"><use href="#i-brush"/></svg>Theming &amp; extension</a>
+        <a class="sketch-nav__item" href="#grid"><svg class="sketch-icon" aria-hidden="true"><use href="#i-download"/></svg>Grid &amp; layout</a>
+      </nav>
+    </aside>
+
+    <main class="center">
+      <section class="sketch-box" id="overview" aria-labelledby="s1">
+        <h2 class="sketch-box__title" id="s1"><span>01</span>Overview</h2>
+        <div class="overview">
+          <p>A unified, extensible style guide that defines the visual language, interaction behaviour and components for building consistent, considered product experiences. Everything is drawn in ink first; color only adds meaning.</p>
+          <svg viewBox="0 0 200 120" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M24 18h112a6 6 0 0 1 6 6v64a6 6 0 0 1-6 6H24a6 6 0 0 1-6-6V24a6 6 0 0 1 6-6Z"/><path d="M18 32h124M28 25h.1M36 25h.1M44 25h.1"/>
+            <path d="M34 44h44v34H34Z"/><path d="m36 74 12-14 9 9 6-5 13 10"/><circle cx="66" cy="52" r="3.5"/>
+            <path d="M90 46h38M90 56h30M90 66h36"/>
+            <path d="M120 48h58a5 5 0 0 1 5 5v54a5 5 0 0 1-5 5h-58a5 5 0 0 1-5-5V53a5 5 0 0 1 5-5Z" fill="var(--sketch-color-panel)"/>
+            <path d="M126 62h46M126 72h40M126 82h46M126 92h30"/>
+            <path d="M160 10l4 6M172 14l-2 6M182 22l-6 2"/>
+          </svg>
+        </div>
+      </section>
+
+      <section class="sketch-box" id="tokens" aria-labelledby="s2">
+        <h2 class="sketch-box__title" id="s2"><span>02</span>Design tokens <small>The design language foundation that keeps everything consistent.</small></h2>
+        <div class="tokens">
+          <div>
+            <span class="sketch-label">Color (semantic)</span>
+            <div class="ramp-row"><span>Brand</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-brand) 35%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-brand) 70%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-brand)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-brand) 70%,var(--sketch-color-ink))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-brand) 40%,var(--sketch-color-ink))"></span></div></div>
+            <div class="ramp-row"><span>Neutral</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:var(--sketch-color-panel)"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-well)"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-ink-faint)"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-ink-soft)"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-ink)"></span></div></div>
+            <div class="ramp-row"><span>Success</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-success) 35%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-success) 70%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-success)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-success) 70%,var(--sketch-color-ink))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-success) 40%,var(--sketch-color-ink))"></span></div></div>
+            <div class="ramp-row"><span>Warning</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-warning) 35%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-warning) 70%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-warning)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-warning) 70%,var(--sketch-color-ink))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-warning) 40%,var(--sketch-color-ink))"></span></div></div>
+            <div class="ramp-row"><span>Danger</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-danger) 35%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-danger) 70%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-danger)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-danger) 70%,var(--sketch-color-ink))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-danger) 40%,var(--sketch-color-ink))"></span></div></div>
+            <div class="ramp-row"><span>Info</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-info) 35%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-info) 70%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-info)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-info) 70%,var(--sketch-color-ink))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-info) 40%,var(--sketch-color-ink))"></span></div></div>
+            <div class="ramp-row sketch-caption"><span></span><span>100 · 300 · 500 · 700 · 900</span></div>
+          </div>
+          <div>
+            <span class="sketch-label">Typography</span>
+            <div class="type-list">
+              <div><b class="sketch-h1" style="font-size:26px">H1</b><span>32/40 · Kalam bold</span></div>
+              <div><b class="sketch-h2" style="font-size:21px">H2</b><span>24/32 · Kalam bold</span></div>
+              <div><b class="sketch-h3" style="font-size:18px">H3</b><span>20/28 · Kalam bold</span></div>
+              <div><span>Body L</span><span>16/22 · Patrick Hand</span></div>
+              <div><span class="sketch-small">Body M</span><span>14/20</span></div>
+              <div><span class="sketch-caption">Caption</span><span>13/16</span></div>
+              <div><span class="sketch-overline">Overline</span><span>12/14 caps</span></div>
+            </div>
+          </div>
+          <div class="sketch-stack" style="--gap:14px">
+            <div>
+              <span class="sketch-label">Spacing (8pt grid)</span>
+              <div class="spacing"><span><i style="width:4px;height:4px"></i>4</span><span><i style="width:24px;height:24px"></i>24</span><span><i style="width:8px;height:8px"></i>8</span><span><i style="width:32px;height:32px"></i>32</span><span><i style="width:16px;height:16px"></i>16</span><span><i style="width:48px;height:20px"></i>48</span></div>
+            </div>
+          </div>
+        </div>
+        <hr class="sketch-rule">
+        <div class="two">
+          <div><span class="sketch-label">Radius</span>
+            <div class="radii"><figure><i style="border-top-right-radius:0"></i>0</figure><figure><i style="border-top-right-radius:4px"></i>4</figure><figure><i style="border-top-right-radius:8px"></i>8</figure><figure><i style="border-top-right-radius:12px"></i>12</figure><figure><i style="border-top-right-radius:16px"></i>16</figure><figure><i style="border-top-right-radius:24px"></i>24</figure></div></div>
+          <div><span class="sketch-label">Elevation (drawn shadow)</span>
+            <div class="elev"><div style="box-shadow:var(--sketch-shadow-1)">Level 1 (subtle) · 2px</div><div style="box-shadow:var(--sketch-shadow-2)">Level 2 (medium) · 4px</div><div style="box-shadow:var(--sketch-shadow-3)">Level 3 (high) · 6px</div></div></div>
+        </div>
+      </section>
+
+      <div class="two">
+        <section class="sketch-box" id="iconography" aria-labelledby="s3">
+          <h2 class="sketch-box__title" id="s3"><span>03</span>Iconography</h2>
+          <div class="sketch-row" style="--gap:14px;margin-bottom:12px">
+            <svg class="sketch-icon" aria-hidden="true"><use href="#i-home"/></svg><svg class="sketch-icon" aria-hidden="true"><use href="#i-file"/></svg><svg class="sketch-icon" aria-hidden="true"><use href="#i-search"/></svg><svg class="sketch-icon" aria-hidden="true"><use href="#i-bell"/></svg><svg class="sketch-icon" aria-hidden="true"><use href="#i-gear"/></svg><svg class="sketch-icon" aria-hidden="true"><use href="#i-heart"/></svg><svg class="sketch-icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="sketch-icon" aria-hidden="true"><use href="#i-user"/></svg><svg class="sketch-icon" aria-hidden="true"><use href="#i-calendar"/></svg><svg class="sketch-icon" aria-hidden="true"><use href="#i-filter"/></svg>
+          </div>
+          <ul class="sketch-small" style="margin:0;padding-left:18px"><li>Outline style, rounded geometry</li><li>16 / 20 / 24 / 32px sizes</li><li>1.7px stroke, round caps</li></ul>
+        </section>
+        <section class="sketch-box" aria-labelledby="s4">
+          <h2 class="sketch-box__title" id="s4"><span>04</span>Illustration</h2>
+          <div class="sketch-row" style="--gap:14px;align-items:center;flex-wrap:nowrap">
+            <svg viewBox="0 0 120 80" width="120" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M26 14h68a4 4 0 0 1 4 4v40H22V18a4 4 0 0 1 4-4Z"/><path d="M10 58h100l-6 9H16Z"/><path d="M34 46l14-16 10 10 6-6 12 12"/><circle cx="68" cy="26" r="4"/><path d="M100 20c6-4 12-2 14 3M8 30c3-5 9-6 13-3" stroke-dasharray="2 4"/><path d="M28 18h60v36H28Z" fill="url(#hatch-ill)" stroke="none" opacity=".35"/><defs><pattern id="hatch-ill" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0v6" stroke="currentColor" stroke-width="1.2"/></pattern></defs></svg>
+            <ul class="sketch-small" style="margin:0;padding-left:18px"><li>Line + soft fill + hatching</li><li>Same stroke as icons</li><li>Monochrome or one tint</li></ul>
+          </div>
+        </section>
+      </div>
+
+      <section class="sketch-box" id="components" aria-labelledby="s5">
+        <h2 class="sketch-box__title" id="s5"><span>05</span>Components <small>Interactive elements, complete and extensible.</small></h2>
+
+        <div class="row"><h3>Buttons</h3><div class="specimens">
+          <figure>Primary<button class="sketch-btn sketch-btn--primary" type="button">Button</button></figure>
+          <figure>Secondary<button class="sketch-btn" type="button">Button</button></figure>
+          <figure>Tertiary<button class="sketch-btn sketch-btn--tertiary" type="button">Button</button></figure>
+          <figure>Ghost<button class="sketch-btn sketch-btn--ghost" type="button">Button</button></figure>
+          <figure>Destructive<button class="sketch-btn sketch-btn--destructive" type="button">Button</button></figure>
+          <figure>Loading<button class="sketch-btn" type="button" aria-busy="true"><span class="sketch-spinner" aria-hidden="true"></span>Saving</button></figure>
+          <figure>Icon only<button class="sketch-btn sketch-btn--icon" type="button" aria-label="Settings"><svg class="sketch-icon" aria-hidden="true"><use href="#i-gear"/></svg></button></figure>
+        </div></div>
+
+        <div class="row"><h3>Sizes &amp; states</h3><div class="specimens">
+          <figure>Large<button class="sketch-btn sketch-btn--lg" type="button">Large</button></figure>
+          <figure>Medium<button class="sketch-btn" type="button">Medium</button></figure>
+          <figure>Small<button class="sketch-btn sketch-btn--sm" type="button">Small</button></figure>
+          <figure>Default<button class="sketch-btn" type="button">Default</button></figure>
+          <figure>Hover<button class="sketch-btn is-hover" type="button">Hover</button></figure>
+          <figure>Pressed<button class="sketch-btn is-active" type="button">Pressed</button></figure>
+          <figure>Focused<button class="sketch-btn is-focus" type="button">Focused</button></figure>
+          <figure>Disabled<button class="sketch-btn" type="button" disabled>Disabled</button></figure>
+        </div></div>
+
+        <div class="row"><h3>Form controls</h3><div>
+          <div class="forms">
+            <div class="sketch-form-row"><label class="sketch-field-label" for="f1">Text field</label><label class="sketch-input-icon"><input id="f1" placeholder="Placeholder"><svg class="sketch-icon" aria-hidden="true"><use href="#i-search"/></svg></label></div>
+            <div class="sketch-form-row"><label class="sketch-field-label" for="f2">Text area</label><textarea class="sketch-input" id="f2" rows="2" placeholder="Enter something…" style="min-height:40px"></textarea></div>
+            <div class="sketch-form-row"><label class="sketch-field-label" for="f3">Select</label><select class="sketch-input" id="f3"><option>Select…</option><option>Weekly</option></select></div>
+            <div class="sketch-form-row"><span class="sketch-field-label">Multi-select</span><div class="sketch-tags"><span class="sketch-tag">Tag <button type="button" aria-label="Remove tag">×</button></span><span class="sketch-tag">Tag <button type="button" aria-label="Remove tag">×</button></span><input aria-label="Add tag"></div></div>
+            <div class="sketch-form-row"><label class="sketch-field-label" for="f5">Date picker</label><label class="sketch-input-icon"><input id="f5" placeholder="YYYY-MM-DD"><svg class="sketch-icon" aria-hidden="true"><use href="#i-calendar"/></svg></label></div>
+          </div>
+          <div class="forms2">
+            <div class="sketch-stack" style="--gap:8px"><span class="sketch-field-label">Checkbox</span><div class="sketch-row" style="--gap:10px"><input type="checkbox" class="sketch-checkbox" aria-label="Unchecked"><input type="checkbox" class="sketch-checkbox" checked aria-label="Checked"><input type="checkbox" class="sketch-checkbox" aria-label="Mixed" data-indeterminate></div></div>
+            <div class="sketch-stack" style="--gap:8px"><span class="sketch-field-label">Radio</span><div class="sketch-row" style="--gap:10px"><input type="radio" name="r" class="sketch-radio" aria-label="Option A" checked><input type="radio" name="r" class="sketch-radio" aria-label="Option B"></div></div>
+            <div class="sketch-stack" style="--gap:8px"><span class="sketch-field-label">Switch</span><div class="sketch-row" style="--gap:10px"><input type="checkbox" class="sketch-toggle" aria-label="Off"><input type="checkbox" class="sketch-toggle" checked aria-label="On"></div></div>
+            <div class="sketch-stack" style="--gap:2px"><span class="sketch-field-label">Slider</span><div class="sketch-range" style="--fill-n:.75"><output class="sketch-range__bubble" for="sl">75</output><input class="sketch-slider" id="sl" type="range" value="75" aria-label="Slider"><div class="sketch-range__ticks"><span>0</span><span>100</span></div></div></div>
+            <div class="sketch-stack" style="--gap:8px"><span class="sketch-field-label">Stepper</span><div class="sketch-stepper" data-min="0" data-max="9"><button type="button" aria-label="Decrease">−</button><output aria-live="polite">1</output><button type="button" aria-label="Increase">+</button></div></div>
+          </div>
+        </div></div>
+
+        <div class="row"><h3>Tags &amp; badges</h3><div class="sketch-row" style="--gap:18px">
+          <div class="sketch-row" style="--gap:6px"><span class="sketch-tag">Tag</span><span class="sketch-tag">Tag</span><span class="sketch-tag sketch-tag--active">Tag</span></div>
+          <div class="sketch-row" style="--gap:6px"><span class="sketch-badge sketch-badge--new">New</span><span class="sketch-badge sketch-badge--updated">Updated</span><span class="sketch-badge sketch-badge--beta">Beta</span><span class="sketch-badge sketch-badge--hot">Hot</span></div>
+          <div class="sketch-row" style="--gap:6px"><button class="sketch-chip" type="button" aria-pressed="false"><svg class="sketch-icon" aria-hidden="true"><use href="#i-filter"/></svg>Filter</button><button class="sketch-chip sketch-chip--add" type="button"><svg class="sketch-icon" aria-hidden="true"><use href="#i-plus"/></svg>Add</button></div>
+        </div></div>
+
+        <div class="row"><h3>Navigation</h3><div class="sketch-row" style="--gap:22px;align-items:flex-start">
+          <div><span class="sketch-field-label">Tabs</span><div class="sketch-tabs" role="tablist" aria-label="Tabs"><button class="sketch-tabs__item" role="tab" aria-selected="true">Tab 1</button><button class="sketch-tabs__item" role="tab" aria-selected="false" tabindex="-1">Tab 2</button><button class="sketch-tabs__item" role="tab" aria-selected="false" tabindex="-1">Tab 3</button></div></div>
+          <div><span class="sketch-field-label">Pills</span><div class="sketch-pills" role="tablist" aria-label="Status filter"><button class="sketch-pills__item" role="tab" aria-selected="true">All</button><button class="sketch-pills__item" role="tab" aria-selected="false" tabindex="-1">Active</button><button class="sketch-pills__item" role="tab" aria-selected="false" tabindex="-1">Draft</button><button class="sketch-pills__item" role="tab" aria-selected="false" tabindex="-1">Archived</button></div></div>
+          <div><span class="sketch-field-label">Folder tabs</span><div class="sketch-tabs sketch-tabs--folder" role="tablist" aria-label="Folders"><button class="sketch-tabs__item" role="tab" aria-selected="true">Tabs</button><button class="sketch-tabs__item" role="tab" aria-selected="false" tabindex="-1">Rounder</button><button class="sketch-tabs__item" role="tab" aria-selected="false" tabindex="-1">Library</button></div></div>
+          <div><span class="sketch-field-label">Breadcrumbs</span><nav class="sketch-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Home</a></li><li><a href="#">Library</a></li><li aria-current="page">Data</li></ol></nav></div>
+          <div><span class="sketch-field-label">Pagination</span><nav class="sketch-pagination" aria-label="Pages"><a href="#" aria-label="Previous page">‹</a><a href="#">1</a><a href="#" aria-current="page">2</a><a href="#">3</a><span>…</span><a href="#">10</a><a href="#" aria-label="Next page">›</a></nav></div>
+        </div></div>
+
+        <div class="row"><h3>Feedback</h3><div class="grid4">
+          <div class="sketch-stack" style="--gap:6px">
+            <div class="sketch-alert sketch-alert--success" role="status"><svg class="sketch-icon" aria-hidden="true"><use href="#i-check-c"/></svg><span><b>Success</b>Operation completed.</span><button class="sketch-close" type="button" aria-label="Dismiss">×</button></div>
+            <div class="sketch-alert sketch-alert--warning" role="status"><svg class="sketch-icon" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Warning</b>Check your input.</span><button class="sketch-close" type="button" aria-label="Dismiss">×</button></div>
+            <div class="sketch-alert sketch-alert--danger" role="alert"><svg class="sketch-icon" aria-hidden="true"><use href="#i-err"/></svg><span><b>Error</b>Something went wrong.</span><button class="sketch-close" type="button" aria-label="Dismiss">×</button></div>
+            <div class="sketch-alert sketch-alert--info" role="status"><svg class="sketch-icon" aria-hidden="true"><use href="#i-info"/></svg><span><b>Info</b>Here is some information.</span><button class="sketch-close" type="button" aria-label="Dismiss">×</button></div>
+          </div>
+          <div class="sketch-stack" style="--gap:10px"><span class="sketch-field-label">Toast</span>
+            <div class="sketch-toast" role="status"><svg class="sketch-icon" aria-hidden="true"><use href="#i-check-c"/></svg>Saved successfully</div>
+            <div class="sketch-toast" role="status"><svg class="sketch-icon" aria-hidden="true"><use href="#i-warn"/></svg>Network is unstable</div>
+          </div>
+          <div class="sketch-box" style="text-align:center;padding:14px;box-shadow:var(--sketch-shadow-2)">
+            <div class="sketch-dialog__mark">!</div>
+            <div class="sketch-dialog__title" style="font-size:17px">Confirm deletion?</div>
+            <p class="sketch-caption">This action cannot be undone.</p>
+            <div class="sketch-row" style="justify-content:center;margin-top:10px"><button class="sketch-btn sketch-btn--sm" type="button">Cancel</button><button class="sketch-btn sketch-btn--sm sketch-btn--destructive" type="button" data-sketch-open="#dlg">Delete</button></div>
+          </div>
+          <div class="sketch-stack" style="--gap:16px;align-items:flex-start"><span class="sketch-field-label">Popover / tooltip</span><span class="sketch-popover">Popover content</span><span class="sketch-tip">Tooltip</span></div>
+        </div></div>
+
+        <div class="row"><h3>Data display</h3><div class="grid4">
+          <article class="sketch-card"><div class="sketch-placeholder"></div><h4 class="sketch-card__title">Card title</h4><p class="sketch-card__text">Secondary text</p><span><button class="sketch-btn sketch-btn--sm" type="button">Action</button></span></article>
+          <ul class="sketch-list">
+            <li><span class="sketch-list__icon"><svg class="sketch-icon" aria-hidden="true"><use href="#i-user"/></svg></span><div><div class="sketch-list__title">Item title</div><div class="sketch-list__text">Secondary text</div></div><svg class="sketch-icon sketch-list__chev" aria-hidden="true"><use href="#i-chev"/></svg></li>
+            <li><span class="sketch-list__icon"><svg class="sketch-icon" aria-hidden="true"><use href="#i-file"/></svg></span><div><div class="sketch-list__title">Item title</div><div class="sketch-list__text">Secondary text</div></div><svg class="sketch-icon sketch-list__chev" aria-hidden="true"><use href="#i-chev"/></svg></li>
+            <li><span class="sketch-list__icon"><svg class="sketch-icon" aria-hidden="true"><use href="#i-star"/></svg></span><div><div class="sketch-list__title">Item title</div><div class="sketch-list__text">Secondary text</div></div><svg class="sketch-icon sketch-list__chev" aria-hidden="true"><use href="#i-chev"/></svg></li>
+          </ul>
+          <div class="sketch-table-wrap"><table class="sketch-table"><thead><tr><th><input type="checkbox" class="sketch-checkbox" aria-label="Select all"></th><th>Name</th><th>Status</th></tr></thead><tbody>
+            <tr><td><input type="checkbox" class="sketch-checkbox" aria-label="Select File A"></td><td>File A</td><td><span class="sketch-badge sketch-badge--updated">Active</span></td></tr>
+            <tr><td><input type="checkbox" class="sketch-checkbox" checked aria-label="Select File B"></td><td>File B</td><td><span class="sketch-badge sketch-badge--beta">Draft</span></td></tr>
+            <tr><td><input type="checkbox" class="sketch-checkbox" aria-label="Select File C"></td><td>File C</td><td><span class="sketch-badge">Archived</span></td></tr></tbody></table></div>
+          <div class="sketch-empty"><svg class="sketch-icon" aria-hidden="true"><use href="#i-cloud"/></svg><strong>No data found</strong><span class="sketch-caption">Create a new item to get started.</span><button class="sketch-btn sketch-btn--sm sketch-btn--primary" type="button">Create new</button></div>
+        </div></div>
+
+        <div class="row"><h3>Progress &amp; status</h3><div class="grid4" style="align-items:center">
+          <div class="sketch-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" aria-label="Upload"><div class="sketch-progress__bar"><span style="--value:60%"></span></div><output>60%</output></div>
+          <ol class="sketch-steps" aria-label="Setup steps"><li class="is-done">Configure</li><li aria-current="step">Review</li><li>Confirm</li><li>Done</li></ol>
+          <div class="sketch-row" style="--gap:18px"><div class="sketch-ring" style="--value:75" role="img" aria-label="75 percent"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="sketch-ring__track" cx="50" cy="50" r="40" pathLength="100"/><circle class="sketch-ring__bar" cx="50" cy="50" r="40" pathLength="100"/></svg><span>75%</span></div><span class="sketch-spinner" style="width:26px;height:26px" role="img" aria-label="Loading"></span></div>
+          <div class="sketch-stack" style="--gap:8px"><div class="sketch-skeleton" aria-hidden="true"><span></span><span style="width:70%"></span></div><div class="sketch-row" style="--gap:10px"><span class="sketch-status sketch-status--online">Online</span><span class="sketch-status sketch-status--busy">Busy</span><span class="sketch-status sketch-status--offline">Offline</span><span class="sketch-status sketch-status--error">Error</span></div></div>
+        </div></div>
+      </section>
+
+      <div class="two">
+        <section class="sketch-box" id="theming" aria-labelledby="s6">
+          <h2 class="sketch-box__title" id="s6"><span>06</span>Theming &amp; extension</h2>
+          <div class="sketch-stack" style="--gap:14px">
+            <div class="sketch-segmented" role="tablist" aria-label="Segmented control"><button class="sketch-segmented__item" role="tab" aria-selected="false" tabindex="-1">System</button><button class="sketch-segmented__item" role="tab" aria-selected="true">Light</button><button class="sketch-segmented__item" role="tab" aria-selected="false" tabindex="-1">Compact</button></div>
+            <div class="sketch-row" data-pick-group style="--gap:14px;padding-bottom:22px"><button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:var(--sketch-color-brand)" aria-pressed="true" data-label="Ocean" aria-label="Ocean"></button><button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:var(--sketch-color-success)" aria-pressed="false" data-label="Moss" aria-label="Moss"></button><button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:var(--sketch-color-warning)" aria-pressed="false" data-label="Sun" aria-label="Sun"></button><button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:var(--sketch-color-danger)" aria-pressed="false" data-label="Coral" aria-label="Coral"></button><button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:var(--sketch-color-info)" aria-pressed="false" data-label="Lilac" aria-label="Lilac"></button></div>
+            <pre class="sketch-code">:root {
+  --sketch-color-brand: #A9C7EC;
+  --sketch-radius-md: 12px 16px 11px 17px / …;
+  --sketch-shadow-2: 4px 4px 0 -0.5px paper, 4px 4px 0 1.1px ink;
+}</pre>
+          </div>
+        </section>
+        <section class="sketch-box" id="grid" aria-labelledby="s7">
+          <h2 class="sketch-box__title" id="s7"><span>07</span>Grid &amp; layout</h2>
+          <div class="cols" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          <ul class="sketch-small" style="margin:12px 0 0;padding-left:18px"><li>12-column grid, 8pt spacing</li><li>Breakpoints: ≥1440 XL · ≥1024 LG · ≥768 MD · ≥480 SM</li><li>Content max width 1240px</li></ul>
+          <div class="sketch-frame" style="margin-top:16px;padding:14px"><span class="sketch-dim">16</span> <span class="sketch-caption">Construction frame and dimension notes for specs</span></div>
+        </section>
+      </div>
+    </main>
+
+    <aside class="right" aria-label="Guidelines">
+      <section class="sketch-box" id="principles" aria-labelledby="r1">
+        <h2 class="sketch-box__title" id="r1" style="font-size:17px">Design principles</h2>
+        <ul class="side-list">
+          <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-bulb"/></svg><span>Clear &amp; efficient<small>Reduce cognitive load</small></span></li>
+          <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-layers"/></svg><span>Consistent &amp; systematic<small>Unified language and rules</small></span></li>
+          <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-grid"/></svg><span>Modular &amp; scalable<small>Composed, reusable, extendable</small></span></li>
+          <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-person"/></svg><span>Human &amp; inclusive<small>Accessible and user-friendly</small></span></li>
+        </ul>
+      </section>
+      <section class="sketch-box" id="patterns" aria-labelledby="r2">
+        <h2 class="sketch-box__title" id="r2" style="font-size:17px">Patterns</h2>
+        <div class="patterns"><div>Navigation<i></i></div><div>CRUD<i></i></div><div>Search<i></i></div><div>Filter<i></i></div><div>Form<i></i></div><div>Data view<i></i></div></div>
+      </section>
+      <section class="sketch-box" id="interaction" aria-labelledby="r3">
+        <h2 class="sketch-box__title" id="r3" style="font-size:17px">Interaction</h2>
+        <ul class="side-list">
+          <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-hand"/></svg><span>Hover<small>Drawn shadow grows</small></span></li>
+          <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-hand"/></svg><span>Press<small>Piece moves in, gets hatched</small></span></li>
+          <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-search"/></svg><span>Focus<small>Dashed outline, always visible</small></span></li>
+          <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-gear"/></svg><span>Loading<small>Dashed spinner, skeleton</small></span></li>
+          <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-chev"/></svg><span>Transition<small>160ms; indicators glide 360ms</small></span></li>
+        </ul>
+      </section>
+      <section class="sketch-box" id="accessibility" aria-labelledby="r4">
+        <h2 class="sketch-box__title" id="r4" style="font-size:17px">Accessibility</h2>
+        <div class="sketch-stack" style="--gap:8px">
+          <label class="sketch-check"><input type="checkbox" class="sketch-checkbox" checked> Keyboard navigation</label>
+          <label class="sketch-check"><input type="checkbox" class="sketch-checkbox" checked> Focus visible and consistent</label>
+          <label class="sketch-check"><input type="checkbox" class="sketch-checkbox" checked> Contrast ≥ 4.5:1 (AA)</label>
+          <label class="sketch-check"><input type="checkbox" class="sketch-checkbox" checked> Non-color indicators</label>
+          <label class="sketch-check"><input type="checkbox" class="sketch-checkbox" checked> Screen-reader labels</label>
+          <label class="sketch-check"><input type="checkbox" class="sketch-checkbox" checked> 40px minimum targets</label>
+        </div>
+      </section>
+      <section class="sketch-box" aria-labelledby="r5">
+        <h2 class="sketch-box__title" id="r5" style="font-size:17px">Platforms</h2>
+        <ul class="side-list">
+          <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-desktop"/></svg><span>Desktop<small>Full-featured, multi-panel</small></span></li>
+          <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-tablet"/></svg><span>Tablet<small>Adaptive, touch-friendly</small></span></li>
+          <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-phone"/></svg><span>Mobile<small>Optimised, simplified flow</small></span></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer class="sketch-box foot"><span class="sketch-h3" style="font-size:17px">Scalable · Consistent · Accessible · Production-ready</span><span class="sketch-muted">Product UI Style Guide v1.0.0</span></footer>
+</div>
+
+<dialog class="sketch-dialog" id="dlg" aria-labelledby="dlg-t">
+  <div class="sketch-dialog__mark">!</div>
+  <h2 class="sketch-dialog__title" id="dlg-t">Confirm deletion?</h2>
+  <p class="sketch-dialog__body">“Q3 research notes” will be removed. This action cannot be undone.</p>
+  <div class="sketch-dialog__actions"><button class="sketch-btn" type="button" data-sketch-close>Cancel</button><button class="sketch-btn sketch-btn--destructive" type="button" data-sketch-close>Delete</button></div>
+</dialog>
+
+<script src="js/sketch.js"></script>
+<script>document.querySelectorAll("[data-indeterminate]").forEach(function (el) { el.indeterminate = true; });</script>
+<!-- Site chrome (not part of the pack): preview + code toggle for each specimen -->
+<script src="../site/code-view.js" data-selector=".center > .sketch-box, .center > .two > .sketch-box, .right > .sketch-box" data-skip=".sketch-box__title"></script>
+</body>
+</html>

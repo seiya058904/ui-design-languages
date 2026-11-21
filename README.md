@@ -10,7 +10,7 @@ A library of complete UI design languages ("Style Packs"). Each one is shown as 
 | [Lilac](lilac/) | Ivory study tiles, one glowing accent, editorial serif | [DESIGN.md](lilac/DESIGN.md) | [open](https://seiya058904.github.io/ui-design-languages/lilac/) | [focus planner](https://seiya058904.github.io/ui-design-languages/lilac/examples/app.html) |
 | [Atelier](atelier/) | Precise frosted product UI with working appearance settings | [DESIGN.md](atelier/DESIGN.md) | [open](https://seiya058904.github.io/ui-design-languages/atelier/) | [workspace](https://seiya058904.github.io/ui-design-languages/atelier/examples/workspace.html) |
 | [Tactile](tactile/) | Warm sand neumorphism, four material states, deep teal | [DESIGN.md](tactile/DESIGN.md) | [open](https://seiya058904.github.io/ui-design-languages/tactile/) | [smart home](https://seiya058904.github.io/ui-design-languages/tactile/examples/home.html) |
-| Sketch | Hand-drawn ink on cream paper | planned | — | — |
+| [Sketch](sketch/) | Hand-drawn ink on cream paper, hatching, watercolor tints | [DESIGN.md](sketch/DESIGN.md) | [open](https://seiya058904.github.io/ui-design-languages/sketch/) | [settings](https://seiya058904.github.io/ui-design-languages/sketch/examples/settings.html) |
 
 ## Use a pack
 
@@ -49,4 +49,4 @@ Requirements: Node 18+ and a local Chrome or Edge for `snap.mjs` (`CHROME_PATH` 
 
 ## Licenses
 
-Code and docs: [MIT](LICENSE). Fonts are loaded from Google Fonts under the SIL Open Font License (Inter, Cormorant Garamond, Manrope, Archivo, Plus Jakarta Sans). Icons are drawn for this repository. The reference images that inspired the packs are not redistributed.
+Code and docs: [MIT](LICENSE). Fonts are loaded from Google Fonts under the SIL Open Font License (Inter, Cormorant Garamond, Manrope, Archivo, Plus Jakarta Sans, Kalam, Patrick Hand). Icons are drawn for this repository. The reference images that inspired the packs are not redistributed.

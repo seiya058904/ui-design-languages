@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Workspace Settings</title>
+  <meta name="description" content="Sketch example: an appearance settings page with a live board preview, drawn in ink on paper.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/sketch.css">
+  <style>
+    /* Page layout only — visuals come from Sketch classes and tokens. */
+    body { padding: 28px 16px 48px; }
+    .window { width: min(100%, 1240px); margin: 0 auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); padding: 0; overflow: hidden; }
+    .side { padding: 22px 14px; border-right: var(--sketch-line-regular) solid var(--sketch-color-ink); }
+    .side h1 { margin: 0 0 16px 10px; letter-spacing: .02em; }
+    .main { padding: 22px 24px 26px; }
+    .main__head { padding-bottom: 12px; margin-bottom: 20px; border-bottom: var(--sketch-line-regular) solid var(--sketch-color-ink); }
+    .cols { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 26px; align-items: start; }
+    .controls { display: flex; flex-direction: column; gap: 22px; }
+    .accents { display: grid; grid-template-columns: repeat(4, max-content); gap: 14px 18px; padding-bottom: 18px; }
+    .stops { display: flex; justify-content: space-between; font-size: var(--sketch-font-size-small); color: var(--sketch-color-ink-soft); margin-top: 2px; }
+    .stops .is-current { color: var(--sketch-color-ink); font-weight: 700; }
+    .preview { position: relative; display: grid; grid-template-columns: 44px 210px minmax(0, 1fr); min-height: 520px; padding: 0; overflow: hidden; }
+    .rail { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 12px 0; border-right: var(--sketch-line-regular) solid var(--sketch-color-ink); }
+    .projects { padding: 12px; border-right: var(--sketch-line-regular) solid var(--sketch-color-ink); }
+    .projects ul { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; font-size: 14px; }
+    .projects li { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: center; line-height: 1.1; }
+    .projects li small { display: block; color: var(--sketch-color-ink-soft); font-size: 12px; }
+    .projects li.is-active { padding: 4px; margin: -4px; border: 1.4px solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background-image: var(--sketch-hatch-light); }
+    .board { padding: 12px 14px; min-width: 0; }
+    .board__top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+    .board__top .sketch-input-icon { flex: 1 1 220px; }
+    .columns { display: grid; grid-template-columns: repeat(3, minmax(150px, 1fr)); gap: 12px; overflow-x: auto; }
+    .column { padding: 8px; border: 1.4px solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-well); }
+    .column h3 { font-size: 15px; margin-bottom: 8px; }
+    .task { display: flex; flex-direction: column; gap: 6px; padding: 8px; margin-bottom: 8px; border: 1.4px solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); font-size: 14px; line-height: 1.15; }
+    .saved { position: absolute; right: 16px; bottom: 16px; }
+    .icon-box { display: grid; place-items: center; width: 26px; height: 26px; border: 1.4px solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); }
+    @media (max-width: 1080px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+    @media (max-width: 760px) {
+      .window { grid-template-columns: minmax(0, 1fr); }
+      .side { border-right: 0; border-bottom: var(--sketch-line-regular) solid var(--sketch-color-ink); }
+      .side .sketch-nav { flex-direction: row; flex-wrap: wrap; }
+      .main { padding: 18px 16px; }
+      .preview { grid-template-columns: minmax(0, 1fr); }
+      .rail, .projects { display: none; }
+      .accents { grid-template-columns: repeat(4, max-content); gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16M15 10h4a1 1 0 0 1 1 1v10M3 21h18M8 8h3M8 12h3M8 16h3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="11" width="15" height="10" rx="2"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></symbol>
+  <symbol id="i-brush" viewBox="0 0 24 24"><path d="M14 4 20 10 11 19a3 3 0 0 1-4 0 3 3 0 0 1 0-4Z"/><path d="M7 15c-2 0-3 1.5-3 5 3 0 5-1 5-3"/></symbol>
+  <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M10 4h4v3a2 2 0 1 0 0 0h3v4a2 2 0 1 1 0 4v4h-4a2 2 0 1 0-4 0H5v-4a2 2 0 1 0 0-4V7h5Z"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h3"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></symbol>
+  <symbol id="i-check-c" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.7L16.5 9"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15M5 19l7-7"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-board" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M9.5 4v16M15 4v16"/></symbol>
+</svg>
+
+<div class="sketch-box window">
+  <aside class="side" aria-label="Settings">
+    <h1 class="sketch-h1">Settings</h1>
+    <nav class="sketch-nav" aria-label="Settings sections">
+      <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-user"/></svg>Account<span class="sketch-count">2</span></a>
+      <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-building"/></svg>Workspace</a>
+      <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-bell"/></svg>Notifications<span class="sketch-count">5</span></a>
+      <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-lock"/></svg>Privacy</a>
+      <a class="sketch-nav__item" href="#" aria-current="page"><svg class="sketch-icon" aria-hidden="true"><use href="#i-brush"/></svg>Appearance</a>
+      <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-puzzle"/></svg>Integrations</a>
+      <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-card"/></svg>Billing</a>
+      <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-key"/></svg>Keyboard</a>
+      <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-gear"/></svg>Advanced</a>
+    </nav>
+    <p class="sketch-caption" style="margin:22px 0 0 10px"><a href="../index.html">← Sketch style guide</a></p>
+  </aside>
+
+  <main class="main">
+    <header class="main__head">
+      <h2 class="sketch-h1">Appearance</h2>
+      <p class="sketch-muted">Personalize how the workspace looks on this device.</p>
+    </header>
+
+    <div class="cols">
+      <form class="controls" id="prefs" onsubmit="return false">
+        <div>
+          <span class="sketch-label">Theme</span>
+          <div class="sketch-segmented" role="tablist" aria-label="Theme">
+            <button class="sketch-segmented__item" type="button" role="tab" aria-selected="false" tabindex="-1">System</button>
+            <button class="sketch-segmented__item" type="button" role="tab" aria-selected="true">Light</button>
+            <button class="sketch-segmented__item" type="button" role="tab" aria-selected="false" tabindex="-1">Dark</button>
+          </div>
+        </div>
+        <div>
+          <span class="sketch-label">Accent color</span>
+          <div class="accents" data-pick-group>
+            <button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:#C3B6F0" data-label="Lavender" aria-label="Lavender" aria-pressed="false"></button>
+            <button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:#D8B4EC" data-label="Orchid" aria-label="Orchid" aria-pressed="false"></button>
+            <button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:#B4DBAF" data-label="Moss" aria-label="Moss" aria-pressed="false"></button>
+            <button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:#F3BF8E" data-label="Apricot" aria-label="Apricot" aria-pressed="false"></button>
+            <button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:#A8DCD2" data-label="Mint" aria-label="Mint" aria-pressed="false"></button>
+            <button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:#F2B7C9" data-label="Rose" aria-label="Rose" aria-pressed="false"></button>
+            <button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:#A9C7EC" data-label="Ocean" aria-label="Ocean" aria-pressed="true"></button>
+            <button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:#F2DC8A" data-label="Sun" aria-label="Sun" aria-pressed="false"></button>
+          </div>
+        </div>
+        <div>
+          <span class="sketch-label">Density</span>
+          <div class="sketch-range" style="--fill-n:1;padding-top:6px"><input class="sketch-slider" type="range" min="0" max="2" value="2" aria-label="Density" id="density"></div>
+          <div class="stops" id="density-stops"><span>Cozy</span><span>Balanced</span><span class="is-current">Compact</span></div>
+        </div>
+        <div class="sketch-form-row">
+          <label class="sketch-label" for="face" style="margin:0">Typeface</label>
+          <select class="sketch-input" id="face"><option>Patrick Hand</option><option>Kalam</option><option>System</option></select>
+        </div>
+        <div>
+          <span class="sketch-label">Corner radius</span>
+          <div class="sketch-range" style="--fill-n:.66;padding-top:6px"><input class="sketch-slider" type="range" min="8" max="20" step="4" value="16" aria-label="Corner radius" id="radius"></div>
+          <div class="stops" id="radius-stops"><span>8</span><span>12</span><span class="is-current">16</span><span>20</span></div>
+        </div>
+        <hr class="sketch-rule" style="margin:0">
+        <label class="sketch-check sketch-check--between"><span><span class="sketch-check__title">Reduce motion</span><span class="sketch-check__hint">Simpler animations for better performance.</span></span><input type="checkbox" class="sketch-toggle"></label>
+        <label class="sketch-check sketch-check--between"><span><span class="sketch-check__title">High contrast outlines</span><span class="sketch-check__hint">Makes borders and edges more distinct.</span></span><input type="checkbox" class="sketch-toggle" checked></label>
+        <label class="sketch-check sketch-check--between"><span><span class="sketch-check__title">Show row dividers</span><span class="sketch-check__hint">Adds horizontal lines between items.</span></span><input type="checkbox" class="sketch-toggle"></label>
+        <label class="sketch-check sketch-check--between"><span><span class="sketch-check__title">Use large sidebar icons</span><span class="sketch-check__hint">Increases the size of navigation icons.</span></span><input type="checkbox" class="sketch-toggle" checked></label>
+      </form>
+
+      <section class="sketch-box preview" aria-label="Preview">
+        <div class="rail" aria-hidden="true"><svg class="sketch-icon" style="width:22px;height:22px"><use href="#i-leaf"/></svg><span class="icon-box"><svg class="sketch-icon"><use href="#i-search"/></svg></span><svg class="sketch-icon"><use href="#i-user"/></svg><svg class="sketch-icon"><use href="#i-board"/></svg><svg class="sketch-icon"><use href="#i-plus"/></svg></div>
+        <div class="projects">
+          <div class="sketch-row" style="justify-content:space-between"><strong class="sketch-h3" style="font-size:17px">Projects</strong><span aria-hidden="true">···</span></div>
+          <ul>
+            <li class="is-active"><span class="icon-box"><svg class="sketch-icon" aria-hidden="true"><use href="#i-folder"/></svg></span><span>Home<small>● Status</small></span></li>
+            <li><span class="icon-box"><svg class="sketch-icon" aria-hidden="true"><use href="#i-brush"/></svg></span><span>Project design<small>● Status</small></span></li>
+            <li><span class="icon-box"><svg class="sketch-icon" aria-hidden="true"><use href="#i-user"/></svg></span><span>Project manager<small>8m ago</small></span></li>
+            <li><span class="icon-box"><svg class="sketch-icon" aria-hidden="true"><use href="#i-card"/></svg></span><span>Billing rewrite<small>4m ago</small></span></li>
+            <li><span class="icon-box"><svg class="sketch-icon" aria-hidden="true"><use href="#i-bell"/></svg></span><span>Contact alerts<small>● Status</small></span></li>
+            <li><span class="icon-box"><svg class="sketch-icon" aria-hidden="true"><use href="#i-puzzle"/></svg></span><span>Project action<small>5m ago</small></span></li>
+          </ul>
+        </div>
+        <div class="board">
+          <div class="board__top">
+            <label class="sketch-input-icon"><svg class="sketch-icon" aria-hidden="true"><use href="#i-search"/></svg><input type="search" placeholder="Search projects, tasks, people" aria-label="Search"></label>
+            <button class="sketch-btn sketch-btn--sm sketch-btn--primary" type="button">New task</button>
+            <button class="sketch-btn sketch-btn--sm" type="button">Invite member</button>
+          </div>
+          <div class="sketch-row" style="justify-content:space-between;margin-bottom:10px">
+            <strong class="sketch-h3" style="font-size:18px">All board</strong>
+            <div class="sketch-tabs" role="tablist" aria-label="View"><button class="sketch-tabs__item" role="tab" aria-selected="false" tabindex="-1">Projects</button><button class="sketch-tabs__item" role="tab" aria-selected="true">Board</button></div>
+          </div>
+          <div class="columns">
+            <div class="column"><h3 class="sketch-label">To do</h3>
+              <div class="task">Project team care<span><span class="sketch-tag">Tags</span></span></div>
+              <div class="task">Plan a roadmap<span><span class="sketch-tag">Tags</span></span></div>
+              <div class="task">Write release notes<span><span class="sketch-tag">Tags</span></span></div>
+            </div>
+            <div class="column"><h3 class="sketch-label">In progress</h3>
+              <div class="task">Project engagement<span><span class="sketch-tag sketch-tag--active">Tags</span></span></div>
+              <div class="task">Your project breaks<span class="sketch-row" style="--gap:4px"><span class="sketch-badge sketch-badge--beta">Blocked</span><span class="sketch-badge">Review</span></span></div>
+            </div>
+            <div class="column"><h3 class="sketch-label">Done</h3>
+              <div class="task">Project archive<span><span class="sketch-tag">Tags</span></span></div>
+              <div class="task">Develop new items<span><span class="sketch-badge sketch-badge--updated">Shipped</span></span></div>
+              <div class="task">Project amendment<span><span class="sketch-tag">Tags</span></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="sketch-toast saved" role="status" id="saved"><svg class="sketch-icon" aria-hidden="true"><use href="#i-check-c"/></svg>[Saved to this device]</div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="../js/sketch.js"></script>
+<script>
+  /* Demo wiring: the accent picker really changes --sketch-color-brand (every wash derives from it),
+     and any change flashes the "saved" toast. */
+  (function () {
+    var saved = document.getElementById("saved");
+    function flash() { saved.animate([{ transform: "translateY(4px)", opacity: .4 }, { transform: "none", opacity: 1 }], { duration: 280, easing: "cubic-bezier(.32,.72,0,1)" }); }
+    document.querySelector(".accents").addEventListener("click", function (e) {
+      var b = e.target.closest(".sketch-swatch--pick");
+      if (!b) return;
+      document.documentElement.style.setProperty("--sketch-color-brand", b.style.getPropertyValue("--swatch"));
+      flash();
+    });
+    function stops(input, list, values) {
+      input.addEventListener("input", function () {
+        Array.prototype.forEach.call(list.children, function (c, i) { c.classList.toggle("is-current", String(values[i]) === input.value); });
+      });
+    }
+    stops(document.getElementById("density"), document.getElementById("density-stops"), [0, 1, 2]);
+    stops(document.getElementById("radius"), document.getElementById("radius-stops"), [8, 12, 16, 20]);
+    document.getElementById("prefs").addEventListener("change", flash);
+    document.querySelector(".controls .sketch-segmented").addEventListener("click", flash);
+  })();
+</script>
+</body>
+</html>

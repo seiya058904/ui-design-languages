@@ -8,7 +8,7 @@ This repository holds several complete, independent design languages. Each top-l
 | `lilac/` | Lilac | Ivory component-study cards, one violet accent with a soft glow, editorial serif headlines |
 | `atelier/` | Atelier | Precise, cool product UI: frosted panels, cobalt accent, bold uppercase section titles |
 | `tactile/` | Tactile | Warm sand neumorphism with base / raised / inset / pressed layers and a deep teal accent |
-| `sketch/` (planned) | Sketch | Hand-drawn ink on cream paper, hatched fills, wireframe honesty |
+| `sketch/` | Sketch | Hand-drawn ink on cream paper, hatched fills, wireframe honesty |
 
 ## Before building UI with a language
 

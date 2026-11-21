@@ -1,0 +1,78 @@
+/* sketch tokens — GENERATED from sketch/tokens/tokens.json. Do not edit by hand.
+   Regenerate with: node scripts/build-tokens.mjs sketch */
+:root {
+  --sketch-color-paper: #F6F1E6; /* Page */
+  --sketch-color-panel: #FBF8F1; /* Boxes, cards, fields */
+  --sketch-color-well: #EFE8DA; /* Tracks, skeletons, sunken areas */
+  --sketch-color-ink: #2B2A27; /* Lines and text */
+  --sketch-color-ink-soft: #5E5A52; /* Secondary text (≥ 4.5:1 on paper) */
+  --sketch-color-ink-faint: #A39D90; /* Placeholders, disabled lines, dims */
+  --sketch-color-grid: rgba(43, 42, 39, 0.07); /* Paper grid and frames */
+  --sketch-color-brand: #A9C7EC; /* Brand blue watercolor */
+  --sketch-color-success: #B4DBAF;
+  --sketch-color-warning: #F2DC8A;
+  --sketch-color-danger: #F0AEAB;
+  --sketch-color-info: #CBB7EA;
+  --sketch-color-brand-wash: color-mix(in srgb, var(--sketch-color-brand) 45%, var(--sketch-color-panel)); /* Light wash behind primary pieces */
+  --sketch-color-success-wash: color-mix(in srgb, var(--sketch-color-success) 40%, var(--sketch-color-panel));
+  --sketch-color-warning-wash: color-mix(in srgb, var(--sketch-color-warning) 40%, var(--sketch-color-panel));
+  --sketch-color-danger-wash: color-mix(in srgb, var(--sketch-color-danger) 40%, var(--sketch-color-panel));
+  --sketch-color-info-wash: color-mix(in srgb, var(--sketch-color-info) 40%, var(--sketch-color-panel));
+  --sketch-color-danger-ink: #8E2B27; /* Error text */
+  --sketch-color-online: #5DAA62;
+  --sketch-color-busy: #E2B53C;
+  --sketch-color-offline: #A39D90;
+  --sketch-color-error: #D9645F;
+  --sketch-color-backdrop: rgba(43, 42, 39, 0.28);
+
+  --sketch-hatch-default: repeating-linear-gradient(-45deg, rgba(43, 42, 39, 0.32) 0 1.2px, transparent 1.2px 6px);
+  --sketch-hatch-dense: repeating-linear-gradient(-45deg, rgba(43, 42, 39, 0.5) 0 1.4px, transparent 1.4px 4.5px);
+  --sketch-hatch-light: repeating-linear-gradient(-45deg, rgba(43, 42, 39, 0.16) 0 1px, transparent 1px 7px);
+
+  --sketch-paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .17 0 0 0 0 .16 0 0 0 0 .15 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); /* Inline SVG noise for the paper texture */
+
+  --sketch-font-family-display: "Kalam", "Comic Neue", "Segoe Print", cursive; /* Hand-printed titles */
+  --sketch-font-family-hand: "Patrick Hand", "Comic Neue", "Segoe Print", sans-serif; /* Hand-printed UI text */
+  --sketch-font-family-mono: ui-monospace, "SF Mono", Consolas, "Liberation Mono", monospace; /* Token code blocks */
+
+  --sketch-font-size-display: 44px;
+  --sketch-font-size-h1: 32px;
+  --sketch-font-size-h2: 24px;
+  --sketch-font-size-h3: 20px;
+  --sketch-font-size-body: 16px;
+  --sketch-font-size-small: 14px;
+  --sketch-font-size-caption: 13px;
+  --sketch-font-size-overline: 12px;
+
+  --sketch-line-regular: 1.6px;
+  --sketch-line-bold: 2.2px;
+  --sketch-line-thick: 3px;
+
+  --sketch-space-1: 4px;
+  --sketch-space-2: 8px;
+  --sketch-space-3: 12px;
+  --sketch-space-4: 16px;
+  --sketch-space-5: 24px;
+  --sketch-space-6: 32px;
+  --sketch-space-7: 48px;
+  --sketch-space-8: 64px;
+
+  --sketch-radius-sm: 7px 9px 6px 10px / 9px 6px 10px 7px; /* Wobbly small radius: inputs, tags, checkboxes */
+  --sketch-radius-md: 12px 16px 11px 17px / 16px 11px 17px 12px; /* Buttons, cards */
+  --sketch-radius-lg: 18px 24px 16px 26px / 24px 16px 26px 18px; /* Section boxes, dialogs */
+  --sketch-radius-pill: 999px 960px 999px 940px / 940px 999px 960px 999px; /* Chips, toggles, badges */
+
+  --sketch-size-control-sm: 32px;
+  --sketch-size-control: 40px;
+  --sketch-size-control-lg: 48px;
+
+  --sketch-shadow-1: 2px 2px 0 -0.5px var(--sketch-color-paper), 2px 2px 0 1.1px var(--sketch-color-ink); /* Drawn offset outline, level 1 */
+  --sketch-shadow-2: 4px 4px 0 -0.5px var(--sketch-color-paper), 4px 4px 0 1.1px var(--sketch-color-ink); /* Level 2 (raised boxes, buttons) */
+  --sketch-shadow-3: 6px 6px 0 -0.5px var(--sketch-color-paper), 6px 6px 0 1.1px var(--sketch-color-ink); /* Level 3 (dialogs, popovers) */
+  --sketch-shadow-focus: 0 0 0 3px var(--sketch-color-paper), 0 0 0 5px var(--sketch-color-ink); /* Double outline for focus (with a dashed outline on top) */
+
+  --sketch-motion-duration: 160ms;
+  --sketch-motion-duration-slide: 360ms;
+  --sketch-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --sketch-motion-easing-spring: cubic-bezier(0.32, 0.72, 0, 1);
+}

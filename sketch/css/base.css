@@ -1,0 +1,122 @@
+/* Sketch — base: paper, type, section boxes, frames, dimension notes, helpers */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--sketch-font-family-hand);
+  font-size: var(--sketch-font-size-body);
+  line-height: 1.4;
+  color: var(--sketch-color-ink);
+  background: var(--sketch-paper-grain), var(--sketch-color-paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+img, svg, video { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+h1, h2, h3, h4, h5, h6, p, figure, ol, ul { margin: 0; }
+a { color: inherit; }
+:focus { outline: none; }
+::selection { background: var(--sketch-color-brand); color: var(--sketch-color-ink); }
+
+/* ---------- Typography ---------- */
+.sketch-display,
+.sketch-h1,
+.sketch-h2,
+.sketch-h3 { font-family: var(--sketch-font-family-display); font-weight: 700; line-height: 1.15; letter-spacing: 0.005em; }
+.sketch-display { font-size: clamp(32px, 6vw, var(--sketch-font-size-display)); }
+.sketch-h1 { font-size: clamp(26px, 4vw, var(--sketch-font-size-h1)); }
+.sketch-h2 { font-size: var(--sketch-font-size-h2); }
+.sketch-h3 { font-size: var(--sketch-font-size-h3); }
+.sketch-body    { font-size: var(--sketch-font-size-body); }
+.sketch-small   { font-size: var(--sketch-font-size-small); }
+.sketch-caption { font-size: var(--sketch-font-size-caption); color: var(--sketch-color-ink-soft); line-height: 1.3; }
+.sketch-overline { font-size: var(--sketch-font-size-overline); letter-spacing: 0.08em; text-transform: uppercase; color: var(--sketch-color-ink-soft); }
+.sketch-muted   { color: var(--sketch-color-ink-soft); }
+.sketch-mono    { font-family: var(--sketch-font-family-mono); font-size: 0.82em; }
+
+/* ---------- Section box: a drawn panel with a numbered title ("01 OVERVIEW") ----------
+   <section class="sketch-box"><h2 class="sketch-box__title"><span>01</span>Overview</h2>…</section>
+   The number is the section's order in the guide. */
+.sketch-box {
+  position: relative;
+  padding: 20px 22px 22px;
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-lg);
+  background: var(--sketch-color-panel);
+  box-shadow: var(--sketch-shadow-1);
+}
+.sketch-box__title {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-family: var(--sketch-font-family-display);
+  font-size: var(--sketch-font-size-h3);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.sketch-box__title span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 38px;
+  height: 32px;
+  padding: 0 6px;
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-sm);
+  font-size: 18px;
+}
+.sketch-box__title small { font-family: var(--sketch-font-family-hand); font-size: var(--sketch-font-size-small); font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--sketch-color-ink-soft); }
+.sketch-label { display: block; margin-bottom: 8px; font-family: var(--sketch-font-family-display); font-size: 15px; font-weight: 700; }
+
+/* Hatched fill utility */
+.sketch-hatched { background-image: var(--sketch-hatch-default); }
+
+/* ---------- Frame: dashed construction frame with checker corners (NEO-SKEUO) ---------- */
+.sketch-frame {
+  position: relative;
+  padding: 28px;
+  border: 1.4px dashed var(--sketch-color-ink-faint);
+  border-radius: 4px;
+}
+.sketch-frame::before,
+.sketch-frame::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: repeating-conic-gradient(var(--sketch-color-ink-faint) 0 25%, transparent 0 50%) 0 0 / 6px 6px;
+  opacity: 0.7;
+}
+.sketch-frame::before { top: -9px; right: -9px; }
+.sketch-frame::after { bottom: -9px; left: -9px; }
+
+/* Dimension note: <span class="sketch-dim">8</span> — a small bracketed measurement */
+.sketch-dim {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--sketch-font-family-hand);
+  font-size: var(--sketch-font-size-caption);
+  color: var(--sketch-color-ink-soft);
+}
+.sketch-dim::before { content: "{"; font-size: 1.5em; line-height: 0.6; color: var(--sketch-color-ink-faint); transform: scaleX(0.7); }
+
+/* ---------- Icons ---------- */
+.sketch-icon { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Layout helpers ---------- */
+.sketch-container { width: min(100% - 32px, 1180px); margin-inline: auto; }
+.sketch-stack { display: flex; flex-direction: column; gap: var(--gap, var(--sketch-space-3)); }
+.sketch-row   { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap, var(--sketch-space-3)); }
+.sketch-rule  { height: 0; border: 0; border-top: 1.4px dashed var(--sketch-color-ink-faint); margin: var(--sketch-space-4) 0; }
+.sketch-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}

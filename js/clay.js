@@ -1,64 +1,85 @@
 /* Clay UI — optional behaviour (no dependencies).
    The CSS works without this file; it adds:
-   - tablists (.clay-segmented / .clay-tabs): click + arrow keys move aria-selected,
-     and a single indicator glides to the active tab (iOS-style)
+   - sliding indicators: one mint pill / bar / raised tile glides to the active item
+     (iOS-style) in segmented controls, underline tabs and the sidebar nav
+   - tablists (.clay-segmented / .clay-tabs): click + arrow keys move aria-selected
+   - nav (.clay-nav): click moves aria-current="page"
    - toggle chips (.clay-chip[aria-pressed]): click flips aria-pressed
    - dialogs: [data-clay-open="#id"] opens a <dialog>, [data-clay-close] closes it
 
-   Frameworks (React, Vue, Svelte…): just render aria-selected="true" (or .is-active)
-   on the active tab. Tablists added later are picked up automatically, and changing
-   the attribute from your own code moves the indicator. Manual hooks:
-   window.ClayUI.initTabs(rootElement) and window.ClayUI.refreshTabs(tablistElement). */
+   Frameworks (React, Vue, Svelte…): just render aria-selected="true" / aria-current="page"
+   (or .is-active) on the active item. Groups added later are picked up automatically and
+   attribute changes from your own code move the indicator. Manual hooks:
+   window.ClayUI.initIndicators(root), window.ClayUI.refresh(group), window.ClayUI.selectTab(tab). */
 (function () {
-  var LIST = ".clay-segmented, .clay-tabs";
-  var ITEM = ".clay-segmented__item, .clay-tabs__item";
-  var ACTIVE = '[aria-selected="true"], .is-active';
+  /* Every group that gets a sliding indicator */
+  var GROUPS = [
+    { list: ".clay-segmented", item: ".clay-segmented__item", active: '[aria-selected="true"], .is-active' },
+    { list: ".clay-tabs", item: ".clay-tabs__item", active: '[aria-selected="true"], .is-active' },
+    { list: ".clay-nav", item: ".clay-nav__item", active: '[aria-current="page"], [aria-current="true"], .is-active' }
+  ];
+  var LIST = GROUPS.map(function (g) { return g.list; }).join(", ");
+  var TAB_LIST = ".clay-segmented, .clay-tabs";
+  var TAB_ITEM = ".clay-segmented__item, .clay-tabs__item";
+
+  function groupOf(list) {
+    for (var i = 0; i < GROUPS.length; i++) if (list.matches(GROUPS[i].list)) return GROUPS[i];
+    return null;
+  }
 
   function items(list) {
-    return Array.prototype.filter.call(list.querySelectorAll(ITEM), function (el) {
-      return el.closest(LIST) === list; // ignore nested tablists
+    var g = groupOf(list);
+    if (!g) return [];
+    return Array.prototype.filter.call(list.querySelectorAll(g.item), function (el) {
+      return el.closest(LIST) === list; // ignore nested groups
     });
   }
 
-  /* Move the indicator to the active tab (positions come from layout, so any width works). */
-  function refreshTabs(list) {
-    var active = items(list).filter(function (el) { return el.matches(ACTIVE); })[0];
+  /* Move the indicator to the active item (positions come from layout, so any size works). */
+  function refresh(list) {
+    var g = groupOf(list);
+    if (!g) return;
+    var active = items(list).filter(function (el) { return el.matches(g.active); })[0];
+    var s = list.style;
     if (!active) {
-      list.style.setProperty("--clay-indicator-w", "0px");
+      s.setProperty("--clay-indicator-o", "0");
       return;
     }
-    list.style.setProperty("--clay-indicator-x", active.offsetLeft + "px");
-    list.style.setProperty("--clay-indicator-w", active.offsetWidth + "px");
+    s.setProperty("--clay-indicator-o", "1");
+    s.setProperty("--clay-indicator-x", active.offsetLeft + "px");
+    s.setProperty("--clay-indicator-y", active.offsetTop + "px");
+    s.setProperty("--clay-indicator-w", active.offsetWidth + "px");
+    s.setProperty("--clay-indicator-h", active.offsetHeight + "px");
   }
 
-  function initTabs(root) {
+  function initIndicators(root) {
     var scope = root || document;
     var lists = scope.matches && scope.matches(LIST) ? [scope] : scope.querySelectorAll(LIST);
     Array.prototype.forEach.call(lists, function (list) {
-      if (list.__clayTabs) return;
-      list.__clayTabs = true;
+      if (list.__clayIndicator) return;
+      list.__clayIndicator = true;
       list.classList.add("has-indicator");
-      refreshTabs(list);
+      refresh(list);
       // Turn transitions on only after the first placement, so nothing slides in on page load.
       requestAnimationFrame(function () {
         requestAnimationFrame(function () { list.classList.add("is-animated"); });
       });
       if ("ResizeObserver" in window) {
-        var ro = new ResizeObserver(function () { refreshTabs(list); });
+        var ro = new ResizeObserver(function () { refresh(list); });
         ro.observe(list);
         items(list).forEach(function (el) { ro.observe(el); }); // web fonts, label changes
       }
-      new MutationObserver(function () { refreshTabs(list); }).observe(list, {
+      new MutationObserver(function () { refresh(list); }).observe(list, {
         subtree: true,
         childList: true,
         attributes: true,
-        attributeFilter: ["aria-selected", "class"]
+        attributeFilter: ["aria-selected", "aria-current", "class"]
       });
     });
   }
 
   function selectTab(tab) {
-    var list = tab.closest(LIST);
+    var list = tab.closest(TAB_LIST);
     if (!list) return;
     items(list).forEach(function (t) {
       var on = t === tab;
@@ -71,12 +92,30 @@
         if (panel) panel.hidden = !on;
       }
     });
-    refreshTabs(list);
+    refresh(list);
+  }
+
+  function selectNavItem(link) {
+    var list = link.closest(".clay-nav");
+    if (!list) return;
+    items(list).forEach(function (el) {
+      if (el === link) el.setAttribute("aria-current", "page");
+      else el.removeAttribute("aria-current");
+      el.classList.toggle("is-active", el === link);
+    });
+    refresh(list);
   }
 
   document.addEventListener("click", function (e) {
-    var tab = e.target.closest(ITEM);
+    var tab = e.target.closest(TAB_ITEM);
     if (tab && !tab.disabled) selectTab(tab);
+
+    // Plain left clicks only, so "open in new tab" doesn't move the highlight.
+    var navItem = e.target.closest(".clay-nav__item");
+    if (navItem && e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) {
+      selectNavItem(navItem);
+      if (navItem.getAttribute("href") === "#") e.preventDefault();
+    }
 
     var chip = e.target.closest(".clay-chip[aria-pressed]");
     if (chip && !chip.disabled) {
@@ -97,11 +136,11 @@
   });
 
   document.addEventListener("keydown", function (e) {
-    var tab = e.target.closest && e.target.closest(ITEM);
+    var tab = e.target.closest && e.target.closest(TAB_ITEM);
     if (!tab) return;
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
     if (!(e.key in keys)) return;
-    var all = items(tab.closest(LIST)).filter(function (t) { return !t.disabled; });
+    var all = items(tab.closest(TAB_LIST)).filter(function (t) { return !t.disabled; });
     var i = all.indexOf(tab);
     var step = keys[e.key];
     var next = step === "first" ? all[0] : step === "last" ? all[all.length - 1] : all[(i + step + all.length) % all.length];
@@ -111,18 +150,26 @@
   });
 
   function boot() {
-    initTabs(document);
-    // Pick up tablists rendered later (SPAs, dialogs, templates). Batched to one pass per frame.
+    initIndicators(document);
+    // Pick up groups rendered later (SPAs, dialogs, templates). Batched to one pass per frame.
     var queued = false;
     new MutationObserver(function () {
       if (queued) return;
       queued = true;
-      requestAnimationFrame(function () { queued = false; initTabs(document); });
+      requestAnimationFrame(function () { queued = false; initIndicators(document); });
     }).observe(document.body, { childList: true, subtree: true });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
-  window.ClayUI = { initTabs: initTabs, refreshTabs: refreshTabs, selectTab: selectTab };
+  window.ClayUI = {
+    initIndicators: initIndicators,
+    refresh: refresh,
+    selectTab: selectTab,
+    selectNavItem: selectNavItem,
+    // Aliases kept for the earlier tabs-only API
+    initTabs: initIndicators,
+    refreshTabs: refresh
+  };
 })();

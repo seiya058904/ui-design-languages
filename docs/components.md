@@ -65,7 +65,7 @@ Chip: `aria-pressed="true"`/`.is-selected` glows · `--neutral` · `:disabled`. 
 
 **Sliding indicator.** With `js/clay.js` loaded, every tablist gets one mint pill (segmented) or bar (underline) that glides to the active tab in 380ms with an iOS-style ease (`--clay-motion-easing-spring`); holding the active segment squeezes the pill slightly. It measures the real tab positions, so any number of tabs and any label length work, and it follows resizes and web-font loading. Without JS each tab falls back to its own static highlight.
 
-In React/Vue/Svelte, just render `aria-selected="true"` (or `.is-active`) on the active tab — the indicator follows attribute changes and picks up tablists rendered later. Manual hooks: `ClayUI.initTabs(root)`, `ClayUI.refreshTabs(list)`, `ClayUI.selectTab(tab)`. Keyboard: ←/→, Home, End.
+In React/Vue/Svelte, just render `aria-selected="true"` (or `.is-active`) on the active tab — the indicator follows attribute changes and picks up tablists rendered later. Manual hooks: `ClayUI.initIndicators(root)`, `ClayUI.refresh(list)`, `ClayUI.selectTab(tab)` (`initTabs` / `refreshTabs` remain as aliases). Keyboard: ←/→, Home, End.
 
 ## Alert — `alert.css`
 ```html
@@ -105,6 +105,7 @@ Variants `--column` `--stacked` `--sunken` `--interactive` · `.clay-card__media
 <label class="clay-check"><input type="checkbox" class="clay-checkbox"> Include tax</label>
 <label class="clay-check"><input type="radio" name="cycle" class="clay-radio"> Monthly</label>
 ```
+The toggle knob glides on `--clay-motion-easing-spring`; pressing and holding stretches it toward the direction it will travel, like iOS. Pure CSS, no JS needed.
 
 ## Navigation, table, dialog, tooltip — `navigation.css`
 ```html
@@ -126,3 +127,4 @@ Variants `--column` `--stacked` `--sunken` `--interactive` · `.clay-card__media
 
 <span class="clay-tooltip" data-tip="Copied"><button class="clay-btn">Copy link</button></span>
 ```
+**Nav sliding tile.** With `js/clay.js`, the raised tile behind the active `.clay-nav__item` glides to the newly selected item (same engine and timing as the tabs). Mark the current page with `aria-current="page"` (or `.is-active`); plain left clicks move it, modifier clicks (open in new tab) don't, and `href="#"` links don't jump. In a router-driven app, set `aria-current` from your router and the tile follows. `ClayUI.selectNavItem(link)` moves it manually.

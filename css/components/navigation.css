@@ -1,8 +1,12 @@
 /* Clay UI — Navigation, table, dialog, tooltip */
 
-/* ---------- Sidebar / vertical nav ---------- */
-.clay-nav { display: flex; flex-direction: column; gap: 4px; }
+/* ---------- Sidebar / vertical nav ----------
+   Active: aria-current="page" or .is-active. With js/clay.js a single raised tile
+   glides to the active item (same mechanism as the tabs). */
+.clay-nav { position: relative; isolation: isolate; display: flex; flex-direction: column; gap: 4px; }
 .clay-nav__item {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: var(--clay-space-3);
@@ -14,6 +18,7 @@
   font-weight: var(--clay-font-weight-medium);
   text-decoration: none;
   transition:
+    color var(--clay-motion-duration) var(--clay-motion-easing),
     background-color var(--clay-motion-duration) var(--clay-motion-easing),
     box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
 }
@@ -28,6 +33,36 @@
 }
 .clay-nav__item[aria-current="page"] .clay-icon,
 .clay-nav__item.is-active .clay-icon { color: #2E8F6B; }
+.clay-nav__item .clay-icon { transition: color var(--clay-motion-duration) var(--clay-motion-easing); }
+
+/* Sliding tile */
+.clay-nav.has-indicator::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: var(--clay-indicator-w, 0px);
+  height: var(--clay-indicator-h, 0px);
+  transform: translate(var(--clay-indicator-x, 0px), var(--clay-indicator-y, 0px));
+  opacity: var(--clay-indicator-o, 1);
+  border-radius: var(--clay-radius-md);
+  background: var(--clay-color-surface);
+  box-shadow: var(--clay-shadow-raised-sm);
+}
+.clay-nav.has-indicator.is-animated::before {
+  transition:
+    transform var(--clay-motion-duration-slide) var(--clay-motion-easing-spring),
+    width var(--clay-motion-duration-slide) var(--clay-motion-easing-spring),
+    height var(--clay-motion-duration-slide) var(--clay-motion-easing-spring),
+    opacity var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-nav.has-indicator .clay-nav__item[aria-current="page"],
+.clay-nav.has-indicator .clay-nav__item.is-active {
+  background: transparent;
+  box-shadow: none;
+}
+.clay-nav.has-indicator .clay-nav__item:focus-visible { box-shadow: var(--clay-shadow-glow); }
 .clay-nav__count {
   margin-left: auto;
   min-width: 22px;

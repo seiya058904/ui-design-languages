@@ -28,12 +28,16 @@
 }
 
 /* ---------- Toggle ---------- */
+/* Knob glides on the iOS curve; pressing stretches it toward the travel direction. */
 .clay-toggle {
   position: relative;
   width: 52px;
   height: 30px;
   border-radius: var(--clay-radius-pill);
   background-color: var(--clay-color-neutral);
+  transition:
+    background-color var(--clay-motion-duration-slow) var(--clay-motion-easing),
+    box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
 }
 .clay-toggle::before {
   content: "";
@@ -42,13 +46,17 @@
   left: 3px;
   width: 24px;
   height: 24px;
-  border-radius: 50%;
+  border-radius: var(--clay-radius-pill);
   background: var(--clay-color-surface);
   box-shadow: var(--clay-shadow-raised-sm);
-  transition: transform var(--clay-motion-duration-slow) var(--clay-motion-easing);
+  transition:
+    transform var(--clay-motion-duration-slide) var(--clay-motion-easing-spring),
+    width var(--clay-motion-duration-slow) var(--clay-motion-easing-spring);
 }
+.clay-toggle:active::before { width: 30px; }
 .clay-toggle:checked { background-color: var(--clay-color-primary); }
 .clay-toggle:checked::before { transform: translateX(22px); }
+.clay-toggle:checked:active::before { transform: translateX(16px); }
 
 /* ---------- Checkbox ---------- */
 .clay-checkbox {
@@ -80,3 +88,5 @@
 .clay-toggle:disabled,
 .clay-checkbox:disabled,
 .clay-radio:disabled { opacity: 0.5; cursor: not-allowed; }
+.clay-toggle:disabled::before { width: 24px; }
+.clay-toggle:checked:disabled::before { transform: translateX(22px); }

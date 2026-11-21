@@ -14,7 +14,7 @@
    Active: aria-selected="true" or .is-active
 
    Sliding indicator: js/clay.js adds .has-indicator to every tablist and keeps
-   --clay-indicator-x / --clay-indicator-w in sync with the active tab, so one
+   --clay-indicator-x/-y/-w/-h/-o in sync with the active tab, so one
    mint pill (or bar) glides between tabs. Without JS each tab shows its own
    static highlight, so the markup works either way. */
 
@@ -73,6 +73,7 @@
   left: 0;
   width: var(--clay-indicator-w, 0px);
   transform: translateX(var(--clay-indicator-x, 0px));
+  opacity: var(--clay-indicator-o, 1);
   border-radius: var(--clay-radius-pill);
   background: linear-gradient(180deg, var(--clay-color-primary-light) 0%, var(--clay-color-primary) 60%);
   box-shadow: var(--clay-shadow-raised-sm);
@@ -162,6 +163,7 @@
   height: 7px;
   width: var(--clay-indicator-w, 0px);
   transform: translateX(var(--clay-indicator-x, 0px));
+  opacity: var(--clay-indicator-o, 1);
   border-radius: var(--clay-radius-pill);
   background: linear-gradient(180deg, var(--clay-color-primary-light), var(--clay-color-primary));
   box-shadow: var(--clay-shadow-raised-sm);

@@ -1,0 +1,82 @@
+/* Clay UI — Toggle, checkbox, radio
+   <label class="clay-check"><input type="checkbox" class="clay-toggle"> Email alerts</label>
+   <label class="clay-check"><input type="checkbox" class="clay-checkbox"> Remember me</label>
+   <label class="clay-check"><input type="radio" name="plan" class="clay-radio"> Monthly</label> */
+
+.clay-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--clay-space-3);
+  font-size: 15px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.clay-toggle,
+.clay-checkbox,
+.clay-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  margin: 0;
+  cursor: pointer;
+  background-color: #E2DED8;
+  box-shadow: inset 0 2px 4px rgba(84, 74, 60, 0.24), inset 0 -1.5px 0 rgba(255, 255, 255, 0.8);
+  transition:
+    background-color var(--clay-motion-duration) var(--clay-motion-easing),
+    box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
+}
+
+/* ---------- Toggle ---------- */
+.clay-toggle {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  border-radius: var(--clay-radius-pill);
+  background-color: var(--clay-color-neutral);
+}
+.clay-toggle::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--clay-color-surface);
+  box-shadow: var(--clay-shadow-raised-sm);
+  transition: transform var(--clay-motion-duration-slow) var(--clay-motion-easing);
+}
+.clay-toggle:checked { background-color: var(--clay-color-primary); }
+.clay-toggle:checked::before { transform: translateX(22px); }
+
+/* ---------- Checkbox ---------- */
+.clay-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px;
+}
+.clay-checkbox:checked {
+  background-color: var(--clay-color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231E4A3A' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17 19 7'/%3E%3C/svg%3E");
+  box-shadow: var(--clay-shadow-raised-sm);
+}
+
+/* ---------- Radio ---------- */
+.clay-radio { width: 22px; height: 22px; border-radius: 50%; }
+.clay-radio:checked {
+  background-color: var(--clay-color-primary);
+  background-image: radial-gradient(circle, var(--clay-color-primary-ink) 0 3.5px, transparent 4px);
+  box-shadow: var(--clay-shadow-raised-sm);
+}
+
+.clay-toggle:focus-visible,
+.clay-checkbox:focus-visible,
+.clay-radio:focus-visible { box-shadow: var(--clay-shadow-inset), var(--clay-shadow-glow); }
+
+.clay-toggle:disabled,
+.clay-checkbox:disabled,
+.clay-radio:disabled { opacity: 0.5; cursor: not-allowed; }

@@ -1,0 +1,116 @@
+/* Clay UI — Navigation, table, dialog, tooltip */
+
+/* ---------- Sidebar / vertical nav ---------- */
+.clay-nav { display: flex; flex-direction: column; gap: 4px; }
+.clay-nav__item {
+  display: flex;
+  align-items: center;
+  gap: var(--clay-space-3);
+  height: 42px;
+  padding: 0 14px;
+  border-radius: var(--clay-radius-md);
+  color: var(--clay-color-text-muted);
+  font-size: 15px;
+  font-weight: var(--clay-font-weight-medium);
+  text-decoration: none;
+  transition:
+    background-color var(--clay-motion-duration) var(--clay-motion-easing),
+    box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-nav__item:hover { background: rgba(84, 74, 60, 0.06); color: var(--clay-color-text); }
+.clay-nav__item:focus-visible { box-shadow: var(--clay-shadow-glow); }
+.clay-nav__item[aria-current="page"],
+.clay-nav__item.is-active {
+  background: var(--clay-color-surface);
+  color: var(--clay-color-text);
+  font-weight: var(--clay-font-weight-semibold);
+  box-shadow: var(--clay-shadow-raised-sm);
+}
+.clay-nav__item[aria-current="page"] .clay-icon,
+.clay-nav__item.is-active .clay-icon { color: #2E8F6B; }
+.clay-nav__count {
+  margin-left: auto;
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: var(--clay-radius-pill);
+  background: var(--clay-color-primary);
+  color: var(--clay-color-primary-ink);
+  font-size: 11px;
+  font-weight: var(--clay-font-weight-bold);
+  text-align: center;
+}
+
+/* ---------- Top bar ---------- */
+.clay-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--clay-space-4);
+  padding: 10px 12px 10px 20px;
+  border-radius: var(--clay-radius-pill);
+  background: var(--clay-color-surface);
+  box-shadow: var(--clay-shadow-elevation-2);
+}
+
+/* ---------- Table ---------- */
+.clay-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.clay-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--clay-font-size-small); }
+.clay-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: var(--clay-font-size-caption);
+  font-weight: var(--clay-font-weight-semibold);
+  color: var(--clay-color-text-muted);
+  white-space: nowrap;
+}
+.clay-table td {
+  padding: 14px;
+  border-top: 1px solid var(--clay-color-border);
+  white-space: nowrap;
+}
+.clay-table tbody tr { transition: background-color var(--clay-motion-duration-fast); }
+.clay-table tbody tr:hover { background: rgba(168, 230, 207, 0.16); }
+.clay-table .is-num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---------- Dialog (native <dialog class="clay-dialog">) ---------- */
+.clay-dialog {
+  width: min(100% - 32px, 440px);
+  padding: var(--clay-space-6);
+  border: 0;
+  border-radius: var(--clay-radius-xl);
+  background: var(--clay-color-surface);
+  color: var(--clay-color-text);
+  box-shadow: var(--clay-shadow-elevation-5);
+}
+.clay-dialog::backdrop { background: rgba(60, 54, 46, 0.28); backdrop-filter: blur(3px); }
+.clay-dialog[open] { animation: clay-pop var(--clay-motion-duration-slow) var(--clay-motion-easing); }
+.clay-dialog__title { font-size: var(--clay-font-size-subtitle); font-weight: var(--clay-font-weight-semibold); letter-spacing: -0.01em; }
+.clay-dialog__body  { margin-top: var(--clay-space-2); color: var(--clay-color-text-muted); }
+.clay-dialog__actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: var(--clay-space-3); margin-top: var(--clay-space-6); }
+
+@keyframes clay-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Tooltip: <span class="clay-tooltip" data-tip="Copied">…</span> ---------- */
+.clay-tooltip { position: relative; display: inline-flex; }
+.clay-tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translate(-50%, 4px);
+  padding: 6px 12px;
+  border-radius: var(--clay-radius-pill);
+  background: var(--clay-color-text);
+  color: var(--clay-color-board);
+  font-size: var(--clay-font-size-caption);
+  font-weight: var(--clay-font-weight-medium);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 6px 16px -6px rgba(40, 36, 30, 0.5);
+  transition: opacity var(--clay-motion-duration), transform var(--clay-motion-duration);
+}
+.clay-tooltip:hover::after,
+.clay-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0); }

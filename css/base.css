@@ -1,0 +1,136 @@
+/* Clay UI — base: reset, typography, board surface, layout helpers */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--clay-font-family-sans);
+  font-size: var(--clay-font-size-body);
+  line-height: var(--clay-font-leading-normal);
+  color: var(--clay-color-text);
+  background: var(--clay-color-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img, svg, video { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
+a { color: inherit; }
+:focus { outline: none; }
+::selection { background: var(--clay-color-primary); color: var(--clay-color-primary-ink); }
+
+/* ---------- Typography ---------- */
+.clay-display,
+.clay-heading,
+.clay-title,
+.clay-subtitle {
+  font-weight: var(--clay-font-weight-bold);
+  line-height: var(--clay-font-leading-tight);
+  letter-spacing: var(--clay-font-tracking-heading);
+  color: var(--clay-color-text);
+}
+.clay-display  { font-size: clamp(40px, 7vw, var(--clay-font-size-display)); line-height: var(--clay-font-leading-display); letter-spacing: var(--clay-font-tracking-display); }
+.clay-heading  { font-size: clamp(30px, 5vw, var(--clay-font-size-heading)); }
+.clay-title    { font-size: clamp(26px, 4vw, var(--clay-font-size-title)); font-weight: var(--clay-font-weight-semibold); }
+.clay-subtitle { font-size: var(--clay-font-size-subtitle); font-weight: var(--clay-font-weight-semibold); }
+.clay-lead     { font-size: var(--clay-font-size-lead); color: var(--clay-color-text-muted); line-height: 1.55; max-width: 62ch; }
+.clay-body     { font-size: var(--clay-font-size-body); }
+.clay-small    { font-size: var(--clay-font-size-small); }
+.clay-caption  { font-size: var(--clay-font-size-caption); color: var(--clay-color-text-muted); line-height: 1.4; }
+.clay-muted    { color: var(--clay-color-text-muted); }
+.clay-mono     { font-family: var(--clay-font-family-mono); font-size: 0.86em; letter-spacing: 0; }
+
+/* Section label used on boards ("Color Tokens", "Buttons" …) */
+.clay-section-title {
+  font-size: 20px;
+  font-weight: var(--clay-font-weight-medium);
+  letter-spacing: -0.01em;
+  color: var(--clay-color-text);
+  margin-bottom: var(--clay-space-4);
+}
+
+/* ---------- Board: matte paper with grid ---------- */
+.clay-board {
+  position: relative;
+  background-color: var(--clay-color-board);
+  background-image:
+    linear-gradient(var(--clay-color-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--clay-color-grid) 1px, transparent 1px);
+  background-size: 64px 64px;
+  background-position: -1px -1px;
+  border-radius: var(--clay-radius-lg);
+  box-shadow: var(--clay-shadow-elevation-3);
+}
+
+/* Optional engineering ruler frame along the board edges */
+.clay-ruler::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  pointer-events: none;
+  border: 1px solid var(--clay-color-grid);
+  background:
+    repeating-linear-gradient(90deg, var(--clay-color-grid-strong) 0 1px, transparent 1px 16px) top    / 100% 5px no-repeat,
+    repeating-linear-gradient(90deg, var(--clay-color-grid-strong) 0 1px, transparent 1px 16px) bottom / 100% 5px no-repeat,
+    repeating-linear-gradient(180deg, var(--clay-color-grid-strong) 0 1px, transparent 1px 16px) left  / 5px 100% no-repeat,
+    repeating-linear-gradient(180deg, var(--clay-color-grid-strong) 0 1px, transparent 1px 16px) right / 5px 100% no-repeat;
+  border-radius: 6px;
+}
+
+/* Plain grid background for any element */
+.clay-grid-bg {
+  background-image:
+    linear-gradient(var(--clay-color-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--clay-color-grid) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* ---------- Generic clay surfaces ---------- */
+.clay-raised  { background: var(--clay-color-surface); box-shadow: var(--clay-shadow-raised); }
+.clay-sunken  { background: var(--clay-color-surface-sunken); box-shadow: var(--clay-shadow-inset); }
+
+/* ---------- Icons ---------- */
+.clay-icon {
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- Layout helpers ---------- */
+.clay-container { width: min(100% - 32px, 1120px); margin-inline: auto; }
+.clay-stack { display: flex; flex-direction: column; gap: var(--gap, var(--clay-space-4)); }
+.clay-row   { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap, var(--clay-space-3)); }
+
+.clay-divider {
+  height: 0;
+  border: 0;
+  border-top: 1px solid rgba(84, 74, 60, 0.14);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  margin: var(--clay-space-6) 0;
+}
+
+.clay-visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

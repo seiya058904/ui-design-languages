@@ -1,0 +1,78 @@
+/* Clay UI — Chip (filter / toggle pill)
+   <button class="clay-chip" aria-pressed="false">Filter</button>
+   Selected: aria-pressed="true" or .is-selected   Variants: --neutral   Disabled: :disabled / .is-disabled */
+
+.clay-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--clay-size-control-sm);
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--clay-radius-pill);
+  background: linear-gradient(180deg, var(--clay-color-primary-light) 0%, var(--clay-color-primary) 60%);
+  color: var(--clay-color-primary-ink);
+  font-size: var(--clay-font-size-small);
+  font-weight: var(--clay-font-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--clay-shadow-raised-sm);
+  transition:
+    transform var(--clay-motion-duration) var(--clay-motion-easing),
+    box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-chip .clay-icon { width: 15px; height: 15px; stroke-width: 2.4; }
+
+.clay-chip:hover { transform: translateY(-1px); }
+.clay-chip:active { transform: translateY(0); box-shadow: var(--clay-shadow-pressed); }
+.clay-chip:focus-visible { box-shadow: var(--clay-shadow-raised-sm), var(--clay-shadow-glow); }
+
+.clay-chip[aria-pressed="true"],
+.clay-chip.is-selected {
+  box-shadow: var(--clay-shadow-raised-sm), var(--clay-shadow-glow);
+}
+
+.clay-chip--neutral {
+  background: var(--clay-color-surface);
+  color: var(--clay-color-text);
+}
+
+.clay-chip:disabled,
+.clay-chip.is-disabled {
+  background: var(--clay-color-disabled);
+  color: var(--clay-color-disabled-ink);
+  box-shadow: var(--clay-shadow-flat);
+  transform: none;
+  cursor: not-allowed;
+}
+
+/* Badge — passive status label (not interactive) */
+.clay-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--clay-radius-pill);
+  background: var(--clay-color-surface);
+  color: var(--clay-color-text);
+  font-size: var(--clay-font-size-caption);
+  font-weight: var(--clay-font-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: var(--clay-shadow-raised-sm);
+}
+.clay-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.7;
+}
+.clay-badge--plain::before { display: none; }
+.clay-badge--success { background: var(--clay-color-success); color: var(--clay-color-success-ink); }
+.clay-badge--warning { background: var(--clay-color-warning); color: var(--clay-color-warning-ink); }
+.clay-badge--error   { background: var(--clay-color-error);   color: var(--clay-color-error-ink); }
+.clay-badge--info    { background: var(--clay-color-info);    color: var(--clay-color-info-ink); }

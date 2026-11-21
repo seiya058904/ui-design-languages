@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pebble Invoices</title>
+  <meta name="description" content="Clay UI example: a marketing website built only from Clay UI tokens and components.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/clay.css">
+  <style>
+    /* Page layout only — every visual comes from Clay UI classes and tokens. */
+    body { background: var(--clay-color-board); }
+    .page { background-image: linear-gradient(var(--clay-color-grid) 1px, transparent 1px), linear-gradient(90deg, var(--clay-color-grid) 1px, transparent 1px); background-size: 64px 64px; }
+    .nav { display: flex; align-items: center; gap: 8px; padding: 20px 0; }
+    .nav__brand { display: flex; align-items: center; gap: 10px; margin-right: auto; font-weight: 700; font-size: 19px; letter-spacing: -0.02em; text-decoration: none; }
+    .nav__brand .clay-swatch { --swatch-size: 32px; }
+
+    .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; padding: 56px 0 96px; }
+    .hero h1 { font-size: clamp(42px, 6.4vw, 76px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+    .hero .clay-lead { margin: 24px 0 32px; }
+    .hero__form { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; max-width: 520px; }
+    .hero__form .clay-field { flex: 1 1 260px; }
+    .hero__note { margin-top: 14px; font-size: 13px; color: var(--clay-color-text-muted); }
+
+    /* Clay invoice composition */
+    .stage { position: relative; min-height: 460px; }
+    .invoice { position: absolute; inset: 20px 40px auto 0; padding: 28px; border-radius: var(--clay-radius-xl); background: var(--clay-color-surface); box-shadow: var(--clay-shadow-elevation-4); display: flex; flex-direction: column; gap: 18px; }
+    .invoice__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .invoice__amount { font-size: 44px; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+    .invoice__lines { display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; border-radius: var(--clay-radius-lg); background: var(--clay-color-surface-sunken); box-shadow: var(--clay-shadow-inset); font-size: 14px; }
+    .invoice__lines div { display: flex; justify-content: space-between; gap: 12px; }
+    .invoice__lines span:last-child { font-variant-numeric: tabular-nums; }
+    .float-toast { position: absolute; right: 0; bottom: 34px; width: min(300px, 80%); }
+    .float-chip { position: absolute; z-index: 2; right: 8px; top: 0; }
+
+    .section { padding: 88px 0; }
+    .section__head { max-width: 640px; margin-bottom: 44px; }
+    .section__head h2 { font-size: clamp(32px, 4.4vw, 48px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 14px; }
+
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; counter-reset: step; }
+    .step { flex-direction: column; gap: 14px; padding: 26px; }
+    .step__num { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 34%; background: var(--clay-color-primary); color: var(--clay-color-primary-ink); font-weight: 700; box-shadow: var(--clay-shadow-raised); }
+    .step h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+    .step p { color: var(--clay-color-text-muted); font-size: 15px; }
+
+    .pricing-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 36px; }
+    .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch; }
+    .plan { flex-direction: column; gap: 18px; padding: 28px; }
+    .plan--featured { box-shadow: var(--clay-shadow-elevation-4), var(--clay-shadow-glow); }
+    .plan__price { font-size: 44px; font-weight: 700; letter-spacing: -0.03em; }
+    .plan__price small { font-size: 15px; font-weight: 500; color: var(--clay-color-text-muted); letter-spacing: 0; }
+    .plan ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 15px; }
+    .plan li { display: flex; gap: 10px; align-items: center; }
+    .plan li .clay-icon { color: #2E8F6B; }
+    .plan .clay-btn { margin-top: auto; }
+
+    .quote { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center; padding: 40px; border-radius: var(--clay-radius-xl); }
+    .quote blockquote { margin: 0; font-size: clamp(20px, 2.4vw, 28px); font-weight: 500; letter-spacing: -0.015em; line-height: 1.35; max-width: 34ch; }
+    .quote cite { display: block; margin-top: 14px; font-style: normal; font-size: 14px; color: var(--clay-color-text-muted); }
+
+    .cta { text-align: center; padding: 64px 32px; border-radius: var(--clay-radius-xl); background: linear-gradient(180deg, var(--clay-color-primary-light), var(--clay-color-primary)); box-shadow: var(--clay-shadow-elevation-3); color: var(--clay-color-primary-ink); }
+    .cta h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 12px; color: var(--clay-color-text); }
+    .cta .clay-btn { margin-top: 26px; }
+
+    .footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 40px 0 48px; font-size: 14px; color: var(--clay-color-text-muted); }
+    .footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer a { text-decoration: none; }
+    .footer a:hover { color: var(--clay-color-text); }
+
+    @media (max-width: 920px) {
+      .hero { grid-template-columns: 1fr; padding-top: 24px; }
+      .steps, .plans { grid-template-columns: 1fr; }
+      .nav .clay-btn--ghost { display: none; }
+    }
+    @media (max-width: 520px) {
+      .stage { min-height: 500px; }
+      .invoice { inset: 40px 0 auto 0; padding: 22px; }
+      .float-chip { right: 0; }
+      .quote { grid-template-columns: 1fr; padding: 28px; }
+      .section { padding: 64px 0; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4Z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></symbol>
+</svg>
+
+<div class="page">
+  <div class="clay-container">
+    <header class="nav">
+      <a class="nav__brand" href="#"><span class="clay-swatch clay-swatch--primary"></span>Pebble</a>
+      <a class="clay-btn clay-btn--ghost clay-btn--sm" href="#how">How it works</a>
+      <a class="clay-btn clay-btn--ghost clay-btn--sm" href="#pricing">Pricing</a>
+      <a class="clay-btn clay-btn--sm" href="dashboard.html">Sign in</a>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h1>Invoices that feel as easy as they should.</h1>
+        <p class="clay-lead">Pebble writes the invoice, sends it, reminds the client and tells you the moment you are paid. Built for studios and freelancers who would rather be doing the work.</p>
+        <form class="hero__form" onsubmit="return false">
+          <label class="clay-field">
+            <span class="clay-field__control">
+              <input type="email" placeholder="you@studio.com" aria-label="Work email">
+            </span>
+          </label>
+          <button class="clay-btn clay-btn--primary clay-btn--lg" type="submit">Start free</button>
+        </form>
+        <p class="hero__note">Free for your first 5 invoices. No card needed.</p>
+      </div>
+
+      <div class="stage" aria-hidden="true">
+        <span class="clay-chip float-chip" aria-pressed="true"><svg class="clay-icon"><use href="#i-check"/></svg>Auto reminders on</span>
+        <div class="invoice">
+          <div class="invoice__head">
+            <div>
+              <div class="clay-caption">INV-1042 for Northwind Studio</div>
+              <div class="invoice__amount">$4,200.00</div>
+            </div>
+            <span class="clay-badge clay-badge--success">Paid</span>
+          </div>
+          <div class="invoice__lines">
+            <div><span>Brand identity, phase 2</span><span>$3,200.00</span></div>
+            <div><span>Packaging mockups</span><span>$800.00</span></div>
+            <div><span>Print coordination</span><span>$200.00</span></div>
+          </div>
+          <div class="clay-row" style="justify-content:space-between">
+            <div class="clay-avatar-group">
+              <span class="clay-avatar" style="--avatar-size:34px">AM</span>
+              <span class="clay-avatar" style="--avatar-size:34px;--avatar-bg:#F5E596">JK</span>
+            </div>
+            <span class="clay-btn clay-btn--neutral clay-btn--sm"><svg class="clay-icon"><use href="#i-send"/></svg>Sent Nov 18</span>
+          </div>
+        </div>
+        <div class="clay-alert clay-alert--success float-toast"><svg class="clay-icon"><use href="#i-check-circle"/></svg>$4,200 landed in your account</div>
+      </div>
+    </section>
+  </div>
+
+  <section class="section" id="how" aria-labelledby="how-title">
+    <div class="clay-container">
+      <div class="section__head">
+        <h2 id="how-title">From finished work to paid in three steps</h2>
+        <p class="clay-lead">No templates to wrestle with. Pebble remembers your clients, rates and terms.</p>
+      </div>
+      <div class="steps">
+        <article class="clay-card step"><span class="step__num">1</span><h3>Create</h3><p>Pick a client and Pebble fills in their rates, address and payment terms. Add line items in seconds.</p></article>
+        <article class="clay-card step"><span class="step__num">2</span><h3>Send</h3><p>Clients get a clean link they can pay by card or bank transfer. No account, no PDF hunting.</p></article>
+        <article class="clay-card step"><span class="step__num">3</span><h3>Get paid</h3><p>Polite reminders go out before and after the due date, and stop the moment money arrives.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="pricing" aria-labelledby="pricing-title">
+    <div class="clay-container">
+      <div class="pricing-head">
+        <div class="section__head" style="margin-bottom:0">
+          <h2 id="pricing-title">Simple pricing</h2>
+          <p class="clay-lead">Every plan includes unlimited clients and card payments.</p>
+        </div>
+        <div class="clay-segmented" role="tablist" aria-label="Billing period">
+          <button class="clay-segmented__item" role="tab" aria-selected="true">Monthly</button>
+          <button class="clay-segmented__item" role="tab" aria-selected="false" tabindex="-1">Yearly, save 20%</button>
+        </div>
+      </div>
+      <div class="plans">
+        <article class="clay-card plan">
+          <h3 class="clay-subtitle">Starter</h3>
+          <div class="plan__price">$0 <small>per month</small></div>
+          <ul>
+            <li><svg class="clay-icon" aria-hidden="true"><use href="#i-check"/></svg>5 invoices a month</li>
+            <li><svg class="clay-icon" aria-hidden="true"><use href="#i-check"/></svg>Card and bank payments</li>
+            <li><svg class="clay-icon" aria-hidden="true"><use href="#i-check"/></svg>Email reminders</li>
+          </ul>
+          <a class="clay-btn clay-btn--block" href="#">Start free</a>
+        </article>
+        <article class="clay-card plan plan--featured">
+          <div class="clay-row" style="justify-content:space-between"><h3 class="clay-subtitle">Studio</h3><span class="clay-badge clay-badge--success clay-badge--plain">Most teams pick this</span></div>
+          <div class="plan__price">$18 <small>per month</small></div>
+          <ul>
+            <li><svg class="clay-icon" aria-hidden="true"><use href="#i-check"/></svg>Unlimited invoices</li>
+            <li><svg class="clay-icon" aria-hidden="true"><use href="#i-check"/></svg>Recurring invoices</li>
+            <li><svg class="clay-icon" aria-hidden="true"><use href="#i-check"/></svg>3 team members</li>
+            <li><svg class="clay-icon" aria-hidden="true"><use href="#i-check"/></svg>Your logo and colors</li>
+          </ul>
+          <a class="clay-btn clay-btn--primary clay-btn--block" href="#">Try Studio free for 14 days</a>
+        </article>
+        <article class="clay-card plan">
+          <h3 class="clay-subtitle">Agency</h3>
+          <div class="plan__price">$49 <small>per month</small></div>
+          <ul>
+            <li><svg class="clay-icon" aria-hidden="true"><use href="#i-check"/></svg>Everything in Studio</li>
+            <li><svg class="clay-icon" aria-hidden="true"><use href="#i-check"/></svg>Unlimited team members</li>
+            <li><svg class="clay-icon" aria-hidden="true"><use href="#i-check"/></svg>Multi-currency</li>
+          </ul>
+          <a class="clay-btn clay-btn--block" href="#">Talk to us</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0" aria-label="Customer story">
+    <div class="clay-container">
+      <figure class="clay-card quote">
+        <span class="clay-avatar" style="--avatar-size:88px;--avatar-bg:#F5E596">RS</span>
+        <div>
+          <blockquote>We used to spend Friday afternoons chasing payments. Now the reminders go out on their own and we just watch the badges turn green.</blockquote>
+          <cite>Rosa Silva, founder of Fern &amp; Pine</cite>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0" aria-labelledby="cta-title">
+    <div class="clay-container">
+      <div class="cta">
+        <h2 id="cta-title">Send your first invoice today</h2>
+        <p>It takes about two minutes. Your client will thank you for the pay button.</p>
+        <a class="clay-btn clay-btn--lg" href="dashboard.html"><svg class="clay-icon" aria-hidden="true"><use href="#i-mail"/></svg>Create a free account</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="clay-container">
+    <footer class="footer">
+      <span>Pebble is a demo product for Clay UI.</span>
+      <nav aria-label="Footer"><a href="../index.html">Styleguide</a><a href="dashboard.html">App example</a><a href="https://github.com/seiya058904/clay-ui">GitHub</a></nav>
+    </footer>
+  </div>
+</div>
+
+<script src="../js/clay.js"></script>
+</body>
+</html>

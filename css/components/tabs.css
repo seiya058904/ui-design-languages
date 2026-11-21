@@ -1,0 +1,118 @@
+/* Clay UI — Tabs
+
+   1) Segmented (grey clay track, mint pill on the active tab)
+   <div class="clay-segmented" role="tablist">
+     <button class="clay-segmented__item" role="tab" aria-selected="true">Overview</button>
+     <button class="clay-segmented__item" role="tab" aria-selected="false">Billing</button>
+   </div>
+
+   2) Underline (carved rail with a mint indicator under the active tab)
+   <div class="clay-tabs" role="tablist">
+     <button class="clay-tabs__item" role="tab" aria-selected="true">Overview</button>
+     …
+   </div>
+   Active: aria-selected="true" or .is-active */
+
+/* ---------- Segmented ---------- */
+.clay-segmented {
+  display: inline-flex;
+  gap: 4px;
+  padding: 5px;
+  border-radius: var(--clay-radius-pill);
+  background: linear-gradient(180deg, #DEDBD5 0%, var(--clay-color-neutral) 100%);
+  box-shadow: var(--clay-shadow-raised);
+  max-width: 100%;
+}
+.clay-segmented--block { display: flex; width: 100%; }
+
+.clay-segmented__item {
+  flex: 1;
+  height: 38px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--clay-radius-pill);
+  background: transparent;
+  color: var(--clay-color-text);
+  font-size: 15px;
+  font-weight: var(--clay-font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--clay-motion-duration) var(--clay-motion-easing),
+    box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-segmented__item:hover { background: rgba(255, 255, 255, 0.3); }
+.clay-segmented__item:focus-visible { box-shadow: var(--clay-shadow-glow); }
+
+.clay-segmented__item[aria-selected="true"],
+.clay-segmented__item.is-active {
+  background: linear-gradient(180deg, var(--clay-color-primary-light) 0%, var(--clay-color-primary) 60%);
+  color: var(--clay-color-primary-ink);
+  font-weight: var(--clay-font-weight-semibold);
+  box-shadow: var(--clay-shadow-raised-sm);
+}
+.clay-segmented__item[aria-selected="true"]:focus-visible { box-shadow: var(--clay-shadow-raised-sm), var(--clay-shadow-glow); }
+
+/* ---------- Underline ---------- */
+.clay-tabs {
+  position: relative;
+  display: flex;
+  padding-bottom: 14px;
+}
+.clay-tabs::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 7px;
+  border-radius: var(--clay-radius-pill);
+  background: var(--clay-color-neutral);
+  box-shadow: var(--clay-shadow-inset-sm);
+}
+
+.clay-tabs__item {
+  position: relative;
+  flex: 1;
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--clay-color-text-subtle);
+  font-size: 15px;
+  font-weight: var(--clay-font-weight-medium);
+  cursor: pointer;
+  border-radius: var(--clay-radius-md);
+  transition: color var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-tabs__item:hover { color: var(--clay-color-text-muted); }
+.clay-tabs__item:focus-visible { box-shadow: var(--clay-shadow-glow); }
+
+.clay-tabs__item::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: -14px;
+  height: 7px;
+  border-radius: var(--clay-radius-pill);
+  background: var(--clay-color-primary);
+  box-shadow: var(--clay-shadow-raised-sm);
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition:
+    opacity var(--clay-motion-duration) var(--clay-motion-easing),
+    transform var(--clay-motion-duration-slow) var(--clay-motion-easing);
+}
+
+.clay-tabs__item[aria-selected="true"],
+.clay-tabs__item.is-active {
+  color: var(--clay-color-text);
+  font-weight: var(--clay-font-weight-semibold);
+}
+.clay-tabs__item[aria-selected="true"]::after,
+.clay-tabs__item.is-active::after {
+  opacity: 1;
+  transform: scaleX(1);
+}

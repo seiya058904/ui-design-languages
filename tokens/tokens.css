@@ -1,0 +1,99 @@
+/* Clay UI tokens — GENERATED from tokens/tokens.json. Do not edit by hand.
+   Regenerate with: node scripts/build-tokens.mjs */
+:root {
+  --clay-color-canvas: #E6E3DE; /* Page background behind boards */
+  --clay-color-board: #F1EFEB; /* Matte paper board that carries content and the grid */
+  --clay-color-surface: #F8F7F4; /* Raised clay surface: cards, buttons, swatches */
+  --clay-color-surface-sunken: #EAE7E2; /* Pressed wells: input fields, tracks */
+  --clay-color-primary: #A8E6CF; /* Mint clay — primary actions, selection, success */
+  --clay-color-primary-light: #C6F0E0; /* Top-light tint of primary used in gradients */
+  --clay-color-primary-strong: #6ED3AE; /* Indicators and strokes on mint */
+  --clay-color-primary-ink: #1E4A3A; /* Text and icons placed on mint */
+  --clay-color-neutral: #D6D3CD; /* Grey clay — outer rings, segmented tracks, borders */
+  --clay-color-neutral-strong: #B9B5AE; /* Darker grey clay for media placeholders */
+  --clay-color-border: #DCD9D3; /* Hairlines and dividers */
+  --clay-color-focus: #7CF2C6; /* Glowing focus ring */
+  --clay-color-text: #2C2C2A; /* Primary text */
+  --clay-color-text-muted: #67635D; /* Secondary text (passes 4.5:1 on board) */
+  --clay-color-text-subtle: #9C988F; /* Placeholder, inactive tab, decorative labels */
+  --clay-color-disabled: #DAD7D1; /* Disabled fill */
+  --clay-color-disabled-ink: #A29E97; /* Disabled text */
+  --clay-color-success: #A8E6CF; /* Success fill */
+  --clay-color-success-ink: #1E4A3A; /* Text on success */
+  --clay-color-warning: #F5E596; /* Warning fill */
+  --clay-color-warning-ink: #4F4310; /* Text on warning */
+  --clay-color-error: #F2A09E; /* Error fill */
+  --clay-color-error-ink: #5E1D1B; /* Text on error */
+  --clay-color-info: #C9DDF2; /* Info fill */
+  --clay-color-info-ink: #1F3A57; /* Text on info */
+  --clay-color-grid: rgba(110, 100, 86, 0.09); /* Board grid lines */
+  --clay-color-grid-strong: rgba(110, 100, 86, 0.22); /* Ruler ticks and spec lines */
+  --clay-color-shadow: rgba(84, 74, 60, 0.20); /* Reference shadow tint (warm, never pure black) */
+
+  --clay-font-family-sans: "Inter", "SF Pro Display", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --clay-font-family-mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+
+  --clay-font-size-display: 56px;
+  --clay-font-size-heading: 40px;
+  --clay-font-size-title: 32px;
+  --clay-font-size-subtitle: 24px;
+  --clay-font-size-lead: 19px;
+  --clay-font-size-body: 16px;
+  --clay-font-size-small: 14px;
+  --clay-font-size-caption: 12px;
+
+  --clay-font-leading-display: 1.08;
+  --clay-font-leading-tight: 1.2;
+  --clay-font-leading-normal: 1.5;
+
+  --clay-font-weight-regular: 400;
+  --clay-font-weight-medium: 500;
+  --clay-font-weight-semibold: 600;
+  --clay-font-weight-bold: 700;
+
+  --clay-font-tracking-display: -0.03em;
+  --clay-font-tracking-heading: -0.02em;
+  --clay-font-tracking-normal: 0em;
+
+  --clay-space-1: 4px;
+  --clay-space-2: 8px;
+  --clay-space-3: 12px;
+  --clay-space-4: 16px;
+  --clay-space-5: 20px;
+  --clay-space-6: 24px;
+  --clay-space-8: 32px;
+  --clay-space-10: 40px;
+  --clay-space-12: 48px;
+  --clay-space-16: 64px;
+  --clay-space-20: 80px;
+
+  --clay-radius-sm: 8px; /* Checkboxes, tiny tags */
+  --clay-radius-md: 14px; /* Nav items, small tiles */
+  --clay-radius-lg: 20px; /* Cards, media tiles */
+  --clay-radius-xl: 28px; /* Large panels, dialogs */
+  --clay-radius-squircle: 34%; /* Swatches and app-icon shapes (relative to size) */
+  --clay-radius-pill: 999px; /* Buttons, inputs, chips, tabs, alerts */
+
+  --clay-size-control-sm: 32px;
+  --clay-size-control: 44px;
+  --clay-size-control-lg: 52px;
+
+  --clay-shadow-raised: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), inset 0 -2px 3px rgba(84, 74, 60, 0.12), 0 1px 1px rgba(84, 74, 60, 0.08), 0 4px 10px -2px rgba(84, 74, 60, 0.22); /* Default extruded clay */
+  --clay-shadow-raised-sm: inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -1.5px 2px rgba(84, 74, 60, 0.12), 0 1px 1px rgba(84, 74, 60, 0.08), 0 2px 6px -1px rgba(84, 74, 60, 0.2); /* Small extruded clay: chips, knobs, indicators */
+  --clay-shadow-raised-hover: inset 0 1.5px 0 rgba(255, 255, 255, 0.9), inset 0 -2px 3px rgba(84, 74, 60, 0.12), 0 2px 2px rgba(84, 74, 60, 0.08), 0 10px 20px -6px rgba(84, 74, 60, 0.28); /* Lifted on hover */
+  --clay-shadow-pressed: inset 0 2px 5px rgba(84, 74, 60, 0.24), inset 0 -1px 0 rgba(255, 255, 255, 0.6); /* Pushed into the board (active state) */
+  --clay-shadow-inset: inset 0 2px 4px rgba(84, 74, 60, 0.18), inset 0 -1.5px 0 rgba(255, 255, 255, 0.75); /* Carved well: input fields, tracks */
+  --clay-shadow-inset-sm: inset 0 1px 2px rgba(84, 74, 60, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.7); /* Shallow well: small tracks */
+  --clay-shadow-flat: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 1px 2px rgba(84, 74, 60, 0.12); /* Disabled — clay that has lost its height */
+  --clay-shadow-glow: 0 0 0 2px rgba(124, 242, 198, 0.95), 0 0 16px 2px rgba(124, 242, 198, 0.55); /* Focus / hover glow ring, append to other shadows */
+  --clay-shadow-elevation-1: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(84, 74, 60, 0.08), 0 2px 6px -2px rgba(84, 74, 60, 0.16);
+  --clay-shadow-elevation-2: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 2px 4px rgba(84, 74, 60, 0.07), 0 8px 16px -6px rgba(84, 74, 60, 0.22);
+  --clay-shadow-elevation-3: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 4px 8px rgba(84, 74, 60, 0.07), 0 14px 28px -10px rgba(84, 74, 60, 0.28);
+  --clay-shadow-elevation-4: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 6px 12px rgba(84, 74, 60, 0.08), 0 22px 40px -14px rgba(84, 74, 60, 0.32);
+  --clay-shadow-elevation-5: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 10px 18px rgba(84, 74, 60, 0.09), 0 34px 60px -18px rgba(84, 74, 60, 0.38);
+
+  --clay-motion-duration-fast: 120ms;
+  --clay-motion-duration: 180ms;
+  --clay-motion-duration-slow: 280ms;
+  --clay-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+}

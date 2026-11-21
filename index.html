@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clay UI Styleguide</title>
+  <meta name="description" content="Clay UI — a soft, extruded clay design language: tokens, components and examples in plain CSS.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/clay.css">
+  <style>
+    /* Page-only layout for the styleguide sheet. Not part of the design system. */
+    body { padding: 20px 16px 64px; }
+    .site-nav { width: min(100%, 1040px); margin: 0 auto 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .site-nav__brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.01em; margin-right: auto; text-decoration: none; }
+    .site-nav__mark { width: 28px; height: 28px; --swatch-size: 28px; border-radius: 34%; }
+
+    .sheet { width: min(100%, 1040px); margin: 0 auto; padding: 68px 64px 72px; }
+    .sheet + .sheet { margin-top: 32px; }
+    .sheet__title { font-size: clamp(40px, 7.6vw, 80px); font-weight: 700; letter-spacing: -0.035em; line-height: 1; margin-bottom: 52px; }
+    .sheet__subtitle { font-size: clamp(30px, 4.6vw, 48px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 12px; }
+    .sheet__intro { color: var(--clay-color-text-muted); max-width: 60ch; margin-bottom: 44px; }
+
+    .guide { display: grid; grid-template-columns: 1fr 1fr; column-gap: 56px; row-gap: 48px;
+      grid-template-areas:
+        "colors  type"
+        "spacing radel"
+        "buttons radel"
+        "inputs  chips"
+        "tabs1   tabs2"
+        "alerts  cards"; }
+    .a-colors { grid-area: colors; } .a-type { grid-area: type; } .a-spacing { grid-area: spacing; }
+    .a-radel { grid-area: radel; display: grid; grid-template-columns: auto 1fr; gap: 36px; }
+    .a-buttons { grid-area: buttons; } .a-inputs { grid-area: inputs; } .a-chips { grid-area: chips; }
+    .a-tabs1 { grid-area: tabs1; } .a-tabs2 { grid-area: tabs2; } .a-alerts { grid-area: alerts; } .a-cards { grid-area: cards; }
+
+    .swatches { display: grid; grid-template-columns: repeat(2, max-content); gap: 28px 52px; padding-left: 4px; }
+
+    .type-scale { display: flex; flex-direction: column; }
+    .type-row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 6px 0 7px; border-bottom: 1px solid var(--clay-color-grid); }
+    .type-row > span:first-child { font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; }
+    .type-row > span:last-child { font-size: 12px; color: var(--clay-color-text-muted); white-space: nowrap; }
+
+    .spacing { display: flex; align-items: flex-start; gap: 22px; flex-wrap: wrap; }
+    .spec { display: flex; flex-direction: column; align-items: stretch; }
+    .spec__box-row { display: flex; align-items: stretch; gap: 6px; }
+    .tile { border-radius: 10px; background: var(--clay-color-surface); box-shadow: var(--clay-shadow-raised); }
+    .tile--grey { background: #E3E0DB; }
+    .tile--dark { background: #A9A59E; }
+    .dim, .vdim { --line: var(--clay-color-grid-strong); font-size: 11px; color: var(--clay-color-text-muted); white-space: nowrap; }
+    .dim { display: flex; align-items: center; gap: 4px; margin-top: 7px; }
+    .dim::before, .dim::after { content: ""; flex: 1; height: 7px; background: linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat; }
+    .dim::before { border-left: 1px solid var(--line); } .dim::after { border-right: 1px solid var(--line); }
+    .vdim { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .vdim::before, .vdim::after { content: ""; flex: 1; width: 7px; background: linear-gradient(var(--line), var(--line)) center / 1px 100% no-repeat; }
+    .vdim::before { border-top: 1px solid var(--line); } .vdim::after { border-bottom: 1px solid var(--line); }
+
+    .radius-demo { position: relative; width: 80px; height: 80px; border-radius: 20px; background: #E3E0DB; box-shadow: var(--clay-shadow-raised); }
+    .radius-demo::before { content: ""; position: absolute; top: 0; right: 0; width: 22px; height: 22px; border-top: 1px dashed #8E8981; border-right: 1px dashed #8E8981; border-top-right-radius: 20px; }
+    .radius-demo span { position: absolute; top: 12px; right: 20px; font-size: 10px; color: var(--clay-color-text-muted); transform: rotate(-35deg); }
+
+    .states { display: grid; grid-template-columns: repeat(3, max-content); gap: 8px 22px; align-items: center; }
+    .states > small { font-size: 12px; color: var(--clay-color-text-muted); }
+
+    .chip-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; min-height: 72px; }
+    .alerts { display: flex; flex-direction: column; gap: 16px; }
+
+    /* Extended sheet */
+    .ext { display: grid; grid-template-columns: repeat(12, 1fr); gap: 48px 40px; }
+    .ext > section { grid-column: span 6; }
+    .ext > .wide { grid-column: span 12; }
+    .ext > .third { grid-column: span 4; }
+    .radius-scale { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
+    .radius-scale figure { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12px; color: var(--clay-color-text-muted); }
+    .radius-scale .tile { width: 52px; height: 52px; }
+    .stat { display: flex; flex-direction: column; gap: 4px; }
+    .stat b { font-size: 28px; letter-spacing: -0.02em; font-weight: 700; }
+
+    .site-foot { width: min(100%, 1040px); margin: 32px auto 0; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 14px; color: var(--clay-color-text-muted); }
+
+    @media (max-width: 860px) {
+      .sheet { padding: 48px 28px 52px; }
+      .guide { grid-template-columns: 1fr; grid-template-areas: "colors" "type" "spacing" "radel" "buttons" "inputs" "chips" "tabs1" "tabs2" "alerts" "cards"; }
+      .ext > section, .ext > .third { grid-column: span 12; }
+    }
+    @media (max-width: 480px) {
+      .sheet { padding: 40px 22px 44px; }
+      .a-radel { grid-template-columns: 1fr; }
+      .states { grid-template-columns: 1fr; }
+      .states > small:nth-child(n) { display: none; }
+      .swatches { gap: 24px 32px; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-warning" viewBox="0 0 24 24"><path d="M10.3 4.2 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0Z"/><path d="M12 9.5v4M12 17h.01"/></symbol>
+  <symbol id="i-error" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.5h.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.5h.01"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><path d="M3 18 9 11l4 4.5 2.5-2.5L21 18Z" fill="currentColor" stroke="none"/><circle cx="16.5" cy="7" r="2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+</svg>
+
+<nav class="site-nav" aria-label="Site">
+  <a class="site-nav__brand" href="./"><span class="clay-swatch clay-swatch--primary site-nav__mark"></span>Clay UI</a>
+  <a class="clay-btn clay-btn--ghost clay-btn--sm" href="examples/dashboard.html">App example</a>
+  <a class="clay-btn clay-btn--ghost clay-btn--sm" href="examples/landing.html">Website example</a>
+  <a class="clay-btn clay-btn--sm" href="https://github.com/seiya058904/clay-ui"><svg class="clay-icon" aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
+</nav>
+
+<main>
+  <!-- ============ Sheet 1: the reference styleguide ============ -->
+  <article class="clay-board clay-ruler sheet" aria-labelledby="t-guide">
+    <h1 class="sheet__title" id="t-guide">Product UI Styleguide</h1>
+
+    <div class="guide">
+      <section class="a-colors" aria-labelledby="h-colors">
+        <h2 class="clay-section-title" id="h-colors">Color Tokens</h2>
+        <div class="swatches">
+          <figure><div class="clay-swatch clay-swatch--primary"></div><figcaption class="clay-swatch-label"><strong>Primary</strong><span>#A8E6CF</span></figcaption></figure>
+          <figure><div class="clay-swatch clay-swatch--surface"></div><figcaption class="clay-swatch-label"><strong>Surface</strong><span>#F8F7F4</span></figcaption></figure>
+          <figure><div class="clay-swatch clay-swatch--neutral"></div><figcaption class="clay-swatch-label"><strong>Border</strong><span>#D6D3CD</span></figcaption></figure>
+          <figure><div class="clay-swatch clay-swatch--ring"></div><figcaption class="clay-swatch-label"><strong>Focus ring</strong><span>#7CF2C6</span></figcaption></figure>
+        </div>
+      </section>
+
+      <section class="a-type" aria-labelledby="h-type">
+        <h2 class="clay-section-title" id="h-type">Typography Scale</h2>
+        <div class="type-scale">
+          <div class="type-row"><span style="font-size:56px;font-weight:600;letter-spacing:-0.03em">Display</span><span>56 / 64</span></div>
+          <div class="type-row"><span style="font-size:40px">Heading</span><span>40 / 48</span></div>
+          <div class="type-row"><span style="font-size:32px">Title</span><span>32 / 40</span></div>
+          <div class="type-row"><span style="font-size:24px">Subtitle</span><span>24 / 32</span></div>
+          <div class="type-row"><span style="font-size:16px">Body</span><span>16 / 24</span></div>
+          <div class="type-row"><span style="font-size:12px">Caption</span><span>12 / 16</span></div>
+        </div>
+      </section>
+
+      <section class="a-spacing" aria-labelledby="h-spacing">
+        <h2 class="clay-section-title" id="h-spacing">Spacing</h2>
+        <div class="spacing">
+          <div class="spec">
+            <div class="spec__box-row"><div class="tile" style="width:64px;height:64px"></div><span class="vdim">64</span></div>
+            <span class="dim">64px</span>
+          </div>
+          <div class="spec">
+            <div class="spec__box-row"><div class="tile tile--grey" style="width:48px;height:48px;margin-top:16px"></div><span class="vdim" style="margin-top:16px">48</span></div>
+            <span class="dim">48px</span>
+          </div>
+          <div class="spec">
+            <div class="tile tile--dark" style="width:16px;height:64px;margin-inline:auto"></div>
+            <span class="dim" style="min-width:28px">16</span>
+          </div>
+          <div class="spec" style="gap:10px">
+            <div class="spec__box-row"><div class="tile tile--dark" style="width:24px;height:24px"></div><span class="vdim">24</span></div>
+            <div class="spec__box-row"><div class="tile tile--grey" style="width:24px;height:8px;border-radius:3px;margin-top:4px"></div><span class="vdim" style="height:16px">8</span></div>
+            <span class="dim" style="margin-top:4px">4px grid</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="a-radel">
+        <section aria-labelledby="h-radius">
+          <h2 class="clay-section-title" id="h-radius">Radius</h2>
+          <div class="spec__box-row">
+            <div class="spec"><div class="radius-demo"><span>r20</span></div><span class="dim">80px</span></div>
+            <span class="vdim" style="height:80px">20px</span>
+          </div>
+        </section>
+        <section aria-labelledby="h-elev">
+          <h2 class="clay-section-title" id="h-elev">Elevation</h2>
+          <div class="clay-strata">
+            <div class="clay-strata__level">Level 1</div>
+            <div class="clay-strata__level">Level 2</div>
+            <div class="clay-strata__level">Level 3</div>
+            <div class="clay-strata__level">Level 4</div>
+            <div class="clay-strata__level">Level 5</div>
+          </div>
+        </section>
+      </div>
+
+      <section class="a-buttons" aria-labelledby="h-buttons">
+        <h2 class="clay-section-title" id="h-buttons">Buttons</h2>
+        <div class="states">
+          <small>Default</small><small>Hover</small><small>Disabled</small>
+          <button class="clay-btn clay-btn--primary" type="button">Primary Action</button>
+          <button class="clay-btn clay-btn--primary is-hover" type="button">Primary Action</button>
+          <button class="clay-btn clay-btn--primary" type="button" disabled>Disabled</button>
+        </div>
+      </section>
+
+      <section class="a-inputs" aria-labelledby="h-inputs">
+        <h2 class="clay-section-title" id="h-inputs">Inputs</h2>
+        <label class="clay-field is-focus">
+          <span class="clay-field__control">
+            <input type="search" placeholder="Search invoices" aria-label="Search invoices">
+            <svg class="clay-icon" aria-hidden="true"><use href="#i-search"/></svg>
+          </span>
+        </label>
+      </section>
+
+      <section class="a-chips" aria-labelledby="h-chips">
+        <h2 class="clay-section-title" id="h-chips">Chips</h2>
+        <div class="chip-row">
+          <button class="clay-chip" type="button" aria-pressed="false"><svg class="clay-icon" aria-hidden="true"><use href="#i-filter"/></svg>Filter</button>
+          <button class="clay-chip" type="button" aria-pressed="true"><svg class="clay-icon" aria-hidden="true"><use href="#i-check"/></svg>Selected</button>
+          <button class="clay-chip" type="button" disabled>Disabled</button>
+        </div>
+      </section>
+
+      <section class="a-tabs1" aria-labelledby="h-tabs1">
+        <h2 class="clay-section-title" id="h-tabs1">Tabs</h2>
+        <div class="clay-segmented clay-segmented--block" role="tablist" aria-label="Segmented tabs">
+          <button class="clay-segmented__item" role="tab" aria-selected="true">Overview</button>
+          <button class="clay-segmented__item" role="tab" aria-selected="false" tabindex="-1">Billing</button>
+          <button class="clay-segmented__item" role="tab" aria-selected="false" tabindex="-1">Team</button>
+        </div>
+      </section>
+
+      <section class="a-tabs2" aria-labelledby="h-tabs2">
+        <h2 class="clay-section-title" id="h-tabs2">Tabs</h2>
+        <div class="clay-tabs" role="tablist" aria-label="Underline tabs">
+          <button class="clay-tabs__item" role="tab" aria-selected="true">Overview</button>
+          <button class="clay-tabs__item" role="tab" aria-selected="false" tabindex="-1">Billing</button>
+          <button class="clay-tabs__item" role="tab" aria-selected="false" tabindex="-1">Team</button>
+        </div>
+      </section>
+
+      <section class="a-alerts" aria-labelledby="h-alerts">
+        <h2 class="clay-section-title" id="h-alerts">Alerts</h2>
+        <div class="alerts">
+          <div class="clay-alert clay-alert--success" role="status"><svg class="clay-icon" aria-hidden="true"><use href="#i-check-circle"/></svg>Success</div>
+          <div class="clay-alert clay-alert--warning" role="status"><svg class="clay-icon" aria-hidden="true"><use href="#i-warning"/></svg>Warning</div>
+          <div class="clay-alert clay-alert--error" role="alert"><svg class="clay-icon" aria-hidden="true"><use href="#i-error"/></svg>Error</div>
+        </div>
+      </section>
+
+      <section class="a-cards" aria-labelledby="h-cards">
+        <h2 class="clay-section-title" id="h-cards">Cards</h2>
+        <article class="clay-card clay-card--stacked">
+          <div class="clay-card__content">
+            <h3 class="clay-card__title">Title</h3>
+            <p class="clay-card__text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <button class="clay-btn clay-btn--neutral clay-btn--sm" type="button">Image</button>
+          </div>
+          <div class="clay-card__media" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-image"/></svg></div>
+        </article>
+      </section>
+    </div>
+  </article>
+
+  <!-- ============ Sheet 2: extended components ============ -->
+  <article class="clay-board clay-ruler sheet" aria-labelledby="t-ext">
+    <h2 class="sheet__subtitle" id="t-ext">Extended components</h2>
+    <p class="sheet__intro">The same clay rules applied to the rest of a product: raised for things you press, carved for things you fill, mint for what is selected.</p>
+
+    <div class="ext">
+      <section class="third" aria-labelledby="h-sel">
+        <h3 class="clay-section-title" id="h-sel">Selection</h3>
+        <div class="clay-stack" style="--gap:16px">
+          <label class="clay-check"><input type="checkbox" class="clay-toggle" checked> Email receipts</label>
+          <label class="clay-check"><input type="checkbox" class="clay-toggle"> Weekly summary</label>
+          <label class="clay-check"><input type="checkbox" class="clay-checkbox" checked> Include tax</label>
+          <label class="clay-check"><input type="checkbox" class="clay-checkbox"> Attach PDF</label>
+          <label class="clay-check"><input type="radio" name="cycle" class="clay-radio" checked> Monthly</label>
+          <label class="clay-check"><input type="radio" name="cycle" class="clay-radio"> Yearly</label>
+        </div>
+      </section>
+
+      <section class="third" aria-labelledby="h-badges">
+        <h3 class="clay-section-title" id="h-badges">Badges and avatars</h3>
+        <div class="clay-stack" style="--gap:20px">
+          <div class="clay-row">
+            <span class="clay-badge clay-badge--success">Paid</span>
+            <span class="clay-badge clay-badge--warning">Due soon</span>
+            <span class="clay-badge clay-badge--error">Overdue</span>
+            <span class="clay-badge clay-badge--info">Draft</span>
+            <span class="clay-badge">Void</span>
+          </div>
+          <div class="clay-avatar-group">
+            <span class="clay-avatar">AM</span>
+            <span class="clay-avatar" style="--avatar-bg:#F5E596">JK</span>
+            <span class="clay-avatar" style="--avatar-bg:#C9DDF2">RS</span>
+            <span class="clay-avatar" style="--avatar-bg:#F8F7F4">+4</span>
+          </div>
+          <div class="clay-stack" style="--gap:8px">
+            <div class="clay-row" style="justify-content:space-between"><span class="clay-small">Collected this month</span><span class="clay-small clay-muted">72%</span></div>
+            <div class="clay-progress" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" aria-label="Collected this month"><span style="--value:72%"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="third" aria-labelledby="h-radscale">
+        <h3 class="clay-section-title" id="h-radscale">Radius scale</h3>
+        <div class="radius-scale">
+          <figure><div class="tile" style="border-radius:8px"></div>sm 8</figure>
+          <figure><div class="tile" style="border-radius:14px"></div>md 14</figure>
+          <figure><div class="tile" style="border-radius:20px"></div>lg 20</figure>
+          <figure><div class="tile" style="border-radius:28px"></div>xl 28</figure>
+          <figure><div class="tile tile--grey" style="width:88px;height:40px;border-radius:999px"></div>pill</figure>
+        </div>
+      </section>
+
+      <section aria-labelledby="h-forms">
+        <h3 class="clay-section-title" id="h-forms">Form fields</h3>
+        <div class="clay-stack" style="--gap:18px">
+          <div class="clay-form-row">
+            <label class="clay-label" for="f-client">Client</label>
+            <input class="clay-input" id="f-client" value="Northwind Studio">
+          </div>
+          <div class="clay-form-row">
+            <label class="clay-label" for="f-email">Billing email</label>
+            <input class="clay-input" id="f-email" value="accounts@northwind" aria-invalid="true" aria-describedby="f-email-hint">
+            <span class="clay-hint clay-hint--error" id="f-email-hint">Add a domain, for example accounts@northwind.com</span>
+          </div>
+          <div class="clay-form-row">
+            <label class="clay-label" for="f-terms">Payment terms</label>
+            <select class="clay-input" id="f-terms"><option>Net 15</option><option selected>Net 30</option><option>Due on receipt</option></select>
+          </div>
+          <div class="clay-form-row">
+            <label class="clay-label" for="f-note">Note to client</label>
+            <textarea class="clay-input" id="f-note" placeholder="Thanks for your business."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="h-feedback">
+        <h3 class="clay-section-title" id="h-feedback">Feedback</h3>
+        <div class="clay-stack" style="--gap:16px">
+          <div class="clay-alert clay-alert--info clay-alert--block" role="status">
+            <svg class="clay-icon" aria-hidden="true"><use href="#i-info"/></svg>
+            <div><div class="clay-alert__title">Reminder scheduled</div><div class="clay-alert__text">Northwind Studio gets a nudge 3 days before the due date.</div></div>
+          </div>
+          <div class="clay-alert clay-alert--error clay-alert--block" role="alert">
+            <svg class="clay-icon" aria-hidden="true"><use href="#i-error"/></svg>
+            <div><div class="clay-alert__title">Card declined</div><div class="clay-alert__text">The bank rejected the charge. Ask the client to update their card, then retry.</div></div>
+            <button class="clay-alert__close" type="button" aria-label="Dismiss"><svg class="clay-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+          <div class="clay-row" style="--gap:14px">
+            <button class="clay-btn clay-btn--primary" type="button" data-clay-open="#demo-dialog">Open dialog</button>
+            <span class="clay-tooltip" data-tip="Copied to clipboard"><button class="clay-btn" type="button">Copy link</button></span>
+            <button class="clay-btn clay-btn--neutral clay-btn--icon" type="button" aria-label="Search"><svg class="clay-icon" aria-hidden="true"><use href="#i-search"/></svg></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="wide" aria-labelledby="h-table">
+        <h3 class="clay-section-title" id="h-table">Table in a card</h3>
+        <div class="clay-card clay-card--column" style="padding:12px 12px 6px">
+          <div class="clay-table-wrap">
+            <table class="clay-table">
+              <thead><tr><th>Invoice</th><th>Client</th><th>Issued</th><th>Status</th><th class="is-num">Amount</th></tr></thead>
+              <tbody>
+                <tr><td>INV-1042</td><td>Northwind Studio</td><td>Nov 18</td><td><span class="clay-badge clay-badge--success">Paid</span></td><td class="is-num">$4,200.00</td></tr>
+                <tr><td>INV-1041</td><td>Fern &amp; Pine</td><td>Nov 14</td><td><span class="clay-badge clay-badge--warning">Due soon</span></td><td class="is-num">$1,860.00</td></tr>
+                <tr><td>INV-1040</td><td>Harbor Labs</td><td>Oct 30</td><td><span class="clay-badge clay-badge--error">Overdue</span></td><td class="is-num">$950.00</td></tr>
+                <tr><td>INV-1039</td><td>Quill Coffee</td><td>Oct 27</td><td><span class="clay-badge clay-badge--info">Draft</span></td><td class="is-num">$312.50</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </article>
+</main>
+
+<dialog class="clay-dialog" id="demo-dialog" aria-labelledby="dlg-title">
+  <h2 class="clay-dialog__title" id="dlg-title">Send invoice INV-1042?</h2>
+  <p class="clay-dialog__body">Northwind Studio will get an email with a payment link. You can still edit the invoice until it is paid.</p>
+  <div class="clay-dialog__actions">
+    <button class="clay-btn" type="button" data-clay-close>Cancel</button>
+    <button class="clay-btn clay-btn--primary" type="button" data-clay-close>Send invoice</button>
+  </div>
+</dialog>
+
+<footer class="site-foot">
+  <span>Clay UI — plain CSS, zero dependencies, MIT licensed.</span>
+  <span>Read <a href="https://github.com/seiya058904/clay-ui/blob/main/AGENTS.md">AGENTS.md</a> to rebuild this look with any AI.</span>
+</footer>
+
+<script src="js/clay.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+/* Clay UI — Inputs
+
+   1) Ringed field (the reference "Search invoices" look): a grey clay ring holding a carved well.
+   <label class="clay-field">
+     <span class="clay-field__control">
+       <input type="search" placeholder="Search invoices">
+       <svg class="clay-icon">…</svg>
+     </span>
+   </label>
+
+   2) Plain carved input: <input class="clay-input"> / <textarea class="clay-input"> / <select class="clay-input">
+   States: :focus / .is-focus · [aria-invalid="true"] / .is-invalid · :disabled */
+
+.clay-field {
+  display: flex;
+  padding: 9px;
+  border-radius: var(--clay-radius-pill);
+  background: linear-gradient(180deg, #DCD9D3 0%, #CCC8C1 100%);
+  box-shadow: var(--clay-shadow-raised);
+}
+
+.clay-field__control {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--clay-space-3);
+  min-width: 0;
+  height: var(--clay-size-control);
+  padding: 0 18px 0 22px;
+  border-radius: var(--clay-radius-pill);
+  background: var(--clay-color-surface-sunken);
+  box-shadow: var(--clay-shadow-inset);
+  color: var(--clay-color-text);
+  transition: box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
+}
+
+.clay-field__control input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  outline: none;
+  font-size: 15px;
+}
+.clay-field__control input::placeholder { color: var(--clay-color-text-subtle); }
+.clay-field__control input::-webkit-search-cancel-button { display: none; }
+.clay-field__control .clay-icon { width: 20px; height: 20px; color: var(--clay-color-text); }
+
+.clay-field:focus-within .clay-field__control,
+.clay-field.is-focus .clay-field__control {
+  /* Glow stays inside the grey ring so the ring keeps reading as clay */
+  box-shadow:
+    var(--clay-shadow-inset),
+    inset 0 0 0 2px var(--clay-color-focus),
+    inset 0 0 10px rgba(124, 242, 198, 0.45),
+    0 0 0 1.5px rgba(124, 242, 198, 0.9),
+    0 0 8px 1px rgba(124, 242, 198, 0.55);
+}
+
+/* Plain carved input */
+.clay-input {
+  display: block;
+  width: 100%;
+  height: var(--clay-size-control);
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--clay-radius-pill);
+  background: var(--clay-color-surface-sunken);
+  box-shadow: var(--clay-shadow-inset);
+  font-size: 15px;
+  outline: none;
+  appearance: none;
+  transition: box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-input::placeholder { color: var(--clay-color-text-subtle); }
+textarea.clay-input {
+  height: auto;
+  min-height: 112px;
+  padding: 14px 18px;
+  border-radius: var(--clay-radius-lg);
+  line-height: var(--clay-font-leading-normal);
+  resize: vertical;
+}
+select.clay-input {
+  padding-right: 44px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232C2C2A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 18px;
+}
+
+.clay-input:focus,
+.clay-input.is-focus { box-shadow: var(--clay-shadow-inset), var(--clay-shadow-glow); }
+
+.clay-input[aria-invalid="true"],
+.clay-input.is-invalid,
+.clay-field.is-invalid .clay-field__control {
+  box-shadow: var(--clay-shadow-inset), 0 0 0 2px var(--clay-color-error), 0 0 14px rgba(242, 160, 158, 0.6);
+}
+
+.clay-input:disabled,
+.clay-field.is-disabled .clay-field__control {
+  color: var(--clay-color-disabled-ink);
+  background: var(--clay-color-disabled);
+  box-shadow: var(--clay-shadow-inset-sm);
+  cursor: not-allowed;
+}
+
+/* Label + hint layout */
+.clay-form-row { display: flex; flex-direction: column; gap: var(--clay-space-2); }
+.clay-label { font-size: var(--clay-font-size-small); font-weight: var(--clay-font-weight-semibold); padding-left: 6px; }
+.clay-hint  { font-size: var(--clay-font-size-caption); color: var(--clay-color-text-muted); padding-left: 6px; }
+.clay-hint--error { color: #A23431; }

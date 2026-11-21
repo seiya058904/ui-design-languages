@@ -1,0 +1,68 @@
+/* Clay UI — Card
+   <article class="clay-card clay-card--stacked">
+     <div class="clay-card__content">
+       <h3 class="clay-card__title">Title</h3>
+       <p class="clay-card__text">Body copy.</p>
+       <button class="clay-btn clay-btn--neutral clay-btn--sm">Image</button>
+     </div>
+     <div class="clay-card__media">…</div>
+   </article>
+   Variants: --stacked (two slabs peeking below) · --sunken (carved panel) · --interactive (lifts on hover) */
+
+.clay-card {
+  position: relative;
+  display: flex;
+  gap: var(--clay-space-4);
+  padding: var(--clay-space-5);
+  border-radius: var(--clay-radius-lg);
+  background: var(--clay-color-surface);
+  box-shadow: var(--clay-shadow-elevation-2);
+}
+.clay-card--column { flex-direction: column; }
+
+.clay-card__content { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: var(--clay-space-2); }
+.clay-card__title   { font-size: 20px; font-weight: var(--clay-font-weight-semibold); letter-spacing: -0.01em; line-height: 1.25; }
+.clay-card__text    { font-size: var(--clay-font-size-small); color: var(--clay-color-text-muted); line-height: 1.45; }
+.clay-card__footer  { display: flex; align-items: center; gap: var(--clay-space-2); margin-top: auto; padding-top: var(--clay-space-2); }
+
+/* Grey clay media tile with a landscape glyph */
+.clay-card__media {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: var(--clay-radius-lg);
+  background: linear-gradient(160deg, #D9D6D0 0%, var(--clay-color-neutral-strong) 100%);
+  box-shadow: var(--clay-shadow-raised);
+  color: #8E8981;
+  overflow: hidden;
+}
+.clay-card__media svg { width: 70%; height: 70%; }
+.clay-card__media img { width: 100%; height: 100%; object-fit: cover; }
+.clay-card__media--wide { width: 100%; height: auto; aspect-ratio: 16 / 9; }
+
+/* Two slabs peeking out below the card, as in the reference */
+.clay-card--stacked {
+  margin-bottom: 14px;
+  box-shadow:
+    var(--clay-shadow-elevation-2),
+    0 7px 0 -3px #ECE9E4,
+    0 8px 6px -3px rgba(84, 74, 60, 0.18),
+    0 14px 0 -6px #E2DFD9,
+    0 15px 8px -6px rgba(84, 74, 60, 0.2);
+}
+
+.clay-card--sunken {
+  background: var(--clay-color-surface-sunken);
+  box-shadow: var(--clay-shadow-inset);
+}
+
+.clay-card--interactive {
+  cursor: pointer;
+  transition:
+    transform var(--clay-motion-duration) var(--clay-motion-easing),
+    box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-card--interactive:hover { transform: translateY(-2px); box-shadow: var(--clay-shadow-elevation-3); }
+.clay-card--interactive:focus-visible { box-shadow: var(--clay-shadow-elevation-2), var(--clay-shadow-glow); }

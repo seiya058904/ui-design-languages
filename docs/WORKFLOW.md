@@ -15,9 +15,11 @@ Start `<pack>/DESIGN.md` with the **reference analysis table** — one row per e
 
 Facts are only what the image shows (including any printed hex values, labels and states). Everything else — exact colors when labels are illegible, font family, size scale, shadow recipes, motion, extra components — is an inference and must be labelled as one. When a printed value exists, use it (e.g. Lilac's ivory `#FCFAF6`).
 
-## 3. Confirm understanding (Claude Design canvas, recommended for new packs)
+## 3. Self-review the spec (no human checkpoint by default)
 
-Before coding, place the primary reference on a **Claude Design canvas** (an Artifact of the *Design* type) next to annotated callouts for the spec rows, and let the user correct them in place. Update the spec, then code.
+The repository owner reviews rarely, so the default is **autonomous end-to-end**: do not stop for confirmation. Re-read the reference against the spec table, fix any row that states as fact something the image does not show, then code. Fidelity is enforced later by screenshots (step 5), not by sign-off.
+
+Optional — only if the owner asks for a review round: place the primary reference on a **Claude Design canvas** (an Artifact of the *Design* type) next to annotated callouts for the spec rows and let them correct it in place.
 
 - The canvas is for agreement on *what the style is*; it is not production code.
 - Keep each pack's canvas and any design-system sync **separate per pack**. The homepage chrome in `site/` is never synced or mixed into a pack.

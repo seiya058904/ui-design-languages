@@ -25,6 +25,8 @@ State hooks are shared too: `aria-selected`, `aria-pressed`, `aria-current="page
 
 ## Working on this repository
 
+- Work autonomously end-to-end: the owner reviews rarely, so don't block on human checkpoints. Self-verify against the reference with screenshots, then commit.
+
 - Each language's `tokens/tokens.json` is its single source of truth (optional `tokens.dark.json` for a dark theme). Run `node scripts/build-tokens.mjs` from the repo root after editing tokens; `node scripts/build-tokens.mjs --check` must pass before committing. Never hand-edit a generated `tokens.css`.
 - A language folder contains: `tokens/`, `css/` (entry file + base + components), `js/` (optional behaviour), `index.html` (styleguide), `examples/`, `DESIGN.md`, `AGENTS.md`, `README.md`. Register it in `packs.json` and give it a card on the homepage.
 - Follow `docs/WORKFLOW.md`: write the reference-analysis table (facts vs inferences) in `DESIGN.md` before coding.

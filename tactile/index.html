@@ -13,7 +13,7 @@
   <style>
     /* Page layout only — visuals come from Tactile classes and tokens. */
     body { padding: 28px 16px 56px; }
-    .sheet { width: min(100%, 1080px); margin: 0 auto; }
+    .sheet { width: min(100%, 1000px); margin: 0 auto; }
     .top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 36px; }
     .top__title { margin-right: auto; }
     .top__title p { margin-top: 6px; }
@@ -22,11 +22,11 @@
     .found { display: grid; grid-template-columns: 2fr 1fr; gap: 36px; }
     .layers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
     .layers figure { display: flex; flex-direction: column; gap: 14px; }
-    .layers .tactile-layer { aspect-ratio: 1; max-width: 100px; display: grid; place-items: center; }
+    .layers .tactile-layer { aspect-ratio: 1; max-width: 112px; display: grid; place-items: center; }
     .layers .is-inset span { width: 60%; height: 60%; border-radius: 16px; box-shadow: var(--tactile-shadow-inset); }
     .layers .tactile-layer--pressed span { width: 66%; height: 66%; border-radius: 16px; box-shadow: var(--tactile-shadow-pressed); }
     .levels { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 22px; }
-    .levels div { padding: 9px 16px; border-radius: 10px; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--tactile-color-ink); line-height: 1.3; }
+    .levels div { padding: 11px 18px; border-radius: 12px; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--tactile-color-ink); line-height: 1.3; }
     .tokens-row { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 26px; }
     .borders { display: flex; flex-direction: column; gap: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--tactile-color-ink); }
     .borders div { display: flex; align-items: center; gap: 14px; }

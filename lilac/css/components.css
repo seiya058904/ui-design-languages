@@ -367,8 +367,8 @@ select.lilac-input {
 
 .lilac-toggle {
   position: relative;
-  width: 60px;
-  height: 34px;
+  width: 66px;
+  height: 38px;
   border-radius: var(--lilac-radius-pill);
   background: var(--lilac-color-track);
   box-shadow: var(--lilac-shadow-inset);
@@ -378,8 +378,8 @@ select.lilac-input {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--lilac-radius-pill);
   background: var(--lilac-color-surface);
   box-shadow: var(--lilac-shadow-knob);
@@ -387,18 +387,18 @@ select.lilac-input {
     transform var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring),
     width var(--lilac-motion-duration) var(--lilac-motion-easing-spring);
 }
-.lilac-toggle:active::before { width: 34px; }
+.lilac-toggle:active::before { width: 38px; }
 .lilac-toggle:checked {
   background: linear-gradient(180deg, var(--lilac-color-primary-light), var(--lilac-color-primary));
   box-shadow: inset 0 1px 2px rgba(20, 0, 80, 0.25), 0 8px 18px -8px var(--lilac-color-glow);
 }
-.lilac-toggle:checked::before { transform: translateX(26px); }
-.lilac-toggle:checked:active::before { transform: translateX(20px); }
+.lilac-toggle:checked::before { transform: translateX(28px); }
+.lilac-toggle:checked:active::before { transform: translateX(22px); }
 
 .lilac-checkbox,
 .lilac-radio {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   background-color: var(--lilac-color-surface);
   background-repeat: no-repeat;
   background-position: center;
@@ -500,12 +500,12 @@ select.lilac-input {
 
 .lilac-ring { position: relative; width: var(--ring-size, 180px); aspect-ratio: 1; flex: none; }
 .lilac-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
-.lilac-ring circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+.lilac-ring circle { fill: none; stroke-width: 9; stroke-linecap: round; }
 .lilac-ring__track { stroke: var(--lilac-color-track); }
 .lilac-ring__bar {
   stroke: var(--lilac-color-primary);
   stroke-dasharray: var(--value, 0) 100;
-  filter: drop-shadow(0 0 6px var(--lilac-color-glow));
+  filter: drop-shadow(0 0 7px var(--lilac-color-glow)) drop-shadow(0 4px 10px var(--lilac-color-glow-soft));
   transition: stroke-dasharray var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring);
 }
 .lilac-ring__label { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }

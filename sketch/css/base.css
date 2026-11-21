@@ -44,7 +44,7 @@ a { color: inherit; }
    The number is the section's order in the guide. */
 .sketch-box {
   position: relative;
-  padding: 20px 22px 22px;
+  padding: 16px 18px 18px;
   border: var(--sketch-line-regular) solid var(--sketch-color-ink);
   border-radius: var(--sketch-radius-lg);
   background: var(--sketch-color-panel);
@@ -54,7 +54,7 @@ a { color: inherit; }
   display: flex;
   align-items: baseline;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   font-family: var(--sketch-font-family-display);
   font-size: var(--sketch-font-size-h3);
   font-weight: 700;

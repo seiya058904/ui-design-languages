@@ -110,22 +110,22 @@
   --clay-size-control: 44px;
   --clay-size-control-lg: 52px;
 
-  --clay-shadow-raised: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), inset 0 -2px 3px rgba(84, 74, 60, 0.12), 0 1px 1px rgba(84, 74, 60, 0.08), 0 4px 10px -2px rgba(84, 74, 60, 0.22); /* Default extruded clay */
-  --clay-shadow-raised-sm: inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -1.5px 2px rgba(84, 74, 60, 0.12), 0 1px 1px rgba(84, 74, 60, 0.08), 0 2px 6px -1px rgba(84, 74, 60, 0.2); /* Small extruded clay: chips, knobs, indicators */
-  --clay-shadow-raised-hover: inset 0 1.5px 0 rgba(255, 255, 255, 0.9), inset 0 -2px 3px rgba(84, 74, 60, 0.12), 0 2px 2px rgba(84, 74, 60, 0.08), 0 10px 20px -6px rgba(84, 74, 60, 0.28); /* Lifted on hover */
+  --clay-shadow-raised: inset 0 2px 1px rgba(255, 255, 255, 0.9), inset 0 -3px 5px rgba(84, 74, 60, 0.16), 0 2px 2px rgba(84, 74, 60, 0.1), 0 6px 10px -2px rgba(84, 74, 60, 0.2), 0 16px 28px -12px rgba(84, 74, 60, 0.34); /* Default extruded clay */
+  --clay-shadow-raised-sm: inset 0 1.5px 1px rgba(255, 255, 255, 0.85), inset 0 -2px 3px rgba(84, 74, 60, 0.15), 0 1px 1px rgba(84, 74, 60, 0.1), 0 4px 8px -2px rgba(84, 74, 60, 0.24); /* Small extruded clay: chips, knobs, indicators */
+  --clay-shadow-raised-hover: inset 0 2px 1px rgba(255, 255, 255, 0.95), inset 0 -3px 5px rgba(84, 74, 60, 0.16), 0 3px 3px rgba(84, 74, 60, 0.1), 0 10px 16px -4px rgba(84, 74, 60, 0.24), 0 24px 36px -14px rgba(84, 74, 60, 0.38); /* Lifted on hover */
   --clay-shadow-pressed: inset 0 2px 5px rgba(84, 74, 60, 0.24), inset 0 -1px 0 rgba(255, 255, 255, 0.6); /* Pushed into the board (active state) */
   --clay-shadow-inset: inset 0 2px 4px rgba(84, 74, 60, 0.18), inset 0 -1.5px 0 rgba(255, 255, 255, 0.75); /* Carved well: input fields, tracks */
   --clay-shadow-inset-sm: inset 0 1px 2px rgba(84, 74, 60, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.7); /* Shallow well: small tracks */
   --clay-shadow-flat: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 1px 2px rgba(84, 74, 60, 0.12); /* Disabled — clay that has lost its height */
   --clay-shadow-glow: 0 0 0 2px rgba(124, 242, 198, 0.95), 0 0 16px 2px rgba(124, 242, 198, 0.55); /* Focus / hover glow ring, append to other shadows */
   --clay-shadow-well: inset 0 2px 4px rgba(84, 74, 60, 0.24), inset 0 -1.5px 0 rgba(255, 255, 255, 0.8); /* Deeper well for checkbox / radio / toggle tracks */
-  --clay-shadow-swatch: inset 0 2px 1px rgba(255, 255, 255, 0.7), inset 0 -6px 10px rgba(84, 74, 60, 0.12), 0 3px 4px rgba(84, 74, 60, 0.1), 0 14px 24px -10px rgba(84, 74, 60, 0.35); /* Big squircle blobs */
-  --clay-shadow-slab: inset 0 1.5px 0 rgba(255, 255, 255, 0.6), inset 0 -2px 3px rgba(60, 52, 42, 0.12), 0 4px 8px -2px rgba(60, 52, 42, 0.3); /* Elevation strata slabs */
-  --clay-shadow-elevation-1: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 1px 2px rgba(84, 74, 60, 0.08), 0 2px 6px -2px rgba(84, 74, 60, 0.16);
-  --clay-shadow-elevation-2: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 2px 4px rgba(84, 74, 60, 0.07), 0 8px 16px -6px rgba(84, 74, 60, 0.22);
-  --clay-shadow-elevation-3: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 4px 8px rgba(84, 74, 60, 0.07), 0 14px 28px -10px rgba(84, 74, 60, 0.28);
-  --clay-shadow-elevation-4: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 6px 12px rgba(84, 74, 60, 0.08), 0 22px 40px -14px rgba(84, 74, 60, 0.32);
-  --clay-shadow-elevation-5: inset 0 1.5px 0 rgba(255, 255, 255, 0.85), 0 10px 18px rgba(84, 74, 60, 0.09), 0 34px 60px -18px rgba(84, 74, 60, 0.38);
+  --clay-shadow-swatch: inset 0 3px 2px rgba(255, 255, 255, 0.75), inset 0 -9px 14px rgba(84, 74, 60, 0.16), 0 4px 6px rgba(84, 74, 60, 0.12), 0 22px 34px -12px rgba(84, 74, 60, 0.45); /* Big squircle blobs */
+  --clay-shadow-slab: inset 0 2px 1px rgba(255, 255, 255, 0.6), inset 0 -3px 4px rgba(60, 52, 42, 0.16), 0 3px 0 -1px rgba(60, 52, 42, 0.18), 0 8px 14px -4px rgba(60, 52, 42, 0.38); /* Elevation strata slabs */
+  --clay-shadow-elevation-1: inset 0 2px 1px rgba(255, 255, 255, 0.85), inset 0 -2px 4px rgba(84, 74, 60, 0.08), 0 1px 2px rgba(84, 74, 60, 0.08), 0 2px 6px -2px rgba(84, 74, 60, 0.18);
+  --clay-shadow-elevation-2: inset 0 2px 1px rgba(255, 255, 255, 0.85), inset 0 -2px 4px rgba(84, 74, 60, 0.08), 0 2px 2px rgba(84, 74, 60, 0.08), 0 8px 18px -6px rgba(84, 74, 60, 0.26);
+  --clay-shadow-elevation-3: inset 0 2px 1px rgba(255, 255, 255, 0.85), inset 0 -2px 4px rgba(84, 74, 60, 0.08), 0 3px 4px rgba(84, 74, 60, 0.08), 0 14px 30px -10px rgba(84, 74, 60, 0.32);
+  --clay-shadow-elevation-4: inset 0 2px 1px rgba(255, 255, 255, 0.85), inset 0 -2px 4px rgba(84, 74, 60, 0.08), 0 5px 7px rgba(84, 74, 60, 0.08), 0 22px 44px -14px rgba(84, 74, 60, 0.36);
+  --clay-shadow-elevation-5: inset 0 2px 1px rgba(255, 255, 255, 0.85), inset 0 -2px 4px rgba(84, 74, 60, 0.08), 0 8px 11px rgba(84, 74, 60, 0.08), 0 34px 64px -18px rgba(84, 74, 60, 0.42);
 
   --clay-motion-duration-fast: 120ms;
   --clay-motion-duration: 180ms;

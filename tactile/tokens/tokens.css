@@ -4,9 +4,9 @@
   --tactile-color-surface: #EEE6D9; /* The material: page and every raised piece */
   --tactile-color-surface-pressed: #E5DACA; /* Pressed pieces sink and darken */
   --tactile-color-well: #E9E0D2; /* Inset fields and tracks */
-  --tactile-color-light: rgba(255, 252, 246, 0.9); /* Highlight half of every shadow */
-  --tactile-color-dark: rgba(166, 140, 104, 0.42); /* Shade half of every shadow */
-  --tactile-color-dark-soft: rgba(166, 140, 104, 0.26); /* Shade for low levels */
+  --tactile-color-light: rgba(255, 253, 249, 0.95); /* Highlight half of every shadow */
+  --tactile-color-dark: rgba(160, 132, 94, 0.52); /* Shade half of every shadow */
+  --tactile-color-dark-soft: rgba(160, 132, 94, 0.32); /* Shade for low levels */
   --tactile-color-line: #DCD0BD; /* Hairlines and section rules */
   --tactile-color-primary: #0E5357; /* Deep teal — the accent */
   --tactile-color-primary-strong: #093D40; /* Pressed teal */
@@ -68,17 +68,17 @@
   --tactile-border-thick: 4px;
 
   --tactile-size-control-sm: 32px;
-  --tactile-size-control: 40px;
+  --tactile-size-control: 42px;
   --tactile-size-control-lg: 48px;
 
   --tactile-shadow-level-1: -1px -1px 2px var(--tactile-color-light), 1px 1px 3px var(--tactile-color-dark-soft); /* Flat */
   --tactile-shadow-level-2: -3px -3px 7px var(--tactile-color-light), 3px 3px 8px var(--tactile-color-dark-soft); /* Hover */
-  --tactile-shadow-level-3: -6px -6px 14px var(--tactile-color-light), 6px 6px 14px var(--tactile-color-dark); /* Raised */
+  --tactile-shadow-level-3: -7px -7px 16px var(--tactile-color-light), 8px 8px 18px var(--tactile-color-dark); /* Raised */
   --tactile-shadow-level-4: -10px -10px 24px var(--tactile-color-light), 10px 12px 26px var(--tactile-color-dark); /* Modal */
   --tactile-shadow-level-5: -16px -16px 36px var(--tactile-color-light), 16px 18px 40px var(--tactile-color-dark); /* Popover */
-  --tactile-shadow-inset: inset 3px 3px 7px var(--tactile-color-dark), inset -3px -3px 7px var(--tactile-color-light); /* Carved fields and tracks */
+  --tactile-shadow-inset: inset 4px 4px 9px var(--tactile-color-dark), inset -4px -4px 9px var(--tactile-color-light); /* Carved fields and tracks */
   --tactile-shadow-inset-sm: inset 2px 2px 4px var(--tactile-color-dark-soft), inset -2px -2px 4px var(--tactile-color-light);
-  --tactile-shadow-pressed: inset 4px 4px 10px var(--tactile-color-dark), inset -4px -4px 10px var(--tactile-color-light); /* Pushed-in pieces */
+  --tactile-shadow-pressed: inset 6px 6px 13px var(--tactile-color-dark), inset -5px -5px 12px var(--tactile-color-light); /* Pushed-in pieces */
   --tactile-shadow-accent: -4px -4px 10px var(--tactile-color-light), 5px 6px 14px var(--tactile-color-glow), inset 0 1px 0 rgba(255, 255, 255, 0.14); /* Teal pieces cast a teal shadow */
   --tactile-shadow-focus: 0 0 0 2px var(--tactile-color-primary-light), 0 0 12px 2px var(--tactile-color-glow);
 
@@ -94,8 +94,8 @@
   --tactile-color-surface-pressed: #DCDEE2;
   --tactile-color-well: #E1E3E6;
   --tactile-color-light: rgba(255, 255, 255, 0.92);
-  --tactile-color-dark: rgba(134, 141, 154, 0.45);
-  --tactile-color-dark-soft: rgba(134, 141, 154, 0.28);
+  --tactile-color-dark: rgba(126, 134, 148, 0.52);
+  --tactile-color-dark-soft: rgba(126, 134, 148, 0.32);
   --tactile-color-line: #D2D5DA;
   --tactile-color-primary: #2B5BD3;
   --tactile-color-primary-strong: #1F47AE;

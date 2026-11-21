@@ -1,28 +1,74 @@
 {
   "$description": "Stone tone (from the front-faced grey study): cool grey material with an ink-blue accent. Opt in with <html data-tone=\"stone\">.",
   "color": {
-    "surface":         { "$value": "#E7E8EB" },
-    "surface-pressed": { "$value": "#DCDEE2" },
-    "well":            { "$value": "#E1E3E6" },
-    "light":           { "$value": "rgba(255, 255, 255, 0.92)" },
-    "dark":            { "$value": "rgba(134, 141, 154, 0.45)" },
-    "dark-soft":       { "$value": "rgba(134, 141, 154, 0.28)" },
-    "line":            { "$value": "#D2D5DA" },
-    "primary":         { "$value": "#2B5BD3" },
-    "primary-strong":  { "$value": "#1F47AE" },
-    "primary-light":   { "$value": "#4775E6" },
-    "primary-ink":     { "$value": "#F5F8FF" },
-    "primary-soft":    { "$value": "#D8DFEE" },
-    "glow":            { "$value": "rgba(43, 91, 211, 0.3)" },
-    "ink":             { "$value": "#1C1F25" },
-    "text":            { "$value": "#2C3038" },
-    "text-muted":      { "$value": "#626873" },
-    "text-subtle":     { "$value": "#959BA6" },
-    "tip":             { "$value": "#2C3038" },
-    "tip-ink":         { "$value": "#F1F3F6" },
-    "skeleton":        { "$value": "#D9DCE0" },
-    "disabled":        { "$value": "#DADCE0" },
-    "disabled-ink":    { "$value": "#9CA1AA" },
-    "backdrop":        { "$value": "rgba(30, 34, 42, 0.3)" }
+    "surface": {
+      "$value": "#E7E8EB"
+    },
+    "surface-pressed": {
+      "$value": "#DCDEE2"
+    },
+    "well": {
+      "$value": "#E1E3E6"
+    },
+    "light": {
+      "$value": "rgba(255, 255, 255, 0.92)"
+    },
+    "dark": {
+      "$value": "rgba(126, 134, 148, 0.52)"
+    },
+    "dark-soft": {
+      "$value": "rgba(126, 134, 148, 0.32)"
+    },
+    "line": {
+      "$value": "#D2D5DA"
+    },
+    "primary": {
+      "$value": "#2B5BD3"
+    },
+    "primary-strong": {
+      "$value": "#1F47AE"
+    },
+    "primary-light": {
+      "$value": "#4775E6"
+    },
+    "primary-ink": {
+      "$value": "#F5F8FF"
+    },
+    "primary-soft": {
+      "$value": "#D8DFEE"
+    },
+    "glow": {
+      "$value": "rgba(43, 91, 211, 0.3)"
+    },
+    "ink": {
+      "$value": "#1C1F25"
+    },
+    "text": {
+      "$value": "#2C3038"
+    },
+    "text-muted": {
+      "$value": "#626873"
+    },
+    "text-subtle": {
+      "$value": "#959BA6"
+    },
+    "tip": {
+      "$value": "#2C3038"
+    },
+    "tip-ink": {
+      "$value": "#F1F3F6"
+    },
+    "skeleton": {
+      "$value": "#D9DCE0"
+    },
+    "disabled": {
+      "$value": "#DADCE0"
+    },
+    "disabled-ink": {
+      "$value": "#9CA1AA"
+    },
+    "backdrop": {
+      "$value": "rgba(30, 34, 42, 0.3)"
+    }
   }
 }

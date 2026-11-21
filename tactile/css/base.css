@@ -30,7 +30,7 @@ a { color: inherit; }
 .tactile-title   { font-size: var(--tactile-font-size-title); font-weight: var(--tactile-font-weight-bold); letter-spacing: -0.01em; line-height: 1.2; color: var(--tactile-color-ink); }
 .tactile-heading { font-size: var(--tactile-font-size-heading); font-weight: var(--tactile-font-weight-bold); color: var(--tactile-color-ink); }
 /* Label: small bold caps naming a specimen ("PRIMARY BUTTON") */
-.tactile-label   { display: block; font-size: var(--tactile-font-size-label); font-weight: var(--tactile-font-weight-bold); letter-spacing: 0.06em; text-transform: uppercase; color: var(--tactile-color-ink); }
+.tactile-label   { display: block; font-size: 12px; font-weight: var(--tactile-font-weight-bold); letter-spacing: 0.06em; text-transform: uppercase; color: var(--tactile-color-ink); }
 .tactile-small   { font-size: var(--tactile-font-size-small); }
 .tactile-caption { font-size: var(--tactile-font-size-caption); color: var(--tactile-color-text-muted); }
 .tactile-muted   { color: var(--tactile-color-text-muted); }

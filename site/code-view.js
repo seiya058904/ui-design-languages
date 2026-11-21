@@ -49,10 +49,10 @@
   }
 
   var CSS =
-    ":host{display:block;margin-top:18px;font:500 12px/1.4 ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:inherit}" +
+    ":host{display:block;margin-top:10px;font:500 12px/1.4 ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:inherit}" +
     "button{font:inherit;cursor:pointer}" +
-    ".toggle{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;opacity:.62}" +
-    ".toggle:hover,.toggle[aria-expanded=true]{opacity:1}" +
+    ".toggle{display:inline-grid;place-items:center;width:26px;height:22px;padding:0;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;opacity:.28;font:600 11px/1 ui-monospace,Consolas,monospace;transition:opacity .2s}" +
+    ":host(:hover) .toggle,.toggle:focus-visible{opacity:.7}.toggle:hover,.toggle[aria-expanded=true]{opacity:1}" +
     ".toggle:focus-visible,.copy:focus-visible{outline:2px solid #4c8dff;outline-offset:2px}" +
     ".panel{margin-top:10px;border-radius:10px;background:#15171c;color:#e6e7ea;overflow:hidden;text-align:left}" +
     ".bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #2a2d35;color:#9aa0ab}" +
@@ -67,7 +67,7 @@
     var root = host.attachShadow({ mode: "open" });
     root.innerHTML =
       "<style>" + CSS + "</style>" +
-      '<button class="toggle" type="button" aria-expanded="false">&lt;/&gt; Code</button>' +
+      '<button class="toggle" type="button" aria-expanded="false" aria-label="Show code" title="Show code">&lt;/&gt;</button>' +
       '<div class="panel" hidden><div class="bar"><span>HTML — uses this pack\'s CSS</span><button class="copy" type="button">Copy</button></div><pre><code></code></pre></div>';
     el.appendChild(host);
 

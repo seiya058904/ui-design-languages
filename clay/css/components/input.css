@@ -13,7 +13,7 @@
 
 .clay-field {
   display: flex;
-  padding: 9px;
+  padding: 11px;
   border-radius: var(--clay-radius-pill);
   background: linear-gradient(180deg, var(--clay-color-neutral-light) 0%, var(--clay-color-neutral-deep) 100%);
   box-shadow: var(--clay-shadow-raised);

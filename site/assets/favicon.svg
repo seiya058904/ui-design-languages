@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- UI Design Languages: five languages, five dots (Clay, Lilac, Atelier, Tactile, Sketch) -->
+  <rect width="64" height="64" rx="16" fill="#151518"/>
+  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="15.25" fill="none" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="1.5"/>
+  <circle cx="19" cy="19" r="6.5" fill="#A8E6CF"/>
+  <circle cx="45" cy="19" r="6.5" fill="#7C55FF"/>
+  <circle cx="32" cy="32" r="6.5" fill="#2F7BF5"/>
+  <circle cx="19" cy="45" r="6.5" fill="#3AA3A6"/>
+  <circle cx="45" cy="45" r="6.5" fill="#A9C7EC"/>
+</svg>

@@ -3,13 +3,7 @@
    for its demos and code in a drawer. Rendering comes from site/wall.js (real markup, no images). */
 (function () {
   var W = window.UIWall;
-  var PICKS = {
-    clay: [["button", "variants"], ["selection", "toggle"], ["segmented", "segmented-control"], ["input", "search"], ["card", "stacked-card"], ["chips", "chips"], ["alert", "alerts"], ["navigation", "sidebar"]],
-    lilac: [["progress", "ring-and-steps"], ["button", "variants"], ["selection", "toggle"], ["input", "search-field"], ["alert", "toast"], ["card", "profile-card"], ["navigation", "bottom-navigation"]],
-    atelier: [["card", "project-card"], ["button", "variants"], ["tabs", "pill-tabs"], ["selection", "switch"], ["alert", "toasts"], ["board", "board-column"], ["appearance", "accent-swatches"]],
-    tactile: [["material", "four-states"], ["button", "states"], ["selection", "switch"], ["slider", "slider-with-bubble"], ["card", "card"], ["progress", "steps"], ["segmented", "segmented-tabs"]],
-    sketch: [["button", "variants"], ["selection", "checkbox-radio-switch"], ["tabs", "folder-tabs"], ["progress", "bar-ring-spinner"], ["alert", "alerts"], ["card", "card"], ["chips", "badges-and-status"], ["navigation", "sidebar"]]
-  };
+  /* Which demos each language puts on the wall: packs.json → site.wall. */
   var KIND = { button: "actions", input: "inputs", slider: "inputs", selection: "choices", segmented: "choices", tabs: "choices", chips: "choices", appearance: "choices",
     alert: "feedback", progress: "feedback", dialog: "feedback", tooltip: "feedback", card: "content", avatar: "content", table: "content", elevation: "content", material: "content", board: "content", navigation: "navigation" };
   var KINDS = [["all", "All"], ["actions", "Actions"], ["inputs", "Inputs"], ["choices", "Choices"], ["feedback", "Feedback"], ["content", "Content"], ["navigation", "Navigation"]];
@@ -21,7 +15,7 @@
 
   /* ---------- build ---------- */
   function interleave() {
-    var lists = W.packs.map(function (p) { return PICKS[p.id].map(function (pk) { return [p.id].concat(pk); }); });
+    var lists = W.packs.map(function (p) { return p.wall.map(function (pk) { return [p.id].concat(pk); }); });
     var out = [], i = 0, more = true;
     while (more) {
       more = false;
@@ -103,8 +97,10 @@
     backdrops.innerHTML = "";
     W.packs.forEach(function (p) {
       var layer = document.createElement("div");
-      layer.className = "cw-backdrop" + (p.id === "clay" ? " clay-board clay-ruler" : "");
+      var bd = p.backdrop || {};
+      layer.className = "cw-backdrop" + (bd["class"] ? " " + bd["class"] : "");
       layer.setAttribute("data-pack", p.id);
+      if (bd.style || !bd["class"]) layer.setAttribute("style", bd.style || p.page);
       backdrops.appendChild(layer);
     });
   }
@@ -158,6 +154,7 @@
     document.body.setAttribute("data-wall-style", state.style);
     backdrops.querySelectorAll(".cw-backdrop").forEach(function (b) { b.classList.toggle("is-on", b.getAttribute("data-pack") === state.style); });
     $(".cw").classList.toggle("is-unified", state.style !== "all");
+    $(".cw").classList.toggle("is-light-only", !!W.byId[state.style] && !W.byId[state.style].dark); // e.g. paper-only Sketch
     cards.forEach(function (c) { c.el.classList.toggle("is-out", !visible(c)); c.el.setAttribute("aria-hidden", String(!visible(c))); c.el.inert = !visible(c); });
     layout();
     var n = cards.filter(visible).length;
@@ -261,7 +258,7 @@
     frame.className = "drawer__frame";
     frame.title = W.byId[packId].name + " " + comp.title + ": " + dm.label;
     var qs = new URLSearchParams({ p: packId, c: comp.id, d: dm.id });
-    if (state.theme === "dark" && packId !== "sketch") qs.set("theme", "dark");
+    if (state.theme === "dark" && W.byId[packId].dark) qs.set("theme", "dark");
     frame.src = "site/demo.html?" + qs.toString();
     view.appendChild(frame);
     loadSource(packId, comp, dm);
@@ -336,7 +333,7 @@
       state.theme = b.getAttribute("data-wtheme");
       document.querySelectorAll("[data-wtheme]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
       W.setTheme(state.theme);
-      if (frame && frame.contentWindow && current && current.pack !== "sketch") frame.contentWindow.postMessage({ type: "demo-attrs", attrs: { theme: state.theme === "dark" ? "dark" : "" } }, "*");
+      if (frame && frame.contentWindow && current && W.byId[current.pack].dark) frame.contentWindow.postMessage({ type: "demo-attrs", attrs: { theme: state.theme === "dark" ? "dark" : "" } }, "*");
       setTimeout(relayout, 60);
     });
   });
@@ -347,7 +344,7 @@
     if (W.byId[parts[0]]) {
       if (state.style !== parts[0]) { state.style = parts[0]; syncFilters(); apply(true); }
       if (parts[1]) {
-        var pick = (PICKS[parts[0]] || []).filter(function (pk) { return pk[0] === parts[1]; })[0];
+        var pick = W.byId[parts[0]].wall.filter(function (pk) { return pk[0] === parts[1]; })[0];
         openDrawer(parts[0], parts[1], pick ? pick[1] : null, true);
       }
     }

@@ -1,55 +1,53 @@
-# Workflow — from reference image to Style Pack
+# Workflow — from a reference image to a finished design language
 
-The loop that produced Clay, Lilac, Atelier and Tactile, with the checks that keep visual fidelity and code delivery honest.
+Five steps, three commands. It works for any visual style; the five languages in this repo were all made this way.
 
-## 1. Collect and group references
+```bash
+node scripts/new-pack.mjs <id> [Name] [--dark]   # 1. scaffold: a working language that already passes the checks
+node scripts/build-tokens.mjs <id>               #    after every tokens/*.json edit
+node scripts/check.mjs <id>                      # 5. every check, before every commit
+```
 
-- Keep reference images locally in `UI参考图/` (git-ignored). They are inspiration, not assets: never commit or republish them, and check the license of anything you do reuse (fonts, icons, photos).
-- Group images that share a visual language. Pick the most complete one as **primary**; list what each secondary image adds.
+## 1. Scaffold
 
-## 2. Write the spec before the code
+Put the reference images in `UI参考图/` (git-ignored: inspiration, never assets — don't commit or republish them). Group images that share one visual language and pick the most complete as primary.
 
-Start `<pack>/DESIGN.md` with the **reference analysis table** — one row per element (header, palette, type, layers, buttons, inputs, navigation, data, feedback):
+Run `node scripts/new-pack.mjs <id> [Name]`. The id becomes the folder, the class prefix (`.<id>-btn`) and the token prefix (`--<id>-color-…`). You get tokens, CSS, a styleguide, the component catalog, an example page and the three docs, registered in `packs.json` as a draft — and it is already live on the component wall.
 
-| Element | Seen in the reference (fact) | Our decision (inferred / added) |
+## 2. Spec before code
 
-Facts are only what the image shows (including any printed hex values, labels and states). Everything else — exact colors when labels are illegible, font family, size scale, shadow recipes, motion, extra components — is an inference and must be labelled as one. When a printed value exists, use it (e.g. Lilac's ivory `#FCFAF6`).
+Fill the reference-analysis table in `<id>/DESIGN.md`: one row per element, **facts** (only what the image shows, including printed hex values and labels) next to **decisions** (everything inferred or added, labelled as such). Re-read the image against the table and fix any "fact" it doesn't show. Then fill the rules table in `<id>/AGENTS.md`. No human checkpoint is needed: fidelity is enforced by screenshots in step 5.
 
-## 3. Self-review the spec (no human checkpoint by default)
+## 3. Tokens
 
-The repository owner reviews rarely, so the default is **autonomous end-to-end**: do not stop for confirmation. Re-read the reference against the spec table, fix any row that states as fact something the image does not show, then code. Fidelity is enforced later by screenshots (step 5), not by sign-off.
+Replace every placeholder in `<id>/tokens/tokens.json` — color roles, type, space, radius, size, shadow, motion — and run `node scripts/build-tokens.mjs <id>`. Optional files: `tokens.dark.json` (dark theme), `tokens.<attr>-<value>.json` (a variant on `<html data-<attr>>`), `tokens.dark.<attr>-<value>.json`. Never hand-edit `tokens.css`.
 
-Optional — only if the owner asks for a review round: place the primary reference on a **Claude Design canvas** (an Artifact of the *Design* type) next to annotated callouts for the spec rows and let them correct it in place.
+## 4. Components and pages
 
-- The canvas is for agreement on *what the style is*; it is not production code.
-- Keep each pack's canvas and any design-system sync **separate per pack**. The homepage chrome in `site/` is never synced or mixed into a pack.
+Build in this order; every value comes from a `var(--<id>-*)` token, page CSS is layout only.
 
-Status in this environment (checked 2026-11-22): the Design artifact type is available; the account has no design systems; the `DesignSync` tool only runs from a user-started `/design-sync` and targets claude.ai/design projects, and **standalone claude.ai/design closes on 2026-12-14** — so this workflow does not depend on `/design-sync`. If you try it, sync one pack folder per design-system project.
+1. `index.html` — rebuild the reference's own layout first: it is the representative page.
+2. `css/components.css` — what the reference shows, then the shared anatomy (btn, field/input, chip/badge, segmented, tabs, toggle/checkbox/radio, card, nav, table, dialog, tooltip). Every interactive piece gets hover, active, focus-visible and disabled.
+3. `components.html` — every component as real, working markup: `<section data-component="<shared id>">` with `<div class="demo" data-demo="…">` demos (variants, sizes, states). This file feeds the component wall, its source panel and the AI prompts; never use screenshots or crops.
+4. `js/<id>.js` only if components need behaviour (sliding indicators, tabs, sliders). Then add `entry.js` and `site.hooks` (the selectors whose markup needs it) in `packs.json`.
+5. One real page in `examples/` built from the delivered CSS and JS, unchanged.
 
-## 4. Build in this order
+Finish the `packs.json` entry: `summary` (used on the site and in AI prompts), `fonts`, `variants`, and `site` — `dot`, `label`, `wall` picks, `backdrop` if the canvas needs more than its color (`siteFields` in the file explains each). Set `status` to `"stable"` when done.
 
-1. `tokens/tokens.json` (+ `tokens.dark.json` or `tokens.<attr>-<value>.json` variants) → `node scripts/build-tokens.mjs <pack>`.
-2. `index.html` — the styleguide, recreating the reference layout first. This is the representative page.
-3. `css/components.css` — only components the reference shows, plus the shared anatomy (btn, input, chip/badge, tabs, toggle/checkbox/radio, card, nav, table, dialog, tooltip). Every interactive component gets hover, active, focus-visible and disabled.
-4. `components.html` — the catalog: every component as real, working markup, split into demos (variants, sizes, states) under the shared component ids (see the repo `AGENTS.md`). The components browser renders these demos live; never show a component as a screenshot or a crop of the styleguide.
-5. One real example page in `examples/` that uses the delivered CSS and JS unchanged.
+## 5. Check and ship
 
-## 5. Verify in a real browser
+`node scripts/check.mjs <id>` runs, in order:
 
-- `node scripts/snap.mjs <pack>` (or `site`) — full-page screenshots at 1280 and 390 (real mobile emulation) into `.snapshots/`, and a non-zero exit if any page overflows horizontally (it names the culprit elements). It captures in slices and stitches them (a single capture of a page full of live iframes and components exceeds headless raster memory), freezes infinite animations and shows scroll reveals in their final state.
-- Put the screenshot next to the reference and check: layout proportions, alignment, type, colors, spacing, shadows, image crops, states, responsive behaviour. Fix, re-run.
-- For motion (sliding indicators, knobs), sample positions over real time via the DevTools protocol; headless "virtual time" screenshots freeze CSS transitions.
+- **tokens** — generated `tokens.css` matches the JSON.
+- **pages** — real-browser screenshots at 1280 and 390 into `.snapshots/`; fails and names the elements on horizontal overflow. Put the screenshots next to the reference and compare layout, type, color, spacing, shadows and states; fix and re-run.
+- **source** — every demo's single-file export renders exactly like the original, light and dark (proves the component wall hands over complete code).
 
-## 6. Deliver
+`--quick` skips the dark pass, `--skip=pages` skips a step; with no id it checks everything. For motion, sample positions over real time through the DevTools protocol (headless screenshots freeze transitions). When it passes: commit and push.
 
-- `DESIGN.md` (spec), `AGENTS.md` (rules for AI), `README.md` (quick start, components, tokens), screenshots.
-- A card on the homepage (`index.html`) and an entry in `packs.json`.
-- Styleguides include `site/code-view.js`, which shows each specimen's markup read from the delivered file, so preview and copied code are the same.
-- `node scripts/build-tokens.mjs --check` and `node scripts/snap.mjs` pass; commit; push.
+Optional, for the homepage: a showcase section (`.show`) in `index.html`, and a "Same markup" card from `site/compare/<id>.html`.
 
 ## Isolation rules
 
-- `site/` (homepage styles, code viewer) is neutral chrome. Packs never import it for styling; the code viewer renders in Shadow DOM.
-- The component wall's source panel (`site/source.js`) derives everything from the pack files: a demo's CSS is the component rules whose pack classes all appear in its markup, plus the base layer and the tokens those rules reach through `var()`. Keep component rules keyed on the pack's classes and the script hooks listed in each `js/<pack>.js` header, and the single-file export stays complete. After changing a pack's CSS, JS or catalog, run `node scripts/check-source.mjs [pack]`: it renders every demo's single file next to the original and compares computed styles in light and dark (a few minutes for all packs).
-- A pack never reads another pack's tokens or classes.
-- The homepage never sets pack tokens; it only embeds pack pages in iframes.
+- A language never reads another language's tokens or classes, and one page never mixes two languages (the site's own pages are the only exception: every class and token is prefixed).
+- `site/` is the library website's chrome. It never styles a pack and never holds pack tokens; packs may load `site/*.js` only as optional showcase behaviour that degrades to native when missing.
+- The site reads everything about a pack from `packs.json`; the source panel (`site/source.js`) derives a demo's CSS from the pack's files — the rules whose pack classes all appear in its markup, the base layer and the tokens they reach — so keep component rules keyed on the pack's classes.

@@ -5,6 +5,9 @@
   "stack": "HTML + CSS custom properties + optional vanilla JS. No build step, no runtime dependencies.",
   "tokenBuild": "node scripts/build-tokens.mjs [pack]",
   "visualCheck": "node scripts/snap.mjs [pack]",
+  "check": "node scripts/check.mjs [pack]",
+  "scaffold": "node scripts/new-pack.mjs <id> <Name>",
+  "siteFields": "pack.site drives the library website only (never the pack): dot = brand color; label = inline style for the pack name; root = the pack's type and color on a live stage; canvas / page = stage and canvas backgrounds; backdrop = {class|style} for the wall's single-language canvas (defaults to page); hooks = selectors whose markup needs js/<pack>.js; darkHint = how to switch to dark when the script owns the theme; wall = [component, demo] picks from components.html for the component wall.",
   "packs": [
     {
       "id": "clay",
@@ -46,6 +49,51 @@
         "design": "clay/DESIGN.md",
         "agents": "clay/AGENTS.md",
         "readme": "clay/README.md"
+      },
+      "site": {
+        "dot": "#A8E6CF",
+        "label": "font-family:Inter,sans-serif;font-weight:700;letter-spacing:-0.045em",
+        "root": "font-family:var(--clay-font-family-sans);color:var(--clay-color-text);font-size:var(--clay-font-size-body);line-height:1.5",
+        "canvas": "",
+        "page": "background:var(--clay-color-board)",
+        "backdrop": {
+          "class": "clay-board clay-ruler"
+        },
+        "hooks": ".clay-segmented, .clay-tabs, .clay-nav, .clay-chip[aria-pressed], [data-clay-open], [data-clay-close], [data-theme-set], [data-theme-toggle]",
+        "wall": [
+          [
+            "button",
+            "variants"
+          ],
+          [
+            "selection",
+            "toggle"
+          ],
+          [
+            "segmented",
+            "segmented-control"
+          ],
+          [
+            "input",
+            "search"
+          ],
+          [
+            "card",
+            "stacked-card"
+          ],
+          [
+            "chips",
+            "chips"
+          ],
+          [
+            "alert",
+            "alerts"
+          ],
+          [
+            "navigation",
+            "sidebar"
+          ]
+        ]
       }
     },
     {
@@ -98,6 +146,44 @@
         "design": "lilac/DESIGN.md",
         "agents": "lilac/AGENTS.md",
         "readme": "lilac/README.md"
+      },
+      "site": {
+        "dot": "#7C55FF",
+        "label": "font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:0.04em;text-transform:uppercase",
+        "root": "font-family:var(--lilac-font-family-sans);color:var(--lilac-color-text);font-size:var(--lilac-font-size-body);line-height:1.5",
+        "canvas": "",
+        "page": "background:var(--lilac-color-canvas)",
+        "hooks": ".lilac-segmented, .lilac-tabs, .lilac-nav, .lilac-bottom-nav, input[type=range], .lilac-chip[aria-pressed], [data-lilac-open], [data-lilac-close], [data-accent-set], [data-theme-set], [data-theme-toggle]",
+        "wall": [
+          [
+            "progress",
+            "ring-and-steps"
+          ],
+          [
+            "button",
+            "variants"
+          ],
+          [
+            "selection",
+            "toggle"
+          ],
+          [
+            "input",
+            "search-field"
+          ],
+          [
+            "alert",
+            "toast"
+          ],
+          [
+            "card",
+            "profile-card"
+          ],
+          [
+            "navigation",
+            "bottom-navigation"
+          ]
+        ]
       }
     },
     {
@@ -168,6 +254,48 @@
         "design": "atelier/DESIGN.md",
         "agents": "atelier/AGENTS.md",
         "readme": "atelier/README.md"
+      },
+      "site": {
+        "dot": "#2F7BF5",
+        "label": "font-family:Archivo,sans-serif;font-weight:800;font-stretch:112%;text-transform:uppercase;letter-spacing:0",
+        "root": "font-family:var(--atelier-font-family-sans);color:var(--atelier-color-text);font-size:var(--atelier-font-size-body);line-height:1.5",
+        "canvas": "background:var(--atelier-color-canvas)",
+        "page": "background:var(--atelier-color-canvas)",
+        "backdrop": {
+          "style": "background:radial-gradient(900px 500px at 10% -10%, color-mix(in srgb, var(--atelier-color-primary) 10%, transparent), transparent 60%), var(--atelier-color-canvas)"
+        },
+        "hooks": ".atelier-pills, .atelier-segmented, .atelier-nav, input[type=range], [data-atelier-open], [data-atelier-close], [data-appearance]",
+        "darkHint": "AtelierUI.setAppearance({ theme: \"dark\" }) (the script keeps <html data-theme> in sync and remembers it)",
+        "wall": [
+          [
+            "card",
+            "project-card"
+          ],
+          [
+            "button",
+            "variants"
+          ],
+          [
+            "tabs",
+            "pill-tabs"
+          ],
+          [
+            "selection",
+            "switch"
+          ],
+          [
+            "alert",
+            "toasts"
+          ],
+          [
+            "board",
+            "board-column"
+          ],
+          [
+            "appearance",
+            "accent-swatches"
+          ]
+        ]
       }
     },
     {
@@ -215,6 +343,44 @@
         "design": "tactile/DESIGN.md",
         "agents": "tactile/AGENTS.md",
         "readme": "tactile/README.md"
+      },
+      "site": {
+        "dot": "#2C8C8F",
+        "label": "font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;letter-spacing:-0.04em",
+        "root": "font-family:var(--tactile-font-family-sans);color:var(--tactile-color-text);font-size:var(--tactile-font-size-body);line-height:1.5",
+        "canvas": "background:var(--tactile-color-surface)",
+        "page": "background:var(--tactile-color-surface)",
+        "hooks": ".tactile-segmented, .tactile-nav, .tactile-range, input[type=range], .tactile-list__item, [data-tactile-open], [data-tactile-close], [data-tone-set], [data-theme-set], [data-theme-toggle]",
+        "wall": [
+          [
+            "material",
+            "four-states"
+          ],
+          [
+            "button",
+            "states"
+          ],
+          [
+            "selection",
+            "switch"
+          ],
+          [
+            "slider",
+            "slider-with-bubble"
+          ],
+          [
+            "card",
+            "card"
+          ],
+          [
+            "progress",
+            "steps"
+          ],
+          [
+            "segmented",
+            "segmented-tabs"
+          ]
+        ]
       }
     },
     {
@@ -254,6 +420,48 @@
         "design": "sketch/DESIGN.md",
         "agents": "sketch/AGENTS.md",
         "readme": "sketch/README.md"
+      },
+      "site": {
+        "dot": "#A9C7EC",
+        "label": "font-family:Itim,sans-serif;font-weight:400;letter-spacing:0",
+        "root": "font-family:var(--sketch-font-family-hand);color:var(--sketch-color-ink);font-size:var(--sketch-font-size-body);line-height:1.4",
+        "canvas": "",
+        "page": "background:var(--sketch-paper-grain),var(--sketch-color-paper)",
+        "hooks": ".sketch-tabs, .sketch-pills, .sketch-segmented, .sketch-nav, .sketch-range, input[type=range], .sketch-stepper, .sketch-chip[aria-pressed], [data-pick-group], [data-sketch-open], [data-sketch-close]",
+        "wall": [
+          [
+            "button",
+            "variants"
+          ],
+          [
+            "selection",
+            "checkbox-radio-switch"
+          ],
+          [
+            "tabs",
+            "folder-tabs"
+          ],
+          [
+            "progress",
+            "bar-ring-spinner"
+          ],
+          [
+            "alert",
+            "alerts"
+          ],
+          [
+            "card",
+            "card"
+          ],
+          [
+            "chips",
+            "badges-and-status"
+          ],
+          [
+            "navigation",
+            "sidebar"
+          ]
+        ]
       }
     }
   ]

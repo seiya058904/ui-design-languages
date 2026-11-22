@@ -33,16 +33,13 @@
 .cw { position: relative; margin-top: 28px; padding-bottom: 40px; transition: padding .6s var(--ease); }
 .cw.is-unified { padding: 40px 40px 72px; }
 .cw-backdrops { position: absolute; inset: 0; pointer-events: none; }
+/* Each language's canvas: class / style from packs.json → site.backdrop (default: site.page). */
 .cw-backdrop { position: absolute; inset: 0; border-radius: 36px; opacity: 0; transform: scale(0.985); transition: opacity .6s var(--ease), transform .8s var(--ease); }
 .cw-backdrop.is-on { opacity: 1; transform: none; }
-.cw-backdrop[data-pack="lilac"] { background: var(--lilac-color-canvas); }
-.cw-backdrop[data-pack="atelier"] { background: radial-gradient(900px 500px at 10% -10%, color-mix(in srgb, var(--atelier-color-primary) 10%, transparent), transparent 60%), var(--atelier-color-canvas); }
-.cw-backdrop[data-pack="tactile"] { background: var(--tactile-color-surface); }
-.cw-backdrop[data-pack="sketch"] { background: var(--sketch-paper-grain), var(--sketch-color-paper); }
 .cw-grid { position: relative; min-height: 400px; overflow: clip; overflow-clip-margin: 64px; } /* filtered-out cards keep their spot without stretching the page */
 .cw-note { position: relative; margin-top: 24px; text-align: center; font-size: 13.5px; color: var(--faint); transition: color .4s; }
 .cw.is-unified .cw-note { color: rgba(0, 0, 0, 0.55); }
-html[data-theme="dark"] body:not([data-wall-style="sketch"]) .cw.is-unified .cw-note { color: rgba(255, 255, 255, 0.6); }
+html[data-theme="dark"] .cw.is-unified:not(.is-light-only) .cw-note { color: rgba(255, 255, 255, 0.6); }
 
 /* Cards are absolutely positioned by the masonry script; they glide when the filter changes. */
 /* Cards are layers only while they glide; at rest they paint with the page (cheaper to scroll). */

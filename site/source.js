@@ -14,21 +14,8 @@
    UISource.highlight(code, lang)         → HTML string with token spans (html | css | js) */
 (function () {
   var W = window.UIWall;
-  var CHARACTER = {
-    clay: "soft extruded clay on a matte grid board, with a mint accent",
-    lilac: "ivory component-study cards, one violet accent with a soft glow, editorial serif headlines",
-    atelier: "precise, cool product UI: frosted panels, a cobalt accent, bold uppercase section titles",
-    tactile: "warm sand neumorphism with base / raised / inset / pressed layers and a deep teal accent",
-    sketch: "hand-drawn ink on cream paper, hatched fills, wireframe honesty"
-  };
-  /* Markup that needs the pack's script to behave (taken from each script's header comment). */
-  var HOOKS = {
-    clay: ".clay-segmented, .clay-tabs, .clay-nav, .clay-chip[aria-pressed], [data-clay-open], [data-clay-close], [data-theme-set], [data-theme-toggle]",
-    lilac: ".lilac-segmented, .lilac-tabs, .lilac-nav, .lilac-bottom-nav, input[type=range], .lilac-chip[aria-pressed], [data-lilac-open], [data-lilac-close], [data-accent-set], [data-theme-set], [data-theme-toggle]",
-    atelier: ".atelier-pills, .atelier-segmented, .atelier-nav, input[type=range], [data-atelier-open], [data-atelier-close], [data-appearance]",
-    tactile: ".tactile-segmented, .tactile-nav, .tactile-range, input[type=range], .tactile-list__item, [data-tactile-open], [data-tactile-close], [data-tone-set], [data-theme-set], [data-theme-toggle]",
-    sketch: ".sketch-tabs, .sketch-pills, .sketch-segmented, .sketch-nav, .sketch-range, input[type=range], .sketch-stepper, .sketch-chip[aria-pressed], [data-pick-group], [data-sketch-open], [data-sketch-close]"
-  };
+  /* Per-pack facts — summary, fonts, the markup that needs the pack's script (site.hooks) and the
+     dark-theme hint — come from packs.json through UIWall.byId. */
   var VARIANT_HOOKS = "[data-accent-set], [data-tone-set], [data-appearance]";
 
   function get(url) {
@@ -222,7 +209,7 @@
       while ((m = re.exec(text))) imports.push(new URL(m[1], new URL(entry, location.href)).href);
       return Promise.all([
         Promise.all(imports.map(function (u) { return get(u).then(function (t) { return { url: u, text: t }; }); })),
-        get(p + "/js/" + p + ".js").catch(function () { return ""; }),
+        W.byId[p] && W.byId[p].js ? get(p + "/js/" + p + ".js").catch(function () { return ""; }) : "",
         get(p + "/AGENTS.md").catch(function () { return ""; })
       ]);
     }).then(function (r) {
@@ -272,7 +259,7 @@
       var used = classesOf(html, dm.classes);
       var frag = document.createElement("template");
       frag.innerHTML = '<div class="' + dm.classes.join(" ") + '">' + html + "</div>";
-      var needsJs = !!pk.js && !!frag.content.firstChild.querySelector(HOOKS[p]);
+      var needsJs = !!pk.js && !!pack.hooks && !!frag.content.firstChild.querySelector(pack.hooks);
       var variants = !!frag.content.querySelector(VARIANT_HOOKS);
 
       /* Component rules, file by file; keyframes and @property they reference come along. */
@@ -323,11 +310,11 @@
         "<title>" + title + "</title>\n" +
         "<!-- " + title + ", from the " + pack.name + " design language (UI Design Languages). Everything it needs is inlined below:\n" +
         "     tokens, base, component CSS" + (needsJs ? ", the behaviour script" : "") + (symbols.length ? " and icons" : "") + ". Open it in a browser — no build, no dependencies." +
-        (!/data-theme="dark"/.test(tokens.css) ? "" : p === "atelier" && needsJs
-          ? "\n     Dark theme: AtelierUI.setAppearance({ theme: \"dark\" }) (the script keeps <html data-theme> in sync and remembers it)."
+        (!/data-theme="dark"/.test(tokens.css) ? "" : pack.darkHint && needsJs
+          ? "\n     Dark theme: " + pack.darkHint + "."
           : "\n     Dark theme: add data-theme=\"dark\" (or \"auto\") to <html>.") + " -->\n" +
         "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n" +
-        "<link href=\"" + pack.fonts + "\" rel=\"stylesheet\">\n" +
+        pack.fonts.map(function (u) { return "<link href=\"" + u + "\" rel=\"stylesheet\">\n"; }).join("") +
         "<style>\n" + css + "\n" + banner("Preview layout only — centres the demo; not part of " + pack.name) + "\n" +
         "body { min-height: 100vh; display: grid; place-items: center; padding: 48px 20px; }\n" +
         ".demo { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 22px; width: min(100%, 760px); padding: 40px 28px; }\n" +
@@ -340,7 +327,7 @@
       var prompt = [
         "Rebuild this UI component exactly: the " + comp.title + (comp.demos.length > 1 ? " (" + dm.label + ")" : "") + " from the " + pack.name + " design language.",
         "",
-        pack.name + " is " + CHARACTER[p] + ". " + comp.title + ": " + comp.summary,
+        pack.name + ": " + pack.summary + " " + comp.title + ": " + comp.summary,
         "",
         "What \"exactly\" means:",
         "- Keep the structure, the ." + p + "-* class names and every aria-* attribute. The CSS" + (needsJs ? " and the script" : "") + " key off them (aria-selected, aria-pressed, aria-current, :disabled).",

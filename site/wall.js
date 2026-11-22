@@ -1,28 +1,54 @@
 /* Site chrome — live component engine shared by the homepage marquee and the component wall.
-   It reads each pack's own catalog (<pack>/components.html), and renders real demos straight into
-   this page: the five packs' CSS are linked in <head> (all classes are prefixed, so they coexist),
-   their icon sprites are merged with per-pack ids, and their JS is loaded once. No screenshots,
-   no iframes. Not part of any pack.
+   It reads the registry (packs.json) and each pack's own catalog (<pack>/components.html), and renders
+   real demos straight into this page: every pack's CSS is linked in <head> (all classes are prefixed,
+   so they coexist; a pack the page doesn't link yet is linked automatically), their icon sprites are
+   merged with per-pack ids, and their JS is loaded once. No screenshots, no iframes. Not part of any pack.
 
-   UIWall.ready()            → Promise, resolves when catalogs, sprites and pack JS are in place
+   UIWall.ready()            → Promise: reads packs.json, then every pack's catalog and icon sprite
    UIWall.demo(pack, c, d)   → { component, demo } data or null
    UIWall.stage(pack, c, d)  → a live element (.wstage) for that demo
-   UIWall.packs              → registry (name, dot color, display font, root type styles) */
+   UIWall.packs / .byId      → the registry from packs.json (after ready): name, dot, label font,
+                               stage styles, backdrop, script hooks, wall picks, fonts, dark support
+   UIWall.scripts()          → loads each pack's own JS once (after ready) */
 (function () {
-  var PACKS = [
-    { id: "clay", fonts: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap", name: "Clay", dot: "#A8E6CF", font: "font-family:Inter,sans-serif;font-weight:700;letter-spacing:-0.045em",
-      root: "font-family:var(--clay-font-family-sans);color:var(--clay-color-text);font-size:var(--clay-font-size-body);line-height:1.5", canvas: "", page: "background:var(--clay-color-board)" },
-    { id: "lilac", fonts: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap", name: "Lilac", dot: "#7C55FF", font: "font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:0.04em;text-transform:uppercase",
-      root: "font-family:var(--lilac-font-family-sans);color:var(--lilac-color-text);font-size:var(--lilac-font-size-body);line-height:1.5", canvas: "", page: "background:var(--lilac-color-canvas)" },
-    { id: "atelier", fonts: "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap", name: "Atelier", dot: "#2F7BF5", font: "font-family:Archivo,sans-serif;font-weight:800;font-stretch:112%;text-transform:uppercase;letter-spacing:0",
-      root: "font-family:var(--atelier-font-family-sans);color:var(--atelier-color-text);font-size:var(--atelier-font-size-body);line-height:1.5", canvas: "background:var(--atelier-color-canvas)", page: "background:var(--atelier-color-canvas)" },
-    { id: "tactile", fonts: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap", name: "Tactile", dot: "#2C8C8F", font: "font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;letter-spacing:-0.04em",
-      root: "font-family:var(--tactile-font-family-sans);color:var(--tactile-color-text);font-size:var(--tactile-font-size-body);line-height:1.5", canvas: "background:var(--tactile-color-surface)", page: "background:var(--tactile-color-surface)" },
-    { id: "sketch", fonts: "https://fonts.googleapis.com/css2?family=Itim&family=Patrick+Hand&display=swap", name: "Sketch", dot: "#A9C7EC", font: "font-family:Itim,sans-serif;font-weight:400;letter-spacing:0",
-      root: "font-family:var(--sketch-font-family-hand);color:var(--sketch-color-ink);font-size:var(--sketch-font-size-body);line-height:1.4", canvas: "", page: "background:var(--sketch-paper-grain),var(--sketch-color-paper)" }
-  ];
+  /* The registry is packs.json: every pack with a "site" block shows up here (see siteFields there).
+     PACKS and byId are filled in place by ready(), so references taken early stay valid. */
+  var PACKS = [];
   var byId = {};
-  PACKS.forEach(function (p) { byId[p.id] = p; });
+  function register(list) {
+    list.forEach(function (pk) {
+      if (!pk.site || byId[pk.id]) return;
+      var s = pk.site, theme = (pk.variants && pk.variants.theme) || [];
+      var p = {
+        id: pk.id, name: pk.name, summary: pk.summary || "", status: pk.status || "",
+        fonts: (pk.fonts || []).map(function (f) { return f.url; }).filter(Boolean),
+        js: !!(pk.entry && pk.entry.js), dark: theme.indexOf("dark") >= 0,
+        dot: s.dot || "#999", font: s.label || "", root: s.root || "", canvas: s.canvas || "", page: s.page || "",
+        backdrop: s.backdrop || null, hooks: s.hooks || "", darkHint: s.darkHint || "", wall: s.wall || []
+      };
+      PACKS.push(p);
+      byId[p.id] = p;
+      linkAssets(pk);
+    });
+  }
+  /* A pack registered after this page was written still renders: link its stylesheet before the site
+     chrome (so site.css keeps the last word) and any font family the page doesn't load yet. */
+  function linkAssets(pk) {
+    var head = document.head, chrome = head.querySelector('link[href$="site/site.css"]');
+    var css = pk.entry && pk.entry.css;
+    if (css && !head.querySelector('link[href$="' + css + '"]')) {
+      var l = document.createElement("link");
+      l.rel = "stylesheet"; l.href = css;
+      head.insertBefore(l, chrome);
+    }
+    var loaded = Array.prototype.map.call(head.querySelectorAll('link[href*="fonts.googleapis.com/css"]'), function (x) { return x.href; }).join(" ");
+    (pk.fonts || []).forEach(function (f) {
+      if (!f.url || loaded.indexOf("family=" + String(f.family || "").replace(/ /g, "+")) >= 0) return;
+      var l = document.createElement("link");
+      l.rel = "stylesheet"; l.href = f.url;
+      head.insertBefore(l, chrome);
+    });
+  }
   var data = {};   // pack -> { items: { [component]: { title, summary, demos: [{ id, label, html, classes }] } }, order: [] }
 
   function dedent(html) {
@@ -103,15 +129,20 @@
   var readyPromise = null;
   function ready() {
     if (readyPromise) return readyPromise;
-    readyPromise = Promise.all(PACKS.map(function (p) { return load(p.id).catch(function () {}); }));
+    readyPromise = fetch("packs.json").then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (reg) {
+      register(reg.packs || []);
+      return Promise.all(PACKS.map(function (p) { return load(p.id).catch(function () {}); }));
+    });
     return readyPromise;
   }
   var scriptsPromise = null;
   function scripts() {
     if (scriptsPromise) return scriptsPromise;
-    scriptsPromise = PACKS.reduce(function (chain, p) {
-      return chain.then(function () { return loadScript(p.id + "/js/" + p.id + ".js"); });
-    }, Promise.resolve()).then(resetAppearance);
+    scriptsPromise = ready().then(function () {
+      return PACKS.reduce(function (chain, p) {
+        return p.js ? chain.then(function () { return loadScript(p.id + "/js/" + p.id + ".js"); }) : chain;
+      }, Promise.resolve());
+    }).then(resetAppearance);
     return scriptsPromise;
   }
 

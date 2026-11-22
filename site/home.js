@@ -202,8 +202,9 @@
       view.style.height = Math.ceil(inner.offsetHeight * s) + "px";
     };
     var cro = "ResizeObserver" in window ? new ResizeObserver(function (es) { es.forEach(function (e) { fitCompare(e.target.closest ? e.target.closest("[data-compare]") || e.target : e.target); }); }) : null;
-    compares.forEach(function (view) {
+    UIWall.ready().then(function () { compares.forEach(function (view) {
       var id = view.getAttribute("data-compare"), p = UIWall.byId[id];
+      if (!p) return;
       fetch("site/compare/" + id + ".html").then(function (r) { return r.text(); }).then(function (text) {
         var doc = new DOMParser().parseFromString(text, "text/html");
         var wrap = doc.querySelector(".wrap");
@@ -218,7 +219,7 @@
         if (cro) { cro.observe(view); cro.observe(inner); }
         UIWall.scripts();
       });
-    });
+    }); });
   }
 
   /* Live marquee: real components from every language (site/wall.js). */

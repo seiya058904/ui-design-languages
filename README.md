@@ -29,23 +29,27 @@ Or copy the pack folder into your project. Every styleguide has a **`</>`** butt
 
 ```
 index.html            library homepage (live previews, comparison)
-site/                 neutral homepage chrome + code viewer (not part of any pack)
-packs.json            machine-readable index of packs, entry files, fonts, variants
-<pack>/               tokens/  css/  js/  index.html  examples/  DESIGN.md  AGENTS.md  README.md
-scripts/build-tokens.mjs   tokens.json (+ variants) → tokens.css, with --check
-scripts/snap.mjs           real-browser screenshots at 1280 / 390 + overflow check
-docs/WORKFLOW.md           reference image → spec → code → visual check → delivery
+components.html       the component wall: every pack's live components, each with its complete source
+site/                 the website's chrome (not part of any pack)
+packs.json            the registry: packs, entry files, fonts, variants, and how the site shows each one
+<pack>/               tokens/  css/  js/  index.html  components.html  examples/  DESIGN.md  AGENTS.md  README.md
+scripts/new-pack.mjs       scaffold a new language that already passes the checks
+scripts/build-tokens.mjs   tokens.json (+ variants) → tokens.css
+scripts/check.mjs          every check: tokens, real-browser pages, complete component source
+docs/WORKFLOW.md           reference image → scaffold → spec → tokens → components → check
 ```
 
 ## Develop
 
 ```bash
-node scripts/build-tokens.mjs           # rebuild every pack's tokens.css
-node scripts/build-tokens.mjs --check   # verify they are in sync
-node scripts/snap.mjs [pack]            # screenshots into .snapshots/, fails on horizontal overflow
+node scripts/new-pack.mjs <id> [Name]   # start a new language (see docs/WORKFLOW.md)
+node scripts/build-tokens.mjs [pack]    # rebuild tokens.css after editing tokens/*.json
+node scripts/check.mjs [pack]           # before every commit: tokens, pages at 1280/390, component source
 ```
 
-Requirements: Node 18+ and a local Chrome or Edge for `snap.mjs` (`CHROME_PATH` to override). No npm dependencies.
+`check.mjs` runs three scripts you can also call alone: `build-tokens.mjs --check`, `snap.mjs` (screenshots into `.snapshots/`, fails on horizontal overflow) and `check-source.mjs` (every demo's single-file export renders like the original, light and dark).
+
+Requirements: Node 18+ and a local Chrome or Edge (`CHROME_PATH` to override). No npm dependencies.
 
 ## Licenses
 

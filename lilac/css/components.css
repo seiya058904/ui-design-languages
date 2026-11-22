@@ -232,7 +232,7 @@ select.lilac-input {
   z-index: 1;
   flex: 1;
   height: 54px;
-  padding: 0 26px;
+  padding: 0 clamp(14px, 4vw, 26px); /* narrows on phones so three segments fit */
   border: 0;
   border-radius: var(--lilac-radius-pill);
   background: transparent;

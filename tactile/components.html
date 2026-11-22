@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var d=document.documentElement,t=localStorage.getItem("tactile-tone"),m=localStorage.getItem("tactile-theme");if(t&&t!=="sand")d.setAttribute("data-tone",t);if(m&&m!=="light")d.setAttribute("data-theme",m)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tactile components</title>
+  <meta name="description" content="Every Tactile component as real, working markup: variants, sizes and states.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tactile.css">
+  <style>
+    /* Page layout only — every component below is the real Tactile markup, styled by css/tactile.css. */
+    body { padding: 24px 16px 72px; }
+    .cat-top, .cat { width: min(100%, 1080px); margin-inline: auto; }
+    .cat-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-bottom: 40px; font-size: 14px; }
+    .cat-top a { color: var(--tactile-color-text-muted); text-decoration: none; }
+    .cat-top a:hover { color: inherit; }
+    .cat-top a:first-child { margin-right: auto; }
+    .cat-head h1 { font-family: var(--tactile-font-family-sans); font-size: clamp(36px, 6vw, 60px); line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 12px; }
+    .cat-head p { max-width: 60ch; color: var(--tactile-color-text-muted); margin: 0; }
+    .cat-toc { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 26px 0 8px; padding: 14px 0; border-block: 1px solid var(--tactile-color-line); font-size: 14px; }
+    .cat-toc a { color: var(--tactile-color-text-muted); text-decoration: none; }
+    .cat-toc a:hover { color: inherit; }
+    .cat-section { padding-top: 56px; scroll-margin-top: 24px; }
+    .cat-section > h2 { font-family: var(--tactile-font-family-sans); font-size: 30px; letter-spacing: -0.01em; margin: 0 0 6px; }
+    .cat-section > p { color: var(--tactile-color-text-muted); margin: 0 0 22px; }
+    .demo + .demo { margin-top: 22px; }
+    .demo > h3 { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--tactile-color-text-muted); margin: 0 0 10px; }
+    .demo__stage { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 22px; min-height: 140px; padding: 40px 28px; }
+    @media (max-width: 560px) { .demo__stage { padding: 32px 18px; } }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" stroke="none"/><path d="M12 7.5v5M12 16.5h.01" stroke="var(--tactile-color-primary)"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-warning" viewBox="0 0 24 24"><path d="M10.3 4.2 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0Z"/><path d="M12 9.5v4M12 17h.01"/></symbol>
+</svg>
+
+<header class="cat-top"><a href="../index.html">UI Design Languages</a><a href="index.html">Styleguide</a><a href="../components.html#/tactile">Browse with code</a></header>
+<div class="cat">
+<div class="cat-head">
+  <h1>Tactile components</h1>
+  <p>Warm sand neumorphism: one material, four states (base, raised, inset, pressed) and a deep teal accent. Every block below is live markup you can copy: open it in the <a href="../components.html#/tactile">components browser</a> for the code.</p>
+</div>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Toggle, checkbox & radio</a><a href="#segmented">Segmented control</a><a href="#slider">Slider</a><a href="#progress">Progress</a><a href="#alert">Alerts & toasts</a><a href="#card">Card</a><a href="#avatar">Avatar & list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#material">Material layers</a></nav>
+<main>
+  <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
+    <h2 id="h-button">Button</h2>
+    <p>Actions people press.</p>
+    <div class="demo" data-demo="variants">
+      <h3>Variants</h3>
+      <div class="demo__stage">
+        <button class="tactile-btn tactile-btn--primary" type="button">Submit now</button>
+        <button class="tactile-btn" type="button">Secondary</button>
+        <button class="tactile-btn tactile-btn--ghost" type="button">Ghost</button>
+        <button class="tactile-btn tactile-btn--round tactile-btn--icon" type="button" aria-label="Add"><svg class="tactile-icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+      </div>
+    </div>
+    <div class="demo" data-demo="sizes">
+      <h3>Sizes</h3>
+      <div class="demo__stage">
+        <button class="tactile-btn tactile-btn--primary tactile-btn--lg" type="button">Large</button>
+        <button class="tactile-btn tactile-btn--primary" type="button">Medium</button>
+        <button class="tactile-btn tactile-btn--primary tactile-btn--sm" type="button">Small</button>
+      </div>
+    </div>
+    <div class="demo" data-demo="states">
+      <h3>States</h3>
+      <div class="demo__stage">
+        <button class="tactile-btn tactile-btn--primary" type="button">Default</button>
+        <button class="tactile-btn tactile-btn--primary" type="button" aria-busy="true"><span class="tactile-spinner" aria-hidden="true"></span>Sending…</button>
+        <button class="tactile-btn" type="button" disabled>Not available</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="input" data-component="input" aria-labelledby="h-input">
+    <h2 id="h-input">Text field</h2>
+    <p>Labelled fields, helper and error text, search.</p>
+    <div class="demo" data-demo="text-fields">
+      <h3>Text fields</h3>
+      <div class="demo__stage">
+        <div class="tactile-stack" style="--gap:18px;width:min(100%,360px)">
+          <div class="tactile-form-row"><input class="tactile-input" placeholder="Email address" aria-label="Email address"><span class="tactile-hint">Helper: enter a valid email</span></div>
+          <div class="tactile-form-row"><input class="tactile-input" value="mira@" aria-label="Email address with error" aria-invalid="true"><span class="tactile-hint tactile-hint--error">Error: invalid email format</span></div>
+          <div class="tactile-form-row"><input class="tactile-input" placeholder="Email address" aria-label="Email address, disabled" disabled><span class="tactile-hint">Disabled: no shadow, low contrast</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="selection" data-component="selection" aria-labelledby="h-selection">
+    <h2 id="h-selection">Toggle, checkbox & radio</h2>
+    <p>On/off and one-or-many choices.</p>
+    <div class="demo" data-demo="checkbox-and-radio">
+      <h3>Checkbox and radio</h3>
+      <div class="demo__stage">
+        <div class="tactile-stack" style="--gap:12px">
+          <label class="tactile-check"><input type="checkbox" class="tactile-checkbox" checked> Option 1</label>
+          <label class="tactile-check"><input type="checkbox" class="tactile-checkbox"> Option 2</label>
+        </div>
+        <div class="tactile-stack" style="--gap:12px">
+          <label class="tactile-check"><input type="radio" name="t-opt" class="tactile-radio" checked> Option 1</label>
+          <label class="tactile-check"><input type="radio" name="t-opt" class="tactile-radio"> Option 2</label>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="switch">
+      <h3>Switch</h3>
+      <div class="demo__stage">
+        <input type="checkbox" class="tactile-toggle tactile-toggle--label" checked aria-label="Heating">
+        <input type="checkbox" class="tactile-toggle tactile-toggle--label" aria-label="Away mode">
+        <input type="checkbox" class="tactile-toggle" checked aria-label="Lights">
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="segmented" data-component="segmented" aria-labelledby="h-segmented">
+    <h2 id="h-segmented">Segmented control</h2>
+    <p>Switch between a few views; the indicator glides.</p>
+    <div class="demo" data-demo="segmented-tabs">
+      <h3>Segmented tabs</h3>
+      <div class="demo__stage">
+        <div class="tactile-segmented" role="tablist" aria-label="Product">
+          <button class="tactile-segmented__item" role="tab" aria-selected="true">Overview</button>
+          <button class="tactile-segmented__item" role="tab" aria-selected="false" tabindex="-1">Details</button>
+          <button class="tactile-segmented__item" role="tab" aria-selected="false" tabindex="-1">Settings</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="slider" data-component="slider" aria-labelledby="h-slider">
+    <h2 id="h-slider">Slider</h2>
+    <p>Pick a value on a range.</p>
+    <div class="demo" data-demo="slider-with-bubble">
+      <h3>Slider with bubble</h3>
+      <div class="demo__stage">
+        <div class="tactile-range" style="--fill:75%;--fill-n:.75;width:min(100%,380px)">
+          <output class="tactile-range__bubble" for="t-vol" data-suffix="%">75%</output>
+          <input class="tactile-slider" id="t-vol" type="range" min="0" max="100" value="75" aria-label="Volume">
+          <div class="tactile-range__ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="progress" data-component="progress" aria-labelledby="h-progress">
+    <h2 id="h-progress">Progress</h2>
+    <p>How far along something is.</p>
+    <div class="demo" data-demo="progress-spinner-skeleton">
+      <h3>Progress, spinner, skeleton</h3>
+      <div class="demo__stage">
+        <div class="tactile-stack" style="--gap:14px;width:min(100%,360px)">
+          <div class="tactile-row" style="justify-content:space-between"><span class="tactile-label">Upload</span><span class="tactile-label">50%</span></div>
+          <div class="tactile-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Upload"><span style="--value:50%"></span></div>
+        </div>
+        <span class="tactile-spinner" style="color:var(--tactile-color-primary);width:28px;height:28px" role="img" aria-label="Loading"></span>
+      </div>
+    </div>
+    <div class="demo" data-demo="steps">
+      <h3>Steps</h3>
+      <div class="demo__stage">
+        <ol class="tactile-steps" aria-label="Checkout progress" style="width:min(100%,420px)"><li class="is-done">Account</li><li aria-current="step">Details</li><li>Review</li><li>Payment</li></ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="alert" data-component="alert" aria-labelledby="h-alert">
+    <h2 id="h-alert">Alerts & toasts</h2>
+    <p>Status messages, inline or floating.</p>
+    <div class="demo" data-demo="alert-and-toasts">
+      <h3>Alert and toasts</h3>
+      <div class="demo__stage">
+        <div class="tactile-stack" style="--gap:16px;width:min(100%,380px)">
+          <div class="tactile-alert" role="alert"><svg class="tactile-icon" aria-hidden="true"><use href="#i-alert"/></svg>Important: system maintenance scheduled</div>
+          <div class="tactile-toast-stack">
+            <div class="tactile-toast" role="status"><b>Success:</b> File uploaded<svg class="tactile-icon" aria-hidden="true"><use href="#i-check"/></svg></div>
+            <div class="tactile-toast" role="status"><b>Info:</b> Updates available</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="card" data-component="card" aria-labelledby="h-card">
+    <h2 id="h-card">Card</h2>
+    <p>A grouped piece of content.</p>
+    <div class="demo" data-demo="card">
+      <h3>Card</h3>
+      <div class="demo__stage">
+        <article class="tactile-card tactile-stack" style="--gap:10px;width:min(100%,260px)">
+          <span class="tactile-card__icon"><svg class="tactile-icon" aria-hidden="true"><use href="#i-box"/></svg></span>
+          <h3 class="tactile-card__title">Product name</h3><p class="tactile-card__text">Hand-thrown stoneware, set of four.</p>
+          <span><button class="tactile-btn tactile-btn--primary tactile-btn--sm" type="button">View more</button></span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="avatar" data-component="avatar" aria-labelledby="h-avatar">
+    <h2 id="h-avatar">Avatar & list</h2>
+    <p>People and lists of them.</p>
+    <div class="demo" data-demo="avatars-and-list">
+      <h3>Avatars and list</h3>
+      <div class="demo__stage">
+        <div class="tactile-row" style="--gap:14px"><span class="tactile-avatar is-active" style="--avatar-size:52px;--avatar-bg:#E3C9A6">MK</span><span class="tactile-avatar" style="--avatar-size:52px;--avatar-bg:#D9CBB8">AL</span><span class="tactile-avatar" style="--avatar-size:52px;--avatar-bg:#C9D7CF">JS</span></div>
+        <ul class="tactile-list" role="listbox" aria-label="Members" style="width:min(100%,280px)">
+          <li class="tactile-list__item" role="option" aria-selected="true"><span class="tactile-avatar" style="--avatar-size:34px;--avatar-bg:#E3C9A6">MK</span><div><div class="tactile-list__title">Mira Kovač</div><div class="tactile-list__text">Owner</div></div></li>
+          <li class="tactile-list__item" role="option" aria-selected="false"><span class="tactile-avatar" style="--avatar-size:34px;--avatar-bg:#C9D7CF">JS</span><div><div class="tactile-list__title">Jun Sato</div><div class="tactile-list__text">Editor</div></div></li>
+          <li class="tactile-list__item" role="option" aria-selected="false"><span class="tactile-avatar" style="--avatar-size:34px;--avatar-bg:#D9CBB8">AL</span><div><div class="tactile-list__title">Ana Lima</div><div class="tactile-list__text">Viewer</div></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="navigation" data-component="navigation" aria-labelledby="h-navigation">
+    <h2 id="h-navigation">Navigation</h2>
+    <p>Sidebars, breadcrumbs and pagination.</p>
+    <div class="demo" data-demo="sidebar">
+      <h3>Sidebar</h3>
+      <div class="demo__stage">
+        <nav class="tactile-nav" aria-label="Rooms" style="width:min(100%,240px)">
+          <a class="tactile-nav__item" href="#" aria-current="page"><svg class="tactile-icon" aria-hidden="true"><use href="#i-home"/></svg>Living room</a>
+          <a class="tactile-nav__item" href="#"><svg class="tactile-icon" aria-hidden="true"><use href="#i-box"/></svg>Kitchen</a>
+          <a class="tactile-nav__item" href="#"><svg class="tactile-icon" aria-hidden="true"><use href="#i-user"/></svg>Bedroom</a>
+        </nav>
+      </div>
+    </div>
+    <div class="demo" data-demo="breadcrumb-and-pagination">
+      <h3>Breadcrumb and pagination</h3>
+      <div class="demo__stage">
+        <div class="tactile-stack" style="--gap:22px">
+          <nav class="tactile-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Home</a></li><li><a href="#">Categories</a></li><li><a href="#">Product details</a></li><li aria-current="page">Edit</li></ol></nav>
+          <nav class="tactile-pagination" aria-label="Pages"><a class="is-edge" href="#">Prev</a><a href="#">1</a><a href="#" aria-current="page">2</a><a href="#">3</a><a href="#">4</a><a class="is-edge" href="#">Next</a></nav>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="table" data-component="table" aria-labelledby="h-table">
+    <h2 id="h-table">Table</h2>
+    <p>Rows of records.</p>
+    <div class="demo" data-demo="table">
+      <h3>Table</h3>
+      <div class="demo__stage">
+        <div class="tactile-table-wrap" style="width:100%;padding:6px 2px">
+          <table class="tactile-table">
+            <thead><tr><th>Device</th><th>Room</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Ceiling light</td><td>Living room</td><td><span class="tactile-badge">On</span></td></tr>
+              <tr><td>Speaker</td><td>Living room</td><td><span class="tactile-badge">On</span></td></tr>
+              <tr><td>Air purifier</td><td>Bedroom</td><td><span class="tactile-badge tactile-badge--soft">Off</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="dialog" data-component="dialog" aria-labelledby="h-dialog">
+    <h2 id="h-dialog">Dialog</h2>
+    <p>A focused decision. Press the button to open it again.</p>
+    <div class="demo" data-demo="dialog" data-min-height="460" data-open-dialog>
+      <h3>Dialog</h3>
+      <div class="demo__stage">
+        <button class="tactile-btn tactile-btn--primary" type="button" data-tactile-open="#t-dialog">Delete account</button>
+        <dialog class="tactile-dialog" id="t-dialog" aria-labelledby="t-dialog-title">
+          <div class="tactile-warning-mark"><svg class="tactile-icon" aria-hidden="true"><use href="#i-warning"/></svg></div>
+          <h2 class="tactile-dialog__title" id="t-dialog-title">Delete account?</h2>
+          <p class="tactile-dialog__body">Your devices, rooms and scenes will be removed. This can't be undone.</p>
+          <div class="tactile-dialog__actions"><button class="tactile-btn" type="button" data-tactile-close>Cancel</button><button class="tactile-btn tactile-btn--primary" type="button" data-tactile-close>Delete</button></div>
+        </dialog>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tooltip" data-component="tooltip" aria-labelledby="h-tooltip">
+    <h2 id="h-tooltip">Tooltip</h2>
+    <p>A short hint on hover or focus.</p>
+    <div class="demo" data-demo="tooltip">
+      <h3>Tooltip</h3>
+      <div class="demo__stage">
+        <span class="tactile-tooltip" data-tip="Heating to 21.5°"><button class="tactile-btn" type="button">Climate</button></span>
+        <span class="tactile-tip">More info</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="material" data-component="material" aria-labelledby="h-material">
+    <h2 id="h-material">Material layers</h2>
+    <p>The four states of the material and five elevation levels.</p>
+    <div class="demo" data-demo="four-states">
+      <h3>Four states</h3>
+      <div class="demo__stage">
+        <div class="tactile-layer tactile-layer--base" style="width:96px;height:96px"></div>
+        <div class="tactile-layer tactile-layer--raised" style="width:96px;height:96px"></div>
+        <div class="tactile-layer tactile-layer--inset" style="width:96px;height:96px"></div>
+        <div class="tactile-layer tactile-layer--pressed" style="width:96px;height:96px"></div>
+      </div>
+    </div>
+    <div class="demo" data-demo="elevation-levels">
+      <h3>Elevation levels</h3>
+      <div class="demo__stage">
+        <div class="tactile-level-1" style="padding:14px 18px;border-radius:var(--tactile-radius-md)">Level 1</div>
+        <div class="tactile-level-2" style="padding:14px 18px;border-radius:var(--tactile-radius-md)">Level 2</div>
+        <div class="tactile-level-3" style="padding:14px 18px;border-radius:var(--tactile-radius-md)">Level 3</div>
+        <div class="tactile-level-4" style="padding:14px 18px;border-radius:var(--tactile-radius-md)">Level 4</div>
+        <div class="tactile-level-5" style="padding:14px 18px;border-radius:var(--tactile-radius-md)">Level 5</div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script src="js/tactile.js"></script>
+<script src="../site/smooth-scroll.js" defer></script>
+</body>
+</html>

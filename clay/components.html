@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var t=localStorage.getItem("clay-theme");if(t&&t!=="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clay components</title>
+  <meta name="description" content="Every Clay component as real, working markup: variants, sizes and states.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/clay.css">
+  <style>
+    /* Page layout only — every component below is the real Clay markup, styled by css/clay.css. */
+    body { padding: 24px 16px 72px; }
+    .cat-top, .cat { width: min(100%, 1080px); margin-inline: auto; }
+    .cat-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-bottom: 40px; font-size: 14px; }
+    .cat-top a { color: var(--clay-color-text-muted); text-decoration: none; }
+    .cat-top a:hover { color: inherit; }
+    .cat-top a:first-child { margin-right: auto; }
+    .cat-head h1 { font-family: var(--clay-font-family-sans); font-size: clamp(36px, 6vw, 60px); line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 12px; }
+    .cat-head p { max-width: 60ch; color: var(--clay-color-text-muted); margin: 0; }
+    .cat-toc { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 26px 0 8px; padding: 14px 0; border-block: 1px solid var(--clay-color-grid-strong); font-size: 14px; }
+    .cat-toc a { color: var(--clay-color-text-muted); text-decoration: none; }
+    .cat-toc a:hover { color: inherit; }
+    .cat-section { padding-top: 56px; scroll-margin-top: 24px; }
+    .cat-section > h2 { font-family: var(--clay-font-family-sans); font-size: 30px; letter-spacing: -0.01em; margin: 0 0 6px; }
+    .cat-section > p { color: var(--clay-color-text-muted); margin: 0 0 22px; }
+    .demo + .demo { margin-top: 22px; }
+    .demo > h3 { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--clay-color-text-muted); margin: 0 0 10px; }
+    .demo__stage { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 22px; min-height: 140px; padding: 40px 28px; }
+    @media (max-width: 560px) { .demo__stage { padding: 32px 18px; } }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h3"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-error" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.5h.01"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1Z"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><path d="M3 18 9 11l4 4.5 2.5-2.5L21 18Z" fill="currentColor" stroke="none"/><circle cx="16.5" cy="7" r="2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.5h.01"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14a6.5 6.5 0 0 1 3 6"/></symbol>
+  <symbol id="i-warning" viewBox="0 0 24 24"><path d="M10.3 4.2 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0Z"/><path d="M12 9.5v4M12 17h.01"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
+
+<header class="cat-top"><a href="../index.html">UI Design Languages</a><a href="index.html">Styleguide</a><a href="../components.html#/clay">Browse with code</a></header>
+<div class="cat">
+<div class="cat-head">
+  <h1>Clay components</h1>
+  <p>Soft extruded clay on a matte grid board. Raised for things you press, carved for things you fill, mint for what is selected. Every block below is live markup you can copy: open it in the <a href="../components.html#/clay">components browser</a> for the code.</p>
+</div>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Toggle, checkbox & radio</a><a href="#segmented">Segmented control</a><a href="#tabs">Tabs</a><a href="#chips">Chips & badges</a><a href="#progress">Progress</a><a href="#alert">Alerts & toasts</a><a href="#card">Card</a><a href="#avatar">Avatar & list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#elevation">Elevation</a></nav>
+<main>
+  <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
+    <h2 id="h-button">Button</h2>
+    <p>Actions people press.</p>
+    <div class="demo" data-demo="variants">
+      <h3>Variants</h3>
+      <div class="demo__stage clay-board">
+        <button class="clay-btn clay-btn--primary" type="button">Primary action</button>
+        <button class="clay-btn" type="button">Secondary</button>
+        <button class="clay-btn clay-btn--neutral" type="button">Neutral</button>
+        <button class="clay-btn clay-btn--ghost" type="button">Ghost</button>
+      </div>
+    </div>
+    <div class="demo" data-demo="sizes">
+      <h3>Sizes</h3>
+      <div class="demo__stage clay-board">
+        <button class="clay-btn clay-btn--primary clay-btn--lg" type="button">Large</button>
+        <button class="clay-btn clay-btn--primary" type="button">Medium</button>
+        <button class="clay-btn clay-btn--primary clay-btn--sm" type="button">Small</button>
+        <button class="clay-btn clay-btn--icon" type="button" aria-label="Search"><svg class="clay-icon" aria-hidden="true"><use href="#i-search"/></svg></button>
+      </div>
+    </div>
+    <div class="demo" data-demo="states">
+      <h3>States</h3>
+      <div class="demo__stage clay-board">
+        <button class="clay-btn clay-btn--primary" type="button">Default</button>
+        <button class="clay-btn clay-btn--primary is-hover" type="button">Hover</button>
+        <button class="clay-btn clay-btn--primary is-active" type="button">Pressed</button>
+        <button class="clay-btn clay-btn--primary" type="button" disabled>Disabled</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="input" data-component="input" aria-labelledby="h-input">
+    <h2 id="h-input">Text field</h2>
+    <p>Labelled fields, helper and error text, search.</p>
+    <div class="demo" data-demo="field-with-label">
+      <h3>Field with label</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-form-row" style="width:min(100%,360px)">
+          <label class="clay-label" for="c-client">Client</label>
+          <input class="clay-input" id="c-client" value="Northwind Studio">
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="error-select-textarea">
+      <h3>Error, select, textarea</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-stack" style="--gap:16px;width:min(100%,360px)">
+          <div class="clay-form-row">
+            <label class="clay-label" for="c-email">Billing email</label>
+            <input class="clay-input" id="c-email" value="accounts@northwind" aria-invalid="true" aria-describedby="c-email-hint">
+            <span class="clay-hint clay-hint--error" id="c-email-hint">Add a domain, for example accounts@northwind.com</span>
+          </div>
+          <div class="clay-form-row">
+            <label class="clay-label" for="c-terms">Payment terms</label>
+            <select class="clay-input" id="c-terms"><option>Net 15</option><option selected>Net 30</option><option>Due on receipt</option></select>
+          </div>
+          <div class="clay-form-row">
+            <label class="clay-label" for="c-note">Note to client</label>
+            <textarea class="clay-input" id="c-note" placeholder="Thanks for your business."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="search">
+      <h3>Search</h3>
+      <div class="demo__stage clay-board">
+        <label class="clay-field" style="width:min(100%,380px)">
+          <span class="clay-field__control">
+            <input type="search" placeholder="Search invoices" aria-label="Search invoices">
+            <svg class="clay-icon" aria-hidden="true"><use href="#i-search"/></svg>
+          </span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="selection" data-component="selection" aria-labelledby="h-selection">
+    <h2 id="h-selection">Toggle, checkbox & radio</h2>
+    <p>On/off and one-or-many choices.</p>
+    <div class="demo" data-demo="toggle">
+      <h3>Toggle</h3>
+      <div class="demo__stage clay-board">
+        <label class="clay-check"><input type="checkbox" class="clay-toggle" checked> Email receipts</label>
+        <label class="clay-check"><input type="checkbox" class="clay-toggle"> Weekly summary</label>
+        <label class="clay-check"><input type="checkbox" class="clay-toggle" disabled> Disabled</label>
+      </div>
+    </div>
+    <div class="demo" data-demo="checkbox">
+      <h3>Checkbox</h3>
+      <div class="demo__stage clay-board">
+        <label class="clay-check"><input type="checkbox" class="clay-checkbox" checked> Include tax</label>
+        <label class="clay-check"><input type="checkbox" class="clay-checkbox"> Attach PDF</label>
+        <label class="clay-check"><input type="checkbox" class="clay-checkbox" disabled> Disabled</label>
+      </div>
+    </div>
+    <div class="demo" data-demo="radio">
+      <h3>Radio</h3>
+      <div class="demo__stage clay-board">
+        <label class="clay-check"><input type="radio" name="c-cycle" class="clay-radio" checked> Monthly</label>
+        <label class="clay-check"><input type="radio" name="c-cycle" class="clay-radio"> Yearly</label>
+        <label class="clay-check"><input type="radio" name="c-cycle" class="clay-radio" disabled> Lifetime</label>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="segmented" data-component="segmented" aria-labelledby="h-segmented">
+    <h2 id="h-segmented">Segmented control</h2>
+    <p>Switch between a few views; the indicator glides.</p>
+    <div class="demo" data-demo="segmented-control">
+      <h3>Segmented control</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-segmented" role="tablist" aria-label="Section">
+          <button class="clay-segmented__item" role="tab" aria-selected="true">Overview</button>
+          <button class="clay-segmented__item" role="tab" aria-selected="false" tabindex="-1">Billing</button>
+          <button class="clay-segmented__item" role="tab" aria-selected="false" tabindex="-1">Team</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tabs" data-component="tabs" aria-labelledby="h-tabs">
+    <h2 id="h-tabs">Tabs</h2>
+    <p>Section tabs with a sliding marker.</p>
+    <div class="demo" data-demo="underline-tabs">
+      <h3>Underline tabs</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-tabs" role="tablist" aria-label="Section" style="width:min(100%,380px)">
+          <button class="clay-tabs__item" role="tab" aria-selected="true">Overview</button>
+          <button class="clay-tabs__item" role="tab" aria-selected="false" tabindex="-1">Billing</button>
+          <button class="clay-tabs__item" role="tab" aria-selected="false" tabindex="-1">Team</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="chips" data-component="chips" aria-labelledby="h-chips">
+    <h2 id="h-chips">Chips & badges</h2>
+    <p>Filters people toggle, and passive status labels.</p>
+    <div class="demo" data-demo="chips">
+      <h3>Chips</h3>
+      <div class="demo__stage clay-board">
+        <button class="clay-chip" type="button" aria-pressed="false"><svg class="clay-icon" aria-hidden="true"><use href="#i-filter"/></svg>Filter</button>
+        <button class="clay-chip" type="button" aria-pressed="true"><svg class="clay-icon" aria-hidden="true"><use href="#i-check"/></svg>Selected</button>
+        <button class="clay-chip clay-chip--neutral" type="button" aria-pressed="false">This month</button>
+        <button class="clay-chip" type="button" disabled>Disabled</button>
+      </div>
+    </div>
+    <div class="demo" data-demo="badges">
+      <h3>Badges</h3>
+      <div class="demo__stage clay-board">
+        <span class="clay-badge clay-badge--success">Paid</span>
+        <span class="clay-badge clay-badge--warning">Due soon</span>
+        <span class="clay-badge clay-badge--error">Overdue</span>
+        <span class="clay-badge clay-badge--info">Draft</span>
+        <span class="clay-badge">Void</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="progress" data-component="progress" aria-labelledby="h-progress">
+    <h2 id="h-progress">Progress</h2>
+    <p>How far along something is.</p>
+    <div class="demo" data-demo="progress-bar">
+      <h3>Progress bar</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-stack" style="--gap:8px;width:min(100%,380px)">
+          <div class="clay-row" style="justify-content:space-between"><span class="clay-small">Collected this month</span><span class="clay-small clay-muted">72%</span></div>
+          <div class="clay-progress" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" aria-label="Collected this month"><span style="--value:72%"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="alert" data-component="alert" aria-labelledby="h-alert">
+    <h2 id="h-alert">Alerts & toasts</h2>
+    <p>Status messages, inline or floating.</p>
+    <div class="demo" data-demo="alerts">
+      <h3>Alerts</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-stack" style="--gap:14px;width:min(100%,380px)">
+          <div class="clay-alert clay-alert--success" role="status"><svg class="clay-icon" aria-hidden="true"><use href="#i-check-circle"/></svg>Success</div>
+          <div class="clay-alert clay-alert--warning" role="status"><svg class="clay-icon" aria-hidden="true"><use href="#i-warning"/></svg>Warning</div>
+          <div class="clay-alert clay-alert--error" role="alert"><svg class="clay-icon" aria-hidden="true"><use href="#i-error"/></svg>Error</div>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="with-title-and-close">
+      <h3>With title and close</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-stack" style="--gap:14px;width:min(100%,480px)">
+          <div class="clay-alert clay-alert--info clay-alert--block" role="status">
+            <svg class="clay-icon" aria-hidden="true"><use href="#i-info"/></svg>
+            <div><div class="clay-alert__title">Reminder scheduled</div><div class="clay-alert__text">Northwind Studio gets a nudge 3 days before the due date.</div></div>
+          </div>
+          <div class="clay-alert clay-alert--error clay-alert--block" role="alert">
+            <svg class="clay-icon" aria-hidden="true"><use href="#i-error"/></svg>
+            <div><div class="clay-alert__title">Card declined</div><div class="clay-alert__text">The bank rejected the charge. Ask the client to update their card, then retry.</div></div>
+            <button class="clay-alert__close" type="button" aria-label="Dismiss"><svg class="clay-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="card" data-component="card" aria-labelledby="h-card">
+    <h2 id="h-card">Card</h2>
+    <p>A grouped piece of content.</p>
+    <div class="demo" data-demo="stacked-card">
+      <h3>Stacked card</h3>
+      <div class="demo__stage clay-board">
+        <article class="clay-card clay-card--stacked" style="width:min(100%,360px)">
+          <div class="clay-card__content">
+            <h3 class="clay-card__title">Title</h3>
+            <p class="clay-card__text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <button class="clay-btn clay-btn--neutral clay-btn--sm" type="button">Image</button>
+          </div>
+          <div class="clay-card__media" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-image"/></svg></div>
+        </article>
+      </div>
+    </div>
+    <div class="demo" data-demo="interactive-and-sunken">
+      <h3>Interactive and sunken</h3>
+      <div class="demo__stage clay-board">
+        <article class="clay-card clay-card--interactive" tabindex="0" style="width:min(100%,260px)">
+          <div class="clay-card__content"><h3 class="clay-card__title">Northwind Studio</h3><p class="clay-card__text">3 open invoices · $7,010 due</p></div>
+        </article>
+        <article class="clay-card clay-card--sunken" style="width:min(100%,260px)">
+          <div class="clay-card__content"><h3 class="clay-card__title">Drop a file</h3><p class="clay-card__text">PDF or PNG, up to 10 MB.</p></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="avatar" data-component="avatar" aria-labelledby="h-avatar">
+    <h2 id="h-avatar">Avatar & list</h2>
+    <p>People and lists of them.</p>
+    <div class="demo" data-demo="avatars">
+      <h3>Avatars</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-avatar-group">
+          <span class="clay-avatar">AM</span>
+          <span class="clay-avatar" style="--avatar-bg:#F5E596">JK</span>
+          <span class="clay-avatar" style="--avatar-bg:#C9DDF2">RS</span>
+          <span class="clay-avatar" style="--avatar-bg:#F8F7F4">+4</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="navigation" data-component="navigation" aria-labelledby="h-navigation">
+    <h2 id="h-navigation">Navigation</h2>
+    <p>Sidebars, breadcrumbs and pagination.</p>
+    <div class="demo" data-demo="sidebar">
+      <h3>Sidebar</h3>
+      <div class="demo__stage clay-board">
+        <nav class="clay-nav clay-sunken" aria-label="Main" style="width:min(100%,260px);padding:12px;border-radius:var(--clay-radius-lg)">
+          <a class="clay-nav__item" href="#" aria-current="page"><svg class="clay-icon" aria-hidden="true"><use href="#i-home"/></svg>Overview</a>
+          <a class="clay-nav__item" href="#"><svg class="clay-icon" aria-hidden="true"><use href="#i-file"/></svg>Invoices<span class="clay-nav__count">3</span></a>
+          <a class="clay-nav__item" href="#"><svg class="clay-icon" aria-hidden="true"><use href="#i-users"/></svg>Clients</a>
+          <a class="clay-nav__item" href="#"><svg class="clay-icon" aria-hidden="true"><use href="#i-card"/></svg>Payments</a>
+          <a class="clay-nav__item" href="#"><svg class="clay-icon" aria-hidden="true"><use href="#i-chart"/></svg>Reports</a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="table" data-component="table" aria-labelledby="h-table">
+    <h2 id="h-table">Table</h2>
+    <p>Rows of records.</p>
+    <div class="demo" data-demo="table-in-a-card">
+      <h3>Table in a card</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-card clay-card--column" style="width:100%;padding:12px 12px 6px">
+          <div class="clay-table-wrap">
+            <table class="clay-table">
+              <thead><tr><th>Invoice</th><th>Client</th><th>Issued</th><th>Status</th><th class="is-num">Amount</th></tr></thead>
+              <tbody>
+                <tr><td>INV-1042</td><td>Northwind Studio</td><td>Nov 18</td><td><span class="clay-badge clay-badge--success">Paid</span></td><td class="is-num">$4,200.00</td></tr>
+                <tr><td>INV-1041</td><td>Fern &amp; Pine</td><td>Nov 14</td><td><span class="clay-badge clay-badge--warning">Due soon</span></td><td class="is-num">$1,860.00</td></tr>
+                <tr><td>INV-1040</td><td>Harbor Labs</td><td>Oct 30</td><td><span class="clay-badge clay-badge--error">Overdue</span></td><td class="is-num">$950.00</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="dialog" data-component="dialog" aria-labelledby="h-dialog">
+    <h2 id="h-dialog">Dialog</h2>
+    <p>A focused decision. Press the button to open it again.</p>
+    <div class="demo" data-demo="dialog" data-min-height="420" data-open-dialog>
+      <h3>Dialog</h3>
+      <div class="demo__stage clay-board">
+        <button class="clay-btn clay-btn--primary" type="button" data-clay-open="#c-dialog">Send invoice</button>
+        <dialog class="clay-dialog" id="c-dialog" aria-labelledby="c-dialog-title">
+          <h2 class="clay-dialog__title" id="c-dialog-title">Send invoice INV-1042?</h2>
+          <p class="clay-dialog__body">Northwind Studio will get an email with a payment link. You can still edit the invoice until it is paid.</p>
+          <div class="clay-dialog__actions">
+            <button class="clay-btn" type="button" data-clay-close>Cancel</button>
+            <button class="clay-btn clay-btn--primary" type="button" data-clay-close>Send invoice</button>
+          </div>
+        </dialog>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tooltip" data-component="tooltip" aria-labelledby="h-tooltip">
+    <h2 id="h-tooltip">Tooltip</h2>
+    <p>A short hint on hover or focus.</p>
+    <div class="demo" data-demo="tooltip">
+      <h3>Tooltip</h3>
+      <div class="demo__stage clay-board">
+        <span class="clay-tooltip" data-tip="Copied to clipboard"><button class="clay-btn" type="button">Copy link</button></span>
+        <span class="clay-tooltip" data-tip="Search invoices"><button class="clay-btn clay-btn--neutral clay-btn--icon" type="button" aria-label="Search"><svg class="clay-icon" aria-hidden="true"><use href="#i-search"/></svg></button></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="elevation" data-component="elevation" aria-labelledby="h-elevation">
+    <h2 id="h-elevation">Elevation</h2>
+    <p>Five clay slabs, from resting to floating.</p>
+    <div class="demo" data-demo="elevation-slabs">
+      <h3>Elevation slabs</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-strata" style="width:min(100%,240px)">
+          <div class="clay-strata__level">Level 1</div>
+          <div class="clay-strata__level">Level 2</div>
+          <div class="clay-strata__level">Level 3</div>
+          <div class="clay-strata__level">Level 4</div>
+          <div class="clay-strata__level">Level 5</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script src="js/clay.js"></script>
+<script src="../site/smooth-scroll.js" defer></script>
+</body>
+</html>

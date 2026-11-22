@@ -2,7 +2,7 @@
 
 Hand-drawn ink on cream paper: uneven outlines, drawn offset shadows, diagonal hatching for emphasis and a few watercolor tints for meaning. A careful wireframe that works like a real UI. Plain CSS, design tokens and copy-paste HTML; no build step, no dependencies.
 
-**Live:** [Style guide](https://seiya058904.github.io/ui-design-languages/sketch/) · [Settings example](https://seiya058904.github.io/ui-design-languages/sketch/examples/settings.html)
+**Live:** [Style guide](https://seiya058904.github.io/ui-design-languages/sketch/) · [Settings example](https://seiya058904.github.io/ui-design-languages/sketch/examples/settings.html) · [Components](https://seiya058904.github.io/ui-design-languages/sketch/components.html)
 
 ![Sketch style guide](assets/screenshots/styleguide.png)
 

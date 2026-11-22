@@ -2,7 +2,7 @@
 
 A tactile, precise product-UI language: frosted panels on a cool canvas, one accent, bold semi-expanded section titles — and an appearance panel that really works (theme, accent, density, radius, motion, contrast). Plain CSS, design tokens and copy-paste HTML; no build step, no dependencies.
 
-**Live:** [Styleguide](https://seiya058904.github.io/ui-design-languages/atelier/) · [Workspace example](https://seiya058904.github.io/ui-design-languages/atelier/examples/workspace.html)
+**Live:** [Styleguide](https://seiya058904.github.io/ui-design-languages/atelier/) · [Workspace example](https://seiya058904.github.io/ui-design-languages/atelier/examples/workspace.html) · [Components](https://seiya058904.github.io/ui-design-languages/atelier/components.html)
 
 | Light, cobalt, balanced | Dark, violet, compact, radius 24 |
 | --- | --- |

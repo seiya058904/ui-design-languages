@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var s=JSON.parse(localStorage.getItem("atelier-appearance")||"{}"),d=document.documentElement;s.theme&&s.theme!=="light"&&d.setAttribute("data-theme",s.theme);s.accent&&s.accent!=="cobalt"&&d.setAttribute("data-accent",s.accent);s.density&&s.density!=="balanced"&&d.setAttribute("data-density",s.density);s.radius&&s.radius!=16&&d.style.setProperty("--atelier-radius-base",s.radius+"px");s.motion==="reduced"&&d.setAttribute("data-motion","reduced");s.contrast==="high"&&d.setAttribute("data-contrast","high")}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atelier components</title>
+  <meta name="description" content="Every Atelier component as real, working markup: variants, sizes and states.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/atelier.css">
+  <style>
+    /* Page layout only — every component below is the real Atelier markup, styled by css/atelier.css. */
+    body { padding: 24px 16px 72px; }
+    .cat-top, .cat { width: min(100%, 1080px); margin-inline: auto; }
+    .cat-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-bottom: 40px; font-size: 14px; }
+    .cat-top a { color: var(--atelier-color-text-muted); text-decoration: none; }
+    .cat-top a:hover { color: inherit; }
+    .cat-top a:first-child { margin-right: auto; }
+    .cat-head h1 { font-family: var(--atelier-font-family-sans); font-size: clamp(36px, 6vw, 60px); line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 12px; }
+    .cat-head p { max-width: 60ch; color: var(--atelier-color-text-muted); margin: 0; }
+    .cat-toc { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 26px 0 8px; padding: 14px 0; border-block: 1px solid var(--atelier-color-hairline); font-size: 14px; }
+    .cat-toc a { color: var(--atelier-color-text-muted); text-decoration: none; }
+    .cat-toc a:hover { color: inherit; }
+    .cat-section { padding-top: 56px; scroll-margin-top: 24px; }
+    .cat-section > h2 { font-family: var(--atelier-font-family-sans); font-size: 30px; letter-spacing: -0.01em; margin: 0 0 6px; }
+    .cat-section > p { color: var(--atelier-color-text-muted); margin: 0 0 22px; }
+    .demo + .demo { margin-top: 22px; }
+    .demo > h3 { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--atelier-color-text-muted); margin: 0 0 10px; }
+    .demo__stage { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 22px; min-height: 140px; padding: 40px 28px; }
+    @media (max-width: 560px) { .demo__stage { padding: 32px 18px; } }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h4"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1Z"/></symbol>
+  <symbol id="i-logo" viewBox="0 0 48 40"><path d="M15 4 2 36h26Z" fill="currentColor" opacity=".55" stroke="none"/><path d="M28 6 12 36h34Z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-tray" viewBox="0 0 24 24"><path d="M3 13h5l1.5 3h5L16 13h5M5 5h14l2 8v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5Z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
+
+<header class="cat-top"><a href="../index.html">UI Design Languages</a><a href="index.html">Styleguide</a><a href="../components.html#/atelier">Browse with code</a></header>
+<div class="cat">
+<div class="cat-head">
+  <h1>Atelier components</h1>
+  <p>Precise, cool product UI: frosted panels, one accent, bold uppercase section titles, appearance settings that really work. Every block below is live markup you can copy: open it in the <a href="../components.html#/atelier">components browser</a> for the code.</p>
+</div>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Toggle, checkbox & radio</a><a href="#segmented">Segmented control</a><a href="#tabs">Tabs</a><a href="#chips">Chips & badges</a><a href="#slider">Slider</a><a href="#progress">Progress</a><a href="#alert">Alerts & toasts</a><a href="#card">Card</a><a href="#avatar">Avatar & list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#board">Task board</a><a href="#appearance">Accent picker</a></nav>
+<main>
+  <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
+    <h2 id="h-button">Button</h2>
+    <p>Actions people press.</p>
+    <div class="demo" data-demo="variants">
+      <h3>Variants</h3>
+      <div class="demo__stage atelier-panel">
+        <button class="atelier-btn atelier-btn--primary" type="button">Primary</button>
+        <button class="atelier-btn atelier-btn--secondary" type="button">Secondary</button>
+        <button class="atelier-btn atelier-btn--tertiary" type="button">Tertiary</button>
+        <button class="atelier-btn atelier-btn--destructive" type="button">Destructive</button>
+        <button class="atelier-btn atelier-btn--ghost" type="button">Ghost</button>
+      </div>
+    </div>
+    <div class="demo" data-demo="sizes">
+      <h3>Sizes</h3>
+      <div class="demo__stage atelier-panel">
+        <button class="atelier-btn atelier-btn--primary atelier-btn--lg" type="button">Large</button>
+        <button class="atelier-btn atelier-btn--primary" type="button">Medium</button>
+        <button class="atelier-btn atelier-btn--primary atelier-btn--sm" type="button">Small</button>
+        <button class="atelier-btn atelier-btn--tertiary atelier-btn--icon" type="button" aria-label="Add"><svg class="atelier-icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+      </div>
+    </div>
+    <div class="demo" data-demo="states">
+      <h3>States</h3>
+      <div class="demo__stage atelier-panel">
+        <button class="atelier-btn atelier-btn--primary" type="button">Default</button>
+        <button class="atelier-btn atelier-btn--primary is-active" type="button">Pressed</button>
+        <button class="atelier-btn atelier-btn--primary" type="button" disabled>Disabled</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="input" data-component="input" aria-labelledby="h-input">
+    <h2 id="h-input">Text field</h2>
+    <p>Labelled fields, helper and error text, search.</p>
+    <div class="demo" data-demo="field-with-label">
+      <h3>Field with label</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-form-row" style="width:min(100%,360px)">
+          <label class="atelier-field-label" for="a-pn">Project name</label>
+          <input class="atelier-input" id="a-pn" placeholder="Enter a project name">
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="search">
+      <h3>Search</h3>
+      <div class="demo__stage atelier-panel">
+        <label class="atelier-search" style="width:min(100%,400px)"><svg class="atelier-icon" aria-hidden="true"><use href="#i-search"/></svg><input type="search" placeholder="Search anything…" aria-label="Search"></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="selection" data-component="selection" aria-labelledby="h-selection">
+    <h2 id="h-selection">Toggle, checkbox & radio</h2>
+    <p>On/off and one-or-many choices.</p>
+    <div class="demo" data-demo="checkbox-and-radio">
+      <h3>Checkbox and radio</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-stack" style="--gap:12px">
+          <label class="atelier-check"><input type="checkbox" class="atelier-checkbox" checked> Remember me</label>
+          <label class="atelier-check"><input type="checkbox" class="atelier-checkbox"> Email me a copy</label>
+        </div>
+        <div class="atelier-stack" style="--gap:12px">
+          <label class="atelier-check"><input type="radio" class="atelier-radio" name="a-bill" checked> Monthly</label>
+          <label class="atelier-check"><input type="radio" class="atelier-radio" name="a-bill"> Yearly</label>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="switch">
+      <h3>Switch</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-stack" style="--gap:14px;width:min(100%,320px)">
+          <label class="atelier-check atelier-check--between">Reduce motion<input type="checkbox" class="atelier-toggle"></label>
+          <label class="atelier-check atelier-check--between">High contrast<input type="checkbox" class="atelier-toggle" checked></label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="segmented" data-component="segmented" aria-labelledby="h-segmented">
+    <h2 id="h-segmented">Segmented control</h2>
+    <p>Switch between a few views; the indicator glides.</p>
+    <div class="demo" data-demo="segmented-control">
+      <h3>Segmented control</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-segmented" role="tablist" aria-label="Theme">
+          <button class="atelier-segmented__item" role="tab" aria-selected="true"><svg class="atelier-icon" aria-hidden="true"><use href="#i-sun"/></svg>Light</button>
+          <button class="atelier-segmented__item" role="tab" aria-selected="false" tabindex="-1"><svg class="atelier-icon" aria-hidden="true"><use href="#i-moon"/></svg>Dark</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tabs" data-component="tabs" aria-labelledby="h-tabs">
+    <h2 id="h-tabs">Tabs</h2>
+    <p>Section tabs with a sliding marker.</p>
+    <div class="demo" data-demo="pill-tabs">
+      <h3>Pill tabs</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-pills" role="tablist" aria-label="Project view">
+          <button class="atelier-pills__item" role="tab" aria-selected="true">Overview</button>
+          <button class="atelier-pills__item" role="tab" aria-selected="false" tabindex="-1">Projects</button>
+          <button class="atelier-pills__item" role="tab" aria-selected="false" tabindex="-1">Activity</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="chips" data-component="chips" aria-labelledby="h-chips">
+    <h2 id="h-chips">Chips & badges</h2>
+    <p>Filters people toggle, and passive status labels.</p>
+    <div class="demo" data-demo="status-badges">
+      <h3>Status badges</h3>
+      <div class="demo__stage atelier-panel">
+        <span class="atelier-badge atelier-badge--primary">New</span>
+        <span class="atelier-badge atelier-badge--soft">In progress</span>
+        <span class="atelier-badge atelier-badge--teal">Approved</span>
+        <span class="atelier-badge atelier-badge--amber">At risk</span>
+        <span class="atelier-badge atelier-badge--violet">Review</span>
+        <span class="atelier-badge atelier-badge--danger">Blocked</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="slider" data-component="slider" aria-labelledby="h-slider">
+    <h2 id="h-slider">Slider</h2>
+    <p>Pick a value on a range.</p>
+    <div class="demo" data-demo="slider">
+      <h3>Slider</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-slider-row" style="width:min(100%,400px)"><span>Density</span><input class="atelier-slider" id="a-dens" type="range" min="0" max="100" value="72" aria-label="Density"><output for="a-dens">72</output></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="progress" data-component="progress" aria-labelledby="h-progress">
+    <h2 id="h-progress">Progress</h2>
+    <p>How far along something is.</p>
+    <div class="demo" data-demo="progress">
+      <h3>Progress</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-progress" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress" style="width:min(100%,380px)"><div class="atelier-progress__bar"><span style="--value:68%"></span></div><output>68%</output></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="alert" data-component="alert" aria-labelledby="h-alert">
+    <h2 id="h-alert">Alerts & toasts</h2>
+    <p>Status messages, inline or floating.</p>
+    <div class="demo" data-demo="toasts">
+      <h3>Toasts</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-stack" style="--gap:12px;width:min(100%,380px)">
+          <div class="atelier-toast atelier-toast--success" role="status"><svg class="atelier-icon" aria-hidden="true"><use href="#i-check-circle"/></svg>Changes saved successfully<button class="atelier-toast__close" type="button" aria-label="Dismiss"><svg class="atelier-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+          <div class="atelier-toast atelier-toast--inverse" role="status"><svg class="atelier-icon" aria-hidden="true"><use href="#i-mail"/></svg>Invite sent<button class="atelier-toast__close" type="button" aria-label="Dismiss"><svg class="atelier-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="confirm-and-empty-state">
+      <h3>Confirm and empty state</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-confirm" style="width:min(100%,280px)">
+          <h3>Delete project?</h3>
+          <p>This action cannot be undone.</p>
+          <div class="atelier-confirm__actions"><button class="atelier-btn atelier-btn--tertiary" type="button">Cancel</button><button class="atelier-btn atelier-btn--destructive" type="button">Delete</button></div>
+        </div>
+        <div class="atelier-empty" style="width:min(100%,240px)"><svg class="atelier-icon" aria-hidden="true"><use href="#i-tray"/></svg>Nothing here yet</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="card" data-component="card" aria-labelledby="h-card">
+    <h2 id="h-card">Card</h2>
+    <p>A grouped piece of content.</p>
+    <div class="demo" data-demo="project-card">
+      <h3>Project card</h3>
+      <div class="demo__stage atelier-panel">
+        <article class="atelier-card atelier-card--interactive" tabindex="0" style="width:min(100%,340px)">
+          <div class="atelier-row" style="--gap:12px;align-items:flex-start">
+            <span class="atelier-logo"><svg viewBox="0 0 48 40" width="40" aria-hidden="true"><use href="#i-logo"/></svg></span>
+            <div class="atelier-stack" style="--gap:6px">
+              <h3 class="atelier-card__title">Project Atlas</h3>
+              <span><span class="atelier-badge atelier-badge--soft">In progress</span></span>
+            </div>
+          </div>
+          <div class="atelier-row" style="justify-content:space-between;margin-top:12px">
+            <div class="atelier-card__meta"><span><svg class="atelier-icon" aria-hidden="true"><use href="#i-calendar"/></svg>Oct 30</span><span><svg class="atelier-icon" aria-hidden="true"><use href="#i-clip"/></svg>12 tasks</span></div>
+            <span class="atelier-avatars"><span class="atelier-avatar" style="--avatar-bg:#F6C9A8;--avatar-ink:#6B3A16">AC</span><span class="atelier-avatar" style="--avatar-bg:#BFD7F7;--avatar-ink:#1C4A86">MJ</span><span class="atelier-avatar" style="--avatar-bg:#C9EBDD;--avatar-ink:#16614A">SK</span></span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="avatar" data-component="avatar" aria-labelledby="h-avatar">
+    <h2 id="h-avatar">Avatar & list</h2>
+    <p>People and lists of them.</p>
+    <div class="demo" data-demo="avatars">
+      <h3>Avatars</h3>
+      <div class="demo__stage atelier-panel">
+        <span class="atelier-avatars"><span class="atelier-avatar" style="--avatar-bg:#F6C9A8;--avatar-ink:#6B3A16">AC</span><span class="atelier-avatar" style="--avatar-bg:#BFD7F7;--avatar-ink:#1C4A86">MJ</span><span class="atelier-avatar" style="--avatar-bg:#C9EBDD;--avatar-ink:#16614A">SK</span></span>
+        <span class="atelier-avatar" style="--avatar-bg:#E4DAFB;--avatar-ink:#4B2A9E">LP</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="navigation" data-component="navigation" aria-labelledby="h-navigation">
+    <h2 id="h-navigation">Navigation</h2>
+    <p>Sidebars, breadcrumbs and pagination.</p>
+    <div class="demo" data-demo="sidebar">
+      <h3>Sidebar</h3>
+      <div class="demo__stage atelier-panel">
+        <nav class="atelier-nav" aria-label="Main" style="width:min(100%,240px)">
+          <a class="atelier-nav__item" href="#" aria-current="page"><svg class="atelier-icon" aria-hidden="true"><use href="#i-home"/></svg>Home</a>
+          <a class="atelier-nav__item" href="#"><svg class="atelier-icon" aria-hidden="true"><use href="#i-folder"/></svg>Projects</a>
+          <a class="atelier-nav__item" href="#"><svg class="atelier-icon" aria-hidden="true"><use href="#i-mail"/></svg>Inbox</a>
+          <a class="atelier-nav__item" href="#"><svg class="atelier-icon" aria-hidden="true"><use href="#i-settings"/></svg>Settings</a>
+        </nav>
+      </div>
+    </div>
+    <div class="demo" data-demo="breadcrumb-and-pagination">
+      <h3>Breadcrumb and pagination</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-stack" style="--gap:22px">
+          <nav class="atelier-breadcrumb" aria-label="Breadcrumb"><ol>
+            <li><a href="#" aria-label="Home"><svg class="atelier-icon" aria-hidden="true"><use href="#i-home"/></svg></a></li>
+            <li><a href="#">Workspace</a></li><li><a href="#">Projects</a></li><li aria-current="page">Atlas</li>
+          </ol></nav>
+          <nav class="atelier-pagination" aria-label="Pages">
+            <a href="#" aria-current="page">1</a><a href="#">2</a><a href="#">3</a><span>…</span><a href="#">8</a>
+            <a href="#" aria-label="Next page"><svg class="atelier-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="table" data-component="table" aria-labelledby="h-table">
+    <h2 id="h-table">Table</h2>
+    <p>Rows of records.</p>
+    <div class="demo" data-demo="table">
+      <h3>Table</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-table-wrap" style="width:100%">
+          <table class="atelier-table">
+            <thead><tr><th>Project</th><th>Owner</th><th>Status</th><th>Progress</th><th class="is-num">Tasks</th></tr></thead>
+            <tbody>
+              <tr><td>Atlas</td><td>Alex Chen</td><td><span class="atelier-badge atelier-badge--soft">In progress</span></td><td style="min-width:140px"><div class="atelier-progress"><div class="atelier-progress__bar"><span style="--value:68%"></span></div></div></td><td class="is-num">12</td></tr>
+              <tr><td>Northwind portal</td><td>Mia Jones</td><td><span class="atelier-badge atelier-badge--teal">Approved</span></td><td><div class="atelier-progress"><div class="atelier-progress__bar"><span style="--value:92%"></span></div></div></td><td class="is-num">31</td></tr>
+              <tr><td>Field app</td><td>Sam Kim</td><td><span class="atelier-badge atelier-badge--amber">At risk</span></td><td><div class="atelier-progress"><div class="atelier-progress__bar"><span style="--value:34%"></span></div></div></td><td class="is-num">18</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="dialog" data-component="dialog" aria-labelledby="h-dialog">
+    <h2 id="h-dialog">Dialog</h2>
+    <p>A focused decision. Press the button to open it again.</p>
+    <div class="demo" data-demo="dialog" data-min-height="400" data-open-dialog>
+      <h3>Dialog</h3>
+      <div class="demo__stage atelier-panel">
+        <button class="atelier-btn atelier-btn--destructive" type="button" data-atelier-open="#a-dialog">Delete project</button>
+        <dialog class="atelier-dialog" id="a-dialog" aria-labelledby="a-dialog-title">
+          <h2 class="atelier-dialog__title" id="a-dialog-title">Delete Project Atlas?</h2>
+          <p class="atelier-dialog__body">12 tasks and their history will be removed for everyone in the workspace. This can't be undone.</p>
+          <div class="atelier-dialog__actions"><button class="atelier-btn atelier-btn--tertiary" type="button" data-atelier-close>Cancel</button><button class="atelier-btn atelier-btn--destructive" type="button" data-atelier-close>Delete project</button></div>
+        </dialog>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tooltip" data-component="tooltip" aria-labelledby="h-tooltip">
+    <h2 id="h-tooltip">Tooltip</h2>
+    <p>A short hint on hover or focus.</p>
+    <div class="demo" data-demo="tooltip">
+      <h3>Tooltip</h3>
+      <div class="demo__stage atelier-panel">
+        <span class="atelier-tooltip" data-tip="Copy invite link"><button class="atelier-btn atelier-btn--secondary" type="button">Share</button></span>
+        <span class="atelier-tooltip" data-tip="New task"><button class="atelier-btn atelier-btn--primary atelier-btn--icon" type="button" aria-label="New task"><svg class="atelier-icon" aria-hidden="true"><use href="#i-plus"/></svg></button></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="board" data-component="board" aria-labelledby="h-board">
+    <h2 id="h-board">Task board</h2>
+    <p>Columns of task cards.</p>
+    <div class="demo" data-demo="board-column">
+      <h3>Board column</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-board" style="--columns:1;width:min(100%,300px)">
+          <section class="atelier-column" aria-label="To do">
+            <header class="atelier-column__head"><h3>To do</h3><span class="atelier-column__count">3</span><button class="atelier-btn atelier-btn--ghost atelier-btn--icon atelier-btn--sm" type="button" aria-label="Add to To do"><svg class="atelier-icon" aria-hidden="true"><use href="#i-plus"/></svg></button></header>
+            <article class="atelier-task"><h4>Website refresh</h4><div class="atelier-task__foot"><span class="atelier-badge atelier-badge--soft">Design</span><span class="atelier-avatar" style="--avatar-bg:#BFD7F7;--avatar-ink:#1C4A86">MJ</span></div></article>
+            <article class="atelier-task"><h4>Mobile onboarding</h4><div class="atelier-task__foot"><span class="atelier-badge atelier-badge--violet">Review</span><span class="atelier-avatar" style="--avatar-bg:#F6C9A8;--avatar-ink:#6B3A16">AC</span></div></article>
+            <article class="atelier-task"><h4>Pricing page copy</h4><div class="atelier-task__foot"><span class="atelier-badge atelier-badge--amber">Copy</span><span class="atelier-avatar" style="--avatar-bg:#C9EBDD;--avatar-ink:#16614A">SK</span></div></article>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="appearance" data-component="appearance" aria-labelledby="h-appearance">
+    <h2 id="h-appearance">Accent picker</h2>
+    <p>Swatch buttons that switch the accent.</p>
+    <div class="demo" data-demo="accent-swatches">
+      <h3>Accent swatches</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-row" style="--gap:14px">
+          <button class="atelier-swatch atelier-swatch--pick" type="button" style="--swatch:#2F7BF5" aria-pressed="true" aria-label="Cobalt"></button>
+          <button class="atelier-swatch atelier-swatch--pick" type="button" style="--swatch:#7A4DF0" aria-pressed="false" aria-label="Violet"></button>
+          <button class="atelier-swatch atelier-swatch--pick" type="button" style="--swatch:#0EA5C6" aria-pressed="false" aria-label="Cyan"></button>
+          <button class="atelier-swatch atelier-swatch--pick" type="button" style="--swatch:#1FA971" aria-pressed="false" aria-label="Green"></button>
+          <button class="atelier-swatch atelier-swatch--pick" type="button" style="--swatch:#F08A24" aria-pressed="false" aria-label="Orange"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script src="js/atelier.js"></script>
+<script src="../site/smooth-scroll.js" defer></script>
+</body>
+</html>

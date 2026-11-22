@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Components · UI Design Languages</title>
-  <meta name="description" content="Browse every component of every design language one at a time: live preview with the language's own CSS and JS, the exact markup to copy, and the same component in the other languages.">
+  <meta name="description" content="Every component of every design language as real, working markup: variants, sizes and states rendered live with the language's own CSS and JS, the exact code to copy, and the same component in the other languages.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@700&family=Cormorant+Garamond:wght@500&family=Archivo:wdth,wght@112,800&family=Plus+Jakarta+Sans:wght@800&family=Itim&display=swap" rel="stylesheet">
@@ -37,28 +37,14 @@
     </div>
 
     <div class="cmp__bar">
-      <div class="cmp__tools">
-        <div class="seg" role="group" aria-label="View">
-          <button type="button" aria-pressed="true" data-view="preview">Preview</button>
-          <button type="button" aria-pressed="false" data-view="code">Code</button>
-        </div>
-        <div class="cmp__opts" data-opts></div>
-      </div>
+      <div class="cmp__opts" data-opts></div>
       <div class="cmp__actions">
-        <button class="pill pill--sm" type="button" data-act="copy"><span>Copy code</span></button>
         <button class="pill pill--sm" type="button" data-act="ai"><span>Copy for AI</span></button>
-        <a class="pill pill--sm" href="#" data-act="open">Open in styleguide</a>
+        <a class="pill pill--sm" href="#" data-act="open">Open the catalog page</a>
       </div>
     </div>
 
-    <div class="cmp__stage" data-stage>
-      <div class="cmp__view" data-view-box><iframe title="Live preview" tabindex="0" data-frame></iframe></div>
-      <p class="cmp__hint">Live: hover, press and type — it runs on the language's own CSS and JS.</p>
-    </div>
-    <div class="cmp__code" data-code hidden>
-      <div class="cmp__codebar"><span data-codefile>index.html</span><span>HTML · uses the language's CSS</span></div>
-      <pre><code data-code-text></code></pre>
-    </div>
+    <div class="cmp__demos" data-demos></div>
 
     <p class="cmp__keys" aria-hidden="true"><kbd>←</kbd><kbd>→</kbd> previous / next · <kbd>/</kbd> search</p>
     <nav class="cmp__pager" aria-label="Previous and next component">
@@ -67,8 +53,8 @@
     </nav>
 
     <section class="cmp__related" aria-labelledby="rel-t">
-      <h2 id="rel-t">The same idea in the other languages</h2>
-      <div class="cmp__minis" data-minis></div>
+      <h2 id="rel-t">The same component in the other languages</h2>
+      <div class="cmp__others" data-others></div>
     </section>
   </section>
 </main>

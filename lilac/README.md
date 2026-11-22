@@ -2,7 +2,7 @@
 
 An ivory component-study design language: calm tiles, one accent that glows, editorial serif headlines. Violet by default, cobalt on request, light or dark. Plain CSS, design tokens and copy-paste HTML — no build step, no dependencies.
 
-**Live:** [Styleguide](https://seiya058904.github.io/ui-design-languages/lilac/) · [App example](https://seiya058904.github.io/ui-design-languages/lilac/examples/app.html)
+**Live:** [Styleguide](https://seiya058904.github.io/ui-design-languages/lilac/) · [App example](https://seiya058904.github.io/ui-design-languages/lilac/examples/app.html) · [Components](https://seiya058904.github.io/ui-design-languages/lilac/components.html)
 
 | Light | Dark |
 | --- | --- |

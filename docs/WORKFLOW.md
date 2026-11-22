@@ -31,7 +31,8 @@ Status in this environment (checked 2026-11-22): the Design artifact type is ava
 1. `tokens/tokens.json` (+ `tokens.dark.json` or `tokens.<attr>-<value>.json` variants) → `node scripts/build-tokens.mjs <pack>`.
 2. `index.html` — the styleguide, recreating the reference layout first. This is the representative page.
 3. `css/components.css` — only components the reference shows, plus the shared anatomy (btn, input, chip/badge, tabs, toggle/checkbox/radio, card, nav, table, dialog, tooltip). Every interactive component gets hover, active, focus-visible and disabled.
-4. One real example page in `examples/` that uses the delivered CSS and JS unchanged.
+4. `components.html` — the catalog: every component as real, working markup, split into demos (variants, sizes, states) under the shared component ids (see the repo `AGENTS.md`). The components browser renders these demos live; never show a component as a screenshot or a crop of the styleguide.
+5. One real example page in `examples/` that uses the delivered CSS and JS unchanged.
 
 ## 5. Verify in a real browser
 

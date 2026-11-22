@@ -2,7 +2,7 @@
 
 A soft, extruded clay design language for websites and apps — matte paper boards, mint clay accents, carved inputs and a glowing focus ring. Plain CSS, design tokens and copy-paste HTML. No build step, no dependencies.
 
-**Live styleguide:** https://seiya058904.github.io/ui-design-languages/clay/ · [App example](https://seiya058904.github.io/ui-design-languages/clay/examples/dashboard.html) · [Website example](https://seiya058904.github.io/ui-design-languages/clay/examples/landing.html)
+**Live styleguide:** https://seiya058904.github.io/ui-design-languages/clay/ · [App example](https://seiya058904.github.io/ui-design-languages/clay/examples/dashboard.html) · [Website example](https://seiya058904.github.io/ui-design-languages/clay/examples/landing.html) · [Components](https://seiya058904.github.io/ui-design-languages/clay/components.html)
 
 | Light | Dark |
 | --- | --- |

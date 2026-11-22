@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sketch components</title>
+  <meta name="description" content="Every Sketch component as real, working markup: variants, sizes and states.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Itim&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/sketch.css">
+  <style>
+    /* Page layout only — every component below is the real Sketch markup, styled by css/sketch.css. */
+    body { padding: 24px 16px 72px; }
+    .cat-top, .cat { width: min(100%, 1080px); margin-inline: auto; }
+    .cat-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-bottom: 40px; font-size: 14px; }
+    .cat-top a { color: var(--sketch-color-ink-soft); text-decoration: none; }
+    .cat-top a:hover { color: inherit; }
+    .cat-top a:first-child { margin-right: auto; }
+    .cat-head h1 { font-family: var(--sketch-font-family-display); font-size: clamp(36px, 6vw, 60px); line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 12px; }
+    .cat-head p { max-width: 60ch; color: var(--sketch-color-ink-soft); margin: 0; }
+    .cat-toc { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 26px 0 8px; padding: 14px 0; border-block: 1px solid var(--sketch-color-ink-faint); font-size: 14px; }
+    .cat-toc a { color: var(--sketch-color-ink-soft); text-decoration: none; }
+    .cat-toc a:hover { color: inherit; }
+    .cat-section { padding-top: 56px; scroll-margin-top: 24px; }
+    .cat-section > h2 { font-family: var(--sketch-font-family-display); font-size: 30px; letter-spacing: -0.01em; margin: 0 0 6px; }
+    .cat-section > p { color: var(--sketch-color-ink-soft); margin: 0 0 22px; }
+    .demo + .demo { margin-top: 22px; }
+    .demo > h3 { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sketch-color-ink-soft); margin: 0 0 10px; }
+    .demo__stage { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 22px; min-height: 140px; padding: 40px 28px; }
+    @media (max-width: 560px) { .demo__stage { padding: 32px 18px; } }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3Z"/></symbol>
+  <symbol id="i-check-c" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.7L16.5 9"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 0 1-.5-9A6 6 0 0 1 18 8a4.5 4.5 0 0 1-.5 10Z"/><path d="M12 15V10m-2.3 2.2L12 10l2.3 2.2"/></symbol>
+  <symbol id="i-err" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16l-6 7.5V19l-4-2v-4.5Z"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11m0-1V4.5a1.5 1.5 0 0 1 3 0V11m0-4.5a1.5 1.5 0 0 1 3 0V13c0 4-2.5 7-6 7-2.4 0-3.8-1-5.2-3L4 13.5a1.5 1.5 0 0 1 2.5-1.6L8 13.5"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4.3l8 6.9V19a1 1 0 0 1-1 1h-4v-5.6H9V20H5a1 1 0 0 1-1-1Z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8h.01"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M10 4h4v3a2 2 0 1 0 0 0h3v4a2 2 0 1 1 0 4v4h-4a2 2 0 1 0-4 0H5v-4a2 2 0 1 0 0-4V7h5Z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9Z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M10.3 4.4 2.8 17.6A2 2 0 0 0 4.5 20.5h15a2 2 0 0 0 1.7-2.9L13.7 4.4a2 2 0 0 0-3.4 0Z"/><path d="M12 9.5v4.2M12 17h.01"/></symbol>
+</svg>
+
+<header class="cat-top"><a href="../index.html">UI Design Languages</a><a href="index.html">Styleguide</a><a href="../components.html#/sketch">Browse with code</a></header>
+<div class="cat">
+<div class="cat-head">
+  <h1>Sketch components</h1>
+  <p>Hand-drawn ink on cream paper: wobbly outlines, drawn shadows, hatching, color only where it means something. Every block below is live markup you can copy: open it in the <a href="../components.html#/sketch">components browser</a> for the code.</p>
+</div>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Toggle, checkbox & radio</a><a href="#segmented">Segmented control</a><a href="#tabs">Tabs</a><a href="#chips">Chips & badges</a><a href="#slider">Slider</a><a href="#progress">Progress</a><a href="#alert">Alerts & toasts</a><a href="#card">Card</a><a href="#avatar">Avatar & list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a></nav>
+<main>
+  <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
+    <h2 id="h-button">Button</h2>
+    <p>Actions people press.</p>
+    <div class="demo" data-demo="variants">
+      <h3>Variants</h3>
+      <div class="demo__stage sketch-box">
+        <button class="sketch-btn sketch-btn--primary" type="button">Primary</button>
+        <button class="sketch-btn" type="button">Secondary</button>
+        <button class="sketch-btn sketch-btn--tertiary" type="button">Tertiary</button>
+        <button class="sketch-btn sketch-btn--ghost" type="button">Ghost</button>
+        <button class="sketch-btn sketch-btn--destructive" type="button">Destructive</button>
+      </div>
+    </div>
+    <div class="demo" data-demo="sizes">
+      <h3>Sizes</h3>
+      <div class="demo__stage sketch-box">
+        <button class="sketch-btn sketch-btn--lg" type="button">Large</button>
+        <button class="sketch-btn" type="button">Medium</button>
+        <button class="sketch-btn sketch-btn--sm" type="button">Small</button>
+        <button class="sketch-btn sketch-btn--icon" type="button" aria-label="Settings"><svg class="sketch-icon" aria-hidden="true"><use href="#i-gear"/></svg></button>
+      </div>
+    </div>
+    <div class="demo" data-demo="states">
+      <h3>States</h3>
+      <div class="demo__stage sketch-box">
+        <button class="sketch-btn" type="button">Default</button>
+        <button class="sketch-btn is-hover" type="button">Hover</button>
+        <button class="sketch-btn is-active" type="button">Pressed</button>
+        <button class="sketch-btn is-focus" type="button">Focused</button>
+        <button class="sketch-btn" type="button" aria-busy="true"><span class="sketch-spinner" aria-hidden="true"></span>Saving</button>
+        <button class="sketch-btn" type="button" disabled>Disabled</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="input" data-component="input" aria-labelledby="h-input">
+    <h2 id="h-input">Text field</h2>
+    <p>Labelled fields, helper and error text, search.</p>
+    <div class="demo" data-demo="fields">
+      <h3>Fields</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-stack" style="--gap:14px;width:min(100%,360px)">
+          <div class="sketch-form-row"><label class="sketch-field-label" for="s-f1">Text field</label><label class="sketch-input-icon"><input id="s-f1" placeholder="Placeholder"><svg class="sketch-icon" aria-hidden="true"><use href="#i-search"/></svg></label></div>
+          <div class="sketch-form-row"><label class="sketch-field-label" for="s-f2">Email</label><input class="sketch-input" id="s-f2" value="mira@" aria-invalid="true" aria-describedby="s-f2-hint"><span class="sketch-hint sketch-hint--error" id="s-f2-hint">Add a domain, for example mira@studio.com</span></div>
+          <div class="sketch-form-row"><label class="sketch-field-label" for="s-f3">Select</label><select class="sketch-input" id="s-f3"><option>Select…</option><option>Weekly</option></select></div>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="text-area-and-tags">
+      <h3>Text area and tags</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-stack" style="--gap:14px;width:min(100%,360px)">
+          <div class="sketch-form-row"><label class="sketch-field-label" for="s-f4">Text area</label><textarea class="sketch-input" id="s-f4" rows="2" placeholder="Enter something…"></textarea></div>
+          <div class="sketch-form-row"><span class="sketch-field-label">Multi-select</span><div class="sketch-tags"><span class="sketch-tag">Research <button type="button" aria-label="Remove Research">×</button></span><span class="sketch-tag">Notes <button type="button" aria-label="Remove Notes">×</button></span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="selection" data-component="selection" aria-labelledby="h-selection">
+    <h2 id="h-selection">Toggle, checkbox & radio</h2>
+    <p>On/off and one-or-many choices.</p>
+    <div class="demo" data-demo="checkbox-radio-switch">
+      <h3>Checkbox, radio, switch</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-stack" style="--gap:12px">
+          <label class="sketch-check"><input type="checkbox" class="sketch-checkbox" checked> Email digest</label>
+          <label class="sketch-check"><input type="checkbox" class="sketch-checkbox"> Weekly report</label>
+        </div>
+        <div class="sketch-stack" style="--gap:12px">
+          <label class="sketch-check"><input type="radio" name="s-r" class="sketch-radio" checked> Light</label>
+          <label class="sketch-check"><input type="radio" name="s-r" class="sketch-radio"> Dark</label>
+        </div>
+        <div class="sketch-stack" style="--gap:12px">
+          <label class="sketch-check"><input type="checkbox" class="sketch-toggle" checked> Sounds</label>
+          <label class="sketch-check"><input type="checkbox" class="sketch-toggle"> Reduce motion</label>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="stepper">
+      <h3>Stepper</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-stepper" data-min="0" data-max="9"><button type="button" aria-label="Decrease">−</button><output aria-live="polite">1</output><button type="button" aria-label="Increase">+</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="segmented" data-component="segmented" aria-labelledby="h-segmented">
+    <h2 id="h-segmented">Segmented control</h2>
+    <p>Switch between a few views; the indicator glides.</p>
+    <div class="demo" data-demo="segmented-control">
+      <h3>Segmented control</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-segmented" role="tablist" aria-label="Theme">
+          <button class="sketch-segmented__item" type="button" role="tab" aria-selected="false" tabindex="-1">System</button>
+          <button class="sketch-segmented__item" type="button" role="tab" aria-selected="true">Light</button>
+          <button class="sketch-segmented__item" type="button" role="tab" aria-selected="false" tabindex="-1">Dark</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tabs" data-component="tabs" aria-labelledby="h-tabs">
+    <h2 id="h-tabs">Tabs</h2>
+    <p>Section tabs with a sliding marker.</p>
+    <div class="demo" data-demo="tabs-and-pills">
+      <h3>Tabs and pills</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-stack" style="--gap:20px">
+          <div class="sketch-tabs" role="tablist" aria-label="Tabs"><button class="sketch-tabs__item" role="tab" aria-selected="true">Tab 1</button><button class="sketch-tabs__item" role="tab" aria-selected="false" tabindex="-1">Tab 2</button><button class="sketch-tabs__item" role="tab" aria-selected="false" tabindex="-1">Tab 3</button></div>
+          <div class="sketch-pills" role="tablist" aria-label="Status filter"><button class="sketch-pills__item" role="tab" aria-selected="true">All</button><button class="sketch-pills__item" role="tab" aria-selected="false" tabindex="-1">Active</button><button class="sketch-pills__item" role="tab" aria-selected="false" tabindex="-1">Draft</button><button class="sketch-pills__item" role="tab" aria-selected="false" tabindex="-1">Archived</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="folder-tabs">
+      <h3>Folder tabs</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-tabs sketch-tabs--folder" role="tablist" aria-label="Folders"><button class="sketch-tabs__item" role="tab" aria-selected="true">Notes</button><button class="sketch-tabs__item" role="tab" aria-selected="false" tabindex="-1">Sketches</button><button class="sketch-tabs__item" role="tab" aria-selected="false" tabindex="-1">Library</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="chips" data-component="chips" aria-labelledby="h-chips">
+    <h2 id="h-chips">Chips & badges</h2>
+    <p>Filters people toggle, and passive status labels.</p>
+    <div class="demo" data-demo="chips-and-tags">
+      <h3>Chips and tags</h3>
+      <div class="demo__stage sketch-box">
+        <button class="sketch-chip" type="button" aria-pressed="false"><svg class="sketch-icon" aria-hidden="true"><use href="#i-filter"/></svg>Filter</button>
+        <button class="sketch-chip" type="button" aria-pressed="true">Selected</button>
+        <button class="sketch-chip sketch-chip--add" type="button"><svg class="sketch-icon" aria-hidden="true"><use href="#i-plus"/></svg>Add</button>
+        <span class="sketch-tag">Tag</span><span class="sketch-tag sketch-tag--active">Active tag</span>
+      </div>
+    </div>
+    <div class="demo" data-demo="badges-and-status">
+      <h3>Badges and status</h3>
+      <div class="demo__stage sketch-box">
+        <span class="sketch-badge sketch-badge--new">New</span><span class="sketch-badge sketch-badge--updated">Updated</span><span class="sketch-badge sketch-badge--beta">Beta</span><span class="sketch-badge sketch-badge--hot">Hot</span>
+        <span class="sketch-status sketch-status--online">Online</span><span class="sketch-status sketch-status--busy">Busy</span><span class="sketch-status sketch-status--offline">Offline</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="slider" data-component="slider" aria-labelledby="h-slider">
+    <h2 id="h-slider">Slider</h2>
+    <p>Pick a value on a range.</p>
+    <div class="demo" data-demo="slider">
+      <h3>Slider</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-range" style="--fill-n:.75;width:min(100%,360px)"><output class="sketch-range__bubble" for="s-sl">75</output><input class="sketch-slider" id="s-sl" type="range" value="75" aria-label="Slider"><div class="sketch-range__ticks"><span>0</span><span>100</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="progress" data-component="progress" aria-labelledby="h-progress">
+    <h2 id="h-progress">Progress</h2>
+    <p>How far along something is.</p>
+    <div class="demo" data-demo="bar-ring-spinner">
+      <h3>Bar, ring, spinner</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-progress" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" aria-label="Upload" style="width:min(100%,300px)"><div class="sketch-progress__bar"><span style="--value:60%"></span></div><output>60%</output></div>
+        <div class="sketch-ring" style="--value:75" role="img" aria-label="75 percent"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="sketch-ring__track" cx="50" cy="50" r="40" pathLength="100"/><circle class="sketch-ring__bar" cx="50" cy="50" r="40" pathLength="100"/></svg><span>75%</span></div>
+        <span class="sketch-spinner" style="width:26px;height:26px" role="img" aria-label="Loading"></span>
+      </div>
+    </div>
+    <div class="demo" data-demo="steps-and-skeleton">
+      <h3>Steps and skeleton</h3>
+      <div class="demo__stage sketch-box">
+        <ol class="sketch-steps" aria-label="Setup steps" style="width:min(100%,380px)"><li class="is-done">Configure</li><li aria-current="step">Review</li><li>Confirm</li><li>Done</li></ol>
+        <div class="sketch-skeleton" aria-hidden="true" style="width:min(100%,220px)"><span></span><span style="width:70%"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="alert" data-component="alert" aria-labelledby="h-alert">
+    <h2 id="h-alert">Alerts & toasts</h2>
+    <p>Status messages, inline or floating.</p>
+    <div class="demo" data-demo="alerts">
+      <h3>Alerts</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-stack" style="--gap:8px;width:min(100%,380px)">
+          <div class="sketch-alert sketch-alert--success" role="status"><svg class="sketch-icon" aria-hidden="true"><use href="#i-check-c"/></svg><span><b>Success</b>Operation completed.</span><button class="sketch-close" type="button" aria-label="Dismiss">×</button></div>
+          <div class="sketch-alert sketch-alert--warning" role="status"><svg class="sketch-icon" aria-hidden="true"><use href="#i-warn"/></svg><span><b>Warning</b>Check your input.</span><button class="sketch-close" type="button" aria-label="Dismiss">×</button></div>
+          <div class="sketch-alert sketch-alert--danger" role="alert"><svg class="sketch-icon" aria-hidden="true"><use href="#i-err"/></svg><span><b>Error</b>Something went wrong.</span><button class="sketch-close" type="button" aria-label="Dismiss">×</button></div>
+          <div class="sketch-alert sketch-alert--info" role="status"><svg class="sketch-icon" aria-hidden="true"><use href="#i-info"/></svg><span><b>Info</b>Here is some information.</span><button class="sketch-close" type="button" aria-label="Dismiss">×</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="toasts">
+      <h3>Toasts</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-toast" role="status"><svg class="sketch-icon" aria-hidden="true"><use href="#i-check-c"/></svg>Saved successfully</div>
+        <div class="sketch-toast" role="status"><svg class="sketch-icon" aria-hidden="true"><use href="#i-warn"/></svg>Network is unstable</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="card" data-component="card" aria-labelledby="h-card">
+    <h2 id="h-card">Card</h2>
+    <p>A grouped piece of content.</p>
+    <div class="demo" data-demo="card">
+      <h3>Card</h3>
+      <div class="demo__stage sketch-box">
+        <article class="sketch-card" style="width:min(100%,240px)"><div class="sketch-placeholder"></div><h4 class="sketch-card__title">Card title</h4><p class="sketch-card__text">Secondary text</p><span><button class="sketch-btn sketch-btn--sm" type="button">Action</button></span></article>
+        <div class="sketch-empty" style="width:min(100%,240px)"><svg class="sketch-icon" aria-hidden="true"><use href="#i-cloud"/></svg><strong>No data found</strong><span class="sketch-caption">Create a new item to get started.</span><button class="sketch-btn sketch-btn--sm sketch-btn--primary" type="button">Create new</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="avatar" data-component="avatar" aria-labelledby="h-avatar">
+    <h2 id="h-avatar">Avatar & list</h2>
+    <p>People and lists of them.</p>
+    <div class="demo" data-demo="list">
+      <h3>List</h3>
+      <div class="demo__stage sketch-box">
+        <ul class="sketch-list" style="width:min(100%,320px)">
+          <li><span class="sketch-list__icon"><svg class="sketch-icon" aria-hidden="true"><use href="#i-user"/></svg></span><div><div class="sketch-list__title">Mira Kovač</div><div class="sketch-list__text">Owner</div></div><svg class="sketch-icon sketch-list__chev" aria-hidden="true"><use href="#i-chev"/></svg></li>
+          <li><span class="sketch-list__icon"><svg class="sketch-icon" aria-hidden="true"><use href="#i-file"/></svg></span><div><div class="sketch-list__title">Research notes</div><div class="sketch-list__text">Edited today</div></div><svg class="sketch-icon sketch-list__chev" aria-hidden="true"><use href="#i-chev"/></svg></li>
+          <li><span class="sketch-list__icon"><svg class="sketch-icon" aria-hidden="true"><use href="#i-star"/></svg></span><div><div class="sketch-list__title">Starred</div><div class="sketch-list__text">12 items</div></div><svg class="sketch-icon sketch-list__chev" aria-hidden="true"><use href="#i-chev"/></svg></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="navigation" data-component="navigation" aria-labelledby="h-navigation">
+    <h2 id="h-navigation">Navigation</h2>
+    <p>Sidebars, breadcrumbs and pagination.</p>
+    <div class="demo" data-demo="sidebar">
+      <h3>Sidebar</h3>
+      <div class="demo__stage sketch-box">
+        <nav class="sketch-nav" aria-label="Sections" style="width:min(100%,220px)">
+          <a class="sketch-nav__item" href="#" aria-current="page"><svg class="sketch-icon" aria-hidden="true"><use href="#i-home"/></svg>Overview</a>
+          <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-bulb"/></svg>Principles</a>
+          <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-puzzle"/></svg>Components</a>
+          <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-hand"/></svg>Interactions</a>
+        </nav>
+      </div>
+    </div>
+    <div class="demo" data-demo="breadcrumb-and-pagination">
+      <h3>Breadcrumb and pagination</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-stack" style="--gap:20px">
+          <nav class="sketch-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Home</a></li><li><a href="#">Library</a></li><li aria-current="page">Data</li></ol></nav>
+          <nav class="sketch-pagination" aria-label="Pages"><a href="#" aria-label="Previous page">‹</a><a href="#">1</a><a href="#" aria-current="page">2</a><a href="#">3</a><span>…</span><a href="#">10</a><a href="#" aria-label="Next page">›</a></nav>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="table" data-component="table" aria-labelledby="h-table">
+    <h2 id="h-table">Table</h2>
+    <p>Rows of records.</p>
+    <div class="demo" data-demo="table">
+      <h3>Table</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-table-wrap" style="width:100%"><table class="sketch-table"><thead><tr><th><input type="checkbox" class="sketch-checkbox" aria-label="Select all"></th><th>Name</th><th>Status</th></tr></thead><tbody>
+          <tr><td><input type="checkbox" class="sketch-checkbox" aria-label="Select File A"></td><td>File A</td><td><span class="sketch-badge sketch-badge--updated">Active</span></td></tr>
+          <tr><td><input type="checkbox" class="sketch-checkbox" checked aria-label="Select File B"></td><td>File B</td><td><span class="sketch-badge sketch-badge--beta">Draft</span></td></tr>
+          <tr><td><input type="checkbox" class="sketch-checkbox" aria-label="Select File C"></td><td>File C</td><td><span class="sketch-badge">Archived</span></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="dialog" data-component="dialog" aria-labelledby="h-dialog">
+    <h2 id="h-dialog">Dialog</h2>
+    <p>A focused decision. Press the button to open it again.</p>
+    <div class="demo" data-demo="dialog" data-min-height="420" data-open-dialog>
+      <h3>Dialog</h3>
+      <div class="demo__stage sketch-box">
+        <button class="sketch-btn sketch-btn--destructive" type="button" data-sketch-open="#s-dialog">Delete</button>
+        <dialog class="sketch-dialog" id="s-dialog" aria-labelledby="s-dialog-title">
+          <div class="sketch-dialog__mark">!</div>
+          <h2 class="sketch-dialog__title" id="s-dialog-title">Confirm deletion?</h2>
+          <p class="sketch-dialog__body">“Q3 research notes” will be removed. This action cannot be undone.</p>
+          <div class="sketch-dialog__actions"><button class="sketch-btn" type="button" data-sketch-close>Cancel</button><button class="sketch-btn sketch-btn--destructive" type="button" data-sketch-close>Delete</button></div>
+        </dialog>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tooltip" data-component="tooltip" aria-labelledby="h-tooltip">
+    <h2 id="h-tooltip">Tooltip</h2>
+    <p>A short hint on hover or focus.</p>
+    <div class="demo" data-demo="tooltip-and-popover">
+      <h3>Tooltip and popover</h3>
+      <div class="demo__stage sketch-box">
+        <span class="sketch-tooltip" data-tip="Saved to your library"><button class="sketch-btn" type="button">Save</button></span>
+        <span class="sketch-tip">Tooltip</span>
+        <span class="sketch-popover">Popover content</span>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script src="js/sketch.js"></script>
+<script src="../site/smooth-scroll.js" defer></script>
+</body>
+</html>

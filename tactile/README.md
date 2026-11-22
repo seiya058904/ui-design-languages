@@ -2,7 +2,7 @@
 
 Warm sand neumorphism with a deep teal accent: one material, four states — base, raised, inset, pressed — and five elevation levels. A cool **stone** tone is one attribute away. Plain CSS, design tokens and copy-paste HTML; no build step, no dependencies.
 
-**Live:** [Styleguide](https://seiya058904.github.io/ui-design-languages/tactile/) · [Home app example](https://seiya058904.github.io/ui-design-languages/tactile/examples/home.html)
+**Live:** [Styleguide](https://seiya058904.github.io/ui-design-languages/tactile/) · [Home app example](https://seiya058904.github.io/ui-design-languages/tactile/examples/home.html) · [Components](https://seiya058904.github.io/ui-design-languages/tactile/components.html)
 
 | Light | Dark |
 | --- | --- |

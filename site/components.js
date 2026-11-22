@@ -1,9 +1,9 @@
 /* Components browser (site chrome, not part of any pack).
-   Every entry is a specimen from a language's own styleguide. The preview is that styleguide page,
-   loaded in an iframe and cropped to the specimen, so it renders with the language's real CSS, JS,
-   fonts and background, and stays interactive. The code is the specimen's markup read from the
-   styleguide source file (the same file users copy), so preview and code cannot drift.
-   Specimens are found with the selector the styleguide already gives site/code-view.js. */
+   Source of truth: each pack's own catalog page, <pack>/components.html — real components grouped
+   by <section data-component>, each with demos (<div data-demo>) whose .demo__stage holds the live
+   markup. Every demo is rendered in its own frame (site/demo.html) with the pack's CSS, fonts, icons
+   and JS at natural size, so what you see is the component itself, interactive. The code shown is
+   the stage markup from that same file. */
 (function () {
   var PACKS = [
     { id: "clay", name: "Clay", dot: "#A8E6CF", font: "font-family:Inter,sans-serif;font-weight:700;letter-spacing:-0.045em" },
@@ -12,35 +12,15 @@
     { id: "tactile", name: "Tactile", dot: "#2C8C8F", font: "font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;letter-spacing:-0.04em" },
     { id: "sketch", name: "Sketch", dot: "#A9C7EC", font: "font-family:Itim,sans-serif;font-weight:400;letter-spacing:0" }
   ];
-  /* Loose categories so "the same idea" can be found across languages whose sections are named differently. */
-  var CATS = [
-    /colou?r|palette|swatch|token|foundation/i,
-    /typograph|type scale|token|foundation/i,
-    /button|control|component/i,
-    /input|field|form|search|control|component/i,
-    /tab|segment/i,
-    /toggle|checkbox|selection|switch|radio|control|component/i,
-    /progress|ring|step|slider/i,
-    /alert|notification|toast|feedback|dialog|banner/i,
-    /card|profile|data/i,
-    /nav|sidebar|pagination|breadcrumb/i,
-    /spacing|radius|elevation|layer|shadow|foundation/i,
-    /chip|badge|tag|avatar/i
-  ];
-
   var $ = function (s, r) { return (r || document).querySelector(s); };
-  var packsEl = $("[data-packs]"), listEl = $("[data-list]"), frame = $("[data-frame]"), viewBox = $("[data-view-box]"), stage = $("[data-stage]");
-  var codeBox = $("[data-code]"), codeText = $("[data-code-text]");
-  var sources = {};      // id -> Promise<{ selector, skip, items: [{ title, slug, html, anchor }] }>
-  var state = { pack: null, slug: null, view: "preview", layout: "auto", opts: {} };
-  var minis = {};        // id -> { link, box, iframe }
+  var packsEl = $("[data-packs]"), listEl = $("[data-list]"), demosEl = $("[data-demos]"), othersEl = $("[data-others]"), search = $("[data-search]");
+  var state = { pack: null, comp: null, layout: "desktop", opts: {}, item: null };
+  var catalogs = {};   // id -> Promise<{ items: [{ id, title, summary, demos: [{ id, label, html }] }] }>
+  var frames = [];     // { el, pack }
 
-  /* ---------- source parsing ---------- */
-  function clean(node, skip) {
-    node.querySelectorAll("[data-code-view], code-view-toggle, code-view-panel").forEach(function (n) { n.remove(); });
-    if (skip) node.querySelectorAll(skip).forEach(function (n) { n.remove(); });
-    return node;
-  }
+  function packOf(id) { return PACKS.filter(function (p) { return p.id === id; })[0]; }
+
+  /* ---------- catalog parsing ---------- */
   function dedent(html) {
     var lines = html.replace(/\t/g, "  ").split("\n");
     while (lines.length && !lines[0].trim()) lines.shift();
@@ -48,87 +28,30 @@
     var min = Infinity;
     lines.forEach(function (l) { if (l.trim()) min = Math.min(min, l.match(/^ */)[0].length); });
     if (!isFinite(min)) min = 0;
-    return lines.map(function (l) { return l.slice(min); }).join("\n").replace(/\n{3,}/g, "\n\n");
-  }
-  function titleOf(el, skip, toggleIn) {
-    var t = (toggleIn && el.querySelector(toggleIn)) || (skip && el.querySelector(skip));
-    if (!t) return "Untitled";
-    t = t.cloneNode(true);
-    t.querySelectorAll("small, span").forEach(function (n) { n.remove(); });
-    return t.textContent.replace(/\s+/g, " ").replace(/^\d+[.)]?\s*/, "").trim() || "Untitled";
+    return lines.map(function (l) { return l.slice(min); }).join("\n");
   }
   function load(id) {
-    if (sources[id]) return sources[id];
-    sources[id] = fetch(id + "/index.html").then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (text) {
+    if (catalogs[id]) return catalogs[id];
+    catalogs[id] = fetch(id + "/components.html").then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (text) {
       var doc = new DOMParser().parseFromString(text, "text/html");
-      var script = doc.querySelector("script[data-selector]");
-      var selector = script.getAttribute("data-selector"), skip = script.getAttribute("data-skip") || "", toggleIn = script.getAttribute("data-toggle-in") || "";
-      var seen = {};
-      var items = Array.prototype.map.call(doc.querySelectorAll(selector), function (el, i) {
-        var title = titleOf(el, skip, toggleIn);
-        var slug = title.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "item";
-        seen[slug] = (seen[slug] || 0) + 1;
-        if (seen[slug] > 1) slug += "-" + seen[slug];
-        var idEl = el.id ? el : el.querySelector("[id]");
-        return { index: i, title: title, slug: slug, anchor: idEl ? idEl.id : "", html: dedent(clean(el.cloneNode(true), skip).innerHTML) };
+      var items = Array.prototype.map.call(doc.querySelectorAll("[data-component]"), function (sec) {
+        var h = sec.querySelector("h2"), p = sec.querySelector(":scope > p");
+        return {
+          id: sec.getAttribute("data-component"),
+          title: h ? h.textContent.trim() : sec.getAttribute("data-component"),
+          summary: p ? p.textContent.trim() : "",
+          demos: Array.prototype.map.call(sec.querySelectorAll("[data-demo]"), function (dm) {
+            var label = dm.querySelector("h3");
+            return { id: dm.getAttribute("data-demo"), label: label ? label.textContent.trim() : "", html: dedent(dm.querySelector(".demo__stage").innerHTML) };
+          })
+        };
       });
-      return { selector: selector, items: items };
+      return { items: items };
     });
-    return sources[id];
+    return catalogs[id];
   }
 
-  /* ---------- cropping a live styleguide to one specimen ---------- */
-  function prepare(iframe) {
-    var doc = iframe.contentDocument;
-    if (!doc || !doc.head) return null;
-    if (!doc.getElementById("cmp-isolate")) {
-      var st = doc.createElement("style");
-      st.id = "cmp-isolate";
-      st.textContent = "code-view-toggle,code-view-panel{display:none!important}html,body{overflow:hidden!important}";
-      doc.head.appendChild(st);
-    }
-    return doc;
-  }
-  function crop(box, iframe, selector, index, maxW, maxScale) {
-    var doc = prepare(iframe);
-    if (!doc) return;
-    var el = doc.querySelectorAll(selector)[index];
-    if (!el) return;
-    var sh = Math.min(doc.documentElement.scrollHeight, 20000); // cap: never chase a growing page
-    if (Math.abs((parseFloat(iframe.style.height) || 0) - sh) > 1) iframe.style.height = sh + "px";
-    var r = el.getBoundingClientRect();
-    var pad = 14;
-    var x = Math.max(0, r.left - pad), y = Math.max(0, r.top - pad);
-    // Some specimens let content spill past their box (a row of states); crop to what is drawn.
-    var cw = Math.max(r.width, el.scrollWidth), ch = Math.max(r.height, el.scrollHeight);
-    var w = Math.min(cw + pad * 2, iframe.offsetWidth - x), h = ch + pad * 2;
-    var s = Math.min(maxScale, maxW / w);
-    iframe.style.transform = "scale(" + s + ") translate(" + -x + "px," + -y + "px)";
-    box.style.width = Math.round(w * s) + "px";
-    box.style.height = Math.round(h * s) + "px";
-  }
-  function watch(iframe, recrop) {
-    iframe.addEventListener("load", function () {
-      var win = iframe.contentWindow;
-      recrop();
-      try { win.document.fonts.ready.then(recrop); } catch (e) { /* older engines */ }
-      setTimeout(recrop, 600);
-      setTimeout(recrop, 1600);
-      if (win.ResizeObserver) {
-        var t = 0;
-        new win.ResizeObserver(function () { clearTimeout(t); t = setTimeout(recrop, 60); }).observe(win.document.body);
-      }
-    });
-  }
-
-  /* Layout width for the live page: desktop (1280) or phone (390); "auto" picks by the stage width. */
-  function layoutWidth() {
-    if (state.layout === "phone") return 390;
-    if (state.layout === "desktop") return 1280;
-    return stage.clientWidth < 640 ? 390 : 1280;
-  }
-
-  /* ---------- preview options: theme and variants, read from packs.json ---------- */
+  /* ---------- preview options (theme + variants) from packs.json ---------- */
   var registry = fetch("packs.json").then(function (r) { return r.json(); }).then(function (d) {
     var map = {};
     (d.packs || d).forEach(function (p) {
@@ -145,21 +68,43 @@
     });
     return map;
   }).catch(function () { return {}; });
-
   function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-  function optValue(o) { var v = (state.opts[state.pack] || {})[o.attr]; return v || o.def; }
-  function applyOpts() {
-    registry.then(function (map) {
-      var doc = frame.contentDocument;
-      if (!doc || frame.getAttribute("data-src") !== state.pack + "/index.html") return;
-      (map[state.pack] || []).forEach(function (o) {
-        var v = optValue(o);
-        if (v === o.def) doc.documentElement.removeAttribute("data-" + o.attr);
-        else doc.documentElement.setAttribute("data-" + o.attr, v);
-      });
-      setTimeout(mainRecrop, 40);
-      setTimeout(mainRecrop, 420);
+
+  /* Attributes for a pack's frames: the theme applies to every pack that has one; variants only to the current pack. */
+  function attrsFor(packId, map) {
+    var out = {};
+    (map[packId] || []).forEach(function (o) {
+      var chosen = o.attr === "theme" ? state.opts.theme : packId === state.pack ? (state.opts[packId] || {})[o.attr] : null;
+      out[o.attr] = chosen && chosen !== o.def ? chosen : "";
     });
+    return out;
+  }
+  function pushAttrs() {
+    registry.then(function (map) {
+      frames.forEach(function (f) { if (f.el.contentWindow) f.el.contentWindow.postMessage({ type: "demo-attrs", attrs: attrsFor(f.pack, map) }, "*"); });
+    });
+  }
+  function optValue(o) { return (o.attr === "theme" ? state.opts.theme : (state.opts[state.pack] || {})[o.attr]) || o.def; }
+  function setOpt(o, v) {
+    if (o.attr === "theme") state.opts.theme = v;
+    else (state.opts[state.pack] = state.opts[state.pack] || {})[o.attr] = v;
+    renderOpts();
+    pushAttrs();
+  }
+  function seg(label, pairs, isOn, onPick) {
+    var g = document.createElement("div");
+    g.className = "seg";
+    g.setAttribute("role", "group");
+    g.setAttribute("aria-label", label);
+    pairs.forEach(function (pair) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = pair[1];
+      b.setAttribute("aria-pressed", String(isOn(pair[0])));
+      b.addEventListener("click", function () { onPick(pair[0]); });
+      g.appendChild(b);
+    });
+    return g;
   }
   function renderOpts() {
     var host = $("[data-opts]");
@@ -167,198 +112,52 @@
       host.innerHTML = "";
       (map[state.pack] || []).forEach(function (o) {
         if (o.attr === "theme") {
-          var seg = document.createElement("div");
-          seg.className = "seg";
-          seg.setAttribute("role", "group");
-          seg.setAttribute("aria-label", "Theme");
-          o.values.forEach(function (v) {
-            var b = document.createElement("button");
-            b.type = "button";
-            b.textContent = cap(v);
-            b.setAttribute("aria-pressed", String(optValue(o) === v));
-            b.addEventListener("click", function () { setOpt(o.attr, v); });
-            seg.appendChild(b);
-          });
-          host.appendChild(seg);
-        } else {
-          var label = document.createElement("label");
-          label.className = "opt";
-          label.innerHTML = "<span></span><select></select>";
-          label.querySelector("span").textContent = cap(o.attr);
-          var sel = label.querySelector("select");
-          o.values.forEach(function (v) { var op = document.createElement("option"); op.value = v; op.textContent = cap(v); sel.appendChild(op); });
-          sel.value = optValue(o);
-          sel.addEventListener("change", function () { setOpt(o.attr, sel.value); });
-          host.appendChild(label);
+          host.appendChild(seg("Theme", o.values.map(function (v) { return [v, cap(v)]; }), function (v) { return optValue(o) === v; }, function (v) { setOpt(o, v); }));
+          return;
         }
+        var label = document.createElement("label");
+        label.className = "opt";
+        label.innerHTML = "<span></span><select></select>";
+        label.querySelector("span").textContent = cap(o.attr);
+        var sel = label.querySelector("select");
+        o.values.forEach(function (v) { var op = document.createElement("option"); op.value = v; op.textContent = cap(v); sel.appendChild(op); });
+        sel.value = optValue(o);
+        sel.addEventListener("change", function () { setOpt(o, sel.value); });
+        host.appendChild(label);
       });
-      var lay = document.createElement("div");
-      lay.className = "seg";
-      lay.setAttribute("role", "group");
-      lay.setAttribute("aria-label", "Layout");
-      [["desktop", "Desktop"], ["phone", "Phone"]].forEach(function (pair) {
-        var b = document.createElement("button");
-        b.type = "button";
-        b.textContent = pair[1];
-        b.setAttribute("aria-pressed", String((layoutWidth() === 390) === (pair[0] === "phone")));
-        b.addEventListener("click", function () { state.layout = pair[0]; frame.style.width = layoutWidth() + "px"; renderOpts(); setTimeout(mainRecrop, 60); setTimeout(mainRecrop, 400); });
-        lay.appendChild(b);
-      });
-      host.appendChild(lay);
+      host.appendChild(seg("Layout", [["desktop", "Desktop"], ["phone", "Phone"]], function (v) { return state.layout === v; }, function (v) {
+        state.layout = v;
+        demosEl.classList.toggle("is-phone", v === "phone");
+        renderOpts();
+      }));
     });
-  }
-  function setOpt(attr, v) {
-    (state.opts[state.pack] = state.opts[state.pack] || {})[attr] = v;
-    renderOpts();
-    applyOpts();
   }
 
-  var mainRecrop = function () {};
-  function showPreview(item, data) {
-    var want = state.pack + "/index.html";
-    var lw = layoutWidth();
-    frame.style.width = lw + "px";
-    mainRecrop = function () { crop(viewBox, frame, data.selector, item.index, stage.clientWidth - (stage.clientWidth < 640 ? 16 : 56), 1); };
-    if (frame.getAttribute("data-src") !== want) {
-      frame.setAttribute("data-src", want);
-      viewBox.classList.add("is-loading");
-      frame.onload = function () { viewBox.classList.remove("is-loading"); };
-      frame.src = want;
-    } else {
-      mainRecrop();
-    }
-  }
-  watch(frame, function () { mainRecrop(); });
-  frame.addEventListener("load", applyOpts);
-  if ("ResizeObserver" in window) {
-    var lastW = 0;
-    new ResizeObserver(function () {
-      if (Math.abs(stage.clientWidth - lastW) < 2) return;
-      lastW = stage.clientWidth;
-      var lw = layoutWidth();
-      if (frame.style.width !== lw + "px") frame.style.width = lw + "px";
-      setTimeout(mainRecrop, 30);
-    }).observe(stage);
-  }
-
-  /* ---------- related minis ---------- */
-  function related(title) {
-    var cats = CATS.filter(function (re) { return re.test(title); });
-    var host = $("[data-minis]");
-    PACKS.forEach(function (p) {
-      var m = minis[p.id];
-      if (p.id === state.pack) { if (m) m.link.hidden = true; return; }
-      load(p.id).then(function (data) {
-        var match = null;
-        cats.some(function (re) { return data.items.some(function (it) { if (re.test(it.title)) { match = it; return true; } return false; }); });
-        if (!m) {
-          var link = document.createElement("a");
-          link.className = "mini";
-          link.innerHTML = '<span class="mini__view"><iframe tabindex="-1" aria-hidden="true" loading="lazy"></iframe></span><span class="mini__cap"><b style="' + p.font + '"></b><span></span></span>';
-          host.appendChild(link);
-          m = minis[p.id] = { link: link, box: link.querySelector(".mini__view"), iframe: link.querySelector("iframe"), recrop: function () {} };
-          m.link.querySelector("b").textContent = p.name;
-          m.iframe.style.width = "1280px";
-          watch(m.iframe, function () { m.recrop(); });
-          m.iframe.src = p.id + "/index.html";
-        }
-        if (!match) { m.link.hidden = true; return; }
-        m.link.hidden = false;
-        m.link.href = "#/" + p.id + "/" + match.slug;
-        m.link.setAttribute("aria-label", p.name + ": " + match.title);
-        m.link.querySelector(".mini__cap span").textContent = match.title;
-        m.recrop = function () { crop(m.box, m.iframe, data.selector, match.index, m.link.clientWidth - 2, 0.42); };
-        m.recrop();
-        $(".cmp__related").hidden = false;
-      });
+  /* ---------- frames ---------- */
+  function makeFrame(packId, compId, demoId, title) {
+    var f = document.createElement("iframe");
+    f.className = "demo-frame";
+    f.title = title;
+    f.loading = "lazy";
+    registry.then(function (map) {
+      var qs = new URLSearchParams({ p: packId, c: compId, d: demoId });
+      var a = attrsFor(packId, map);
+      Object.keys(a).forEach(function (k) { if (a[k]) qs.set(k, a[k]); });
+      f.src = "site/demo.html?" + qs.toString();
     });
-    $(".cmp__related").hidden = !cats.length;
+    frames.push({ el: f, pack: packId });
+    return f;
   }
-
-  /* ---------- rendering ---------- */
-  function renderPacks() {
-    packsEl.innerHTML = "";
-    PACKS.forEach(function (p) {
-      var a = document.createElement("a");
-      a.className = "lang";
-      a.href = "#/" + p.id;
-      a.innerHTML = '<i style="background:' + p.dot + '"></i><span style="' + p.font + '"></span>';
-      a.querySelector("span").textContent = p.name;
-      if (p.id === state.pack) a.setAttribute("aria-current", "true");
-      packsEl.appendChild(a);
-    });
-  }
-  function renderList(data) {
-    if (search && search.value.trim()) { runSearch(); return; }
-    listEl.innerHTML = "";
-    data.items.forEach(function (it) {
-      var li = document.createElement("li");
-      var a = document.createElement("a");
-      a.href = "#/" + state.pack + "/" + it.slug;
-      a.textContent = it.title;
-      if (it.slug === state.slug) a.setAttribute("aria-current", "page");
-      li.appendChild(a);
-      listEl.appendChild(li);
-    });
-    var cur = listEl.querySelector("[aria-current]");
-    if (cur && cur.scrollIntoView && listEl.scrollHeight > listEl.clientHeight) {
-      var top = cur.offsetTop - listEl.clientHeight / 2;
-      listEl.scrollTop = Math.max(0, top);
-    }
-  }
-  function setPager(el, it) {
-    if (!it) { el.hidden = true; return; }
-    el.hidden = false;
-    el.href = "#/" + state.pack + "/" + it.slug;
-    el.querySelector("span").textContent = it.title;
-  }
-  function render() {
-    var pack = PACKS.filter(function (p) { return p.id === state.pack; })[0];
-    renderPacks();
-    load(pack.id).then(function (data) {
-      var i = 0;
-      data.items.some(function (it, n) { if (it.slug === state.slug) { i = n; return true; } return false; });
-      var item = data.items[i];
-      state.slug = item.slug;
-      renderList(data);
-      $("[data-crumb]").innerHTML = '<span style="' + pack.font + '"></span> · Components';
-      $("[data-crumb] span").textContent = pack.name;
-      $("[data-title]").textContent = item.title;
-      $("[data-sub]").textContent = (i + 1) + " of " + data.items.length + " in the " + pack.name + " styleguide. The markup below is copied straight from " + pack.id + "/index.html.";
-      document.title = item.title + " · " + pack.name + " · UI Design Languages";
-      codeText.textContent = item.html;
-      $("[data-codefile]").textContent = pack.id + "/index.html";
-      var open = $("[data-act=open]");
-      open.href = pack.id + "/index.html" + (item.anchor ? "#" + item.anchor : "");
-      setPager($("[data-prev]"), data.items[i - 1]);
-      setPager($("[data-next]"), data.items[i + 1]);
-      showPreview(item, data);
-      renderOpts();
-      related(item.title);
-      state.item = item;
-    }).catch(function () {
-      $("[data-crumb]").textContent = "Could not load " + pack.id + "/index.html. Open this page over http (GitHub Pages or a local server), not file://.";
-    });
-  }
-  function route() {
-    var parts = location.hash.replace(/^#\/?/, "").split("/");
-    var pack = PACKS.some(function (p) { return p.id === parts[0]; }) ? parts[0] : PACKS[0].id;
-    var changed = pack !== state.pack || parts[1] !== state.slug;
-    state.pack = pack;
-    state.slug = parts[1] || null;
-    if (changed) render();
-  }
-
-  /* ---------- controls ---------- */
-  document.querySelectorAll("[data-view]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      state.view = b.getAttribute("data-view");
-      document.querySelectorAll("[data-view]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-      stage.hidden = state.view !== "preview";
-      codeBox.hidden = state.view !== "code";
-      if (!stage.hidden) setTimeout(mainRecrop, 30);
-    });
+  window.addEventListener("message", function (e) {
+    if (!e.data || e.data.type !== "demo-size") return;
+    frames.forEach(function (f) { if (f.el.contentWindow === e.source) f.el.style.height = Math.max(60, e.data.h) + "px"; });
   });
+  function dropFrames(container) {
+    frames = frames.filter(function (f) { return !container.contains(f.el); });
+    container.innerHTML = "";
+  }
+
+  /* ---------- copy ---------- */
   function copy(btn, text) {
     var label = btn.querySelector("span") || btn, original = label.textContent;
     function done(ok) { label.textContent = ok ? "Copied" : "Copy failed"; btn.classList.toggle("is-copied", ok); setTimeout(function () { label.textContent = original; btn.classList.remove("is-copied"); }, 1500); }
@@ -367,33 +166,132 @@
       var ta = document.createElement("textarea");
       ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
       document.body.appendChild(ta); ta.select();
-      var ok = false; try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      var ok = false; try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
       ta.remove(); done(ok);
     }
   }
-  $("[data-act=copy]").addEventListener("click", function () { if (state.item) copy(this, state.item.html); });
-  $("[data-act=ai]").addEventListener("click", function () {
-    if (!state.item) return;
-    var pack = PACKS.filter(function (p) { return p.id === state.pack; })[0];
-    var root = new URL("./", location.href).href;
-    var text = "Recreate the " + pack.name + " component \"" + state.item.title + "\" from the UI Design Languages library.\n" +
-      "First read " + root + pack.id + "/DESIGN.md and " + root + pack.id + "/AGENTS.md. Link " + root + pack.id + "/css/" + pack.id + ".css (and " + root + pack.id + "/js/" + pack.id + ".js for interactive parts) plus the fonts named in DESIGN.md.\n" +
-      "Use only ." + pack.id + "-* classes and var(--" + pack.id + "-*) tokens; page CSS is for layout only. Reference markup from " + pack.id + "/index.html:\n\n" + state.item.html;
-    copy(this, text);
-  });
+
+  /* ---------- rendering ---------- */
+  function renderPacks() {
+    packsEl.innerHTML = "";
+    PACKS.forEach(function (p) {
+      var a = document.createElement("a");
+      a.className = "lang";
+      a.href = "#/" + p.id + (state.comp ? "/" + state.comp : "");
+      a.innerHTML = '<i style="background:' + p.dot + '"></i><span style="' + p.font + '"></span>';
+      a.querySelector("span").textContent = p.name;
+      if (p.id === state.pack) a.setAttribute("aria-current", "true");
+      packsEl.appendChild(a);
+    });
+  }
+  function renderList(cat) {
+    if (search.value.trim()) { runSearch(); return; }
+    listEl.innerHTML = "";
+    cat.items.forEach(function (it) {
+      var li = document.createElement("li"), a = document.createElement("a");
+      a.href = "#/" + state.pack + "/" + it.id;
+      a.textContent = it.title;
+      if (it.id === state.comp) a.setAttribute("aria-current", "page");
+      li.appendChild(a);
+      listEl.appendChild(li);
+    });
+  }
+  function renderDemos(pack, item) {
+    dropFrames(demosEl);
+    item.demos.forEach(function (dm) {
+      var card = document.createElement("article");
+      card.className = "demo";
+      card.innerHTML =
+        '<header class="demo__head"><h2></h2><div class="seg" role="group" aria-label="View"><button type="button" aria-pressed="true" data-v="preview">Preview</button><button type="button" aria-pressed="false" data-v="code">Code</button></div>' +
+        '<button class="pill pill--sm" type="button" data-copy-demo><span>Copy</span></button></header>' +
+        '<div class="demo__view"></div><pre class="demo__code" hidden><code></code></pre>';
+      card.querySelector("h2").textContent = dm.label;
+      card.querySelector("code").textContent = dm.html;
+      card.querySelector(".demo__view").appendChild(makeFrame(pack.id, item.id, dm.id, pack.name + " " + item.title + ": " + dm.label));
+      card.querySelectorAll("[data-v]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var code = b.getAttribute("data-v") === "code";
+          card.querySelectorAll("[data-v]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+          card.querySelector(".demo__view").hidden = code;
+          card.querySelector(".demo__code").hidden = !code;
+        });
+      });
+      card.querySelector("[data-copy-demo]").addEventListener("click", function () { copy(this, dm.html); });
+      demosEl.appendChild(card);
+    });
+  }
+  function renderOthers(item) {
+    dropFrames(othersEl);
+    $(".cmp__related").hidden = true;
+    PACKS.forEach(function (p) {
+      if (p.id === state.pack) return;
+      var slot = document.createElement("article");
+      slot.className = "other";
+      othersEl.appendChild(slot);
+      load(p.id).then(function (cat) {
+        var match = cat.items.filter(function (it) { return it.id === item.id; })[0];
+        if (!match || !match.demos.length || state.comp !== item.id) { slot.remove(); return; }
+        $(".cmp__related").hidden = false;
+        slot.innerHTML = '<a class="other__head" href="#/' + p.id + "/" + match.id + '"><b style="' + p.font + '"></b><span></span></a><div class="other__view"></div>';
+        slot.querySelector("b").textContent = p.name;
+        slot.querySelector("span").textContent = match.demos[0].label;
+        slot.querySelector(".other__view").appendChild(makeFrame(p.id, match.id, match.demos[0].id, p.name + " " + match.title));
+      }, function () { slot.remove(); });
+    });
+  }
+  function setPager(el, it) {
+    if (!it) { el.hidden = true; return; }
+    el.hidden = false;
+    el.href = "#/" + state.pack + "/" + it.id;
+    el.querySelector("span").textContent = it.title;
+  }
+  function render() {
+    var pack = packOf(state.pack);
+    load(pack.id).then(function (cat) {
+      var i = 0;
+      cat.items.some(function (it, n) { if (it.id === state.comp) { i = n; return true; } return false; });
+      var item = cat.items[i];
+      state.comp = item.id;
+      state.item = item;
+      renderPacks();
+      renderList(cat);
+      $("[data-crumb]").innerHTML = '<span style="' + pack.font + '"></span> · Components';
+      $("[data-crumb] span").textContent = pack.name;
+      $("[data-title]").textContent = item.title;
+      $("[data-sub]").textContent = item.summary + " Live " + pack.name + " components: hover, press and type. Code comes from " + pack.id + "/components.html.";
+      document.title = item.title + " · " + pack.name + " · UI Design Languages";
+      $("[data-act=open]").href = pack.id + "/components.html#" + item.id;
+      setPager($("[data-prev]"), cat.items[i - 1]);
+      setPager($("[data-next]"), cat.items[i + 1]);
+      renderOpts();
+      renderDemos(pack, item);
+      renderOthers(item);
+    }).catch(function () {
+      renderPacks();
+      $("[data-crumb]").textContent = "Could not load " + pack.id + "/components.html. Open this page over http (GitHub Pages or a local server), not file://.";
+    });
+  }
+  function route() {
+    var parts = location.hash.replace(/^#\/?/, "").split("/");
+    var pack = packOf(parts[0]) ? parts[0] : PACKS[0].id;
+    var comp = parts[1] || state.comp; // switching language keeps the component when it exists there
+    if (pack === state.pack && comp === state.comp) return;
+    state.pack = pack;
+    state.comp = comp;
+    render();
+  }
 
   /* ---------- search across every language ---------- */
-  var search = $("[data-search]");
   function runSearch() {
     var q = search.value.trim().toLowerCase();
     if (!q) { load(state.pack).then(renderList); return; }
-    Promise.all(PACKS.map(function (p) { return load(p.id).then(function (d) { return { pack: p, items: d.items }; }, function () { return { pack: p, items: [] }; }); })).then(function (groups) {
+    Promise.all(PACKS.map(function (p) { return load(p.id).then(function (c) { return { pack: p, items: c.items }; }, function () { return { pack: p, items: [] }; }); })).then(function (groups) {
       if (search.value.trim().toLowerCase() !== q) return;
       listEl.innerHTML = "";
       var total = 0;
       groups.forEach(function (g) {
-        var hits = g.items.filter(function (it) { return it.title.toLowerCase().indexOf(q) !== -1; });
-        var inCode = g.items.filter(function (it) { return hits.indexOf(it) === -1 && it.html.toLowerCase().indexOf(q) !== -1; });
+        var hits = g.items.filter(function (it) { return (it.title + " " + it.summary).toLowerCase().indexOf(q) !== -1; });
+        var inCode = g.items.filter(function (it) { return hits.indexOf(it) === -1 && it.demos.some(function (d) { return d.html.toLowerCase().indexOf(q) !== -1; }); });
         hits = hits.concat(inCode);
         if (!hits.length) return;
         var head = document.createElement("li");
@@ -402,18 +300,22 @@
         head.firstChild.textContent = g.pack.name;
         listEl.appendChild(head);
         hits.forEach(function (it) {
-          var li = document.createElement("li");
-          var a = document.createElement("a");
-          a.href = "#/" + g.pack.id + "/" + it.slug;
+          var li = document.createElement("li"), a = document.createElement("a");
+          a.href = "#/" + g.pack.id + "/" + it.id;
           a.textContent = it.title;
           if (inCode.indexOf(it) !== -1) { var m = document.createElement("small"); m.textContent = "in markup"; a.appendChild(m); }
-          if (g.pack.id === state.pack && it.slug === state.slug) a.setAttribute("aria-current", "page");
+          if (g.pack.id === state.pack && it.id === state.comp) a.setAttribute("aria-current", "page");
           li.appendChild(a);
           listEl.appendChild(li);
           total++;
         });
       });
-      if (!total) listEl.innerHTML = '<li class="cmp__empty">Nothing matches "' + q.replace(/[<&"]/g, "") + '". Try a component name such as button, toggle or card.</li>';
+      if (!total) {
+        var li = document.createElement("li");
+        li.className = "cmp__empty";
+        li.textContent = "Nothing matches “" + q + "”. Try button, toggle, card or table.";
+        listEl.appendChild(li);
+      }
     });
   }
   search.addEventListener("input", runSearch);
@@ -424,7 +326,7 @@
     if (e.key === "Escape") { search.value = ""; runSearch(); search.blur(); }
   });
 
-  /* ---------- keyboard: ←/→ previous / next, "/" search ---------- */
+  /* ---------- keyboard: left/right previous / next, "/" search ---------- */
   document.addEventListener("keydown", function (e) {
     var t = e.target;
     if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
@@ -432,6 +334,16 @@
     if (e.key === "/") { search.focus(); search.select(); e.preventDefault(); return; }
     var link = e.key === "ArrowLeft" ? $("[data-prev]") : e.key === "ArrowRight" ? $("[data-next]") : null;
     if (link && !link.hidden) { location.hash = link.getAttribute("href"); e.preventDefault(); }
+  });
+
+  $("[data-act=ai]").addEventListener("click", function () {
+    if (!state.item) return;
+    var pack = packOf(state.pack), root = new URL("./", location.href).href;
+    var text = "Build with the " + pack.name + " design language from the UI Design Languages library: the " + state.item.title + " component.\n" +
+      "First read " + root + pack.id + "/DESIGN.md and " + root + pack.id + "/AGENTS.md. Link " + root + pack.id + "/css/" + pack.id + ".css (and " + root + pack.id + "/js/" + pack.id + ".js for interactive parts) plus the fonts named in DESIGN.md.\n" +
+      "Use only ." + pack.id + "-* classes and var(--" + pack.id + "-*) tokens; page CSS is for layout only. Reference markup from " + pack.id + "/components.html:\n\n" +
+      state.item.demos.map(function (d) { return "<!-- " + d.label + " -->\n" + d.html; }).join("\n\n");
+    copy(this, text);
   });
 
   window.addEventListener("hashchange", route);

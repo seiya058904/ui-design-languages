@@ -23,7 +23,7 @@ A library of complete UI design languages ("Style Packs"). Each one is shown as 
 <script src="https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/atelier/js/atelier.js"></script>
 ```
 
-Or copy the pack folder into your project. Every styleguide has a **`</>`** button in each component's title row showing the exact HTML from the delivered file, and [components.html](https://seiya058904.github.io/ui-design-languages/components.html) lists every component of every pack with a live preview, the markup, and a "Copy for AI" prompt. For AI assistants, hand over the pack's `DESIGN.md` and `AGENTS.md`.
+Or copy the pack folder into your project. Every styleguide has a **`</>`** button in each component's title row showing the exact HTML from the delivered file, and [components.html](https://seiya058904.github.io/ui-design-languages/components.html) renders every component of every pack live — variants, sizes and states, each with its markup and a "Copy for AI" prompt. Each pack also has its own catalog page, `<pack>/components.html`. For AI assistants, hand over the pack's `DESIGN.md` and `AGENTS.md`.
 
 ## Repository layout
 

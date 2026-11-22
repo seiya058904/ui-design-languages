@@ -39,7 +39,8 @@
         "examples": [
           "clay/examples/dashboard.html",
           "clay/examples/landing.html"
-        ]
+        ],
+        "components": "clay/components.html"
       },
       "docs": {
         "design": "clay/DESIGN.md",
@@ -90,7 +91,8 @@
         "styleguide": "lilac/index.html",
         "examples": [
           "lilac/examples/app.html"
-        ]
+        ],
+        "components": "lilac/components.html"
       },
       "docs": {
         "design": "lilac/DESIGN.md",
@@ -159,7 +161,8 @@
         "styleguide": "atelier/index.html",
         "examples": [
           "atelier/examples/workspace.html"
-        ]
+        ],
+        "components": "atelier/components.html"
       },
       "docs": {
         "design": "atelier/DESIGN.md",
@@ -205,7 +208,8 @@
         "styleguide": "tactile/index.html",
         "examples": [
           "tactile/examples/home.html"
-        ]
+        ],
+        "components": "tactile/components.html"
       },
       "docs": {
         "design": "tactile/DESIGN.md",
@@ -243,7 +247,8 @@
         "styleguide": "sketch/index.html",
         "examples": [
           "sketch/examples/settings.html"
-        ]
+        ],
+        "components": "sketch/components.html"
       },
       "docs": {
         "design": "sketch/DESIGN.md",

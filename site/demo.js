@@ -16,6 +16,9 @@
     parent.postMessage({ type: "demo-size", h: h }, "*");
   }
 
+  // Placeholder links in demos (href="#") would jump this frame to its top.
+  document.addEventListener("click", function (e) { var a = e.target.closest && e.target.closest('a[href="#"]'); if (a) e.preventDefault(); });
+
   fetch(base).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (text) {
     var doc = new DOMParser().parseFromString(text, "text/html");
     doc.head.querySelectorAll('link[rel="stylesheet"], link[rel="preconnect"], style').forEach(function (n) {
@@ -43,6 +46,9 @@
     if (src) {
       var s = document.createElement("script");
       s.src = new URL(src.getAttribute("src"), base).href;
+      // Some packs restore a saved appearance onto <html> when their script loads (Atelier does);
+      // the theme / variant this frame was asked for wins.
+      s.onload = function () { ATTRS.forEach(function (a) { if (q.get(a)) root.setAttribute("data-" + a, q.get(a)); }); };
       document.body.appendChild(s);
     }
     if ("ResizeObserver" in window) new ResizeObserver(report).observe(document.body);

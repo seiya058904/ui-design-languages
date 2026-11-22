@@ -53,10 +53,21 @@
     bar.querySelectorAll("button").forEach(function (b) { b.addEventListener("click", function () { openDrawer(packId, compId, demoId); }); });
     inner.appendChild(bar);
     card.appendChild(inner);
+    /* Spotlight: one small element moved by transform, once per frame, so the pointer never
+       restyles the demo itself. */
+    var stage = inner.firstChild, spot = document.createElement("span"), dot = document.createElement("i");
+    spot.className = "wcard__spot"; spot.setAttribute("aria-hidden", "true");
+    spot.appendChild(dot); stage.appendChild(spot);
+    var at = null, queued = false;
     card.addEventListener("pointermove", function (e) {
-      var r = card.getBoundingClientRect();
-      card.style.setProperty("--mx", e.clientX - r.left + "px");
-      card.style.setProperty("--my", e.clientY - r.top + "px");
+      at = e;
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () {
+        queued = false;
+        var r = stage.getBoundingClientRect();
+        dot.style.transform = "translate3d(" + (at.clientX - r.left).toFixed(0) + "px," + (at.clientY - r.top).toFixed(0) + "px,0)";
+      });
     });
     return { el: card, pack: packId, comp: compId, demo: demoId };
   }
@@ -151,7 +162,7 @@
     layout();
     var n = cards.filter(visible).length;
     var p = W.byId[state.style];
-    note.textContent = p ? n + " " + p.name + " components, on " + p.name + "'s own canvas. Every one is the real markup from " + p.id + "/components.html." : n + " components from five languages, all live.";
+    note.textContent = p ? n + " " + p.name + " components, on " + p.name + "'s own canvas. Open any of them for its complete source." : n + " components from five languages, all live. Open any card for its complete source.";
   }
   var raf = 0;
   function relayout() { if (raf) return; raf = requestAnimationFrame(function () { raf = 0; layout(); glide(); }); }
@@ -186,9 +197,63 @@
       ta.remove(); done(ok);
     }
   }
+  /* Source panel: HTML / CSS / JS / single file for the demo on show (site/source.js builds it). */
+  var S = window.UISource, src = { data: null, tab: "html", key: "" };
+  var srcTabs = $("[data-src-tabs]"), srcCode = $("[data-src-code]"), srcMeta = $("[data-src-meta]"), srcPre = $(".src__code");
+  function renderSource() {
+    var d = src.data;
+    srcTabs.querySelectorAll("[data-src]").forEach(function (b) {
+      var t = b.getAttribute("data-src"), on = t === src.tab;
+      b.setAttribute("aria-selected", String(on));
+      b.tabIndex = on ? 0 : -1;
+      b.disabled = !!d && t === "js" && !d.js;
+      b.title = b.disabled ? "This demo needs no JavaScript" : "";
+    });
+    if (!d) { srcCode.textContent = "Collecting the source…"; srcMeta.textContent = ""; return; }
+    var i = d.info, t = src.tab;
+    srcCode.innerHTML = S.highlight(d[t] || "", t);
+    srcPre.scrollTop = 0; srcPre.scrollLeft = 0;
+    srcMeta.textContent = t === "html" ? "The demo markup from " + i.htmlFrom + " · " + i.lines.html + " lines"
+      : t === "css" ? i.tokenCount + " tokens, the base layer and the rules from " + i.cssFrom.join(", ") + " · " + i.lines.css + " lines · " + i.size.css
+      : t === "js" ? i.jsFrom + ", the behaviour this markup relies on · " + i.lines.js + " lines · " + i.size.js
+      : "Runs on its own: tokens, base, component CSS" + (d.js ? ", script" : "") + " and icons, all inlined · " + i.size.file;
+  }
+  function setSrcTab(t) {
+    if (src.data && t === "js" && !src.data.js) return;
+    src.tab = t;
+    renderSource();
+  }
+  srcTabs.addEventListener("click", function (e) { var b = e.target.closest("[data-src]"); if (b && !b.disabled) setSrcTab(b.getAttribute("data-src")); });
+  srcTabs.addEventListener("keydown", function (e) {
+    var list = Array.prototype.filter.call(srcTabs.querySelectorAll("[data-src]"), function (b) { return !b.disabled; });
+    var i = list.indexOf(document.activeElement), n = i;
+    if (e.key === "ArrowRight") n = (i + 1) % list.length;
+    else if (e.key === "ArrowLeft") n = (i - 1 + list.length) % list.length;
+    else if (e.key === "Home") n = 0;
+    else if (e.key === "End") n = list.length - 1;
+    else return;
+    e.preventDefault();
+    list[n].focus();
+    setSrcTab(list[n].getAttribute("data-src"));
+  });
+  function loadSource(packId, comp, dm) {
+    var key = packId + "/" + comp.id + "/" + dm.id;
+    src.key = key; src.data = null;
+    if (src.tab === "js") src.tab = "html";
+    renderSource();
+    S.build(packId, comp.id, dm.id).then(function (d) {
+      if (src.key !== key) return;
+      src.data = d;
+      if (src.tab === "js" && !d.js) src.tab = "html";
+      renderSource();
+    }, function () {
+      if (src.key !== key) return;
+      srcCode.textContent = "The source files could not be loaded. Open this page over http (GitHub Pages or a local server).";
+    });
+  }
+
   function showDemo(packId, comp, dm) {
     current = { pack: packId, comp: comp, demo: dm };
-    $("[data-dr-code]").textContent = dm.html;
     $("[data-dr-tabs]").querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-demo") === dm.id)); });
     var view = $("[data-dr-view]");
     view.innerHTML = "";
@@ -199,6 +264,7 @@
     if (state.theme === "dark" && packId !== "sketch") qs.set("theme", "dark");
     frame.src = "site/demo.html?" + qs.toString();
     view.appendChild(frame);
+    loadSource(packId, comp, dm);
   }
   function openDrawer(packId, compId, demoId, fromHash) {
     var hit = W.demo(packId, compId, demoId);
@@ -208,8 +274,7 @@
     $("[data-dr-tag]").innerHTML = '<i style="background:' + p.dot + '"></i><b style="' + p.font + '"></b>';
     $("[data-dr-tag] b").textContent = p.name;
     $("[data-dr-title]").textContent = comp.title;
-    $("[data-dr-sub]").textContent = comp.summary + " Every demo is live; the code is copied from " + p.id + "/components.html.";
-    $("[data-dr-file]").textContent = p.id + "/components.html";
+    $("[data-dr-sub]").textContent = comp.summary;
     $("[data-dr-open]").href = p.id + "/components.html#" + comp.id;
     var tabs = $("[data-dr-tabs]");
     tabs.innerHTML = "";
@@ -233,7 +298,7 @@
     if (drawer.hidden) return;
     drawer.classList.remove("is-open");
     document.documentElement.classList.remove("has-drawer");
-    setTimeout(function () { drawer.hidden = true; $("[data-dr-view]").innerHTML = ""; frame = null; }, 380);
+    setTimeout(function () { drawer.hidden = true; $("[data-dr-view]").innerHTML = ""; frame = null; }, 420);
     history.replaceState(null, "", state.style === "all" ? location.pathname + location.search : "#" + state.style);
     if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
   }
@@ -243,14 +308,26 @@
     if (!frame || e.source !== frame.contentWindow || !e.data || e.data.type !== "demo-size") return;
     frame.style.height = Math.max(160, e.data.h) + "px";
   });
-  $("[data-dr-copy]").addEventListener("click", function () { if (current) copy(this, current.demo.html); });
-  $("[data-dr-ai]").addEventListener("click", function () {
+  /* Copy / download act on whatever is built; a click before it's ready waits for it. */
+  function withSource(fn) {
     if (!current) return;
-    var p = W.byId[current.pack], root = new URL("./", location.href).href;
-    copy(this, "Build with the " + p.name + " design language from the UI Design Languages library: the " + current.comp.title + " component.\n" +
-      "First read " + root + p.id + "/DESIGN.md and " + root + p.id + "/AGENTS.md. Link " + root + p.id + "/css/" + p.id + ".css (and " + root + p.id + "/js/" + p.id + ".js for interactive parts) plus the fonts named in DESIGN.md.\n" +
-      "Use only ." + p.id + "-* classes and var(--" + p.id + "-*) tokens; page CSS is for layout only. Reference markup from " + p.id + "/components.html:\n\n" +
-      current.comp.demos.map(function (d) { return "<!-- " + d.label + " -->\n" + d.html; }).join("\n\n"));
+    S.build(current.pack, current.comp.id, current.demo.id).then(fn, function () {});
+  }
+  $("[data-src-copy]").addEventListener("click", function () { var b = this; withSource(function (d) { copy(b, d[src.tab] || ""); }); });
+  $("[data-dr-ai]").addEventListener("click", function () { var b = this; withSource(function (d) { copy(b, d.prompt); }); });
+  $("[data-dr-file]").addEventListener("click", function () { var b = this; withSource(function (d) { copy(b, d.file); }); });
+  $("[data-dr-dl]").addEventListener("click", function () {
+    var b = this;
+    withSource(function (d) {
+      var url = URL.createObjectURL(new Blob([d.file], { type: "text/html" }));
+      var a = document.createElement("a");
+      a.href = url; a.download = d.info.fileName;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      var label = b.querySelector("span"), was = label.textContent;
+      label.textContent = "Saved " + d.info.fileName;
+      setTimeout(function () { label.textContent = was; }, 1800);
+    });
   });
 
   /* ---------- theme ---------- */

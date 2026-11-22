@@ -50,5 +50,6 @@ Status in this environment (checked 2026-11-22): the Design artifact type is ava
 ## Isolation rules
 
 - `site/` (homepage styles, code viewer) is neutral chrome. Packs never import it for styling; the code viewer renders in Shadow DOM.
+- The component wall's source panel (`site/source.js`) derives everything from the pack files: a demo's CSS is the component rules whose pack classes all appear in its markup, plus the base layer and the tokens those rules reach through `var()`. Keep component rules keyed on the pack's classes and the script hooks listed in each `js/<pack>.js` header, and the single-file export stays complete. After changing a pack's CSS, JS or catalog, run `node scripts/check-source.mjs [pack]`: it renders every demo's single file next to the original and compares computed styles in light and dark (a few minutes for all packs).
 - A pack never reads another pack's tokens or classes.
 - The homepage never sets pack tokens; it only embeds pack pages in iframes.

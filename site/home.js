@@ -119,10 +119,27 @@
 
   if (reduce) return;
 
-  /* Hero: the page wall leans toward the pointer, and a soft light follows it. */
+  /* Sections out of view pause their loops (wall, aurora, marquee, beam): nothing animates unseen. */
+  if ("IntersectionObserver" in window) {
+    var pio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { e.target.classList.toggle("is-paused", !e.isIntersecting); });
+    }, { rootMargin: "120px 0px" });
+    document.querySelectorAll("[data-hero], .cw-hero, .live").forEach(function (el) { pio.observe(el); });
+  }
+
+  /* Hero: the page wall leans toward the pointer, and a soft light follows it. Both are moved with
+     transforms on their own elements, so a pointer move never restyles the rest of the hero. */
   var hero = document.querySelector("[data-hero]");
   if (hero && window.matchMedia("(hover: hover)").matches) {
+    var plane = hero.querySelector(".wall__plane");
+    var glow = document.createElement("div"), light = document.createElement("i");
+    glow.className = "hero__glow"; glow.setAttribute("aria-hidden", "true");
+    glow.appendChild(light);
+    hero.insertBefore(glow, hero.firstChild);
     var pending = null, queued = false;
+    var lean = function (px, py) {
+      if (plane) plane.style.transform = "translateX(-48%) translate3d(" + (px * -18).toFixed(1) + "px," + (py * -12).toFixed(1) + "px,0) rotateX(" + (16 - py * 5).toFixed(2) + "deg) rotateZ(" + (14 + px * 4).toFixed(2) + "deg)";
+    };
     hero.addEventListener("pointermove", function (e) {
       pending = e;
       if (queued) return;
@@ -130,35 +147,44 @@
       requestAnimationFrame(function () {
         queued = false;
         var r = hero.getBoundingClientRect(), ev = pending;
-        hero.style.setProperty("--px", ((ev.clientX - r.left) / r.width * 2 - 1).toFixed(3));
-        hero.style.setProperty("--py", ((ev.clientY - r.top) / r.height * 2 - 1).toFixed(3));
-        hero.style.setProperty("--sx", ev.clientX - r.left + "px");
-        hero.style.setProperty("--sy", ev.clientY - r.top + "px");
+        var x = ev.clientX - r.left, y = ev.clientY - r.top;
+        lean(x / r.width * 2 - 1, y / r.height * 2 - 1);
+        light.style.transform = "translate3d(" + x.toFixed(0) + "px," + (y + 40).toFixed(0) + "px,0)";
+        glow.classList.add("is-on");
       });
     });
-    hero.addEventListener("pointerleave", function () { hero.style.setProperty("--px", 0); hero.style.setProperty("--py", 0); });
+    hero.addEventListener("pointerleave", function () { lean(0, 0); glow.classList.remove("is-on"); });
   }
 
-  /* Showcases: frames tilt up out of the page and land flat as they scroll in. */
-  var medias = Array.prototype.slice.call(document.querySelectorAll(".show"));
+  /* Showcases: frames tilt up out of the page and land flat as they scroll in. --p goes on the frame
+     and the copy themselves (small subtrees), not on the whole section. */
+  var shows = Array.prototype.slice.call(document.querySelectorAll(".show")).map(function (m) {
+    return { el: m, parts: Array.prototype.slice.call(m.querySelectorAll(".show__media .frame, .show__body")), p: -1 };
+  });
   var ticking = false;
   function onScroll() {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(function () {
       ticking = false;
-      if (document.documentElement.hasAttribute("data-static")) return; // screenshot mode: keep the final state
+      var still = document.documentElement.hasAttribute("data-static"); // screenshot mode: final state
       var vh = window.innerHeight;
-      medias.forEach(function (m) {
-        var r = m.getBoundingClientRect();
-        var p = (vh - r.top) / (vh * 0.7);
-        p = Math.max(0, Math.min(1, p));
-        p = 1 - Math.pow(1 - p, 3);
-        m.style.setProperty("--p", p.toFixed(3));
+      shows.forEach(function (s) {
+        var p = 1;
+        if (!still) {
+          var r = s.el.getBoundingClientRect();
+          if (r.bottom < -200 || r.top > vh + 200) return; // off screen: leave it as it is
+          p = Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.7)));
+          p = 1 - Math.pow(1 - p, 3);
+        }
+        p = Math.round(p * 1000) / 1000;
+        if (p === s.p) return;
+        s.p = p;
+        s.parts.forEach(function (el) { el.style.setProperty("--p", p); });
       });
     });
   }
-  if (medias.length) {
+  if (shows.length) {
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     onScroll();
@@ -229,6 +255,7 @@
           clone.querySelectorAll("[for]").forEach(function (n) { n.removeAttribute("for"); });
           clone.querySelectorAll("input[type=radio]").forEach(function (n) { n.name += "-copy"; });
           clone.querySelectorAll("a, button, input, select, textarea").forEach(function (n) { n.tabIndex = -1; });
+          clone.querySelectorAll(".wstage").forEach(function (st) { st.addEventListener("click", UIWall.inertLinks); }); // cloneNode drops listeners
           track.appendChild(clone);
         });
         requestAnimationFrame(function () { row.style.setProperty("--mq-dur", Math.max(40, track.scrollWidth / 2 / 45) + "s"); });

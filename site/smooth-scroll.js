@@ -124,26 +124,25 @@
     if (active && /^(Arrow|Page|Home|End| )/.test(e.key)) stop();
   });
 
-  /* Same-page anchor links glide to their section (honours scroll-margin-top). */
-  document.addEventListener("click", function (e) {
+  /* Same-page anchor links glide to their section (honours scroll-margin-top).
+     Listens on window, so it runs after the packs' own document handlers (nav items cancel their
+     placeholder links there). Placeholder links (href="#") in specimens and demos stay put instead
+     of throwing the page back to the top. */
+  window.addEventListener("click", function (e) {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     var a = e.target.closest && e.target.closest("a[href^='#']");
     if (!a) return;
     var hash = a.getAttribute("href");
-    var target = hash === "#" ? null : document.getElementById(decodeURIComponent(hash.slice(1)));
-    if (hash !== "#" && !target) return;
+    if (hash === "#") { e.preventDefault(); return; }
+    var target = document.getElementById(decodeURIComponent(hash.slice(1)));
+    if (!target) return;
     e.preventDefault();
-    var y = 0;
-    if (target) {
-      var margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
-      y = target.getBoundingClientRect().top + root.scrollTop - margin;
-    }
+    var margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+    var y = target.getBoundingClientRect().top + root.scrollTop - margin;
     var distance = Math.abs(y - root.scrollTop);
     run(root, y, { start: performance.now(), duration: Math.min(1400, 600 + distance / 6) });
-    if (history.pushState) history.pushState(null, "", hash === "#" ? location.pathname + location.search : hash);
-    if (target) {
-      if (!target.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(target.tagName)) target.setAttribute("tabindex", "-1");
-      target.focus({ preventScroll: true });
-    }
+    if (history.pushState) history.pushState(null, "", hash);
+    if (!target.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(target.tagName)) target.setAttribute("tabindex", "-1");
+    target.focus({ preventScroll: true });
   });
 })();

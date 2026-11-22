@@ -5,7 +5,7 @@
   <script>document.documentElement.classList.add("js")</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Components · UI Design Languages</title>
-  <meta name="description" content="A wall of real, working components from five design languages. Mix them all, or filter to one language to see it as a complete system. Open any card for its code.">
+  <meta name="description" content="A wall of real, working components from five design languages. Mix them all, or filter to one language to see it as a complete system. Every card hands over its complete source and an AI prompt.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
     <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     <span class="chip"><b data-total>37</b>live components · 5 languages</span>
     <h1 id="cw-title" class="reveal-words">Every component, <span>in every language.</span></h1>
-    <p class="cw-hero__lede">Real, working components — press them, type in them. Mix all five languages on one wall, or pick one and watch it gather into a complete system. Open any card for its code.</p>
+    <p class="cw-hero__lede">Real, working components — press them, type in them. Mix all five languages on one wall, or pick one and watch it gather into a complete system. Open any card for its full source: the markup, exactly the CSS and JS it needs, one file that runs on its own, and a prompt for your AI.</p>
   </section>
 
   <div class="cw-bar" data-bar>
@@ -67,13 +67,24 @@
     <p class="drawer__sub" data-dr-sub></p>
     <div class="seg drawer__tabs" role="group" aria-label="Demo" data-dr-tabs></div>
     <div class="drawer__view" data-dr-view></div>
-    <div class="drawer__code">
-      <div class="drawer__codebar"><span data-dr-file>components.html</span><button class="pill pill--sm" type="button" data-dr-copy><span>Copy code</span></button></div>
-      <pre><code data-dr-code></code></pre>
-    </div>
+    <section class="src" aria-label="Source code">
+      <div class="src__bar">
+        <div class="src__tabs" role="tablist" aria-label="Source" data-src-tabs>
+          <button type="button" role="tab" data-src="html">HTML</button>
+          <button type="button" role="tab" data-src="css">CSS</button>
+          <button type="button" role="tab" data-src="js">JS</button>
+          <button type="button" role="tab" data-src="file">Single file</button>
+        </div>
+        <button class="src__copy" type="button" data-src-copy><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="3"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy</span></button>
+      </div>
+      <pre class="src__code" role="tabpanel" tabindex="0"><code data-src-code></code></pre>
+      <p class="src__meta" data-src-meta></p>
+    </section>
     <div class="drawer__actions">
-      <button class="pill pill--solid pill--sm" type="button" data-dr-ai><span>Copy for AI</span></button>
-      <a class="pill pill--sm" href="#" data-dr-open>Open the full catalog</a>
+      <button class="pill pill--solid pill--sm" type="button" data-dr-ai><span>Copy prompt for AI</span></button>
+      <button class="pill pill--sm" type="button" data-dr-file><span>Copy single file</span></button>
+      <button class="pill pill--sm" type="button" data-dr-dl><span>Download .html</span></button>
+      <a class="drawer__link" href="#" data-dr-open>Full catalog</a>
     </div>
   </div>
 </aside>
@@ -81,6 +92,7 @@
 <footer class="wrap foot"><span>UI Design Languages · MIT</span><a href="./">Back to all styles</a></footer>
 <script src="site/home.js"></script>
 <script src="site/wall.js"></script>
+<script src="site/source.js"></script>
 <script src="site/components.js"></script>
 <script src="site/smooth-scroll.js" defer></script>
 </body>

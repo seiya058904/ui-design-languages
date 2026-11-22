@@ -10,15 +10,15 @@
    UIWall.packs              → registry (name, dot color, display font, root type styles) */
 (function () {
   var PACKS = [
-    { id: "clay", name: "Clay", dot: "#A8E6CF", font: "font-family:Inter,sans-serif;font-weight:700;letter-spacing:-0.045em",
+    { id: "clay", fonts: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap", name: "Clay", dot: "#A8E6CF", font: "font-family:Inter,sans-serif;font-weight:700;letter-spacing:-0.045em",
       root: "font-family:var(--clay-font-family-sans);color:var(--clay-color-text);font-size:var(--clay-font-size-body);line-height:1.5", canvas: "", page: "background:var(--clay-color-board)" },
-    { id: "lilac", name: "Lilac", dot: "#7C55FF", font: "font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:0.04em;text-transform:uppercase",
+    { id: "lilac", fonts: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap", name: "Lilac", dot: "#7C55FF", font: "font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:0.04em;text-transform:uppercase",
       root: "font-family:var(--lilac-font-family-sans);color:var(--lilac-color-text);font-size:var(--lilac-font-size-body);line-height:1.5", canvas: "", page: "background:var(--lilac-color-canvas)" },
-    { id: "atelier", name: "Atelier", dot: "#2F7BF5", font: "font-family:Archivo,sans-serif;font-weight:800;font-stretch:112%;text-transform:uppercase;letter-spacing:0",
+    { id: "atelier", fonts: "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap", name: "Atelier", dot: "#2F7BF5", font: "font-family:Archivo,sans-serif;font-weight:800;font-stretch:112%;text-transform:uppercase;letter-spacing:0",
       root: "font-family:var(--atelier-font-family-sans);color:var(--atelier-color-text);font-size:var(--atelier-font-size-body);line-height:1.5", canvas: "background:var(--atelier-color-canvas)", page: "background:var(--atelier-color-canvas)" },
-    { id: "tactile", name: "Tactile", dot: "#2C8C8F", font: "font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;letter-spacing:-0.04em",
+    { id: "tactile", fonts: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap", name: "Tactile", dot: "#2C8C8F", font: "font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;letter-spacing:-0.04em",
       root: "font-family:var(--tactile-font-family-sans);color:var(--tactile-color-text);font-size:var(--tactile-font-size-body);line-height:1.5", canvas: "background:var(--tactile-color-surface)", page: "background:var(--tactile-color-surface)" },
-    { id: "sketch", name: "Sketch", dot: "#A9C7EC", font: "font-family:Itim,sans-serif;font-weight:400;letter-spacing:0",
+    { id: "sketch", fonts: "https://fonts.googleapis.com/css2?family=Itim&family=Patrick+Hand&display=swap", name: "Sketch", dot: "#A9C7EC", font: "font-family:Itim,sans-serif;font-weight:400;letter-spacing:0",
       root: "font-family:var(--sketch-font-family-hand);color:var(--sketch-color-ink);font-size:var(--sketch-font-size-body);line-height:1.4", canvas: "", page: "background:var(--sketch-paper-grain),var(--sketch-color-paper)" }
   ];
   var byId = {};
@@ -76,7 +76,9 @@
           })
         };
       });
-      data[packId] = { items: items, order: order };
+      var symbols = {};
+      doc.querySelectorAll("symbol[id]").forEach(function (sym) { symbols[sym.id] = sym.outerHTML; });
+      data[packId] = { items: items, order: order, symbols: symbols };
       addSymbols(packId, doc);
     });
   }
@@ -113,6 +115,12 @@
     return scriptsPromise;
   }
 
+  /* Demo links are placeholders (href="#"): following them would throw the page back to the top. */
+  function inertLinks(e) {
+    var a = e.target.closest && e.target.closest('a[href="#"]');
+    if (a) e.preventDefault();
+  }
+
   function demo(packId, compId, demoId) {
     var pk = data[packId]; if (!pk) return null;
     var comp = pk.items[compId]; if (!comp) return null;
@@ -127,6 +135,7 @@
     el.className = ["wstage"].concat(hit.demo.classes).join(" ");
     el.setAttribute("style", p.root + (p.canvas ? ";" + p.canvas : ""));
     el.innerHTML = scopeIcons(hit.demo.html, packId);
+    el.addEventListener("click", inertLinks);
     return el;
   }
   function setTheme(theme) {
@@ -135,5 +144,5 @@
     else { d.removeAttribute("data-wall-theme"); d.removeAttribute("data-theme"); }
   }
 
-  window.UIWall = { packs: PACKS, byId: byId, ready: ready, scripts: scripts, demo: demo, stage: stage, data: data, setTheme: setTheme };
+  window.UIWall = { packs: PACKS, byId: byId, ready: ready, scripts: scripts, demo: demo, stage: stage, data: data, setTheme: setTheme, inertLinks: inertLinks };
 })();

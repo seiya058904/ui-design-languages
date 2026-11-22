@@ -227,6 +227,8 @@ select.lilac-input {
   max-width: 100%;
 }
 .lilac-segmented--block { display: flex; width: 100%; }
+/* Block: the track's width is given, so segments share it evenly and trim their side padding rather than spill out of a narrow card. */
+.lilac-segmented--block .lilac-segmented__item { min-width: 0; padding-inline: 10px; overflow: hidden; text-overflow: ellipsis; }
 .lilac-segmented__item {
   position: relative;
   z-index: 1;

@@ -2,7 +2,7 @@
 
 A library of complete UI design languages ("Style Packs"). Each one is shown as real, working pages — so you can compare styles by how they actually look and behave — and each one ships both the **design spec** (Markdown) and the **code** (tokens, CSS components, optional JS, demos).
 
-**Live library:** https://seiya058904.github.io/ui-design-languages/ · **Components:** [browse one at a time](https://seiya058904.github.io/ui-design-languages/components.html) — one wall of live components from all five languages; filter to one and it gathers onto that language's own canvas; open any card for its demos and code
+**Live library:** https://seiya058904.github.io/ui-design-languages/ · **Components:** [browse one at a time](https://seiya058904.github.io/ui-design-languages/components.html) — one wall of live components from all five languages; filter to one and it gathers onto that language's own canvas; open any card for its complete source
 
 | Pack | Character | Spec | Styleguide + code | Example |
 | --- | --- | --- | --- | --- |
@@ -23,7 +23,7 @@ A library of complete UI design languages ("Style Packs"). Each one is shown as 
 <script src="https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/atelier/js/atelier.js"></script>
 ```
 
-Or copy the pack folder into your project. Every styleguide has a **`</>`** button in each component's title row showing the exact HTML from the delivered file, and [components.html](https://seiya058904.github.io/ui-design-languages/components.html) is a wall of live components from every pack — filter by language or kind, open a card for its variants, markup and a "Copy for AI" prompt. Each pack also has its full catalog page, `<pack>/components.html`. For AI assistants, hand over the pack's `DESIGN.md` and `AGENTS.md`.
+Or copy the pack folder into your project. Every styleguide has a **`</>`** button in each component's title row showing the exact HTML from the delivered file, and [components.html](https://seiya058904.github.io/ui-design-languages/components.html) is a wall of live components from every pack — filter by language or kind, open a card for its variants and complete source: the markup, exactly the CSS it needs (component rules, the base layer and only the tokens they use, light and dark), the pack's script when the markup relies on it, a single HTML file that runs on its own (copy or download), and a ready-made prompt for an AI assistant. Each pack also has its full catalog page, `<pack>/components.html`. For AI assistants, hand over the pack's `DESIGN.md` and `AGENTS.md`.
 
 ## Repository layout
 

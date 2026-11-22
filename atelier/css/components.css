@@ -271,6 +271,8 @@ select.atelier-input {
   background: var(--atelier-color-surface-sunken);
 }
 .atelier-segmented--block { display: flex; width: 100%; }
+/* Block: the track's width is given, so segments share it evenly and trim their side padding rather than spill out of a narrow card. */
+.atelier-segmented--block .atelier-segmented__item { min-width: 0; padding-inline: 10px; overflow: hidden; text-overflow: ellipsis; }
 .atelier-segmented__item {
   position: relative;
   z-index: 1;

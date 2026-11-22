@@ -31,6 +31,8 @@
   max-width: 100%;
 }
 .clay-segmented--block { display: flex; width: 100%; }
+/* Block: the track's width is given, so segments share it evenly and trim their side padding rather than spill out of a narrow card. */
+.clay-segmented--block .clay-segmented__item { min-width: 0; padding-inline: 10px; overflow: hidden; text-overflow: ellipsis; }
 
 .clay-segmented__item {
   position: relative;

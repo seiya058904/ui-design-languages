@@ -261,6 +261,8 @@ select.sketch-input {
 .sketch-tabs { padding: 3px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); }
 .sketch-segmented { padding: 3px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-color-panel); flex-wrap: nowrap; }
 .sketch-segmented--block { display: flex; width: 100%; }
+/* Block: the track's width is given, so segments share it evenly and trim their side padding rather than spill out of a narrow card. */
+.sketch-segmented--block .sketch-segmented__item { min-width: 0; padding-inline: 10px; overflow: hidden; text-overflow: ellipsis; }
 .sketch-pills { gap: 8px; }
 .sketch-tabs__item,
 .sketch-pills__item,

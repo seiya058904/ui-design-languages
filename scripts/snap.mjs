@@ -133,7 +133,7 @@ const evaluate = async (expression) => (await send("Runtime.evaluate", { express
 // Jump finite entrance animations (ring fills, dialog pops) to their end and freeze infinite loops
 // (marquees, auroras), so captures are deterministic and a tall headless viewport isn't repainted every frame.
 // Scroll-triggered reveals and scroll-linked tilts are shown in their final state.
-const SETTLE = "document.getAnimations().forEach((a) => { try { if (a.effect && a.effect.getComputedTiming().endTime !== Infinity) a.finish(); else a.pause(); } catch (e) {} }); document.querySelectorAll('.rise, .reveal-words, .wcard').forEach((el) => el.classList.add('is-in', 'is-revealed')); document.documentElement.setAttribute('data-static', ''); document.querySelectorAll('.show').forEach((el) => el.style.setProperty('--p', 1))";
+const SETTLE = "document.getAnimations().forEach((a) => { try { if (a.effect && a.effect.getComputedTiming().endTime !== Infinity) a.finish(); else a.pause(); } catch (e) {} }); document.querySelectorAll('.rise, .reveal-words, .wcard').forEach((el) => el.classList.add('is-in', 'is-revealed')); document.documentElement.setAttribute('data-static', ''); document.querySelectorAll('.show, .show .frame, .show__body').forEach((el) => el.style.setProperty('--p', 1))";
 // Lazy iframes below the fold would stay blank in a beyond-viewport capture.
 const EAGER = "document.querySelectorAll('iframe[loading=lazy]').forEach((f) => { f.loading = 'eager'; })";
 

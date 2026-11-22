@@ -30,12 +30,18 @@
   cursor: pointer;
   user-select: none;
   box-shadow: var(--tactile-shadow-level-3);
-  transition: box-shadow var(--tactile-motion-duration) var(--tactile-motion-easing), background-color var(--tactile-motion-duration), transform var(--tactile-motion-duration);
+  /* A key: it accelerates into the material on press, springs back up (small overshoot) on release.
+     Raised and pressed shadows share a list shape, so the piece sinks through flat instead of snapping. */
+  transition:
+    box-shadow var(--tactile-motion-duration-release) var(--tactile-motion-easing-release),
+    background-color var(--tactile-motion-duration),
+    transform var(--tactile-motion-duration-release) var(--tactile-motion-easing-release);
 }
 .tactile-btn:hover { box-shadow: var(--tactile-shadow-level-2); }
 .tactile-btn:active,
 .tactile-btn.is-active,
-.tactile-btn[aria-busy="true"] { box-shadow: var(--tactile-shadow-pressed); background: var(--tactile-color-surface-pressed); }
+.tactile-btn[aria-busy="true"] { box-shadow: var(--tactile-shadow-pressed); background: var(--tactile-color-surface-pressed); transform: scale(0.985); }
+.tactile-btn:active { transition-duration: var(--tactile-motion-duration-press); transition-timing-function: var(--tactile-motion-easing-press); }
 .tactile-btn:focus-visible { box-shadow: var(--tactile-shadow-level-3), var(--tactile-shadow-focus); }
 
 .tactile-btn--primary {
@@ -48,7 +54,8 @@
 .tactile-btn--primary.is-active,
 .tactile-btn--primary[aria-busy="true"] {
   background: var(--tactile-color-primary-strong);
-  box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.35), inset -2px -2px 6px rgba(255, 255, 255, 0.08), 0 0 0 4px var(--tactile-color-surface), -4px -4px 10px var(--tactile-color-light);
+  /* (outer, outer, inset, …) like --tactile-shadow-accent, so the press interpolates */
+  box-shadow: -4px -4px 10px var(--tactile-color-light), 0 0 0 4px var(--tactile-color-surface), inset 3px 3px 8px rgba(0, 0, 0, 0.35), inset -2px -2px 6px rgba(255, 255, 255, 0.08);
 }
 .tactile-btn--primary:focus-visible { box-shadow: var(--tactile-shadow-accent), var(--tactile-shadow-focus); }
 .tactile-btn--ghost { background: transparent; box-shadow: none; }
@@ -155,16 +162,21 @@ select.tactile-input {
   background-repeat: no-repeat;
   background-position: center;
   box-shadow: var(--tactile-shadow-inset);
-  transition: background-color var(--tactile-motion-duration), box-shadow var(--tactile-motion-duration);
+  transition:
+    background-color var(--tactile-motion-duration),
+    box-shadow var(--tactile-motion-duration-release) var(--tactile-motion-easing),
+    background-size var(--tactile-motion-duration-release) var(--tactile-motion-easing-pop);
 }
-.tactile-checkbox { width: 22px; height: 22px; border-radius: 6px; background-size: 14px; }
-.tactile-radio { width: 22px; height: 22px; border-radius: 50%; }
+.tactile-checkbox { width: 22px; height: 22px; border-radius: 6px; background-size: 0; } /* marks pop in when checked */
+.tactile-radio { width: 22px; height: 22px; border-radius: 50%; background-size: 0 0; }
 .tactile-checkbox:checked {
+  background-size: 14px;
   background-color: var(--tactile-color-primary);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17 19 7'/%3E%3C/svg%3E");
   box-shadow: -2px -2px 5px var(--tactile-color-light), 2px 3px 6px var(--tactile-color-glow);
 }
 .tactile-radio:checked {
+  background-size: 100% 100%;
   background-image: radial-gradient(circle, var(--tactile-color-primary) 0 5px, transparent 5.5px);
   box-shadow: var(--tactile-shadow-level-2), inset 0 0 0 2px var(--tactile-color-primary);
   background-color: var(--tactile-color-surface);

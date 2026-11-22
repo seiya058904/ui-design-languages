@@ -51,7 +51,7 @@ Sources: **Product UI Style Guide — Master · Flagship Edition** (primary, the
 **Shape** — wobbly radii `--sketch-radius-sm/md/lg` (asymmetric), pills for chips and toggles.
 **Depth** — offset outline `--sketch-shadow-1/2/3` (2 / 4 / 6px); pressed = no offset + hatching.
 **Lines** — `--sketch-line` 1.6px, `--sketch-line-bold` 2.2px; dashed for ghost, disabled and skeleton.
-**Motion** — 160ms; indicators glide 360ms on `cubic-bezier(.32,.72,0,1)`; hover nudges −1px/−1px so the drawn shadow grows.
+**Motion** — A doodle that moves. Hover nudges −1px/−1px so the drawn shadow grows, and buttons and chips *line-boil*: three drawn frames held ~160ms each (`duration-boil`, `steps(1)`). Press pushes the piece into its shadow in 60ms; release snaps back with a cartoon overshoot (`easing-release`). Ticks overshoot their box as they pop in. Indicators glide 360ms on `cubic-bezier(.32,.72,0,1)`.
 
 ## 4. Components
 

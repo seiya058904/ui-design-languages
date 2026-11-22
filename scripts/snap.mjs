@@ -85,6 +85,8 @@ const send = (method, params = {}) => new Promise((r) => { const i = ++id; pendi
   .then((m) => { if (m.error) throw new Error(`${method}: ${m.error.message}`); return m.result; });
 const nextEvent = (name) => new Promise((r) => { const fn = (m) => { if (m.method === name) { listeners.delete(fn); r(m); } }; listeners.add(fn); });
 const evaluate = async (expression) => (await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true })).result.value;
+// Jump finite entrance animations (ring fills, dialog pops) to their end so captures are deterministic.
+const SETTLE = "document.getAnimations().forEach((a) => { try { if (a.effect && a.effect.getComputedTiming().endTime !== Infinity) a.finish(); } catch (e) {} })";
 
 await send("Page.enable");
 let overflowing = 0;
@@ -97,6 +99,7 @@ if (thumbs) {
       await send("Page.navigate", { url: `${base}/${page.path}` });
       await loaded;
       await evaluate("document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 900)))");
+      await evaluate(SETTLE);
       const { data } = await send("Page.captureScreenshot", { format: "jpeg", quality: 82 });
       const name = page.path.replace(`${page.group}/`, "").replace(/\//g, "-").replace(/\.html$/, "");
       const out = join(root, "site", "assets", "thumbs", `${page.group}-${name}.jpg`);
@@ -119,6 +122,7 @@ try {
       const overflow = await evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth");
       const height = await evaluate("Math.min(document.documentElement.scrollHeight, 9000)");
       await metrics(height);
+      await evaluate(SETTLE);
       await evaluate("new Promise((r) => setTimeout(r, 400))");
       const { data } = await send("Page.captureScreenshot", { format: "png" });
       const name = page.path.replace(/^[^/]+\/(?=.)/, page.group === "_site" ? "" : "").replace(/\//g, "_").replace(/\.html$/, "");

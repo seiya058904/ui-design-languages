@@ -24,23 +24,25 @@
   cursor: pointer;
   user-select: none;
   box-shadow: var(--clay-shadow-raised);
+  /* Release / hover use the squish curve (springs back past rest); :active swaps in the press timing. */
   transition:
-    transform var(--clay-motion-duration) var(--clay-motion-easing),
+    transform var(--clay-motion-duration-release) var(--clay-motion-easing-release),
     box-shadow var(--clay-motion-duration) var(--clay-motion-easing),
     background-color var(--clay-motion-duration) var(--clay-motion-easing);
 }
 
 .clay-btn:hover,
 .clay-btn.is-hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: var(--clay-shadow-raised-hover);
 }
 
 .clay-btn:active,
 .clay-btn.is-active {
-  transform: translateY(1px);
+  transform: translateY(1px) scale(0.97);
   box-shadow: var(--clay-shadow-pressed);
-  transition-duration: var(--clay-motion-duration-fast);
+  transition-duration: var(--clay-motion-duration-press);
+  transition-timing-function: var(--clay-motion-easing-press);
 }
 
 .clay-btn:focus-visible {

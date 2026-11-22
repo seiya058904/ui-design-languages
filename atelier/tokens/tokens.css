@@ -90,6 +90,7 @@
   --atelier-shadow-floating: 0 4px 10px rgba(28, 35, 51, 0.06), 0 16px 32px -12px rgba(28, 35, 51, 0.22);
   --atelier-shadow-modal: 0 10px 24px rgba(28, 35, 51, 0.1), 0 32px 64px -20px rgba(28, 35, 51, 0.32);
   --atelier-shadow-inset: inset 0 1px 2px rgba(28, 35, 51, 0.08);
+  --atelier-shadow-pressed: 0 1px 1px transparent, 0 1px 3px transparent, inset 0 1px 2px rgba(28, 35, 51, 0.1); /* Same list shape as subtle (outer, outer) so a press fades the lift into the well */
   --atelier-shadow-primary: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 1px 2px color-mix(in srgb, var(--atelier-color-primary-strong) 40%, transparent), 0 6px 16px -6px color-mix(in srgb, var(--atelier-color-primary) 65%, transparent);
   --atelier-shadow-focus: 0 0 0 3px var(--atelier-color-focus);
 
@@ -97,6 +98,11 @@
   --atelier-motion-duration-slide: 340ms;
   --atelier-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
   --atelier-motion-easing-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --atelier-motion-duration-press: 70ms; /* Going in: press, check */
+  --atelier-motion-duration-release: 180ms; /* Coming back: release, hover settle, pop */
+  --atelier-motion-easing-press: cubic-bezier(0.2, 0, 0, 1);
+  --atelier-motion-easing-release: cubic-bezier(0.2, 0.8, 0.2, 1); /* Precise: no overshoot anywhere */
+  --atelier-motion-easing-pop: cubic-bezier(0.2, 0.8, 0.2, 1); /* Check marks and radio dots appearing */
 }
 
 /* Dark theme — GENERATED from atelier/tokens/tokens.dark.json.
@@ -130,6 +136,7 @@
   --atelier-shadow-floating: 0 4px 10px rgba(0, 0, 0, 0.3), 0 18px 36px -12px rgba(0, 0, 0, 0.6);
   --atelier-shadow-modal: 0 10px 24px rgba(0, 0, 0, 0.35), 0 34px 68px -20px rgba(0, 0, 0, 0.7);
   --atelier-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+  --atelier-shadow-pressed: 0 1px 1px transparent, 0 1px 3px transparent, inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -162,6 +169,7 @@
     --atelier-shadow-floating: 0 4px 10px rgba(0, 0, 0, 0.3), 0 18px 36px -12px rgba(0, 0, 0, 0.6);
     --atelier-shadow-modal: 0 10px 24px rgba(0, 0, 0, 0.35), 0 34px 68px -20px rgba(0, 0, 0, 0.7);
     --atelier-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+    --atelier-shadow-pressed: 0 1px 1px transparent, 0 1px 3px transparent, inset 0 1px 2px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -227,4 +235,6 @@
 :root[data-motion="reduced"] {
   --atelier-motion-duration: 0ms;
   --atelier-motion-duration-slide: 0ms;
+  --atelier-motion-duration-press: 0ms;
+  --atelier-motion-duration-release: 0ms;
 }

@@ -35,11 +35,11 @@
     background-color var(--atelier-motion-duration) var(--atelier-motion-easing),
     border-color var(--atelier-motion-duration) var(--atelier-motion-easing),
     box-shadow var(--atelier-motion-duration) var(--atelier-motion-easing),
-    transform var(--atelier-motion-duration) var(--atelier-motion-easing);
+    transform var(--atelier-motion-duration-release) var(--atelier-motion-easing-release);
 }
 .atelier-btn:hover { border-color: var(--atelier-color-border-strong); }
 .atelier-btn:active,
-.atelier-btn.is-active { transform: translateY(1px); box-shadow: var(--atelier-shadow-inset); }
+.atelier-btn.is-active { transform: translateY(1px); box-shadow: var(--atelier-shadow-pressed); transition-duration: var(--atelier-motion-duration-press); transition-timing-function: var(--atelier-motion-easing-press); }
 .atelier-btn:focus-visible { box-shadow: var(--atelier-shadow-subtle), var(--atelier-shadow-focus); }
 
 .atelier-btn--primary {
@@ -50,7 +50,7 @@
 }
 .atelier-btn--primary:hover { --btn-border: transparent; filter: brightness(1.04); }
 .atelier-btn--primary:active,
-.atelier-btn--primary.is-active { background: var(--atelier-color-primary-strong); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.18); }
+.atelier-btn--primary.is-active { background: var(--atelier-color-primary-strong); box-shadow: inset 0 1px 0 transparent, 0 1px 2px transparent, 0 6px 16px -6px transparent, inset 0 2px 4px rgba(0, 0, 0, 0.18); }
 .atelier-btn--primary:focus-visible { box-shadow: var(--atelier-shadow-primary), var(--atelier-shadow-focus); }
 
 .atelier-btn--secondary { --btn-ink: var(--atelier-color-primary); --btn-border: color-mix(in srgb, var(--atelier-color-primary) 45%, var(--atelier-color-border)); }
@@ -145,11 +145,17 @@ select.atelier-input {
   background-color: var(--atelier-color-surface);
   background-repeat: no-repeat;
   background-position: center;
-  transition: background-color var(--atelier-motion-duration), border-color var(--atelier-motion-duration), box-shadow var(--atelier-motion-duration);
+  transition:
+    background-color var(--atelier-motion-duration),
+    border-color var(--atelier-motion-duration),
+    border-width var(--atelier-motion-duration-release) var(--atelier-motion-easing-pop),
+    box-shadow var(--atelier-motion-duration),
+    background-size var(--atelier-motion-duration-release) var(--atelier-motion-easing-pop);
 }
-.atelier-checkbox { width: 18px; height: 18px; border-radius: calc(var(--atelier-radius-sm) * 0.6); background-size: 12px; }
+.atelier-checkbox { width: 18px; height: 18px; border-radius: calc(var(--atelier-radius-sm) * 0.6); background-size: 0; } /* the mark scales in when checked; radios close their ring */
 .atelier-radio { width: 18px; height: 18px; border-radius: 50%; }
 .atelier-checkbox:checked {
+  background-size: 12px;
   border-color: var(--atelier-color-primary);
   background-color: var(--atelier-color-primary);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17 19 7'/%3E%3C/svg%3E");

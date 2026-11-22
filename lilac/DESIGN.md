@@ -45,7 +45,7 @@ Sources: **LILAC / FLOW** (primary) and **SOFT / SYSTEM** (merged — same struc
 **Spacing** — 4px base; tiles 28px padding; 24px grid gap; two columns collapse under 820px.
 **Shape** — pills (buttons, fields, toggles, tabs); 9px checkboxes; 16px inner cards; 24px tiles; 32px dialogs; circles for swatches, avatars, step markers.
 **Depth** — Tile: `inset 0 1px 0 rgba(255,255,255,.9), 0 1px 2px rgba(60,50,40,.04), 0 14px 34px -14px rgba(60,50,40,.16)`. Raised ivory: `inset 0 1px 0 #fff, 0 1px 2px rgba(60,50,40,.06), 0 8px 18px -8px rgba(60,50,40,.22)`. Accent glow: `0 2px 6px rgba(91,45,255,.25), 0 12px 26px -8px rgba(91,45,255,.55)`.
-**Motion** — 200ms hover; 380ms glide for indicators, knobs, rings on `cubic-bezier(.32,.72,0,1)`.
+**Motion** — Soft and airy. Pieces float back from a press with a gentle overshoot (`easing-release`, 380ms) while the violet glow blooms a little slower than the lift. `shadow-pressed` shares the raised list shape, so a press sinks instead of snapping. Marks pop in on `easing-pop`. Rings and progress bars fill once on first paint, 1.2–1.4s. 380ms glide for indicators, knobs, rings on `cubic-bezier(.32,.72,0,1)`.
 
 ## 4. Components
 

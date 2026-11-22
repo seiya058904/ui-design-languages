@@ -78,7 +78,7 @@
   --lilac-shadow-tile: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(60, 50, 40, 0.04), 0 14px 34px -14px rgba(60, 50, 40, 0.16); /* Study tiles */
   --lilac-shadow-raised: inset 0 1px 0 rgba(255, 255, 255, 1), 0 1px 2px rgba(60, 50, 40, 0.06), 0 8px 18px -8px rgba(60, 50, 40, 0.22); /* Ivory pieces that sit on a tile */
   --lilac-shadow-raised-hover: inset 0 1px 0 rgba(255, 255, 255, 1), 0 2px 4px rgba(60, 50, 40, 0.06), 0 14px 26px -10px rgba(60, 50, 40, 0.26);
-  --lilac-shadow-pressed: inset 0 2px 5px rgba(60, 50, 40, 0.14), inset 0 -1px 0 rgba(255, 255, 255, 0.8);
+  --lilac-shadow-pressed: inset 0 2px 5px rgba(60, 50, 40, 0.14), 0 0 0 transparent, 0 0 0 transparent, inset 0 -1px 0 rgba(255, 255, 255, 0.8); /* Same list shape as raised (inset, outer, outer) so pressing sinks smoothly instead of snapping */
   --lilac-shadow-inset: inset 0 1px 3px rgba(60, 50, 40, 0.12), inset 0 -1px 0 rgba(255, 255, 255, 0.7); /* Tracks and wells */
   --lilac-shadow-accent: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 2px 6px rgba(91, 45, 255, 0.25), 0 12px 26px -8px rgba(91, 45, 255, 0.55); /* Violet pieces glow onto the ivory */
   --lilac-shadow-accent-hover: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 3px 8px rgba(91, 45, 255, 0.3), 0 18px 34px -10px rgba(91, 45, 255, 0.6);
@@ -90,6 +90,11 @@
   --lilac-motion-duration-slide: 380ms;
   --lilac-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
   --lilac-motion-easing-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --lilac-motion-duration-press: 140ms; /* Going in: press, check */
+  --lilac-motion-duration-release: 380ms; /* Coming back: release, hover settle, pop */
+  --lilac-motion-easing-press: cubic-bezier(0.4, 0, 0.6, 1);
+  --lilac-motion-easing-release: cubic-bezier(0.22, 1.25, 0.36, 1); /* Soft settle: pieces float back with a gentle overshoot */
+  --lilac-motion-easing-pop: cubic-bezier(0.22, 1.35, 0.36, 1); /* Check marks and radio dots appearing */
 }
 
 /* Variant — GENERATED from lilac/tokens/tokens.accent-cobalt.json. Opt in with <html data-accent="cobalt">. */

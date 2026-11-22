@@ -28,16 +28,17 @@
   cursor: pointer;
   user-select: none;
   box-shadow: var(--lilac-shadow-raised);
+  /* Pieces float back with a soft overshoot; the violet glow blooms a little slower than the lift. */
   transition:
-    transform var(--lilac-motion-duration) var(--lilac-motion-easing),
-    box-shadow var(--lilac-motion-duration) var(--lilac-motion-easing),
+    transform var(--lilac-motion-duration-release) var(--lilac-motion-easing-release),
+    box-shadow var(--lilac-motion-duration-release) var(--lilac-motion-easing),
     background-color var(--lilac-motion-duration) var(--lilac-motion-easing);
 }
 .lilac-btn .lilac-icon { transition: transform var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring); }
 .lilac-btn:hover,
 .lilac-btn.is-hover { transform: translateY(-1px); box-shadow: var(--lilac-shadow-raised-hover); }
 .lilac-btn:hover .lilac-icon:last-child:not(:first-child) { transform: translateX(3px); }
-.lilac-btn:active { transform: translateY(0); box-shadow: var(--lilac-shadow-pressed); }
+.lilac-btn:active { transform: translateY(0) scale(0.98); box-shadow: var(--lilac-shadow-pressed); transition-duration: var(--lilac-motion-duration-press); transition-timing-function: var(--lilac-motion-easing-press); }
 .lilac-btn:focus-visible { box-shadow: var(--lilac-shadow-raised), var(--lilac-shadow-focus); }
 
 .lilac-btn--primary {
@@ -362,7 +363,10 @@ select.lilac-input {
   flex: none;
   margin: 0;
   cursor: pointer;
-  transition: background-color var(--lilac-motion-duration), box-shadow var(--lilac-motion-duration);
+  transition:
+    background-color var(--lilac-motion-duration),
+    box-shadow var(--lilac-motion-duration),
+    background-size var(--lilac-motion-duration-release) var(--lilac-motion-easing-pop);
 }
 
 .lilac-toggle {
@@ -404,14 +408,16 @@ select.lilac-input {
   background-position: center;
   box-shadow: var(--lilac-shadow-raised), inset 0 0 0 1.5px var(--lilac-color-control-edge);
 }
-.lilac-checkbox { border-radius: var(--lilac-radius-sm); background-size: 16px; }
-.lilac-radio { border-radius: 50%; }
+.lilac-checkbox { border-radius: var(--lilac-radius-sm); background-size: 0; } /* marks pop in when checked */
+.lilac-radio { border-radius: 50%; background-size: 0 0; }
 .lilac-checkbox:checked {
+  background-size: 16px;
   background-color: var(--lilac-color-primary);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17 19 7'/%3E%3C/svg%3E");
   box-shadow: var(--lilac-shadow-accent);
 }
 .lilac-radio:checked {
+  background-size: 100% 100%;
   background-color: var(--lilac-color-primary);
   background-image: radial-gradient(circle, #fff 0 4px, transparent 4.5px);
   box-shadow: var(--lilac-shadow-accent);
@@ -496,7 +502,9 @@ select.lilac-input {
   background: linear-gradient(90deg, var(--lilac-color-primary-light), var(--lilac-color-primary));
   box-shadow: 0 0 12px var(--lilac-color-glow);
   transition: width var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring);
+  animation: lilac-bar-fill 1200ms var(--lilac-motion-easing-spring) 150ms backwards;
 }
+@keyframes lilac-bar-fill { from { width: 0; } }
 
 .lilac-ring { position: relative; width: var(--ring-size, 180px); aspect-ratio: 1; flex: none; }
 .lilac-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
@@ -507,7 +515,9 @@ select.lilac-input {
   stroke-dasharray: var(--value, 0) 100;
   filter: drop-shadow(0 0 7px var(--lilac-color-glow)) drop-shadow(0 4px 10px var(--lilac-color-glow-soft));
   transition: stroke-dasharray var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring);
+  animation: lilac-ring-fill 1400ms var(--lilac-motion-easing-spring) 150ms backwards;
 }
+@keyframes lilac-ring-fill { from { stroke-dasharray: 0 100; } }
 .lilac-ring__label { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
 .lilac-ring__label strong { font-family: var(--lilac-font-family-serif); font-variant-numeric: lining-nums; font-size: calc(var(--ring-size, 180px) * 0.22); font-weight: var(--lilac-font-weight-medium); line-height: 1; color: var(--lilac-color-ink); }
 .lilac-ring__label span { margin-top: 6px; font-size: var(--lilac-font-size-small); color: var(--lilac-color-text-muted); }
@@ -610,7 +620,7 @@ select.lilac-input {
   background: var(--lilac-color-surface);
   box-shadow: var(--lilac-shadow-raised);
 }
-.lilac-card--interactive { cursor: pointer; transition: transform var(--lilac-motion-duration), box-shadow var(--lilac-motion-duration); }
+.lilac-card--interactive { cursor: pointer; transition: transform var(--lilac-motion-duration-release) var(--lilac-motion-easing-release), box-shadow var(--lilac-motion-duration-release) var(--lilac-motion-easing); }
 .lilac-card--interactive:hover { transform: translateY(-2px); box-shadow: var(--lilac-shadow-raised-hover); }
 .lilac-card__title { font-size: 17px; font-weight: var(--lilac-font-weight-semibold); }
 .lilac-card__text  { font-size: var(--lilac-font-size-small); color: var(--lilac-color-text-muted); }

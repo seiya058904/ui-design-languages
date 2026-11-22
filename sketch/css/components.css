@@ -27,12 +27,21 @@
   cursor: pointer;
   user-select: none;
   box-shadow: var(--sketch-shadow-1);
-  transition: transform var(--sketch-motion-duration) var(--sketch-motion-easing), box-shadow var(--sketch-motion-duration) var(--sketch-motion-easing);
+  /* Pressing pushes the piece into its drawn shadow; letting go snaps it back like a doodle. */
+  transition: transform var(--sketch-motion-duration-release) var(--sketch-motion-easing-release), box-shadow var(--sketch-motion-duration-release) var(--sketch-motion-easing-release);
 }
 .sketch-btn:hover,
 .sketch-btn.is-hover { transform: translate(-1px, -1px); box-shadow: var(--sketch-shadow-2); }
 .sketch-btn:active,
-.sketch-btn.is-active { transform: translate(2px, 2px); box-shadow: none; background-image: var(--sketch-hatch-default); }
+.sketch-btn.is-active { transform: translate(2px, 2px); box-shadow: none; background-image: var(--sketch-hatch-default); transition-duration: var(--sketch-motion-duration-press); transition-timing-function: var(--sketch-motion-easing-press); }
+/* Line boil: under the pointer the drawing redraws itself every few frames, like hand-drawn animation. */
+.sketch-btn:hover,
+.sketch-chip:hover { animation: sketch-boil var(--sketch-motion-duration-boil) steps(1, end) infinite; }
+@keyframes sketch-boil {
+  0%   { rotate: -0.6deg; }
+  33%  { rotate: 0.5deg; }
+  66%  { rotate: -0.2deg; }
+}
 .sketch-btn:focus-visible,
 .sketch-btn.is-focus { outline: 2px dashed var(--sketch-color-ink); outline-offset: 4px; }
 
@@ -141,13 +150,15 @@ select.sketch-input {
   background-color: var(--sketch-color-panel);
   background-repeat: no-repeat;
   background-position: center;
-  transition: background-color var(--sketch-motion-duration);
+  transition:
+    background-color var(--sketch-motion-duration),
+    background-size var(--sketch-motion-duration-release) var(--sketch-motion-easing-pop);
 }
-.sketch-checkbox { width: 20px; height: 20px; border-radius: var(--sketch-radius-sm); background-size: 17px; }
-.sketch-checkbox:checked { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232B2A27' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12.8c1.6 1.2 3 2.6 4.6 4.6 3-4.8 6.2-8.6 10.6-12'/%3E%3C/svg%3E"); }
+.sketch-checkbox { width: 20px; height: 20px; border-radius: var(--sketch-radius-sm); background-size: 0; } /* the tick pops in, overshooting its box */
+.sketch-checkbox:checked { background-size: 17px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232B2A27' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12.8c1.6 1.2 3 2.6 4.6 4.6 3-4.8 6.2-8.6 10.6-12'/%3E%3C/svg%3E"); }
 .sketch-checkbox:indeterminate { background-image: linear-gradient(var(--sketch-color-ink), var(--sketch-color-ink)); background-size: 10px 2.4px; }
-.sketch-radio { width: 20px; height: 20px; border-radius: 50%; }
-.sketch-radio:checked { background-image: radial-gradient(circle, var(--sketch-color-ink) 0 4.5px, transparent 5px); }
+.sketch-radio { width: 20px; height: 20px; border-radius: 50%; background-size: 0 0; }
+.sketch-radio:checked { background-size: 100% 100%; background-image: radial-gradient(circle, var(--sketch-color-ink) 0 4.5px, transparent 5px); }
 .sketch-toggle { position: relative; width: 46px; height: 26px; border-radius: var(--sketch-radius-pill); }
 .sketch-toggle::before {
   content: "";
@@ -159,8 +170,10 @@ select.sketch-input {
   border: var(--sketch-line-regular) solid var(--sketch-color-ink);
   border-radius: 50%;
   background: var(--sketch-color-panel);
-  transition: transform var(--sketch-motion-duration-slide) var(--sketch-motion-easing-spring);
+  transition: transform var(--sketch-motion-duration-slide) var(--sketch-motion-easing-spring), width var(--sketch-motion-duration) var(--sketch-motion-easing-spring);
 }
+.sketch-toggle:active::before { width: 23px; }
+.sketch-toggle:checked:active::before { transform: translateX(15px); }
 .sketch-toggle:checked { background-color: var(--sketch-color-brand-wash); background-image: var(--sketch-hatch-dense); }
 .sketch-toggle:checked::before { transform: translateX(20px); }
 .sketch-checkbox:focus-visible,
@@ -221,8 +234,9 @@ select.sketch-input {
 .sketch-badge--beta    { background: var(--sketch-color-warning-wash); --badge-dot: var(--sketch-color-warning); }
 .sketch-badge--hot     { background: var(--sketch-color-danger-wash);  --badge-dot: var(--sketch-color-danger); }
 .sketch-badge--info    { background: var(--sketch-color-info-wash);    --badge-dot: var(--sketch-color-info); }
-.sketch-chip { display: inline-flex; align-items: center; gap: 6px; height: var(--sketch-size-control-sm); padding: 0 14px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-color-panel); font-size: var(--sketch-font-size-small); cursor: pointer; transition: transform var(--sketch-motion-duration); }
+.sketch-chip { display: inline-flex; align-items: center; gap: 6px; height: var(--sketch-size-control-sm); padding: 0 14px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-color-panel); font-size: var(--sketch-font-size-small); cursor: pointer; transition: transform var(--sketch-motion-duration-release) var(--sketch-motion-easing-release); }
 .sketch-chip:hover { transform: translate(-1px, -1px); }
+.sketch-chip:active { transform: translate(1px, 1px); transition-duration: var(--sketch-motion-duration-press); transition-timing-function: var(--sketch-motion-easing-press); }
 .sketch-chip:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 3px; }
 .sketch-chip[aria-pressed="true"] { background-image: var(--sketch-hatch-default); }
 .sketch-chip--add { border-style: dashed; }
@@ -407,7 +421,7 @@ select.sketch-input {
    <article class="sketch-card"><div class="sketch-placeholder"></div><h3 class="sketch-card__title">Card title</h3>…</article>
    ========================================================================= */
 .sketch-card { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-md); background: var(--sketch-color-panel); box-shadow: var(--sketch-shadow-1); }
-.sketch-card--interactive { cursor: pointer; transition: transform var(--sketch-motion-duration), box-shadow var(--sketch-motion-duration); }
+.sketch-card--interactive { cursor: pointer; transition: transform var(--sketch-motion-duration-release) var(--sketch-motion-easing-release), box-shadow var(--sketch-motion-duration-release) var(--sketch-motion-easing-release); }
 .sketch-card--interactive:hover { transform: translate(-1px, -1px); box-shadow: var(--sketch-shadow-2); }
 .sketch-card__title { font-family: var(--sketch-font-family-display); font-size: 17px; font-weight: 700; }
 .sketch-card__text { font-size: var(--sketch-font-size-small); color: var(--sketch-color-ink-soft); }

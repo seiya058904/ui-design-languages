@@ -45,7 +45,7 @@ Sources: the **beige / deep-teal baseline-grid styleguide** (primary) and the **
 **Spacing** — 8px grid; section gaps 44px; panels 24px padding.
 **Shape** — fields 8, buttons 12, cards 16, panels and dialogs 24; toggles, steps and avatars round.
 **Depth** — Raised `-6px -6px 14px light, 6px 6px 14px dark`; inset `inset 3px 3px 7px dark, inset -3px -3px 7px light`; pressed `inset 4px 4px 10px dark, inset -4px -4px 10px light`; teal pieces cast `5px 6px 14px` teal glow.
-**Motion** — 180ms; indicators and knobs glide 360ms on `cubic-bezier(.32,.72,0,1)`.
+**Motion** — Weighted, like a key. Presses accelerate into the material (90ms, `easing-press`) and spring back up with a small overshoot (320ms, `easing-release`). `shadow-pressed` leads with two empty outer shadows, so raised → pressed interpolates through flat instead of snapping. Marks pop in on `easing-pop`. 180ms color; indicators and knobs glide 360ms on `cubic-bezier(.32,.72,0,1)`.
 
 ## 4. Components
 

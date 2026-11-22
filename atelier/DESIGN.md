@@ -43,7 +43,7 @@ Source: **ATELIER / PRODUCT UI SYSTEM** board. The "appearance settings" idea al
 **Spacing & density** — 4px base; panel padding 24 (compact 16, cozy 32); row height 40 (32 / 48); controls 30 / 36 / 44 (26 / 30 / 36 · 34 / 42 / 50).
 **Shape** — `--atelier-radius-base` 16 (8–24); sm/md/lg/xl derived; buttons, tabs, badges, switches are pills.
 **Depth** — Subtle, panel, floating, modal shadows (cool `rgba(28,35,51,…)`); focus `0 0 0 3px` accent at 30%.
-**Motion** — 160ms color; 340ms glide; `data-motion="reduced"` sets durations to 0.
+**Motion** — Precise: no overshoot anywhere. Press 70ms, release 180ms; `shadow-pressed` fades the lift into a well; check marks scale in, radios close their ring. 160ms color; 340ms glide; `data-motion="reduced"` sets every duration to 0.
 
 ## 4. Components
 

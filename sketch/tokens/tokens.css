@@ -75,4 +75,10 @@
   --sketch-motion-duration-slide: 360ms;
   --sketch-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
   --sketch-motion-easing-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --sketch-motion-duration-press: 60ms; /* Going in: press, check */
+  --sketch-motion-duration-release: 300ms; /* Coming back: release, hover settle, pop */
+  --sketch-motion-easing-press: cubic-bezier(0.4, 0, 1, 1);
+  --sketch-motion-easing-release: cubic-bezier(0.3, 1.9, 0.5, 1); /* Cartoon snap-back: drawn pieces overshoot like an animated doodle */
+  --sketch-motion-easing-pop: cubic-bezier(0.3, 1.9, 0.5, 1); /* Check marks and radio dots appearing */
+  --sketch-motion-duration-boil: 480ms; /* One loop of the hover line-boil (three drawn frames) */
 }

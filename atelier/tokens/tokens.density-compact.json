@@ -1,1 +1,1 @@
-{ "$description": "Compact density", "space": { "panel": { "$value": "16px" }, "gap": { "$value": "10px" } }, "size": { "control-sm": { "$value": "26px" }, "control": { "$value": "30px" }, "control-lg": { "$value": "36px" }, "row": { "$value": "32px" } } }
+{ "$description": "Compact density", "space": { "panel": { "$value": "16px" }, "gap": { "$value": "10px" } }, "size": { "control-sm": { "$value": "28px" }, "control": { "$value": "34px" }, "control-lg": { "$value": "40px" }, "row": { "$value": "32px" } } }

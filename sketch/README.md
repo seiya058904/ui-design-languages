@@ -9,7 +9,7 @@ Hand-drawn ink on cream paper: uneven outlines, drawn offset shadows, diagonal h
 ## Quick start
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Itim&family=Patrick+Hand&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/sketch/css/sketch.css">
 
 <section class="sketch-box">

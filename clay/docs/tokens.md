@@ -80,7 +80,7 @@ Families: `--clay-font-family-sans` (Inter), `--clay-font-family-mono` (JetBrain
 
 ## Control sizes
 
-`--clay-size-control-sm` 32px · `--clay-size-control` 44px · `--clay-size-control-lg` 52px
+`--clay-size-control-sm` 36px · `--clay-size-control` 48px · `--clay-size-control-lg` 56px
 
 ## Shadows
 

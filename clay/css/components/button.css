@@ -11,12 +11,12 @@
   justify-content: center;
   gap: var(--clay-space-2);
   height: var(--clay-size-control);
-  padding: 0 22px;
+  padding: 0 24px;
   border: 0;
   border-radius: var(--clay-radius-pill);
   background: var(--btn-bg);
   color: var(--btn-ink);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: var(--clay-font-weight-semibold);
   line-height: 1;
   white-space: nowrap;
@@ -74,7 +74,7 @@
 .clay-btn--ghost.is-hover { background: var(--clay-color-wash); box-shadow: none; transform: none; }
 .clay-btn--ghost:active { box-shadow: var(--clay-shadow-inset-sm); }
 
-.clay-btn--sm   { height: var(--clay-size-control-sm); padding: 0 14px; font-size: 13px; }
+.clay-btn--sm   { height: var(--clay-size-control-sm); padding: 0 16px; font-size: 14px; }
 .clay-btn--lg   { height: var(--clay-size-control-lg); padding: 0 28px; font-size: 16px; }
 .clay-btn--icon { width: var(--clay-size-control); padding: 0; }
 .clay-btn--icon.clay-btn--sm { width: var(--clay-size-control-sm); }

@@ -25,7 +25,7 @@ warning #F5E596 (ink #4F4310), error #F2A09E (ink #5E1D1B), info #C9DDF2 (ink #1
 Type: Inter. Display 56/64 bold −0.03em, heading 40/48 bold, title 32/40 semibold, subtitle 24/32,
 body 16/24, caption 12/16. Section labels 20px medium. Sentence case, no all-caps.
 
-Shape: controls are pills (44px tall, 32 small, 52 large); cards 20px radius; dialogs 28px;
+Shape: controls are pills (48px tall, 36 small, 56 large); cards 20px radius; dialogs 28px;
 swatches, avatars and icon tiles are 34% squircles. 4px spacing grid.
 
 Depth: raised = fill + "inset 0 1.5px 0 rgba(255,255,255,.85), inset 0 -2px 3px rgba(84,74,60,.12),

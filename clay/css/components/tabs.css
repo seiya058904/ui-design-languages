@@ -36,13 +36,13 @@
   position: relative;
   z-index: 1;
   flex: 1;
-  height: 38px;
-  padding: 0 20px;
+  height: 42px;
+  padding: 0 22px;
   border: 0;
   border-radius: var(--clay-radius-pill);
   background: transparent;
   color: var(--clay-color-text);
-  font-size: 15px;
+  font-size: 16px;
   /* One weight for every state so the control never changes width on click */
   font-weight: var(--clay-font-weight-medium);
   white-space: nowrap;
@@ -121,7 +121,7 @@
   border: 0;
   background: transparent;
   color: var(--clay-color-text-subtle);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: var(--clay-font-weight-medium);
   cursor: pointer;
   border-radius: var(--clay-radius-md);

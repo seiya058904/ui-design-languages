@@ -49,4 +49,4 @@ Requirements: Node 18+ and a local Chrome or Edge for `snap.mjs` (`CHROME_PATH` 
 
 ## Licenses
 
-Code and docs: [MIT](LICENSE). Fonts are loaded from Google Fonts under the SIL Open Font License (Inter, Cormorant Garamond, Manrope, Archivo, Plus Jakarta Sans, Kalam, Patrick Hand). Icons are drawn for this repository. The reference images that inspired the packs are not redistributed.
+Code and docs: [MIT](LICENSE). Fonts are loaded from Google Fonts under the SIL Open Font License (Inter, Cormorant Garamond, Manrope, Archivo, Plus Jakarta Sans, Itim, Patrick Hand). Icons are drawn for this repository. The reference images that inspired the packs are not redistributed.

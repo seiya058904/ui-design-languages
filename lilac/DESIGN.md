@@ -18,7 +18,7 @@ Sources: **LILAC / FLOW** (primary) and **SOFT / SYSTEM** (merged — same struc
 
 | Element | Seen in the references (fact) | Our decision (inferred / added) |
 | --- | --- | --- |
-| Header | Spaced serif capitals "LILAC / FLOW", tracked caps subtitle | Cormorant Garamond 500; violet slash |
+| Header | Spaced serif capitals "LILAC / FLOW", tracked caps subtitle | Cormorant Garamond 500; thin muted-ink slash, as printed (violet stays reserved for interaction) |
 | Tiles | 8 rounded ivory tiles, each labelled "01  COLOR PALETTE" etc. | 24px radius, wide faint shadow, 28px padding |
 | Palette | Violet `#5B2DFF`, Lilac `#C8B4FF`, Ivory `#FCFAF6`, Ink `#1F1F28` (printed); SOFT adds cobalt, sky, mist, charcoal (no hex) | Canvas `#F3F0EA`, tile `#FAF8F4`; cobalt `#1556E8` as `data-accent="cobalt"` |
 | Type | Large serif "Aa", "Simple feels better.", list Display / Headline / Body / Caption; SOFT uses a geometric sans "Aa" | Serif display + Manrope UI; scale 72 / 48 / 34 / 22 / 15 / 12 |

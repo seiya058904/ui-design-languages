@@ -21,7 +21,7 @@ Source: **ATELIER / PRODUCT UI SYSTEM** board. The "appearance settings" idea al
 | Header | "ATELIER / PRODUCT UI SYSTEM" bold caps, tagline "A tactile, precise interface language", "DESIGN LANGUAGE 01.26", blue progress rule | Archivo 800 at 112% width |
 | Panels | Four frosted panels "01. FOUNDATIONS" … "04. DATA & FEEDBACK" | `backdrop-filter: blur(16px) saturate(140%)`, white 72%, 16px radius |
 | Foundations | Surfaces Base / Raised / Inset / Overlay (checker); colors Ink, Canvas, Cobalt, Teal, Amber; shadows Subtle / Floating / Modal; radius 8, 12, 16, 16, 24; borders 1, 1.5, 2px | All hex values; radius scale sm/md/lg/xl = 0.5/0.75/1/1.5 × base |
-| Controls | Primary (cobalt pill), Secondary (cobalt outline), Tertiary (grey outline), Destructive (coral), pressed and disabled primary; input "Project name"; checkbox / radio; switch; density slider 72 | 36px controls; gradient + glow recipe |
+| Controls | Primary (cobalt pill), Secondary (cobalt outline), Tertiary (grey outline), Destructive (coral), pressed and disabled primary; input "Project name"; checkbox / radio; switch; density slider 72 | 40px controls; gradient + glow recipe |
 | Navigation | Pill tabs (filled active), breadcrumb with home icon, pagination 1 2 3 … 8 ›, sidebar with soft-blue active item | Sliding indicators |
 | Data & feedback | Project card with logo, "In progress", meta, avatar stack; success toast; confirm card; badges New / Approved / At risk; dark toast "Invite sent"; progress 68% with knob; empty state | Soft badges derived with `color-mix()` |
 | Live preview | Dark header bar, workspace with sidebar, search, "New task", kanban To do / In progress / Done | Real `examples/workspace.html`, embedded as a scaled live iframe |
@@ -39,8 +39,8 @@ Source: **ATELIER / PRODUCT UI SYSTEM** board. The "appearance settings" idea al
 | Status | `-teal` / `-amber` / `-danger` / `-violet` | `#1FB196` / `#F4A23A` / `#EA5B5B` / `#7C4DE8` | same |
 | Tints | `-primary-soft`, `-teal-soft`, `-on-soft`, … | `color-mix()` of the base color with surface or ink | follow automatically |
 
-**Typography** — Archivo. Display 40 / 800 / 112% caps · section 19 / 800 caps · title 28 / 700 · heading 16 / 700 · body 14 · small 13 · caption 12 · kicker 11 caps +0.18em.
-**Spacing & density** — 4px base; panel padding 24 (compact 16, cozy 32); row height 40 (32 / 48); controls 30 / 36 / 44 (26 / 30 / 36 · 34 / 42 / 50).
+**Typography** — Archivo. Display 40 / 800 / 112% caps · section 24 / 800 caps · title 28 / 700 · heading 17 / 700 · body 15 · small 14 · caption 13 · kicker 12 caps +0.18em (scaled up to the printed board's proportions).
+**Spacing & density** — 4px base; panel padding 24 (compact 16, cozy 32); row height 40 (32 / 48); controls 32 / 40 / 48 (28 / 34 / 40 · 36 / 46 / 54).
 **Shape** — `--atelier-radius-base` 16 (8–24); sm/md/lg/xl derived; buttons, tabs, badges, switches are pills.
 **Depth** — Subtle, panel, floating, modal shadows (cool `rgba(28,35,51,…)`); focus `0 0 0 3px` accent at 30%.
 **Motion** — Precise: no overshoot anywhere. Press 70ms, release 180ms; `shadow-pressed` fades the lift into a well; check marks scale in, radios close their ring. 160ms color; 340ms glide; `data-motion="reduced"` sets every duration to 0.

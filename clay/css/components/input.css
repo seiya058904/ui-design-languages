@@ -42,7 +42,7 @@
   padding: 0;
   background: transparent;
   outline: none;
-  font-size: 15px;
+  font-size: 16px;
 }
 .clay-field__control input::placeholder { color: var(--clay-color-text-subtle); }
 .clay-field__control input::-webkit-search-cancel-button { display: none; }
@@ -69,7 +69,7 @@
   border-radius: var(--clay-radius-pill);
   background: var(--clay-color-surface-sunken);
   box-shadow: var(--clay-shadow-inset);
-  font-size: 15px;
+  font-size: 16px;
   outline: none;
   appearance: none;
   transition: box-shadow var(--clay-motion-duration) var(--clay-motion-easing);

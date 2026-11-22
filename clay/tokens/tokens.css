@@ -106,9 +106,9 @@
   --clay-radius-squircle: 34%; /* Swatches and app-icon shapes (relative to size) */
   --clay-radius-pill: 999px; /* Buttons, inputs, chips, tabs, alerts */
 
-  --clay-size-control-sm: 32px;
-  --clay-size-control: 44px;
-  --clay-size-control-lg: 52px;
+  --clay-size-control-sm: 36px;
+  --clay-size-control: 48px;
+  --clay-size-control-lg: 56px;
 
   --clay-shadow-raised: inset 0 2px 1px rgba(255, 255, 255, 0.9), inset 0 -3px 5px rgba(84, 74, 60, 0.16), 0 2px 2px rgba(84, 74, 60, 0.1), 0 6px 10px -2px rgba(84, 74, 60, 0.2), 0 16px 28px -12px rgba(84, 74, 60, 0.34); /* Default extruded clay */
   --clay-shadow-raised-sm: inset 0 1.5px 1px rgba(255, 255, 255, 0.85), inset 0 -2px 3px rgba(84, 74, 60, 0.15), 0 1px 1px rgba(84, 74, 60, 0.1), 0 4px 8px -2px rgba(84, 74, 60, 0.24); /* Small extruded clay: chips, knobs, indicators */

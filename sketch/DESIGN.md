@@ -22,7 +22,7 @@ Sources: **Product UI Style Guide — Master · Flagship Edition** (primary, the
 | Paper | Cream paper, ink line drawing; NEO-SKEUO adds a dashed frame with checker squares and dimension marks (4, 8, 16, 32) | Paper `#F6F1E6`, ink `#2B2A27`; faint grain from an inline SVG noise; `.sketch-frame` and `.sketch-dim` |
 | Lines | Uneven rounded outlines; double / offset outlines on raised surfaces | Asymmetric `border-radius` for the hand-drawn wobble; offset outline via a two-layer `box-shadow` |
 | Hatching | Diagonal hatching on primary / pressed buttons, active tags, "on" switches, pressed surfaces, progress fill | `repeating-linear-gradient(-45deg …)` token `--sketch-hatch` |
-| Type | Hand-printed capitals for the title and section titles ("01 OVERVIEW", "02 DESIGN TOKENS"), neat hand-printed small text; monospace token code block | Kalam 700 for display and section titles, Patrick Hand for UI text, system monospace for code |
+| Type | Hand-printed capitals for the title and section titles ("01 OVERVIEW", "02 DESIGN TOKENS"), neat hand-printed small text; monospace token code block | Itim for display and section titles (upright and narrow like the printed headings; Kalam was too slanted), Patrick Hand for UI text, system monospace for code |
 | Color | Six ramps (Brand blue, Neutral, Success green, Warning yellow, Danger red, Info purple) as pastel watercolor dots, steps 50–900 | Base tints: blue `#A9C7EC`, green `#B4DBAF`, yellow `#F2DC8A`, red `#F0AEAB`, purple `#CBB7EA`; ramps built with `color-mix()` |
 | Type scale | H1 32/40 SemiBold, H2 24/32, H3 20/28, H4 16/24, Body L 14/22, Body M 12/20, Caption 12/16, Overline 10/14 uppercase | Used as printed (adapted to the hand fonts' metrics) |
 | Spacing / radius / elevation | 8pt grid (4…64); radius 0 / 4 / 8 / 12 / 16 / 20 / 24; elevation levels 1–3 with 6%, 10%, 14% shadows | Elevation drawn as 2, 4, 6px offset outlines |
@@ -46,7 +46,7 @@ Sources: **Product UI Style Guide — Master · Flagship Edition** (primary, the
 | Brand / success / warning / danger / info | `--sketch-color-brand` … `-info` | `#A9C7EC` / `#B4DBAF` / `#F2DC8A` / `#F0AEAB` / `#CBB7EA` |
 | Hatch | `--sketch-hatch` | ink 32%, 1.2px lines every 6px at −45° |
 
-**Typography** — Kalam 700: display 44, h1 32/40, h2 24/32, h3 20/28. Patrick Hand: body 16/22, small 14/20, caption 13/16, overline 12 caps.
+**Typography** — Itim (single weight): display 44, h1 32/40, h2 24/32, h3 20/28. Patrick Hand: body 16/22, small 14/20, caption 13/16, overline 12 caps.
 **Spacing** — 8pt grid (`--sketch-space-1…8` = 4…64).
 **Shape** — wobbly radii `--sketch-radius-sm/md/lg` (asymmetric), pills for chips and toggles.
 **Depth** — offset outline `--sketch-shadow-1/2/3` (2 / 4 / 6px); pressed = no offset + hatching.
@@ -64,4 +64,4 @@ Ink on paper is ~13:1; soft ink ≥ 4.5:1. Primary labels get a paper halo (`tex
 ## 6. Files, stack, license
 
 `tokens/tokens.json` → `tokens/tokens.css` · `css/sketch.css` · `js/sketch.js` · `index.html` · `examples/settings.html` · `AGENTS.md` · `README.md`.
-Stack: HTML + CSS custom properties (`color-mix()`) + optional vanilla JS. Dependencies: none (Kalam and Patrick Hand from Google Fonts, SIL OFL). License: MIT.
+Stack: HTML + CSS custom properties (`color-mix()`) + optional vanilla JS. Dependencies: none (Itim and Patrick Hand from Google Fonts, SIL OFL). License: MIT.

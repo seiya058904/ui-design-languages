@@ -35,7 +35,7 @@
     .radii { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
     .radii div { display: grid; place-items: center; width: 44px; height: 44px; font-size: 10px; font-weight: 800; box-shadow: var(--tactile-shadow-level-3); }
     .radii div:last-child { width: 52px; height: 52px; }
-    .icons { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 12px 30px; align-items: end; color: var(--tactile-color-primary); text-align: center; font-size: 11px; font-weight: 700; }
+    .icons { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 12px 36px; align-items: end; color: var(--tactile-color-primary); text-align: center; font-size: 11px; font-weight: 700; }
     .icons span { color: var(--tactile-color-ink); }
     .ctrl { display: grid; grid-template-columns: 1.6fr 1fr; gap: 36px; }
     .btn-states { display: grid; grid-template-columns: repeat(3, auto); gap: 10px 22px; justify-content: start; align-items: center; }
@@ -132,9 +132,10 @@
           <svg class="tactile-icon" style="width:16px;height:16px;margin:auto" aria-hidden="true"><use href="#i-gear"/></svg>
           <svg class="tactile-icon" style="width:20px;height:20px;margin:auto" aria-hidden="true"><use href="#i-user"/></svg>
           <svg class="tactile-icon" style="width:24px;height:24px;margin:auto" aria-hidden="true"><use href="#i-search"/></svg>
-          <svg class="tactile-icon" style="width:24px;height:24px;margin:auto" aria-hidden="true"><use href="#i-gear"/></svg>
-          <svg class="tactile-icon" style="width:28px;height:28px;margin:auto" aria-hidden="true"><use href="#i-user"/></svg>
-          <svg class="tactile-icon" style="width:34px;height:34px;margin:auto" aria-hidden="true"><use href="#i-search"/></svg>
+          <span style="margin-top:10px">16 @2x</span><span style="margin-top:10px">20 @2x</span><span style="margin-top:10px">24 @2x</span>
+          <svg class="tactile-icon" style="width:32px;height:32px;margin:auto" aria-hidden="true"><use href="#i-gear"/></svg>
+          <svg class="tactile-icon" style="width:40px;height:40px;margin:auto" aria-hidden="true"><use href="#i-user"/></svg>
+          <svg class="tactile-icon" style="width:48px;height:48px;margin:auto" aria-hidden="true"><use href="#i-search"/></svg>
         </div>
         <span class="tactile-label" style="margin-top:22px">Stroke weight: 2px · round caps</span>
       </div>
@@ -295,7 +296,7 @@
 
 <script src="js/tactile.js"></script>
 <!-- Site chrome (not part of the pack): preview + code toggle for each specimen -->
-<script src="../site/code-view.js" data-selector=".sheet > section" data-skip=".tactile-section"></script>
+<script src="../site/code-view.js" data-selector=".sheet > section" data-skip=".tactile-section" data-toggle-in=".tactile-section > h2"></script>
 <script src="../site/smooth-scroll.js" defer></script>
 </body>
 </html>

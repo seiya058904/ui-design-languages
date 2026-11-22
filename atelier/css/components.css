@@ -18,7 +18,7 @@
   justify-content: center;
   gap: 8px;
   height: var(--atelier-size-control);
-  padding: 0 18px;
+  padding: 0 22px;
   border: 1px solid var(--btn-border);
   border-radius: var(--atelier-radius-pill);
   background: var(--btn-bg);
@@ -152,19 +152,19 @@ select.atelier-input {
     box-shadow var(--atelier-motion-duration),
     background-size var(--atelier-motion-duration-release) var(--atelier-motion-easing-pop);
 }
-.atelier-checkbox { width: 18px; height: 18px; border-radius: calc(var(--atelier-radius-sm) * 0.6); background-size: 0; } /* the mark scales in when checked; radios close their ring */
-.atelier-radio { width: 18px; height: 18px; border-radius: 50%; }
+.atelier-checkbox { width: 20px; height: 20px; border-radius: calc(var(--atelier-radius-sm) * 0.6); background-size: 0; } /* the mark scales in when checked; radios close their ring */
+.atelier-radio { width: 20px; height: 20px; border-radius: 50%; }
 .atelier-checkbox:checked {
-  background-size: 12px;
+  background-size: 14px;
   border-color: var(--atelier-color-primary);
   background-color: var(--atelier-color-primary);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17 19 7'/%3E%3C/svg%3E");
 }
-.atelier-radio:checked { border-color: var(--atelier-color-primary); border-width: 5px; }
+.atelier-radio:checked { border-color: var(--atelier-color-primary); border-width: 6px; }
 .atelier-toggle {
   position: relative;
-  width: 42px;
-  height: 24px;
+  width: 48px;
+  height: 28px;
   border: 0;
   border-radius: var(--atelier-radius-pill);
   background: var(--atelier-color-border);
@@ -174,17 +174,17 @@ select.atelier-input {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   border-radius: var(--atelier-radius-pill);
   background: #fff;
   box-shadow: 0 1px 3px rgba(20, 28, 45, 0.3);
   transition: transform var(--atelier-motion-duration-slide) var(--atelier-motion-easing-spring), width var(--atelier-motion-duration) var(--atelier-motion-easing-spring);
 }
-.atelier-toggle:active::before { width: 23px; }
+.atelier-toggle:active::before { width: 27px; }
 .atelier-toggle:checked { background: var(--atelier-color-primary); box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--atelier-color-primary) 70%, transparent); }
-.atelier-toggle:checked::before { transform: translateX(18px); }
-.atelier-toggle:checked:active::before { transform: translateX(13px); }
+.atelier-toggle:checked::before { transform: translateX(20px); }
+.atelier-toggle:checked:active::before { transform: translateX(15px); }
 .atelier-checkbox:focus-visible,
 .atelier-radio:focus-visible,
 .atelier-toggle:focus-visible { box-shadow: var(--atelier-shadow-focus); }

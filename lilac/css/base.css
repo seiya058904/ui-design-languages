@@ -35,7 +35,7 @@ a { color: inherit; }
   text-transform: uppercase;
   color: var(--lilac-color-ink);
 }
-.lilac-wordmark__slash { font-weight: var(--lilac-font-weight-light); color: var(--lilac-color-primary); margin: 0 0.12em; }
+.lilac-wordmark__slash { font-weight: var(--lilac-font-weight-light); color: var(--lilac-color-text-muted); margin: 0 0.14em; }
 
 /* Eyebrow: the tile label ("01  COLOR PALETTE"). Its number is the tile's place in the study. */
 .lilac-eyebrow {

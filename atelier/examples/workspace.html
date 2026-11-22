@@ -33,7 +33,13 @@
       .menu-btn { display: inline-flex; }
       .atelier-board { grid-template-columns: repeat(3, minmax(240px, 1fr)); }
     }
-    @media (max-width: 520px) { .bar__end .atelier-btn--primary span { display: none; } }
+    @media (max-width: 520px) {
+      .bar { gap: 8px; }
+      .bar .atelier-search { min-width: 0; }
+      .bar__end { gap: 6px; }
+      .bar__end .atelier-btn--primary { width: var(--atelier-size-control); padding: 0; }
+      .bar__end .atelier-btn--primary span { display: none; }
+    }
   </style>
 </head>
 <body>

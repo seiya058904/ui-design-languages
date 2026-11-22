@@ -23,7 +23,7 @@ Source: one "Product UI Styleguide" board (mint clay on a matte grid). What the 
 | Type | Bold neo-grotesk title; six-step scale Display → Caption | Inter; sizes 56/40/32/24/16/12 (the image's size labels are unreadable) |
 | Spacing / radius | Spacing tiles; one 20px-radius tile | 4px base grid; radius sm 8 / md 14 / lg 20 / xl 28 / squircle 34% / pill |
 | Elevation | Five stacked slabs, light to dark grey | Five elevation shadow tokens plus a strata component |
-| Buttons | Mint pill; hover adds a mint glow; grey disabled pill | Shadow recipes, 44px height, pressed state |
+| Buttons | Mint pill; hover adds a mint glow; grey disabled pill | Shadow recipes, 48px height, pressed state |
 | Inputs | Grey clay ring around a carved field, mint glow, search icon | Glow kept inside the ring; invalid and disabled states |
 | Chips | Mint Filter, glowing Selected, grey Disabled | `aria-pressed` drives the selected state |
 | Tabs | Grey segmented track with mint active pill; underline rail with mint bar | Sliding indicator (iOS-style glide) |

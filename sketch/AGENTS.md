@@ -4,7 +4,7 @@ Sketch is hand-drawn ink on cream paper. Primary reference: **Product UI Style G
 
 ## 1. Use the system
 
-1. Link `css/sketch.css`; load **Kalam** (400/700) and **Patrick Hand** from Google Fonts.
+1. Link `css/sketch.css`; load **Itim** and **Patrick Hand** from Google Fonts.
 2. Compose with `.sketch-*` classes (list in `README.md`). Page CSS is layout only.
 3. Optional `js/sketch.js`: sliding indicators, slider bubble, stepper, chips, swatch pickers, dialogs.
 
@@ -16,7 +16,7 @@ Sketch is hand-drawn ink on cream paper. Primary reference: **Product UI Style G
 | Depth | Drawn offset outline (`--sketch-shadow-1/2/3`); hover moves −1px/−1px so the drawn shadow grows; press moves in and loses it | Blurred shadows, gradients, glass |
 | Emphasis | Diagonal hatching (`--sketch-hatch-*`) for primary, pressed, selected, "on" | Solid saturated fills; color as the only emphasis |
 | Color | Watercolor washes only for meaning: brand, success, warning, danger, info | Decorative color, more than one tint per component |
-| Type | Kalam bold for display, section titles and labels; Patrick Hand for everything else, ≥ 13px | Hand fonts below 13px, mixing in a geometric sans |
+| Type | Itim (one weight, `--sketch-font-weight-display`) for display, section titles and labels; Patrick Hand for everything else, ≥ 13px | Hand fonts below 13px, mixing in a geometric sans, `font-weight: 700` on Itim (synthesized bold) |
 | Focus | Dashed ink outline offset 3–4px, always visible | Removing outlines |
 | Disabled | Dashed faint outline, faint text, no drawn shadow | Opacity alone |
 | Primary text | Paper halo (`text-shadow`) so hatching never fights the label | Hatching behind small unhaloed text |

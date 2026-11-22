@@ -40,7 +40,7 @@ a { color: inherit; }
   color: var(--atelier-color-ink);
 }
 .atelier-display__slash { font-weight: var(--atelier-font-weight-regular); color: var(--atelier-color-text-subtle); margin: 0 0.15em; }
-.atelier-tagline { font-size: clamp(17px, 2.4vw, 22px); color: var(--atelier-color-text-muted); letter-spacing: -0.005em; }
+.atelier-tagline { font-size: clamp(18px, 2.6vw, 27px); color: var(--atelier-color-text-muted); letter-spacing: -0.005em; }
 
 /* Section title: "01. FOUNDATIONS" — the number is the section's order on the sheet */
 .atelier-section-title {
@@ -78,7 +78,7 @@ a { color: inherit; }
   box-shadow: var(--atelier-shadow-panel);
 }
 .atelier-panel > .atelier-section-title:first-child { margin-bottom: var(--atelier-space-5); }
-.atelier-group-label { display: block; font-size: var(--atelier-font-size-body); font-weight: var(--atelier-font-weight-semibold); color: var(--atelier-color-ink); margin-bottom: var(--atelier-space-3); }
+.atelier-group-label { display: block; font-size: var(--atelier-font-size-heading); font-weight: var(--atelier-font-weight-semibold); color: var(--atelier-color-ink); margin-bottom: var(--atelier-space-3); }
 
 /* Progress rule under a page header */
 .atelier-rule { height: 6px; border-radius: var(--atelier-radius-pill); background: var(--atelier-color-hairline); overflow: hidden; }

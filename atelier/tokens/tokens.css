@@ -46,12 +46,12 @@
 
   --atelier-font-size-display: 40px;
   --atelier-font-size-title: 28px;
-  --atelier-font-size-section: 19px;
-  --atelier-font-size-heading: 16px;
-  --atelier-font-size-body: 14px;
-  --atelier-font-size-small: 13px;
-  --atelier-font-size-caption: 12px;
-  --atelier-font-size-kicker: 11px;
+  --atelier-font-size-section: 24px;
+  --atelier-font-size-heading: 17px;
+  --atelier-font-size-body: 15px;
+  --atelier-font-size-small: 14px;
+  --atelier-font-size-caption: 13px;
+  --atelier-font-size-kicker: 12px;
 
   --atelier-font-weight-regular: 400;
   --atelier-font-weight-medium: 500;
@@ -80,9 +80,9 @@
   --atelier-border-regular: 1.5px;
   --atelier-border-thick: 2px;
 
-  --atelier-size-control-sm: 30px;
-  --atelier-size-control: 36px;
-  --atelier-size-control-lg: 44px;
+  --atelier-size-control-sm: 32px;
+  --atelier-size-control: 40px;
+  --atelier-size-control-lg: 48px;
   --atelier-size-row: 40px; /* Nav items, table rows */
 
   --atelier-shadow-subtle: 0 1px 1px rgba(28, 35, 51, 0.04), 0 1px 3px rgba(28, 35, 51, 0.06);
@@ -214,9 +214,9 @@
   --atelier-space-panel: 16px;
   --atelier-space-gap: 10px;
 
-  --atelier-size-control-sm: 26px;
-  --atelier-size-control: 30px;
-  --atelier-size-control-lg: 36px;
+  --atelier-size-control-sm: 28px;
+  --atelier-size-control: 34px;
+  --atelier-size-control-lg: 40px;
   --atelier-size-row: 32px;
 }
 
@@ -225,9 +225,9 @@
   --atelier-space-panel: 32px;
   --atelier-space-gap: 22px;
 
-  --atelier-size-control-sm: 34px;
-  --atelier-size-control: 42px;
-  --atelier-size-control-lg: 50px;
+  --atelier-size-control-sm: 36px;
+  --atelier-size-control: 46px;
+  --atelier-size-control-lg: 54px;
   --atelier-size-row: 48px;
 }
 

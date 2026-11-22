@@ -7,7 +7,7 @@
   <meta name="description" content="Sketch — a hand-drawn design language: ink lines on cream paper, hatching for emphasis, watercolor tints for meaning.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Itim&family=Patrick+Hand&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/sketch.css">
   <style>
     /* Page layout only — visuals come from Sketch classes and tokens. */
@@ -36,7 +36,7 @@
     .elev div { padding: 6px 10px; border: 1.6px solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); font-size: 13px; }
     .row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-items: start; padding: 10px 0; border-top: 1.4px dashed var(--sketch-color-ink-faint); }
     .row:first-of-type { border-top: 0; padding-top: 4px; }
-    .row > h3 { font-family: var(--sketch-font-family-display); font-size: 17px; font-weight: 700; }
+    .row > h3 { font-family: var(--sketch-font-family-display); font-size: 17px; font-weight: var(--sketch-font-weight-display); }
     .specimens { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: flex-end; }
     .specimens figure { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 13px; color: var(--sketch-color-ink-soft); }
     .forms { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px 16px; }
@@ -152,20 +152,20 @@
         <div class="tokens">
           <div>
             <span class="sketch-label">Color (semantic)</span>
-            <div class="ramp-row"><span>Brand</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-brand) 35%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-brand) 70%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-brand)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-brand) 70%,var(--sketch-color-ink))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-brand) 40%,var(--sketch-color-ink))"></span></div></div>
-            <div class="ramp-row"><span>Neutral</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:var(--sketch-color-panel)"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-well)"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-ink-faint)"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-ink-soft)"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-ink)"></span></div></div>
-            <div class="ramp-row"><span>Success</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-success) 35%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-success) 70%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-success)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-success) 70%,var(--sketch-color-ink))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-success) 40%,var(--sketch-color-ink))"></span></div></div>
-            <div class="ramp-row"><span>Warning</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-warning) 35%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-warning) 70%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-warning)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-warning) 70%,var(--sketch-color-ink))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-warning) 40%,var(--sketch-color-ink))"></span></div></div>
-            <div class="ramp-row"><span>Danger</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-danger) 35%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-danger) 70%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-danger)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-danger) 70%,var(--sketch-color-ink))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-danger) 40%,var(--sketch-color-ink))"></span></div></div>
-            <div class="ramp-row"><span>Info</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-info) 35%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-info) 70%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-info)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-info) 70%,var(--sketch-color-ink))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-info) 40%,var(--sketch-color-ink))"></span></div></div>
-            <div class="ramp-row sketch-caption"><span></span><span>100 · 300 · 500 · 700 · 900</span></div>
+            <div class="ramp-row"><span>Brand</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-brand) 45%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-brand)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-brand) 65%,var(--sketch-color-brand-strong))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-brand) 30%,var(--sketch-color-brand-strong))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-brand-strong)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-brand-strong) 78%,var(--sketch-color-ink))"></span></div></div>
+            <div class="ramp-row"><span>Neutral</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:var(--sketch-color-panel)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-ink) 12%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-ink) 30%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-ink) 50%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-ink) 70%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-ink)"></span></div></div>
+            <div class="ramp-row"><span>Success</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-success) 45%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-success)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-success) 65%,var(--sketch-color-success-strong))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-success) 30%,var(--sketch-color-success-strong))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-success-strong)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-success-strong) 78%,var(--sketch-color-ink))"></span></div></div>
+            <div class="ramp-row"><span>Warning</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-warning) 45%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-warning)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-warning) 65%,var(--sketch-color-warning-strong))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-warning) 30%,var(--sketch-color-warning-strong))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-warning-strong)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-warning-strong) 78%,var(--sketch-color-ink))"></span></div></div>
+            <div class="ramp-row"><span>Danger</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-danger) 45%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-danger)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-danger) 65%,var(--sketch-color-danger-strong))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-danger) 30%,var(--sketch-color-danger-strong))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-danger-strong)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-danger-strong) 78%,var(--sketch-color-ink))"></span></div></div>
+            <div class="ramp-row"><span>Info</span><div class="sketch-ramp"><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-info) 45%,var(--sketch-color-panel))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-info)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-info) 65%,var(--sketch-color-info-strong))"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-info) 30%,var(--sketch-color-info-strong))"></span><span class="sketch-swatch" style="--swatch:var(--sketch-color-info-strong)"></span><span class="sketch-swatch" style="--swatch:color-mix(in srgb,var(--sketch-color-info-strong) 78%,var(--sketch-color-ink))"></span></div></div>
+            <div class="ramp-row sketch-caption"><span></span><span>50 · 100 · 300 · 500 · 700 · 900</span></div>
           </div>
           <div>
             <span class="sketch-label">Typography</span>
             <div class="type-list">
-              <div><b class="sketch-h1" style="font-size:26px">H1</b><span>32/40 · Kalam bold</span></div>
-              <div><b class="sketch-h2" style="font-size:21px">H2</b><span>24/32 · Kalam bold</span></div>
-              <div><b class="sketch-h3" style="font-size:18px">H3</b><span>20/28 · Kalam bold</span></div>
+              <div><b class="sketch-h1" style="font-size:26px">H1</b><span>32/40 · Itim</span></div>
+              <div><b class="sketch-h2" style="font-size:21px">H2</b><span>24/32 · Itim</span></div>
+              <div><b class="sketch-h3" style="font-size:18px">H3</b><span>20/28 · Itim</span></div>
               <div><span>Body L</span><span>16/22 · Patrick Hand</span></div>
               <div><span class="sketch-small">Body M</span><span>14/20</span></div>
               <div><span class="sketch-caption">Caption</span><span>13/16</span></div>
@@ -326,7 +326,7 @@
 
     <aside class="right" aria-label="Guidelines">
       <section class="sketch-box" id="principles" aria-labelledby="r1">
-        <h2 class="sketch-box__title" id="r1" style="font-size:17px">Design principles</h2>
+        <h2 class="sketch-box__title" id="r1" style="font-size:19px">Design principles</h2>
         <ul class="side-list">
           <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-bulb"/></svg><span>Clear &amp; efficient<small>Reduce cognitive load</small></span></li>
           <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-layers"/></svg><span>Consistent &amp; systematic<small>Unified language and rules</small></span></li>
@@ -335,11 +335,11 @@
         </ul>
       </section>
       <section class="sketch-box" id="patterns" aria-labelledby="r2">
-        <h2 class="sketch-box__title" id="r2" style="font-size:17px">Patterns</h2>
+        <h2 class="sketch-box__title" id="r2" style="font-size:19px">Patterns</h2>
         <div class="patterns"><div>Navigation<i></i></div><div>CRUD<i></i></div><div>Search<i></i></div><div>Filter<i></i></div><div>Form<i></i></div><div>Data view<i></i></div></div>
       </section>
       <section class="sketch-box" id="interaction" aria-labelledby="r3">
-        <h2 class="sketch-box__title" id="r3" style="font-size:17px">Interaction</h2>
+        <h2 class="sketch-box__title" id="r3" style="font-size:19px">Interaction</h2>
         <ul class="side-list">
           <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-hand"/></svg><span>Hover<small>Drawn shadow grows</small></span></li>
           <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-hand"/></svg><span>Press<small>Piece moves in, gets hatched</small></span></li>
@@ -349,7 +349,7 @@
         </ul>
       </section>
       <section class="sketch-box" id="accessibility" aria-labelledby="r4">
-        <h2 class="sketch-box__title" id="r4" style="font-size:17px">Accessibility</h2>
+        <h2 class="sketch-box__title" id="r4" style="font-size:19px">Accessibility</h2>
         <div class="sketch-stack" style="--gap:8px">
           <label class="sketch-check"><input type="checkbox" class="sketch-checkbox" checked> Keyboard navigation</label>
           <label class="sketch-check"><input type="checkbox" class="sketch-checkbox" checked> Focus visible and consistent</label>
@@ -360,7 +360,7 @@
         </div>
       </section>
       <section class="sketch-box" aria-labelledby="r5">
-        <h2 class="sketch-box__title" id="r5" style="font-size:17px">Platforms</h2>
+        <h2 class="sketch-box__title" id="r5" style="font-size:19px">Platforms</h2>
         <ul class="side-list">
           <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-desktop"/></svg><span>Desktop<small>Full-featured, multi-panel</small></span></li>
           <li><svg class="sketch-icon" aria-hidden="true"><use href="#i-tablet"/></svg><span>Tablet<small>Adaptive, touch-friendly</small></span></li>

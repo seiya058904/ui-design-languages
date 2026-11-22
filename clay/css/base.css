@@ -47,7 +47,7 @@ a { color: inherit; }
 
 /* Section label used on boards ("Color Tokens", "Buttons" …) */
 .clay-section-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: var(--clay-font-weight-medium);
   letter-spacing: -0.01em;
   color: var(--clay-color-text);
@@ -67,19 +67,38 @@ a { color: inherit; }
   box-shadow: var(--clay-shadow-elevation-3);
 }
 
-/* Optional engineering ruler frame along the board edges */
+/* Optional engineering ruler along the board edges (as on the reference board): fine ticks every
+   8px, major ticks every 64px aligned with the board grid, and the major ticks numbered. */
 .clay-ruler::before {
   content: "";
   position: absolute;
   inset: 14px;
   pointer-events: none;
   border: 1px solid var(--clay-color-grid);
+  --tick: linear-gradient(90deg, var(--clay-color-grid-strong) 0 1px, transparent 1px);
+  --vtick: linear-gradient(180deg, var(--clay-color-grid-strong) 0 1px, transparent 1px);
   background:
-    repeating-linear-gradient(90deg, var(--clay-color-grid-strong) 0 1px, transparent 1px 16px) top    / 100% 5px no-repeat,
-    repeating-linear-gradient(90deg, var(--clay-color-grid-strong) 0 1px, transparent 1px 16px) bottom / 100% 5px no-repeat,
-    repeating-linear-gradient(180deg, var(--clay-color-grid-strong) 0 1px, transparent 1px 16px) left  / 5px 100% no-repeat,
-    repeating-linear-gradient(180deg, var(--clay-color-grid-strong) 0 1px, transparent 1px 16px) right / 5px 100% no-repeat;
+    var(--tick)  48px 0    / 64px 9px repeat-x,
+    var(--tick)  0    0    / 8px  4px repeat-x,
+    var(--tick)  48px 100% / 64px 9px repeat-x,
+    var(--tick)  0    100% / 8px  4px repeat-x,
+    var(--vtick) 0    48px / 9px 64px repeat-y,
+    var(--vtick) 0    0    / 4px  8px repeat-y,
+    var(--vtick) 100% 48px / 9px 64px repeat-y,
+    var(--vtick) 100% 0    / 4px  8px repeat-y;
   border-radius: 6px;
+}
+.clay-ruler::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--clay-color-text-subtle);
+  opacity: 0.75;
+  --n-top: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1472' height='10' font-family='Arial,Helvetica,sans-serif' font-size='8.5' text-anchor='middle'%3E%3Ctext x='63' y='8'%3E1%3C/text%3E%3Ctext x='127' y='8'%3E2%3C/text%3E%3Ctext x='191' y='8'%3E3%3C/text%3E%3Ctext x='255' y='8'%3E4%3C/text%3E%3Ctext x='319' y='8'%3E5%3C/text%3E%3Ctext x='383' y='8'%3E6%3C/text%3E%3Ctext x='447' y='8'%3E7%3C/text%3E%3Ctext x='511' y='8'%3E8%3C/text%3E%3Ctext x='575' y='8'%3E9%3C/text%3E%3Ctext x='639' y='8'%3E10%3C/text%3E%3Ctext x='703' y='8'%3E11%3C/text%3E%3Ctext x='767' y='8'%3E12%3C/text%3E%3Ctext x='831' y='8'%3E13%3C/text%3E%3Ctext x='895' y='8'%3E14%3C/text%3E%3Ctext x='959' y='8'%3E15%3C/text%3E%3Ctext x='1023' y='8'%3E16%3C/text%3E%3Ctext x='1087' y='8'%3E17%3C/text%3E%3Ctext x='1151' y='8'%3E18%3C/text%3E%3Ctext x='1215' y='8'%3E19%3C/text%3E%3Ctext x='1279' y='8'%3E20%3C/text%3E%3Ctext x='1343' y='8'%3E21%3C/text%3E%3Ctext x='1407' y='8'%3E22%3C/text%3E%3C/svg%3E");
+  --n-side: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='1472' font-family='Arial,Helvetica,sans-serif' font-size='8.5' text-anchor='middle'%3E%3Ctext x='6' y='66'%3E1%3C/text%3E%3Ctext x='6' y='130'%3E2%3C/text%3E%3Ctext x='6' y='194'%3E3%3C/text%3E%3Ctext x='6' y='258'%3E4%3C/text%3E%3Ctext x='6' y='322'%3E5%3C/text%3E%3Ctext x='6' y='386'%3E6%3C/text%3E%3Ctext x='6' y='450'%3E7%3C/text%3E%3Ctext x='6' y='514'%3E8%3C/text%3E%3Ctext x='6' y='578'%3E9%3C/text%3E%3Ctext x='6' y='642'%3E10%3C/text%3E%3Ctext x='6' y='706'%3E11%3C/text%3E%3Ctext x='6' y='770'%3E12%3C/text%3E%3Ctext x='6' y='834'%3E13%3C/text%3E%3Ctext x='6' y='898'%3E14%3C/text%3E%3Ctext x='6' y='962'%3E15%3C/text%3E%3Ctext x='6' y='1026'%3E16%3C/text%3E%3Ctext x='6' y='1090'%3E17%3C/text%3E%3Ctext x='6' y='1154'%3E18%3C/text%3E%3Ctext x='6' y='1218'%3E19%3C/text%3E%3Ctext x='6' y='1282'%3E20%3C/text%3E%3Ctext x='6' y='1346'%3E21%3C/text%3E%3Ctext x='6' y='1410'%3E22%3C/text%3E%3C/svg%3E");
+  -webkit-mask: var(--n-top) 0 2px / 1472px 10px no-repeat, var(--n-top) 0 calc(100% - 2px) / 1472px 10px no-repeat, var(--n-side) 1px 0 / 12px 1472px no-repeat, var(--n-side) calc(100% - 1px) 0 / 12px 1472px no-repeat;
+          mask: var(--n-top) 0 2px / 1472px 10px no-repeat, var(--n-top) 0 calc(100% - 2px) / 1472px 10px no-repeat, var(--n-side) 1px 0 / 12px 1472px no-repeat, var(--n-side) calc(100% - 1px) 0 / 12px 1472px no-repeat;
 }
 
 /* Plain grid background for any element */

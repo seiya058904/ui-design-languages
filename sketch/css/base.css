@@ -27,8 +27,12 @@ a { color: inherit; }
 .sketch-display,
 .sketch-h1,
 .sketch-h2,
-.sketch-h3 { font-family: var(--sketch-font-family-display); font-weight: 700; line-height: 1.15; letter-spacing: 0.005em; }
+.sketch-h3 { font-family: var(--sketch-font-family-display); font-weight: var(--sketch-font-weight-display); line-height: 1.15; letter-spacing: 0.005em; }
 .sketch-display { font-size: clamp(32px, 6vw, var(--sketch-font-size-display)); }
+/* Itim has one weight; a hairline stroke gives titles the felt-marker weight of the printed headings
+   without a synthesized bold. */
+.sketch-display, .sketch-h1, .sketch-h2, .sketch-h3, .sketch-box__title, .sketch-label { -webkit-text-stroke: 0.35px currentColor; }
+.sketch-box__title small { -webkit-text-stroke: 0; }
 .sketch-h1 { font-size: clamp(26px, 4vw, var(--sketch-font-size-h1)); }
 .sketch-h2 { font-size: var(--sketch-font-size-h2); }
 .sketch-h3 { font-size: var(--sketch-font-size-h3); }
@@ -57,7 +61,7 @@ a { color: inherit; }
   margin-bottom: 12px;
   font-family: var(--sketch-font-family-display);
   font-size: var(--sketch-font-size-h3);
-  font-weight: 700;
+  font-weight: var(--sketch-font-weight-display);
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
@@ -72,7 +76,7 @@ a { color: inherit; }
   font-size: 18px;
 }
 .sketch-box__title small { font-family: var(--sketch-font-family-hand); font-size: var(--sketch-font-size-small); font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--sketch-color-ink-soft); }
-.sketch-label { display: block; margin-bottom: 8px; font-family: var(--sketch-font-family-display); font-size: 15px; font-weight: 700; }
+.sketch-label { display: block; margin-bottom: 8px; font-family: var(--sketch-font-family-display); font-size: 15px; font-weight: var(--sketch-font-weight-display); }
 
 /* Hatched fill utility */
 .sketch-hatched { background-image: var(--sketch-hatch-default); }

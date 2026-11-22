@@ -56,7 +56,7 @@ Appearance controls are plain markup — `data-appearance="theme|accent|density|
 | Accent | `--atelier-color-primary` | `#2F7BF5` |
 | Status | `--atelier-color-teal` / `-amber` / `-danger` / `-violet` | `#1FB196` / `#F4A23A` / `#EA5B5B` / `#7C4DE8` |
 | Radius | `--atelier-radius-base` → `sm/md/lg/xl` | 16 → 8 / 12 / 16 / 24 |
-| Controls | `--atelier-size-control-sm/-/lg`, `--atelier-size-row` | 30 / 36 / 44, 40 |
+| Controls | `--atelier-size-control-sm/-/lg`, `--atelier-size-row` | 32 / 40 / 48, 40 |
 
 ## Example
 

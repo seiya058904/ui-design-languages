@@ -39,10 +39,10 @@
   --lilac-font-size-heading: 48px;
   --lilac-font-size-title: 34px;
   --lilac-font-size-subtitle: 22px;
-  --lilac-font-size-body: 15px;
+  --lilac-font-size-body: 16px;
   --lilac-font-size-small: 13px;
   --lilac-font-size-caption: 12px;
-  --lilac-font-size-eyebrow: 11px;
+  --lilac-font-size-eyebrow: 13px;
 
   --lilac-font-weight-light: 300;
   --lilac-font-weight-regular: 400;
@@ -73,7 +73,7 @@
 
   --lilac-size-control-sm: 36px;
   --lilac-size-control: 48px;
-  --lilac-size-control-lg: 60px;
+  --lilac-size-control-lg: 64px;
 
   --lilac-shadow-tile: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(60, 50, 40, 0.04), 0 14px 34px -14px rgba(60, 50, 40, 0.16); /* Study tiles */
   --lilac-shadow-raised: inset 0 1px 0 rgba(255, 255, 255, 1), 0 1px 2px rgba(60, 50, 40, 0.06), 0 8px 18px -8px rgba(60, 50, 40, 0.22); /* Ivory pieces that sit on a tile */

@@ -31,7 +31,7 @@
 }
 
 .clay-swatch-label { margin-top: var(--clay-space-3); text-align: center; line-height: 1.3; }
-.clay-swatch-label strong { display: block; font-size: 15px; font-weight: var(--clay-font-weight-medium); }
+.clay-swatch-label strong { display: block; font-size: 16px; font-weight: var(--clay-font-weight-medium); }
 .clay-swatch-label span { font-size: var(--clay-font-size-caption); color: var(--clay-color-text-muted); font-family: var(--clay-font-family-mono); }
 
 /* ---------- Elevation utilities ---------- */

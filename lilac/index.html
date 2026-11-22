@@ -18,20 +18,20 @@
     .topbar__home:hover { color: var(--lilac-color-text); }
     .accent-opt { height: 34px; padding: 0 16px; font-size: 13px; }
     .masthead { text-align: center; padding: 56px 0 48px; }
-    .masthead .lilac-eyebrow { justify-content: center; margin-top: 18px; letter-spacing: 0.42em; }
-    .study { width: min(100%, 900px); margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .masthead .lilac-eyebrow { justify-content: center; margin-top: 20px; font-size: 15px; letter-spacing: 0.46em; }
+    .study { width: min(100%, 900px); margin: 0 auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
     .study .wide { grid-column: 1 / -1; }
     .part { grid-column: 1 / -1; text-align: center; padding: 40px 0 8px; }
     .part .lilac-eyebrow { justify-content: center; }
 
     .palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center; }
-    .dot { width: 76px; aspect-ratio: 1; margin: 0 auto 14px; border-radius: 50%; box-shadow: var(--lilac-shadow-raised); }
+    .dot { width: 80px; aspect-ratio: 1; margin: 0 auto 14px; border-radius: 50%; box-shadow: var(--lilac-shadow-raised); }
     .dot--accent { background: radial-gradient(circle at 35% 30%, var(--lilac-color-primary-light), var(--lilac-color-primary)); box-shadow: var(--lilac-shadow-accent); }
     .dot--soft { background: radial-gradient(circle at 35% 30%, var(--lilac-color-primary-wash), var(--lilac-color-primary-soft)); }
     .dot--ivory { background: var(--lilac-color-surface); }
     .dot--ink { background: radial-gradient(circle at 35% 30%, #3A3A46, var(--lilac-color-ink)); }
-    .palette strong { display: block; font-size: 15px; font-weight: 500; }
-    .palette span { font-size: 11px; letter-spacing: 0.12em; color: var(--lilac-color-text-muted); }
+    .palette strong { display: block; font-size: 17px; font-weight: 500; }
+    .palette span { font-size: 12px; letter-spacing: 0.12em; color: var(--lilac-color-text-muted); }
 
     .type { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
     .type__aa { font-family: var(--lilac-font-family-serif); font-size: 150px; font-weight: 500; line-height: 0.82; letter-spacing: -0.02em; color: var(--lilac-color-ink); }
@@ -49,7 +49,7 @@
     .site-foot .lilac-eyebrow { letter-spacing: 0.42em; }
 
     @media (max-width: 820px) {
-      .study { grid-template-columns: 1fr; }
+      .study { grid-template-columns: minmax(0, 1fr); }
       .type__aa { font-size: 120px; }
     }
     @media (max-width: 480px) {
@@ -111,7 +111,7 @@
       <div class="type">
         <div><div class="type__aa" aria-hidden="true">Aa</div><p class="type__line">Simple feels better.</p></div>
         <ul class="type__scale" style="list-style:none;margin:0">
-          <li>Display<b>72</b></li><li>Headline<b>48</b></li><li>Body<b>15</b></li><li>Caption<b>12</b></li>
+          <li>Display<b>72</b></li><li>Headline<b>48</b></li><li>Body<b>16</b></li><li>Caption<b>12</b></li>
         </ul>
       </div>
     </section>

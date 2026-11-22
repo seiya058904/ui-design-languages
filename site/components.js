@@ -32,7 +32,7 @@
   var packsEl = $("[data-packs]"), listEl = $("[data-list]"), frame = $("[data-frame]"), viewBox = $("[data-view-box]"), stage = $("[data-stage]");
   var codeBox = $("[data-code]"), codeText = $("[data-code-text]");
   var sources = {};      // id -> Promise<{ selector, skip, items: [{ title, slug, html, anchor }] }>
-  var state = { pack: null, slug: null, view: "preview" };
+  var state = { pack: null, slug: null, view: "preview", layout: "auto", opts: {} };
   var minis = {};        // id -> { link, box, iframe }
 
   /* ---------- source parsing ---------- */
@@ -121,8 +121,97 @@
     });
   }
 
-  /* Layout width for the live page: the desktop styleguide, or its phone layout on small screens. */
-  function layoutWidth() { return stage.clientWidth < 640 ? 390 : 1280; }
+  /* Layout width for the live page: desktop (1280) or phone (390); "auto" picks by the stage width. */
+  function layoutWidth() {
+    if (state.layout === "phone") return 390;
+    if (state.layout === "desktop") return 1280;
+    return stage.clientWidth < 640 ? 390 : 1280;
+  }
+
+  /* ---------- preview options: theme and variants, read from packs.json ---------- */
+  var registry = fetch("packs.json").then(function (r) { return r.json(); }).then(function (d) {
+    var map = {};
+    (d.packs || d).forEach(function (p) {
+      var files = (p.tokens || []).join(" ");
+      var opts = [];
+      Object.keys(p.variants || {}).forEach(function (attr) {
+        var values = p.variants[attr];
+        if (!Array.isArray(values) || attr === "motion") return;
+        if (attr === "theme") { opts.unshift({ attr: "theme", values: ["light", "dark"], def: "light" }); return; }
+        var def = values.filter(function (v) { return files.indexOf("tokens." + attr + "-" + v + ".json") === -1; })[0] || values[0];
+        opts.push({ attr: attr, values: values, def: def });
+      });
+      map[p.id] = opts;
+    });
+    return map;
+  }).catch(function () { return {}; });
+
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function optValue(o) { var v = (state.opts[state.pack] || {})[o.attr]; return v || o.def; }
+  function applyOpts() {
+    registry.then(function (map) {
+      var doc = frame.contentDocument;
+      if (!doc || frame.getAttribute("data-src") !== state.pack + "/index.html") return;
+      (map[state.pack] || []).forEach(function (o) {
+        var v = optValue(o);
+        if (v === o.def) doc.documentElement.removeAttribute("data-" + o.attr);
+        else doc.documentElement.setAttribute("data-" + o.attr, v);
+      });
+      setTimeout(mainRecrop, 40);
+      setTimeout(mainRecrop, 420);
+    });
+  }
+  function renderOpts() {
+    var host = $("[data-opts]");
+    registry.then(function (map) {
+      host.innerHTML = "";
+      (map[state.pack] || []).forEach(function (o) {
+        if (o.attr === "theme") {
+          var seg = document.createElement("div");
+          seg.className = "seg";
+          seg.setAttribute("role", "group");
+          seg.setAttribute("aria-label", "Theme");
+          o.values.forEach(function (v) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.textContent = cap(v);
+            b.setAttribute("aria-pressed", String(optValue(o) === v));
+            b.addEventListener("click", function () { setOpt(o.attr, v); });
+            seg.appendChild(b);
+          });
+          host.appendChild(seg);
+        } else {
+          var label = document.createElement("label");
+          label.className = "opt";
+          label.innerHTML = "<span></span><select></select>";
+          label.querySelector("span").textContent = cap(o.attr);
+          var sel = label.querySelector("select");
+          o.values.forEach(function (v) { var op = document.createElement("option"); op.value = v; op.textContent = cap(v); sel.appendChild(op); });
+          sel.value = optValue(o);
+          sel.addEventListener("change", function () { setOpt(o.attr, sel.value); });
+          host.appendChild(label);
+        }
+      });
+      var lay = document.createElement("div");
+      lay.className = "seg";
+      lay.setAttribute("role", "group");
+      lay.setAttribute("aria-label", "Layout");
+      [["desktop", "Desktop"], ["phone", "Phone"]].forEach(function (pair) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.textContent = pair[1];
+        b.setAttribute("aria-pressed", String((layoutWidth() === 390) === (pair[0] === "phone")));
+        b.addEventListener("click", function () { state.layout = pair[0]; frame.style.width = layoutWidth() + "px"; renderOpts(); setTimeout(mainRecrop, 60); setTimeout(mainRecrop, 400); });
+        lay.appendChild(b);
+      });
+      host.appendChild(lay);
+    });
+  }
+  function setOpt(attr, v) {
+    (state.opts[state.pack] = state.opts[state.pack] || {})[attr] = v;
+    renderOpts();
+    applyOpts();
+  }
 
   var mainRecrop = function () {};
   function showPreview(item, data) {
@@ -140,6 +229,7 @@
     }
   }
   watch(frame, function () { mainRecrop(); });
+  frame.addEventListener("load", applyOpts);
   if ("ResizeObserver" in window) {
     var lastW = 0;
     new ResizeObserver(function () {
@@ -199,6 +289,7 @@
     });
   }
   function renderList(data) {
+    if (search && search.value.trim()) { runSearch(); return; }
     listEl.innerHTML = "";
     data.items.forEach(function (it) {
       var li = document.createElement("li");
@@ -242,6 +333,7 @@
       setPager($("[data-prev]"), data.items[i - 1]);
       setPager($("[data-next]"), data.items[i + 1]);
       showPreview(item, data);
+      renderOpts();
       related(item.title);
       state.item = item;
     }).catch(function () {
@@ -288,6 +380,58 @@
       "First read " + root + pack.id + "/DESIGN.md and " + root + pack.id + "/AGENTS.md. Link " + root + pack.id + "/css/" + pack.id + ".css (and " + root + pack.id + "/js/" + pack.id + ".js for interactive parts) plus the fonts named in DESIGN.md.\n" +
       "Use only ." + pack.id + "-* classes and var(--" + pack.id + "-*) tokens; page CSS is for layout only. Reference markup from " + pack.id + "/index.html:\n\n" + state.item.html;
     copy(this, text);
+  });
+
+  /* ---------- search across every language ---------- */
+  var search = $("[data-search]");
+  function runSearch() {
+    var q = search.value.trim().toLowerCase();
+    if (!q) { load(state.pack).then(renderList); return; }
+    Promise.all(PACKS.map(function (p) { return load(p.id).then(function (d) { return { pack: p, items: d.items }; }, function () { return { pack: p, items: [] }; }); })).then(function (groups) {
+      if (search.value.trim().toLowerCase() !== q) return;
+      listEl.innerHTML = "";
+      var total = 0;
+      groups.forEach(function (g) {
+        var hits = g.items.filter(function (it) { return it.title.toLowerCase().indexOf(q) !== -1; });
+        var inCode = g.items.filter(function (it) { return hits.indexOf(it) === -1 && it.html.toLowerCase().indexOf(q) !== -1; });
+        hits = hits.concat(inCode);
+        if (!hits.length) return;
+        var head = document.createElement("li");
+        head.className = "cmp__group";
+        head.innerHTML = '<span style="' + g.pack.font + '"></span>';
+        head.firstChild.textContent = g.pack.name;
+        listEl.appendChild(head);
+        hits.forEach(function (it) {
+          var li = document.createElement("li");
+          var a = document.createElement("a");
+          a.href = "#/" + g.pack.id + "/" + it.slug;
+          a.textContent = it.title;
+          if (inCode.indexOf(it) !== -1) { var m = document.createElement("small"); m.textContent = "in markup"; a.appendChild(m); }
+          if (g.pack.id === state.pack && it.slug === state.slug) a.setAttribute("aria-current", "page");
+          li.appendChild(a);
+          listEl.appendChild(li);
+          total++;
+        });
+      });
+      if (!total) listEl.innerHTML = '<li class="cmp__empty">Nothing matches "' + q.replace(/[<&"]/g, "") + '". Try a component name such as button, toggle or card.</li>';
+    });
+  }
+  search.addEventListener("input", runSearch);
+  search.addEventListener("keydown", function (e) {
+    var first = listEl.querySelector("a");
+    if (e.key === "Enter" && first) { location.hash = first.getAttribute("href"); e.preventDefault(); }
+    if (e.key === "ArrowDown" && first) { first.focus(); e.preventDefault(); }
+    if (e.key === "Escape") { search.value = ""; runSearch(); search.blur(); }
+  });
+
+  /* ---------- keyboard: ←/→ previous / next, "/" search ---------- */
+  document.addEventListener("keydown", function (e) {
+    var t = e.target;
+    if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
+    if (t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable)) return;
+    if (e.key === "/") { search.focus(); search.select(); e.preventDefault(); return; }
+    var link = e.key === "ArrowLeft" ? $("[data-prev]") : e.key === "ArrowRight" ? $("[data-next]") : null;
+    if (link && !link.hidden) { location.hash = link.getAttribute("href"); e.preventDefault(); }
   });
 
   window.addEventListener("hashchange", route);

@@ -22,6 +22,7 @@
 
 <main class="wrap cmp">
   <aside class="cmp__side" aria-label="Browse">
+    <label class="cmp__search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><input type="search" placeholder="Search all components" aria-label="Search components in every language" autocomplete="off" spellcheck="false" data-search><kbd aria-hidden="true">/</kbd></label>
     <p class="cmp__label" id="lang-label">Language</p>
     <div class="cmp__packs" role="group" aria-labelledby="lang-label" data-packs></div>
     <p class="cmp__label" id="list-label">Components</p>
@@ -36,9 +37,12 @@
     </div>
 
     <div class="cmp__bar">
-      <div class="seg" role="group" aria-label="View">
-        <button type="button" aria-pressed="true" data-view="preview">Preview</button>
-        <button type="button" aria-pressed="false" data-view="code">Code</button>
+      <div class="cmp__tools">
+        <div class="seg" role="group" aria-label="View">
+          <button type="button" aria-pressed="true" data-view="preview">Preview</button>
+          <button type="button" aria-pressed="false" data-view="code">Code</button>
+        </div>
+        <div class="cmp__opts" data-opts></div>
       </div>
       <div class="cmp__actions">
         <button class="pill pill--sm" type="button" data-act="copy"><span>Copy code</span></button>
@@ -56,6 +60,7 @@
       <pre><code data-code-text></code></pre>
     </div>
 
+    <p class="cmp__keys" aria-hidden="true"><kbd>←</kbd><kbd>→</kbd> previous / next · <kbd>/</kbd> search</p>
     <nav class="cmp__pager" aria-label="Previous and next component">
       <a href="#" rel="prev" data-prev><small>Previous</small><span></span></a>
       <a href="#" rel="next" data-next><small>Next</small><span></span></a>

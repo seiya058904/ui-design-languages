@@ -2,7 +2,7 @@
 
 A library of complete UI design languages ("Style Packs"). Each one is shown as real, working pages — so you can compare styles by how they actually look and behave — and each one ships both the **design spec** (Markdown) and the **code** (tokens, CSS components, optional JS, demos).
 
-**Live library:** https://seiya058904.github.io/ui-design-languages/ · **Components:** [browse one at a time](https://seiya058904.github.io/ui-design-languages/components.html) — live preview, copyable markup and the same component in the other languages
+**Live library:** https://seiya058904.github.io/ui-design-languages/ · **Components:** [browse one at a time](https://seiya058904.github.io/ui-design-languages/components.html) — live preview with theme / variant / phone-layout switches, search across every language, copyable markup and the same component in the other languages
 
 | Pack | Character | Spec | Styleguide + code | Example |
 | --- | --- | --- | --- | --- |

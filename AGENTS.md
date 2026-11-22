@@ -5,9 +5,9 @@ This repository holds several complete, independent design languages. Each top-l
 | Folder | Language | Character |
 | --- | --- | --- |
 | `clay/` | Clay | Soft extruded clay on a matte grid board, mint accent, light + dark |
-| `lilac/` | Lilac | Ivory component-study cards, one violet accent with a soft glow, editorial serif headlines |
+| `lilac/` | Lilac | Ivory component-study cards, one violet accent with a soft glow, editorial serif headlines, light + dark |
 | `atelier/` | Atelier | Precise, cool product UI: frosted panels, cobalt accent, bold uppercase section titles |
-| `tactile/` | Tactile | Warm sand neumorphism with base / raised / inset / pressed layers and a deep teal accent |
+| `tactile/` | Tactile | Warm sand neumorphism with base / raised / inset / pressed layers and a deep teal accent, light + dark |
 | `sketch/` | Sketch | Hand-drawn ink on cream paper, hatched fills, wireframe honesty |
 
 ## Before building UI with a language
@@ -27,7 +27,7 @@ State hooks are shared too: `aria-selected`, `aria-pressed`, `aria-current="page
 
 - Work autonomously end-to-end: the owner reviews rarely, so don't block on human checkpoints. Self-verify against the reference with screenshots, then commit.
 
-- Each language's `tokens/tokens.json` is its single source of truth (optional `tokens.dark.json` for a dark theme). Run `node scripts/build-tokens.mjs` from the repo root after editing tokens; `node scripts/build-tokens.mjs --check` must pass before committing. Never hand-edit a generated `tokens.css`.
+- Each language's `tokens/tokens.json` is its single source of truth (optional `tokens.dark.json` for a dark theme, `tokens.<attr>-<value>.json` for variants, `tokens.dark.<attr>-<value>.json` for a variant on the dark theme). Run `node scripts/build-tokens.mjs` from the repo root after editing tokens; `node scripts/build-tokens.mjs --check` must pass before committing. Never hand-edit a generated `tokens.css`.
 - A language folder contains: `tokens/`, `css/` (entry file + base + components), `js/` (optional behaviour), `index.html` (styleguide), `examples/`, `DESIGN.md`, `AGENTS.md`, `README.md`. Register it in `packs.json` and give it a card on the homepage.
 - Follow `docs/WORKFLOW.md`: write the reference-analysis table (facts vs inferences) in `DESIGN.md` before coding.
 - `site/` is neutral homepage chrome (styles, the Shadow-DOM code viewer, `smooth-scroll.js` — the inertial wheel scrolling every showcase page loads — and the components browser `components.html` + `site/components.*`, which crops each styleguide's own specimens, found through its `code-view.js` `data-selector`, so a new pack shows up there automatically once it is added to `site/components.js`). Never style a pack with it, never put pack tokens in it. Pack pages may load `site/*.js` only as optional showcase behaviour that degrades to native when missing.

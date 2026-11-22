@@ -4,9 +4,11 @@
    - sliders: keeps --fill and a linked <output for="id"> in sync
    - toggle chips (.lilac-chip[aria-pressed]) and dialogs ([data-lilac-open="#id"], [data-lilac-close])
    - accent: [data-accent-set="violet|cobalt"] switches <html data-accent>, remembered in localStorage
+   - theme: [data-theme-set="light|dark|auto"] or a [data-theme-toggle] button / checkbox switches
+     <html data-theme>, remembered in localStorage "lilac-theme"; fires "lilac:themechange"
 
    Frameworks: render aria-selected / aria-current yourself; indicators follow attribute changes and
-   pick up components rendered later. Hooks: window.LilacUI.refresh(el), .initIndicators(root), .setAccent(name). */
+   pick up components rendered later. Hooks: window.LilacUI.refresh(el), .initIndicators(root), .setAccent(name), .setTheme(name). */
 (function () {
   var P = "lilac";
   var GROUPS = [
@@ -116,6 +118,35 @@
     syncAccentControls();
   }
 
+
+  /* ---------- Theme ---------- */
+  var THEME_KEY = P + "-theme";
+  var darkQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  function currentTheme() { return document.documentElement.getAttribute("data-theme") || "light"; }
+  function isDark() { var t = currentTheme(); return t === "dark" || (t === "auto" && !!darkQuery && darkQuery.matches); }
+  function syncThemeControls() {
+    var t = currentTheme();
+    document.querySelectorAll("[data-theme-set]").forEach(function (b) {
+      var on = b.getAttribute("data-theme-set") === t;
+      if (b.matches(TAB_ITEM)) { b.setAttribute("aria-selected", on ? "true" : "false"); b.classList.toggle("is-active", on); b.tabIndex = on ? 0 : -1; }
+      else b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    document.querySelectorAll("[data-theme-toggle]").forEach(function (b) {
+      if (b.type === "checkbox") b.checked = isDark(); else b.setAttribute("aria-pressed", isDark() ? "true" : "false");
+    });
+  }
+  function setTheme(t) {
+    if (!t || t === "light") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t);
+    try { localStorage.setItem(THEME_KEY, t || "light"); } catch (err) { /* not remembered */ }
+    syncThemeControls();
+    document.dispatchEvent(new CustomEvent(P + ":themechange", { detail: { theme: t || "light", dark: isDark() } }));
+  }
+  if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener("change", function () { if (currentTheme() === "auto") syncThemeControls(); });
+  document.addEventListener("change", function (e) {
+    if (e.target.matches && e.target.matches("input[data-theme-toggle]")) setTheme(e.target.checked ? "dark" : "light");
+  });
+
   document.addEventListener("input", function (e) {
     if (e.target.matches && e.target.matches("." + P + "-slider")) syncSlider(e.target);
   });
@@ -132,6 +163,10 @@
 
     var accent = e.target.closest("[data-accent-set]");
     if (accent) setAccent(accent.getAttribute("data-accent-set"));
+    var themeSet = e.target.closest("[data-theme-set]");
+    if (themeSet) setTheme(themeSet.getAttribute("data-theme-set"));
+    var themeToggle = e.target.closest("button[data-theme-toggle]");
+    if (themeToggle) setTheme(isDark() ? "light" : "dark");
 
     var chip = e.target.closest("." + P + "-chip[aria-pressed]");
     if (chip && !chip.disabled) chip.setAttribute("aria-pressed", chip.getAttribute("aria-pressed") === "true" ? "false" : "true");
@@ -155,11 +190,14 @@
     var next = step === "first" ? all[0] : step === "last" ? all[all.length - 1] : all[(i + step + all.length) % all.length];
     next.focus();
     selectTab(next);
+    if (next.hasAttribute("data-accent-set")) setAccent(next.getAttribute("data-accent-set"));
+    if (next.hasAttribute("data-theme-set")) setTheme(next.getAttribute("data-theme-set"));
     e.preventDefault();
   });
 
   function boot() {
     syncAccentControls();
+    syncThemeControls();
     document.querySelectorAll("." + P + "-slider").forEach(syncSlider);
     initIndicators(document);
     var queued = false;
@@ -172,5 +210,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
-  window.LilacUI = { initIndicators: initIndicators, refresh: refresh, selectTab: selectTab, selectNavItem: selectNavItem, setAccent: setAccent, syncSlider: syncSlider };
+  window.LilacUI = { initIndicators: initIndicators, refresh: refresh, selectTab: selectTab, selectNavItem: selectNavItem, setAccent: setAccent, setTheme: setTheme, syncSlider: syncSlider };
 })();

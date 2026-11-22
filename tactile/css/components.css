@@ -456,7 +456,8 @@ select.tactile-input {
   aspect-ratio: 1;
   border: 3px solid var(--tactile-color-surface);
   border-radius: 50%;
-  background: var(--avatar-bg, var(--tactile-color-well));
+  /* the dark theme mutes pastel avatar colours (--tactile-color-avatar-tint) so ivory initials stay readable */
+  background: color-mix(in srgb, var(--avatar-bg, var(--tactile-color-well)) var(--tactile-color-avatar-tint), var(--tactile-color-surface));
   color: var(--tactile-color-ink);
   font-size: calc(var(--avatar-size, 40px) * 0.34);
   font-weight: var(--tactile-font-weight-bold);

@@ -29,6 +29,7 @@
   --tactile-color-disabled-ink: #A39A8C;
   --tactile-color-annotation: #3E7BD8; /* Spec callouts (dots and dashed leaders) */
   --tactile-color-backdrop: rgba(60, 48, 30, 0.3);
+  --tactile-color-avatar-tint: 100%; /* How much of an avatar's own colour shows over the surface */
 
   --tactile-font-family-sans: "Plus Jakarta Sans", "Avenir Next", "Segoe UI", system-ui, sans-serif;
 
@@ -93,6 +94,76 @@
   --tactile-motion-easing-pop: cubic-bezier(0.25, 1.4, 0.5, 1); /* Check marks and radio dots appearing */
 }
 
+/* Dark theme — GENERATED from tactile/tokens/tokens.dark.json.
+   <html data-theme="dark"> forces it; <html data-theme="auto"> follows the OS setting. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --tactile-color-surface: #2A2723;
+  --tactile-color-surface-pressed: #25221F;
+  --tactile-color-well: #24211E;
+  --tactile-color-light: rgba(255, 238, 214, 0.075);
+  --tactile-color-dark: rgba(0, 0, 0, 0.58);
+  --tactile-color-dark-soft: rgba(0, 0, 0, 0.38);
+  --tactile-color-line: #3B3731;
+  --tactile-color-primary: #2A9D99;
+  --tactile-color-primary-strong: #1F7F7C;
+  --tactile-color-primary-light: #3DB4AF;
+  --tactile-color-primary-ink: #061C1B;
+  --tactile-color-primary-soft: #23403D;
+  --tactile-color-glow: rgba(42, 157, 153, 0.38);
+  --tactile-color-ink: #F2ECE2;
+  --tactile-color-text: #DDD6CB;
+  --tactile-color-text-muted: #A69E92;
+  --tactile-color-text-subtle: #7A7267;
+  --tactile-color-danger: #E36D62;
+  --tactile-color-danger-soft: #3D2623;
+  --tactile-color-warning: #E2A84C;
+  --tactile-color-warning-soft: #3A2F1F;
+  --tactile-color-tip: #EDE6DA;
+  --tactile-color-tip-ink: #2A2723;
+  --tactile-color-skeleton: #36322D;
+  --tactile-color-disabled: #312D29;
+  --tactile-color-disabled-ink: #72695F;
+  --tactile-color-annotation: #79A8F2;
+  --tactile-color-backdrop: rgba(0, 0, 0, 0.55);
+  --tactile-color-avatar-tint: 34%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    color-scheme: dark;
+    --tactile-color-surface: #2A2723;
+    --tactile-color-surface-pressed: #25221F;
+    --tactile-color-well: #24211E;
+    --tactile-color-light: rgba(255, 238, 214, 0.075);
+    --tactile-color-dark: rgba(0, 0, 0, 0.58);
+    --tactile-color-dark-soft: rgba(0, 0, 0, 0.38);
+    --tactile-color-line: #3B3731;
+    --tactile-color-primary: #2A9D99;
+    --tactile-color-primary-strong: #1F7F7C;
+    --tactile-color-primary-light: #3DB4AF;
+    --tactile-color-primary-ink: #061C1B;
+    --tactile-color-primary-soft: #23403D;
+    --tactile-color-glow: rgba(42, 157, 153, 0.38);
+    --tactile-color-ink: #F2ECE2;
+    --tactile-color-text: #DDD6CB;
+    --tactile-color-text-muted: #A69E92;
+    --tactile-color-text-subtle: #7A7267;
+    --tactile-color-danger: #E36D62;
+    --tactile-color-danger-soft: #3D2623;
+    --tactile-color-warning: #E2A84C;
+    --tactile-color-warning-soft: #3A2F1F;
+    --tactile-color-tip: #EDE6DA;
+    --tactile-color-tip-ink: #2A2723;
+    --tactile-color-skeleton: #36322D;
+    --tactile-color-disabled: #312D29;
+    --tactile-color-disabled-ink: #72695F;
+    --tactile-color-annotation: #79A8F2;
+    --tactile-color-backdrop: rgba(0, 0, 0, 0.55);
+    --tactile-color-avatar-tint: 34%;
+  }
+}
+
 /* Variant — GENERATED from tactile/tokens/tokens.tone-stone.json. Opt in with <html data-tone="stone">. */
 :root[data-tone="stone"] {
   --tactile-color-surface: #E7E8EB;
@@ -118,4 +189,59 @@
   --tactile-color-disabled: #DADCE0;
   --tactile-color-disabled-ink: #9CA1AA;
   --tactile-color-backdrop: rgba(30, 34, 42, 0.3);
+}
+
+/* Dark + variant — GENERATED from tactile/tokens/tokens.dark.tone-stone.json. Applies when both are on. */
+:root[data-theme="dark"][data-tone="stone"] {
+  --tactile-color-surface: #25282D;
+  --tactile-color-surface-pressed: #212429;
+  --tactile-color-well: #1F2226;
+  --tactile-color-light: rgba(220, 230, 255, 0.065);
+  --tactile-color-dark: rgba(0, 0, 0, 0.58);
+  --tactile-color-dark-soft: rgba(0, 0, 0, 0.38);
+  --tactile-color-line: #353941;
+  --tactile-color-primary: #6D95F5;
+  --tactile-color-primary-strong: #5279DB;
+  --tactile-color-primary-light: #88A9F7;
+  --tactile-color-primary-ink: #0A1430;
+  --tactile-color-primary-soft: #26324D;
+  --tactile-color-glow: rgba(109, 149, 245, 0.36);
+  --tactile-color-ink: #EEF1F6;
+  --tactile-color-text: #D7DCE4;
+  --tactile-color-text-muted: #9AA1AD;
+  --tactile-color-text-subtle: #6E7480;
+  --tactile-color-tip: #E8ECF2;
+  --tactile-color-tip-ink: #25282D;
+  --tactile-color-skeleton: #30343A;
+  --tactile-color-disabled: #2C3035;
+  --tactile-color-disabled-ink: #6A707A;
+  --tactile-color-backdrop: rgba(0, 0, 0, 0.55);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"][data-tone="stone"] {
+    --tactile-color-surface: #25282D;
+    --tactile-color-surface-pressed: #212429;
+    --tactile-color-well: #1F2226;
+    --tactile-color-light: rgba(220, 230, 255, 0.065);
+    --tactile-color-dark: rgba(0, 0, 0, 0.58);
+    --tactile-color-dark-soft: rgba(0, 0, 0, 0.38);
+    --tactile-color-line: #353941;
+    --tactile-color-primary: #6D95F5;
+    --tactile-color-primary-strong: #5279DB;
+    --tactile-color-primary-light: #88A9F7;
+    --tactile-color-primary-ink: #0A1430;
+    --tactile-color-primary-soft: #26324D;
+    --tactile-color-glow: rgba(109, 149, 245, 0.36);
+    --tactile-color-ink: #EEF1F6;
+    --tactile-color-text: #D7DCE4;
+    --tactile-color-text-muted: #9AA1AD;
+    --tactile-color-text-subtle: #6E7480;
+    --tactile-color-tip: #E8ECF2;
+    --tactile-color-tip-ink: #25282D;
+    --tactile-color-skeleton: #30343A;
+    --tactile-color-disabled: #2C3035;
+    --tactile-color-disabled-ink: #6A707A;
+    --tactile-color-backdrop: rgba(0, 0, 0, 0.55);
+  }
 }

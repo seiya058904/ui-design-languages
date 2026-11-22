@@ -1,0 +1,18 @@
+{
+  "$description": "Cobalt accent on the dark theme: a lighter blue so labels and rings keep their contrast on ink.",
+  "color": {
+    "primary":       { "$value": "#3569E6" },
+    "primary-hover": { "$value": "#4378EE" },
+    "primary-light": { "$value": "#5B8CFF" },
+    "primary-soft":  { "$value": "#9FBDFF" },
+    "primary-wash":  { "$value": "#1B2642" },
+    "on-wash":       { "$value": "#B8CDFF" },
+    "glow":          { "$value": "rgba(79, 135, 255, 0.5)" },
+    "glow-soft":     { "$value": "rgba(79, 135, 255, 0.22)" }
+  },
+  "shadow": {
+    "accent":       { "$value": "inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 8px rgba(79, 135, 255, 0.32), 0 14px 32px -8px rgba(79, 135, 255, 0.55)" },
+    "accent-hover": { "$value": "inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 3px 10px rgba(79, 135, 255, 0.38), 0 20px 40px -10px rgba(79, 135, 255, 0.65)" },
+    "focus":        { "$value": "0 0 0 3px rgba(79, 135, 255, 0.42)" }
+  }
+}

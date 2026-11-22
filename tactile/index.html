@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <script>try{var t=localStorage.getItem("tactile-tone");if(t&&t!=="sand")document.documentElement.setAttribute("data-tone",t)}catch(e){}</script>
+  <script>try{var d=document.documentElement,t=localStorage.getItem("tactile-tone"),m=localStorage.getItem("tactile-theme");if(t&&t!=="sand")d.setAttribute("data-tone",t);if(m&&m!=="light")d.setAttribute("data-theme",m)}catch(e){}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tactile Styleguide</title>
   <meta name="description" content="Tactile — warm sand neumorphism with base, raised, inset and pressed layers and a deep teal accent.">
@@ -16,6 +16,7 @@
     .sheet { width: min(100%, 1000px); margin: 0 auto; }
     .top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 36px; }
     .top__title { margin-right: auto; }
+    .top__ctrl { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px 12px; max-width: 560px; }
     .top__title p { margin-top: 6px; }
     .tone-opt { height: 30px; padding: 0 14px; font-size: 12px; }
     section + section { margin-top: 44px; }
@@ -82,12 +83,19 @@
       <h1 class="tactile-display">Tactile</h1>
       <p class="tactile-muted">Base, raised, inset and pressed: one material, four states.</p>
     </div>
+    <div class="top__ctrl">
     <div class="tactile-segmented" role="tablist" aria-label="Tone">
       <button class="tactile-segmented__item tone-opt" role="tab" aria-selected="true" data-tone-set="sand">Sand</button>
       <button class="tactile-segmented__item tone-opt" role="tab" aria-selected="false" tabindex="-1" data-tone-set="stone">Stone</button>
     </div>
+    <div class="tactile-segmented" role="tablist" aria-label="Theme">
+      <button class="tactile-segmented__item tone-opt" role="tab" aria-selected="true" data-theme-set="light">Light</button>
+      <button class="tactile-segmented__item tone-opt" role="tab" aria-selected="false" tabindex="-1" data-theme-set="dark">Dark</button>
+      <button class="tactile-segmented__item tone-opt" role="tab" aria-selected="false" tabindex="-1" data-theme-set="auto">Auto</button>
+    </div>
     <a class="tactile-btn tactile-btn--sm" href="examples/home.html">Home app example</a>
     <a class="tactile-btn tactile-btn--sm tactile-btn--ghost" href="../index.html">All languages</a>
+    </div>
   </header>
 
   <section aria-labelledby="h-found">

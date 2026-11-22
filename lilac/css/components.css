@@ -385,7 +385,7 @@ select.lilac-input {
   width: 38px;
   height: 38px;
   border-radius: var(--lilac-radius-pill);
-  background: var(--lilac-color-surface);
+  background: var(--lilac-color-knob);
   box-shadow: var(--lilac-shadow-knob);
   transition:
     transform var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring),

@@ -8,6 +8,7 @@ Lilac is an ivory component study: calm tiles, one saturated accent that glows, 
 2. Compose with `.lilac-*` classes (see `README.md` for the component list). Page CSS is layout only.
 3. Optional `js/lilac.js`: sliding indicators, slider fill, chips, dialogs, accent switch.
 4. Accent: violet by default; `<html data-accent="cobalt">` switches to the SOFT / SYSTEM cobalt. Never mix both on one page.
+5. Theme: light by default; `<html data-theme="dark|auto">` switches to "Lilac at night". Every color, shadow and the knob come from tokens, so components need no dark-specific CSS; never hard-code ivory or white surfaces.
 
 ## 2. Non-negotiable rules
 

@@ -4,7 +4,9 @@ Warm sand neumorphism with a deep teal accent: one material, four states — bas
 
 **Live:** [Styleguide](https://seiya058904.github.io/ui-design-languages/tactile/) · [Home app example](https://seiya058904.github.io/ui-design-languages/tactile/examples/home.html)
 
-![Tactile styleguide](assets/screenshots/styleguide.png)
+| Light | Dark |
+| --- | --- |
+| ![Tactile styleguide, light](assets/screenshots/styleguide.png) | ![Tactile styleguide, dark](assets/screenshots/styleguide-dark.png) |
 
 ## Quick start
 
@@ -23,6 +25,8 @@ Warm sand neumorphism with a deep teal accent: one material, four states — bas
 
 Stone tone: `<html data-tone="stone">`, or `[data-tone-set="sand|stone"]` controls (remembered in `localStorage`).
 
+Dark theme: `<html data-theme="dark">` (or `"auto"`), or `[data-theme-set="light|dark|auto"]` / `[data-theme-toggle]` controls with `js/tactile.js` (remembered as `tactile-theme`). Works with both tones.
+
 ## Components
 
 | Block | Classes |
@@ -40,7 +44,7 @@ Stone tone: `<html data-tone="stone">`, or `[data-tone-set="sand|stone"]` contro
 
 ## Tokens
 
-`tokens/tokens.json` → `tokens/tokens.css`; tone variant `tokens/tokens.tone-stone.json`. Rebuild from the repo root with `node scripts/build-tokens.mjs tactile`.
+`tokens/tokens.json` → `tokens/tokens.css`; tone variant `tokens/tokens.tone-stone.json`; dark theme `tokens/tokens.dark.json` and `tokens/tokens.dark.tone-stone.json`. Rebuild from the repo root with `node scripts/build-tokens.mjs tactile`.
 
 | Role | Token | Sand | Stone |
 | --- | --- | --- | --- |

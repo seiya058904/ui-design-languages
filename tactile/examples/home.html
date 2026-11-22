@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <script>try{var t=localStorage.getItem("tactile-tone");if(t&&t!=="sand")document.documentElement.setAttribute("data-tone",t)}catch(e){}</script>
+  <script>try{var d=document.documentElement,t=localStorage.getItem("tactile-tone"),m=localStorage.getItem("tactile-theme");if(t&&t!=="sand")d.setAttribute("data-tone",t);if(m&&m!=="light")d.setAttribute("data-theme",m)}catch(e){}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Hearth Home</title>
   <meta name="description" content="Tactile example: a smart-home control panel built only from Tactile tokens and components.">
@@ -68,6 +68,11 @@
     <div class="tactile-segmented tactile-segmented--block" role="tablist" aria-label="Tone">
       <button class="tactile-segmented__item" role="tab" aria-selected="true" data-tone-set="sand" style="height:30px;font-size:12px">Sand</button>
       <button class="tactile-segmented__item" role="tab" aria-selected="false" tabindex="-1" data-tone-set="stone" style="height:30px;font-size:12px">Stone</button>
+    </div>
+    <div class="tactile-segmented tactile-segmented--block" role="tablist" aria-label="Theme">
+      <button class="tactile-segmented__item" role="tab" aria-selected="true" data-theme-set="light" style="height:30px;font-size:12px">Day</button>
+      <button class="tactile-segmented__item" role="tab" aria-selected="false" tabindex="-1" data-theme-set="dark" style="height:30px;font-size:12px">Night</button>
+      <button class="tactile-segmented__item" role="tab" aria-selected="false" tabindex="-1" data-theme-set="auto" style="height:30px;font-size:12px">Auto</button>
     </div>
   </aside>
 

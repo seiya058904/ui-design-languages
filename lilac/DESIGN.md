@@ -29,7 +29,7 @@ Sources: **LILAC / FLOW** (primary) and **SOFT / SYSTEM** (merged — same struc
 | Tabs & slider | Segmented ivory pill with lilac active tab and dividers; violet slider 60%; SOFT: underline tabs | Sliding wash and sliding underline |
 | Feedback | Toast "Saved successfully" with lilac check disc and close; SOFT: bell notification | Status alerts (success / warning / error) |
 | SOFT extras | Profile card (avatar, name, role, bio, menu), bottom navigation (Home / Explore / Favorites / Profile) | Sliding wash in bottom nav and sidebar |
-| Not in the references | — | Chips, badges, form rows, sidebar, table, dialog, tooltip, focus-planner example |
+| Not in the references | — | Chips, badges, form rows, sidebar, table, dialog, tooltip, focus-planner example, **dark theme** |
 
 ## 3. Foundations
 
@@ -45,6 +45,8 @@ Sources: **LILAC / FLOW** (primary) and **SOFT / SYSTEM** (merged — same struc
 **Spacing** — 4px base; tiles 28px padding; 24px grid gap; two columns collapse under 820px.
 **Shape** — pills (buttons, fields, toggles, tabs); 9px checkboxes; 16px inner cards; 24px tiles; 32px dialogs; circles for swatches, avatars, step markers.
 **Depth** — Tile: `inset 0 1px 0 rgba(255,255,255,.9), 0 1px 2px rgba(60,50,40,.04), 0 14px 34px -14px rgba(60,50,40,.16)`. Raised ivory: `inset 0 1px 0 #fff, 0 1px 2px rgba(60,50,40,.06), 0 8px 18px -8px rgba(60,50,40,.22)`. Accent glow: `0 2px 6px rgba(91,45,255,.25), 0 12px 26px -8px rgba(91,45,255,.55)`.
+**Dark theme (added)** — "Lilac at night": ink-violet canvas `#121118`, tiles `#1A1922`, pieces `#23222C`, ivory type `#F4F1EA`. The violet drops to `#6E50F4` so white labels stay ≥ 5:1, and the glow (`rgba(123,92,255,.55)`) does the brightening — on dark ground the glow carries further, which is why this style suits a dark theme. Toggle knobs use `--lilac-color-knob` (near-white in dark). Cobalt has its own dark values (`tokens.dark.accent-cobalt.json`). `<html data-theme="dark|auto">` or `[data-theme-set]` / `[data-theme-toggle]` controls.
+
 **Motion** — Soft and airy. Pieces float back from a press with a gentle overshoot (`easing-release`, 380ms) while the violet glow blooms a little slower than the lift. `shadow-pressed` shares the raised list shape, so a press sinks instead of snapping. Marks pop in on `easing-pop`. Rings and progress bars fill once on first paint, 1.2–1.4s. 380ms glide for indicators, knobs, rings on `cubic-bezier(.32,.72,0,1)`.
 
 ## 4. Components

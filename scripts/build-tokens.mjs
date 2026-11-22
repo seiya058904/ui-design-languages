@@ -4,6 +4,8 @@
 // (clay/ → --clay-*). An optional tokens/tokens.dark.json holds dark-theme overrides (same shape,
 // only the leaves that change) and is emitted for [data-theme="dark"] and [data-theme="auto"] + OS dark.
 // Any other tokens.<attr>-<value>.json (e.g. tokens.accent-cobalt.json) is emitted for :root[data-<attr>="<value>"].
+// tokens.dark.<attr>-<value>.json adjusts a variant for the dark theme (e.g. a lighter accent on ink) and is
+// emitted for :root[data-theme="dark"][data-<attr>="<value>"] (and "auto" + OS dark), after the variants.
 //
 // Usage:
 //   node scripts/build-tokens.mjs            # build every language
@@ -79,6 +81,24 @@ ${indent(dark, "    ")}
 /* Variant — GENERATED from ${lang}/tokens/${file}. Opt in with <html data-${attr}="${value}">. */
 :root[data-${attr}="${value}"] {
 ${indent(lines, "  ")}
+}
+`;
+    count += lines.filter(Boolean).length;
+  }
+  const darkVariants = readdirSync(dir).filter((f) => /^tokens\.dark\.[a-z]+-[a-z0-9]+\.json$/.test(f)).sort();
+  for (const file of darkVariants) {
+    const [, attr, value] = file.match(/^tokens\.dark\.([a-z]+)-([a-z0-9]+)\.json$/);
+    const lines = flatten(lang, JSON.parse(readFileSync(join(dir, file), "utf8")));
+    css += `
+/* Dark + variant — GENERATED from ${lang}/tokens/${file}. Applies when both are on. */
+:root[data-theme="dark"][data-${attr}="${value}"] {
+${indent(lines, "  ")}
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"][data-${attr}="${value}"] {
+${indent(lines, "    ")}
+  }
 }
 `;
     count += lines.filter(Boolean).length;

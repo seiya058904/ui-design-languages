@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <script>try{var a=localStorage.getItem("lilac-accent");if(a&&a!=="violet")document.documentElement.setAttribute("data-accent",a)}catch(e){}</script>
+  <script>try{var d=document.documentElement,a=localStorage.getItem("lilac-accent"),t=localStorage.getItem("lilac-theme");if(a&&a!=="violet")d.setAttribute("data-accent",a);if(t&&t!=="light")d.setAttribute("data-theme",t)}catch(e){}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lilac Flow</title>
   <meta name="description" content="Lilac — an ivory component-study design language with one glowing accent and editorial serif headlines.">
@@ -27,9 +27,9 @@
     .palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center; }
     .dot { width: 80px; aspect-ratio: 1; margin: 0 auto 14px; border-radius: 50%; box-shadow: var(--lilac-shadow-raised); }
     .dot--accent { background: radial-gradient(circle at 35% 30%, var(--lilac-color-primary-light), var(--lilac-color-primary)); box-shadow: var(--lilac-shadow-accent); }
-    .dot--soft { background: radial-gradient(circle at 35% 30%, var(--lilac-color-primary-wash), var(--lilac-color-primary-soft)); }
+    .dot--soft { background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--lilac-color-primary-soft) 50%, #fff), var(--lilac-color-primary-soft)); }
     .dot--ivory { background: var(--lilac-color-surface); }
-    .dot--ink { background: radial-gradient(circle at 35% 30%, #3A3A46, var(--lilac-color-ink)); }
+    .dot--ink { background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--lilac-color-ink) 80%, var(--lilac-color-surface)), var(--lilac-color-ink)); }
     .palette strong { display: block; font-size: 17px; font-weight: 500; }
     .palette span { font-size: 12px; letter-spacing: 0.12em; color: var(--lilac-color-text-muted); }
 
@@ -86,6 +86,11 @@
     <button class="lilac-segmented__item accent-opt" role="tab" aria-selected="true" data-accent-set="violet">Violet</button>
     <button class="lilac-segmented__item accent-opt" role="tab" aria-selected="false" tabindex="-1" data-accent-set="cobalt">Cobalt</button>
   </div>
+  <div class="lilac-segmented" role="tablist" aria-label="Theme">
+    <button class="lilac-segmented__item accent-opt" role="tab" aria-selected="true" data-theme-set="light">Light</button>
+    <button class="lilac-segmented__item accent-opt" role="tab" aria-selected="false" tabindex="-1" data-theme-set="dark">Dark</button>
+    <button class="lilac-segmented__item accent-opt" role="tab" aria-selected="false" tabindex="-1" data-theme-set="auto">Auto</button>
+  </div>
   <a class="lilac-btn lilac-btn--sm" href="examples/app.html">App example</a>
 </header>
 
@@ -101,8 +106,8 @@
       <div class="palette">
         <figure><div class="dot dot--accent"></div><strong data-accent-name="Violet|Cobalt">Violet</strong><span data-token="--lilac-color-primary">#5B2DFF</span></figure>
         <figure><div class="dot dot--soft"></div><strong data-accent-name="Lilac|Sky">Lilac</strong><span data-token="--lilac-color-primary-soft">#C8B4FF</span></figure>
-        <figure><div class="dot dot--ivory"></div><strong>Ivory</strong><span data-token="--lilac-color-surface">#FCFAF6</span></figure>
-        <figure><div class="dot dot--ink"></div><strong>Ink</strong><span data-token="--lilac-color-ink">#1F1F28</span></figure>
+        <figure><div class="dot dot--ivory"></div><strong data-theme-name="Ivory|Night">Ivory</strong><span data-token="--lilac-color-surface">#FCFAF6</span></figure>
+        <figure><div class="dot dot--ink"></div><strong data-theme-name="Ink|Ivory">Ink</strong><span data-token="--lilac-color-ink">#1F1F28</span></figure>
       </div>
     </section>
 
@@ -137,7 +142,7 @@
       <h2 class="lilac-eyebrow" id="t5"><span class="lilac-eyebrow__num">05</span>Toggles &amp; checkboxes</h2>
       <div class="stack-24">
         <label class="lilac-check"><input type="checkbox" class="lilac-toggle" checked><span><span class="lilac-check__title">Notifications</span><span class="lilac-check__hint">Get updates on your space</span></span></label>
-        <label class="lilac-check"><input type="checkbox" class="lilac-toggle"><span><span class="lilac-check__title">Dark mode</span><span class="lilac-check__hint">A calmer experience</span></span></label>
+        <label class="lilac-check"><input type="checkbox" class="lilac-toggle" data-theme-toggle><span><span class="lilac-check__title">Dark mode</span><span class="lilac-check__hint">A calmer experience</span></span></label>
         <hr class="lilac-divider" style="margin:0">
         <label class="lilac-check"><input type="checkbox" class="lilac-checkbox" checked>Remember this device</label>
         <label class="lilac-check"><input type="checkbox" class="lilac-checkbox">Send me updates</label>
@@ -311,8 +316,11 @@
     var cobalt = document.documentElement.getAttribute("data-accent") === "cobalt";
     document.querySelectorAll("[data-token]").forEach(function (el) { el.textContent = cs.getPropertyValue(el.getAttribute("data-token")).trim().toUpperCase(); });
     document.querySelectorAll("[data-accent-name]").forEach(function (el) { el.textContent = el.getAttribute("data-accent-name").split("|")[cobalt ? 1 : 0]; });
+    var dark = getComputedStyle(document.documentElement).colorScheme === "dark";
+    document.querySelectorAll("[data-theme-name]").forEach(function (el) { el.textContent = el.getAttribute("data-theme-name").split("|")[dark ? 1 : 0]; });
   }
   document.addEventListener("click", function (e) { if (e.target.closest("[data-accent-set]")) syncPalette(); });
+  document.addEventListener("lilac:themechange", syncPalette);
   syncPalette();
 </script>
 </body>

@@ -1,10 +1,12 @@
 # Lilac
 
-An ivory component-study design language: calm tiles, one accent that glows, editorial serif headlines. Violet by default, cobalt on request. Plain CSS, design tokens and copy-paste HTML — no build step, no dependencies.
+An ivory component-study design language: calm tiles, one accent that glows, editorial serif headlines. Violet by default, cobalt on request, light or dark. Plain CSS, design tokens and copy-paste HTML — no build step, no dependencies.
 
 **Live:** [Styleguide](https://seiya058904.github.io/ui-design-languages/lilac/) · [App example](https://seiya058904.github.io/ui-design-languages/lilac/examples/app.html)
 
-![Lilac styleguide](assets/screenshots/styleguide.png)
+| Light | Dark |
+| --- | --- |
+| ![Lilac styleguide, light](assets/screenshots/styleguide.png) | ![Lilac styleguide, dark](assets/screenshots/styleguide-dark.png) |
 
 ## Quick start
 
@@ -23,6 +25,8 @@ An ivory component-study design language: calm tiles, one accent that glows, edi
 ```
 
 Cobalt accent: `<html data-accent="cobalt">`, or let users pick with `[data-accent-set="violet|cobalt"]` controls (remembered in `localStorage`).
+
+Dark theme: `<html data-theme="dark">` (or `"auto"` to follow the OS), or `[data-theme-set="light|dark|auto"]` / `[data-theme-toggle]` controls with `js/lilac.js` (remembered as `lilac-theme`). To avoid a flash, restore it in `<head>`: `<script>try{var t=localStorage.getItem("lilac-theme");if(t&&t!=="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>`.
 
 ## Components
 

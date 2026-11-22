@@ -28,7 +28,7 @@ Sources: the **beige / deep-teal baseline-grid styleguide** (primary) and the **
 | Data display | Card with icon and "View More"; list with selected row; badges New / Beta / 24; avatars with ring; tooltip; compact table header | — |
 | Feedback | Modal "Delete Account?", toast stack, teal alert banner, 50% progress, spinner, skeleton rows, dashed empty state with "Clear Filters" | — |
 | Front-faced study | Grey raised pills with inset grooves, toggles, blue slider fill, annotations ("Focus ring is always visible", "Disabled reduces contrast and removes shadow") | Stone tone (`#E7E8EB`, ink-blue `#2B5BD3`), `.tactile-field`, `.tactile-note` |
-| Not in the references | — | All hex values, sidebar nav, thermostat dial, smart-home example |
+| Not in the references | — | All hex values, sidebar nav, thermostat dial, smart-home example, **dark theme** |
 
 ## 3. Foundations
 
@@ -45,6 +45,8 @@ Sources: the **beige / deep-teal baseline-grid styleguide** (primary) and the **
 **Spacing** — 8px grid; section gaps 44px; panels 24px padding.
 **Shape** — fields 8, buttons 12, cards 16, panels and dialogs 24; toggles, steps and avatars round.
 **Depth** — Raised `-6px -6px 14px light, 6px 6px 14px dark`; inset `inset 3px 3px 7px dark, inset -3px -3px 7px light`; pressed `inset 4px 4px 10px dark, inset -4px -4px 10px light`; teal pieces cast `5px 6px 14px` teal glow.
+**Dark theme (added)** — "Tactile at night": the same material on warm charcoal `#2A2723`. Because every shadow is built from `--tactile-color-light` / `-dark`, the theme only swaps those to a faint warm sheen `rgba(255,238,214,.075)` and near-black `rgba(0,0,0,.58)`, so all four states and five levels still read. Teal brightens to `#2A9D99` with dark labels (`primary-ink` `#061C1B`, 5.4:1). Pastel avatars are muted with `--tactile-color-avatar-tint` (34%) so ivory initials stay readable. Stone has its own dark values (`tokens.dark.tone-stone.json`). Suits the smart-home example, which is used at night. `<html data-theme="dark|auto">` or `[data-theme-set]` controls.
+
 **Motion** — Weighted, like a key. Presses accelerate into the material (90ms, `easing-press`) and spring back up with a small overshoot (320ms, `easing-release`). `shadow-pressed` leads with two empty outer shadows, so raised → pressed interpolates through flat instead of snapping. Marks pop in on `easing-pop`. 180ms color; indicators and knobs glide 360ms on `cubic-bezier(.32,.72,0,1)`.
 
 ## 4. Components

@@ -7,9 +7,9 @@ A library of complete UI design languages ("Style Packs"). Each one is shown as 
 | Pack | Character | Spec | Styleguide + code | Example |
 | --- | --- | --- | --- | --- |
 | [Clay](clay/) | Soft extruded clay on a matte grid board, mint accent, light + dark | [DESIGN.md](clay/DESIGN.md) | [open](https://seiya058904.github.io/ui-design-languages/clay/) | [dashboard](https://seiya058904.github.io/ui-design-languages/clay/examples/dashboard.html) · [landing](https://seiya058904.github.io/ui-design-languages/clay/examples/landing.html) |
-| [Lilac](lilac/) | Ivory study tiles, one glowing accent, editorial serif | [DESIGN.md](lilac/DESIGN.md) | [open](https://seiya058904.github.io/ui-design-languages/lilac/) | [focus planner](https://seiya058904.github.io/ui-design-languages/lilac/examples/app.html) |
+| [Lilac](lilac/) | Ivory study tiles, one glowing accent, editorial serif, light + dark | [DESIGN.md](lilac/DESIGN.md) | [open](https://seiya058904.github.io/ui-design-languages/lilac/) | [focus planner](https://seiya058904.github.io/ui-design-languages/lilac/examples/app.html) |
 | [Atelier](atelier/) | Precise frosted product UI with working appearance settings | [DESIGN.md](atelier/DESIGN.md) | [open](https://seiya058904.github.io/ui-design-languages/atelier/) | [workspace](https://seiya058904.github.io/ui-design-languages/atelier/examples/workspace.html) |
-| [Tactile](tactile/) | Warm sand neumorphism, four material states, deep teal | [DESIGN.md](tactile/DESIGN.md) | [open](https://seiya058904.github.io/ui-design-languages/tactile/) | [smart home](https://seiya058904.github.io/ui-design-languages/tactile/examples/home.html) |
+| [Tactile](tactile/) | Warm sand neumorphism, four material states, deep teal, light + dark | [DESIGN.md](tactile/DESIGN.md) | [open](https://seiya058904.github.io/ui-design-languages/tactile/) | [smart home](https://seiya058904.github.io/ui-design-languages/tactile/examples/home.html) |
 | [Sketch](sketch/) | Hand-drawn ink on cream paper, hatching, watercolor tints | [DESIGN.md](sketch/DESIGN.md) | [open](https://seiya058904.github.io/ui-design-languages/sketch/) | [settings](https://seiya058904.github.io/ui-design-languages/sketch/examples/settings.html) |
 
 ## Use a pack

@@ -1,0 +1,28 @@
+{
+  "$description": "Stone tone on the dark theme: cool graphite material with a lighter ink-blue accent.",
+  "color": {
+    "surface":         { "$value": "#25282D" },
+    "surface-pressed": { "$value": "#212429" },
+    "well":            { "$value": "#1F2226" },
+    "light":           { "$value": "rgba(220, 230, 255, 0.065)" },
+    "dark":            { "$value": "rgba(0, 0, 0, 0.58)" },
+    "dark-soft":       { "$value": "rgba(0, 0, 0, 0.38)" },
+    "line":            { "$value": "#353941" },
+    "primary":         { "$value": "#6D95F5" },
+    "primary-strong":  { "$value": "#5279DB" },
+    "primary-light":   { "$value": "#88A9F7" },
+    "primary-ink":     { "$value": "#0A1430" },
+    "primary-soft":    { "$value": "#26324D" },
+    "glow":            { "$value": "rgba(109, 149, 245, 0.36)" },
+    "ink":             { "$value": "#EEF1F6" },
+    "text":            { "$value": "#D7DCE4" },
+    "text-muted":      { "$value": "#9AA1AD" },
+    "text-subtle":     { "$value": "#6E7480" },
+    "tip":             { "$value": "#E8ECF2" },
+    "tip-ink":         { "$value": "#25282D" },
+    "skeleton":        { "$value": "#30343A" },
+    "disabled":        { "$value": "#2C3035" },
+    "disabled-ink":    { "$value": "#6A707A" },
+    "backdrop":        { "$value": "rgba(0, 0, 0, 0.55)" }
+  }
+}

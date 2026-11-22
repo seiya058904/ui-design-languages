@@ -40,4 +40,4 @@ Calm and concrete, sentence case: "Submit now", "Clear filters", "Start Away mod
 
 ## 5. Working on Tactile
 
-Edit `tokens/tokens.json` (and `tokens.tone-stone.json` for the stone tone), then run `node scripts/build-tokens.mjs tactile` from the repo root. Because shadows reference the `light` / `dark` color tokens, a new tone only needs colors.
+Edit `tokens/tokens.json` (and `tokens.tone-stone.json` for the stone tone), then run `node scripts/build-tokens.mjs tactile` from the repo root. Because shadows reference the `light` / `dark` color tokens, a new tone only needs colors. The dark theme (`tokens.dark.json`, plus `tokens.dark.tone-stone.json` for stone) works the same way: never hard-code a light surface, white highlight or text color in components.

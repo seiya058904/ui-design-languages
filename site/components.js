@@ -1,163 +1,179 @@
-/* Components browser (site chrome, not part of any pack).
-   Source of truth: each pack's own catalog page, <pack>/components.html — real components grouped
-   by <section data-component>, each with demos (<div data-demo>) whose .demo__stage holds the live
-   markup. Every demo is rendered in its own frame (site/demo.html) with the pack's CSS, fonts, icons
-   and JS at natural size, so what you see is the component itself, interactive. The code shown is
-   the stage markup from that same file. */
+/* Component wall (site chrome). One page: a masonry wall of live demos from every language.
+   Filter by language (the wall gathers onto that language's own canvas) or by kind; open a card
+   for its demos and code in a drawer. Rendering comes from site/wall.js (real markup, no images). */
 (function () {
-  var PACKS = [
-    { id: "clay", name: "Clay", dot: "#A8E6CF", font: "font-family:Inter,sans-serif;font-weight:700;letter-spacing:-0.045em" },
-    { id: "lilac", name: "Lilac", dot: "#7C55FF", font: "font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:0.04em;text-transform:uppercase" },
-    { id: "atelier", name: "Atelier", dot: "#2F7BF5", font: "font-family:Archivo,sans-serif;font-weight:800;font-stretch:112%;text-transform:uppercase;letter-spacing:0" },
-    { id: "tactile", name: "Tactile", dot: "#2C8C8F", font: "font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;letter-spacing:-0.04em" },
-    { id: "sketch", name: "Sketch", dot: "#A9C7EC", font: "font-family:Itim,sans-serif;font-weight:400;letter-spacing:0" }
-  ];
+  var W = window.UIWall;
+  var PICKS = {
+    clay: [["button", "variants"], ["selection", "toggle"], ["segmented", "segmented-control"], ["input", "search"], ["card", "stacked-card"], ["chips", "chips"], ["alert", "alerts"], ["navigation", "sidebar"]],
+    lilac: [["progress", "ring-and-steps"], ["button", "variants"], ["selection", "toggle"], ["input", "search-field"], ["alert", "toast"], ["card", "profile-card"], ["navigation", "bottom-navigation"]],
+    atelier: [["card", "project-card"], ["button", "variants"], ["tabs", "pill-tabs"], ["selection", "switch"], ["alert", "toasts"], ["board", "board-column"], ["appearance", "accent-swatches"]],
+    tactile: [["material", "four-states"], ["button", "states"], ["selection", "switch"], ["slider", "slider-with-bubble"], ["card", "card"], ["progress", "steps"], ["segmented", "segmented-tabs"]],
+    sketch: [["button", "variants"], ["selection", "checkbox-radio-switch"], ["tabs", "folder-tabs"], ["progress", "bar-ring-spinner"], ["alert", "alerts"], ["card", "card"], ["chips", "badges-and-status"], ["navigation", "sidebar"]]
+  };
+  var KIND = { button: "actions", input: "inputs", slider: "inputs", selection: "choices", segmented: "choices", tabs: "choices", chips: "choices", appearance: "choices",
+    alert: "feedback", progress: "feedback", dialog: "feedback", tooltip: "feedback", card: "content", avatar: "content", table: "content", elevation: "content", material: "content", board: "content", navigation: "navigation" };
+  var KINDS = [["all", "All"], ["actions", "Actions"], ["inputs", "Inputs"], ["choices", "Choices"], ["feedback", "Feedback"], ["content", "Content"], ["navigation", "Navigation"]];
+
   var $ = function (s, r) { return (r || document).querySelector(s); };
-  var packsEl = $("[data-packs]"), listEl = $("[data-list]"), demosEl = $("[data-demos]"), othersEl = $("[data-others]"), search = $("[data-search]");
-  var state = { pack: null, comp: null, layout: "desktop", opts: {}, item: null };
-  var catalogs = {};   // id -> Promise<{ items: [{ id, title, summary, demos: [{ id, label, html }] }] }>
-  var frames = [];     // { el, pack }
+  var grid = $("[data-grid]"), stylesEl = $("[data-styles]"), catsEl = $("[data-cats]"), backdrops = $("[data-backdrops]"), note = $("[data-note]");
+  var state = { style: "all", kind: "all", theme: "light" };
+  var cards = [];
 
-  function packOf(id) { return PACKS.filter(function (p) { return p.id === id; })[0]; }
-
-  /* ---------- catalog parsing ---------- */
-  function dedent(html) {
-    var lines = html.replace(/\t/g, "  ").split("\n");
-    while (lines.length && !lines[0].trim()) lines.shift();
-    while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
-    var min = Infinity;
-    lines.forEach(function (l) { if (l.trim()) min = Math.min(min, l.match(/^ */)[0].length); });
-    if (!isFinite(min)) min = 0;
-    return lines.map(function (l) { return l.slice(min); }).join("\n");
-  }
-  function load(id) {
-    if (catalogs[id]) return catalogs[id];
-    catalogs[id] = fetch(id + "/components.html").then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (text) {
-      var doc = new DOMParser().parseFromString(text, "text/html");
-      var items = Array.prototype.map.call(doc.querySelectorAll("[data-component]"), function (sec) {
-        var h = sec.querySelector("h2"), p = sec.querySelector(":scope > p");
-        return {
-          id: sec.getAttribute("data-component"),
-          title: h ? h.textContent.trim() : sec.getAttribute("data-component"),
-          summary: p ? p.textContent.trim() : "",
-          demos: Array.prototype.map.call(sec.querySelectorAll("[data-demo]"), function (dm) {
-            var label = dm.querySelector("h3");
-            return { id: dm.getAttribute("data-demo"), label: label ? label.textContent.trim() : "", html: dedent(dm.querySelector(".demo__stage").innerHTML) };
-          })
-        };
-      });
-      return { items: items };
-    });
-    return catalogs[id];
-  }
-
-  /* ---------- preview options (theme + variants) from packs.json ---------- */
-  var registry = fetch("packs.json").then(function (r) { return r.json(); }).then(function (d) {
-    var map = {};
-    (d.packs || d).forEach(function (p) {
-      var files = (p.tokens || []).join(" ");
-      var opts = [];
-      Object.keys(p.variants || {}).forEach(function (attr) {
-        var values = p.variants[attr];
-        if (!Array.isArray(values) || attr === "motion") return;
-        if (attr === "theme") { opts.unshift({ attr: "theme", values: ["light", "dark"], def: "light" }); return; }
-        var def = values.filter(function (v) { return files.indexOf("tokens." + attr + "-" + v + ".json") === -1; })[0] || values[0];
-        opts.push({ attr: attr, values: values, def: def });
-      });
-      map[p.id] = opts;
-    });
-    return map;
-  }).catch(function () { return {}; });
-  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-
-  /* Attributes for a pack's frames: the theme applies to every pack that has one; variants only to the current pack. */
-  function attrsFor(packId, map) {
-    var out = {};
-    (map[packId] || []).forEach(function (o) {
-      var chosen = o.attr === "theme" ? state.opts.theme : packId === state.pack ? (state.opts[packId] || {})[o.attr] : null;
-      out[o.attr] = chosen && chosen !== o.def ? chosen : "";
-    });
+  /* ---------- build ---------- */
+  function interleave() {
+    var lists = W.packs.map(function (p) { return PICKS[p.id].map(function (pk) { return [p.id].concat(pk); }); });
+    var out = [], i = 0, more = true;
+    while (more) {
+      more = false;
+      lists.forEach(function (l) { if (l[i]) { out.push(l[i]); more = true; } });
+      i++;
+    }
     return out;
   }
-  function pushAttrs() {
-    registry.then(function (map) {
-      frames.forEach(function (f) { if (f.el.contentWindow) f.el.contentWindow.postMessage({ type: "demo-attrs", attrs: attrsFor(f.pack, map) }, "*"); });
+  var CODE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7-5 5 5 5M15 7l5 5-5 5"/></svg>';
+  function buildCard(packId, compId, demoId) {
+    var hit = W.demo(packId, compId, demoId), p = W.byId[packId];
+    if (!hit) return null;
+    var card = document.createElement("article");
+    card.className = "wcard";
+    card.setAttribute("data-pack", packId);
+    card.setAttribute("data-kind", KIND[compId] || "content");
+    card.style.setProperty("--glow", p.dot);
+    var inner = document.createElement("div");
+    inner.className = "wcard__in";
+    inner.appendChild(W.stage(packId, compId, demoId));
+    var bar = document.createElement("div");
+    bar.className = "wcard__bar";
+    bar.innerHTML = '<button class="wcard__tag" type="button"><i></i><b></b><span></span></button><button class="wcard__code" type="button">' + CODE_ICON + "</button>";
+    bar.querySelector("i").style.background = p.dot;
+    bar.querySelector("b").setAttribute("style", p.font);
+    bar.querySelector("b").textContent = p.name;
+    bar.querySelector("span").textContent = hit.component.title;
+    bar.querySelector(".wcard__code").setAttribute("aria-label", "Code for " + p.name + " " + hit.component.title);
+    bar.querySelectorAll("button").forEach(function (b) { b.addEventListener("click", function () { openDrawer(packId, compId, demoId); }); });
+    inner.appendChild(bar);
+    card.appendChild(inner);
+    card.addEventListener("pointermove", function (e) {
+      var r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", e.clientX - r.left + "px");
+      card.style.setProperty("--my", e.clientY - r.top + "px");
     });
+    return { el: card, pack: packId, comp: compId, demo: demoId };
   }
-  function optValue(o) { return (o.attr === "theme" ? state.opts.theme : (state.opts[state.pack] || {})[o.attr]) || o.def; }
-  function setOpt(o, v) {
-    if (o.attr === "theme") state.opts.theme = v;
-    else (state.opts[state.pack] = state.opts[state.pack] || {})[o.attr] = v;
-    renderOpts();
-    pushAttrs();
-  }
-  function seg(label, pairs, isOn, onPick) {
-    var g = document.createElement("div");
-    g.className = "seg";
-    g.setAttribute("role", "group");
-    g.setAttribute("aria-label", label);
-    pairs.forEach(function (pair) {
+
+  function buildFilters() {
+    var counts = {};
+    cards.forEach(function (c) { counts[c.pack] = (counts[c.pack] || 0) + 1; });
+    var items = [{ id: "all", name: "All", count: cards.length }].concat(W.packs.map(function (p) { return { id: p.id, name: p.name, font: p.font, dot: p.dot, count: counts[p.id] || 0 }; }));
+    stylesEl.innerHTML = '<span class="cw-filter__glider" aria-hidden="true"></span>';
+    items.forEach(function (it) {
       var b = document.createElement("button");
       b.type = "button";
-      b.textContent = pair[1];
-      b.setAttribute("aria-pressed", String(isOn(pair[0])));
-      b.addEventListener("click", function () { onPick(pair[0]); });
-      g.appendChild(b);
+      b.setAttribute("data-style", it.id);
+      b.setAttribute("aria-pressed", String(state.style === it.id));
+      b.innerHTML = (it.dot ? '<i style="background:' + it.dot + '"></i>' : "") + '<b></b><small></small>';
+      var name = b.querySelector("b");
+      name.textContent = it.name;
+      if (it.font) name.setAttribute("style", it.font);
+      b.querySelector("small").textContent = it.count;
+      b.addEventListener("click", function () { setStyle(it.id); });
+      stylesEl.appendChild(b);
     });
-    return g;
+    catsEl.innerHTML = "";
+    KINDS.forEach(function (k) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("data-kind", k[0]);
+      b.setAttribute("aria-pressed", String(state.kind === k[0]));
+      b.textContent = k[1];
+      b.addEventListener("click", function () { state.kind = k[0]; syncFilters(); apply(true); });
+      catsEl.appendChild(b);
+    });
+    backdrops.innerHTML = "";
+    W.packs.forEach(function (p) {
+      var layer = document.createElement("div");
+      layer.className = "cw-backdrop" + (p.id === "clay" ? " clay-board clay-ruler" : "");
+      layer.setAttribute("data-pack", p.id);
+      backdrops.appendChild(layer);
+    });
   }
-  function renderOpts() {
-    var host = $("[data-opts]");
-    registry.then(function (map) {
-      host.innerHTML = "";
-      (map[state.pack] || []).forEach(function (o) {
-        if (o.attr === "theme") {
-          host.appendChild(seg("Theme", o.values.map(function (v) { return [v, cap(v)]; }), function (v) { return optValue(o) === v; }, function (v) { setOpt(o, v); }));
-          return;
-        }
-        var label = document.createElement("label");
-        label.className = "opt";
-        label.innerHTML = "<span></span><select></select>";
-        label.querySelector("span").textContent = cap(o.attr);
-        var sel = label.querySelector("select");
-        o.values.forEach(function (v) { var op = document.createElement("option"); op.value = v; op.textContent = cap(v); sel.appendChild(op); });
-        sel.value = optValue(o);
-        sel.addEventListener("change", function () { setOpt(o, sel.value); });
-        host.appendChild(label);
+  function glide() {
+    var on = stylesEl.querySelector('[aria-pressed="true"]'), g = stylesEl.querySelector(".cw-filter__glider");
+    if (!on || !g) return;
+    g.style.width = on.offsetWidth + "px";
+    g.style.transform = "translateX(" + on.offsetLeft + "px)";
+  }
+  function syncFilters() {
+    stylesEl.querySelectorAll("[data-style]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-style") === state.style)); });
+    catsEl.querySelectorAll("[data-kind]").forEach(function (b) {
+      var k = b.getAttribute("data-kind");
+      var n = cards.filter(function (c) { return (state.style === "all" || c.pack === state.style) && (k === "all" || c.el.getAttribute("data-kind") === k); }).length;
+      b.setAttribute("aria-pressed", String(k === state.kind));
+      b.disabled = n === 0 && k !== "all";
+    });
+    glide();
+  }
+  function setStyle(id) {
+    state.style = id;
+    if (state.kind !== "all" && !cards.some(function (c) { return c.pack === id && c.el.getAttribute("data-kind") === state.kind; })) state.kind = "all";
+    syncFilters();
+    var hash = id === "all" ? "" : "#" + id;
+    if (location.hash !== hash) history.replaceState(null, "", hash || location.pathname + location.search);
+    apply(true);
+  }
+
+  /* ---------- masonry ---------- */
+  function visible(c) { return (state.style === "all" || c.pack === state.style) && (state.kind === "all" || c.el.getAttribute("data-kind") === state.kind); }
+  function layout() {
+    var width = grid.clientWidth;
+    var cols = width >= 1060 ? 3 : width >= 660 ? 2 : 1, gap = width >= 660 ? 20 : 16;
+    var colW = (width - gap * (cols - 1)) / cols;
+    var heights = [];
+    for (var i = 0; i < cols; i++) heights.push(0);
+    var shown = cards.filter(visible);
+    shown.forEach(function (c) { c.el.style.width = colW + "px"; });
+    shown.forEach(function (c) {
+      var col = heights.indexOf(Math.min.apply(null, heights));
+      c.x = col * (colW + gap);
+      c.y = heights[col];
+      c.el.style.transform = "translate(" + c.x + "px," + c.y + "px)";
+      heights[col] += c.el.offsetHeight + gap;
+    });
+    cards.forEach(function (c) { if (!visible(c)) c.el.style.transform = "translate(" + (c.x || 0) + "px," + (c.y || 0) + "px)"; });
+    grid.style.height = Math.max(0, Math.max.apply(null, heights) - gap) + "px";
+  }
+  function apply(animate) {
+    grid.classList.toggle("is-animating", !!animate);
+    document.body.setAttribute("data-wall-style", state.style);
+    backdrops.querySelectorAll(".cw-backdrop").forEach(function (b) { b.classList.toggle("is-on", b.getAttribute("data-pack") === state.style); });
+    $(".cw").classList.toggle("is-unified", state.style !== "all");
+    cards.forEach(function (c) { c.el.classList.toggle("is-out", !visible(c)); c.el.setAttribute("aria-hidden", String(!visible(c))); c.el.inert = !visible(c); });
+    layout();
+    var n = cards.filter(visible).length;
+    var p = W.byId[state.style];
+    note.textContent = p ? n + " " + p.name + " components, on " + p.name + "'s own canvas. Every one is the real markup from " + p.id + "/components.html." : n + " components from five languages, all live.";
+  }
+  var raf = 0;
+  function relayout() { if (raf) return; raf = requestAnimationFrame(function () { raf = 0; layout(); glide(); }); }
+
+  /* ---------- reveal ---------- */
+  function reveal() {
+    if (!("IntersectionObserver" in window)) { cards.forEach(function (c) { c.el.classList.add("is-in"); }); return; }
+    var queue = 0;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        var delay = (queue++ % 6) * 70;
+        setTimeout(function () { e.target.classList.add("is-in"); }, delay);
+        setTimeout(function () { queue = Math.max(0, queue - 1); }, 600);
       });
-      host.appendChild(seg("Layout", [["desktop", "Desktop"], ["phone", "Phone"]], function (v) { return state.layout === v; }, function (v) {
-        state.layout = v;
-        demosEl.classList.toggle("is-phone", v === "phone");
-        renderOpts();
-      }));
-    });
+    }, { rootMargin: "0px 0px -8% 0px" });
+    cards.forEach(function (c) { io.observe(c.el); });
   }
 
-  /* ---------- frames ---------- */
-  function makeFrame(packId, compId, demoId, title) {
-    var f = document.createElement("iframe");
-    f.className = "demo-frame";
-    f.title = title;
-    f.loading = "lazy";
-    registry.then(function (map) {
-      var qs = new URLSearchParams({ p: packId, c: compId, d: demoId });
-      var a = attrsFor(packId, map);
-      Object.keys(a).forEach(function (k) { if (a[k]) qs.set(k, a[k]); });
-      f.src = "site/demo.html?" + qs.toString();
-    });
-    frames.push({ el: f, pack: packId });
-    return f;
-  }
-  window.addEventListener("message", function (e) {
-    if (!e.data || e.data.type !== "demo-size") return;
-    frames.forEach(function (f) { if (f.el.contentWindow === e.source) f.el.style.height = Math.max(60, e.data.h) + "px"; });
-  });
-  function dropFrames(container) {
-    frames = frames.filter(function (f) { return !container.contains(f.el); });
-    container.innerHTML = "";
-  }
-
-  /* ---------- copy ---------- */
+  /* ---------- drawer ---------- */
+  var drawer = $("[data-drawer]"), frame = null, lastFocus = null, current = null;
   function copy(btn, text) {
     var label = btn.querySelector("span") || btn, original = label.textContent;
     function done(ok) { label.textContent = ok ? "Copied" : "Copy failed"; btn.classList.toggle("is-copied", ok); setTimeout(function () { label.textContent = original; btn.classList.remove("is-copied"); }, 1500); }
@@ -170,182 +186,125 @@
       ta.remove(); done(ok);
     }
   }
+  function showDemo(packId, comp, dm) {
+    current = { pack: packId, comp: comp, demo: dm };
+    $("[data-dr-code]").textContent = dm.html;
+    $("[data-dr-tabs]").querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-demo") === dm.id)); });
+    var view = $("[data-dr-view]");
+    view.innerHTML = "";
+    frame = document.createElement("iframe");
+    frame.className = "drawer__frame";
+    frame.title = W.byId[packId].name + " " + comp.title + ": " + dm.label;
+    var qs = new URLSearchParams({ p: packId, c: comp.id, d: dm.id });
+    if (state.theme === "dark" && packId !== "sketch") qs.set("theme", "dark");
+    frame.src = "site/demo.html?" + qs.toString();
+    view.appendChild(frame);
+  }
+  function openDrawer(packId, compId, demoId, fromHash) {
+    var hit = W.demo(packId, compId, demoId);
+    if (!hit) return;
+    var p = W.byId[packId], comp = hit.component;
+    lastFocus = document.activeElement;
+    $("[data-dr-tag]").innerHTML = '<i style="background:' + p.dot + '"></i><b style="' + p.font + '"></b>';
+    $("[data-dr-tag] b").textContent = p.name;
+    $("[data-dr-title]").textContent = comp.title;
+    $("[data-dr-sub]").textContent = comp.summary + " Every demo is live; the code is copied from " + p.id + "/components.html.";
+    $("[data-dr-file]").textContent = p.id + "/components.html";
+    $("[data-dr-open]").href = p.id + "/components.html#" + comp.id;
+    var tabs = $("[data-dr-tabs]");
+    tabs.innerHTML = "";
+    comp.demos.forEach(function (dm) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = dm.label;
+      b.setAttribute("data-demo", dm.id);
+      b.addEventListener("click", function () { showDemo(packId, comp, dm); });
+      tabs.appendChild(b);
+    });
+    tabs.hidden = comp.demos.length < 2;
+    showDemo(packId, comp, hit.demo);
+    drawer.hidden = false;
+    document.documentElement.classList.add("has-drawer");
+    requestAnimationFrame(function () { drawer.classList.add("is-open"); });
+    $(".drawer__close").focus({ preventScroll: true });
+    if (!fromHash) history.replaceState(null, "", "#" + packId + "/" + compId);
+  }
+  function closeDrawer() {
+    if (drawer.hidden) return;
+    drawer.classList.remove("is-open");
+    document.documentElement.classList.remove("has-drawer");
+    setTimeout(function () { drawer.hidden = true; $("[data-dr-view]").innerHTML = ""; frame = null; }, 380);
+    history.replaceState(null, "", state.style === "all" ? location.pathname + location.search : "#" + state.style);
+    if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+  }
+  drawer.addEventListener("click", function (e) { if (e.target.closest("[data-close]")) closeDrawer(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDrawer(); });
+  window.addEventListener("message", function (e) {
+    if (!frame || e.source !== frame.contentWindow || !e.data || e.data.type !== "demo-size") return;
+    frame.style.height = Math.max(160, e.data.h) + "px";
+  });
+  $("[data-dr-copy]").addEventListener("click", function () { if (current) copy(this, current.demo.html); });
+  $("[data-dr-ai]").addEventListener("click", function () {
+    if (!current) return;
+    var p = W.byId[current.pack], root = new URL("./", location.href).href;
+    copy(this, "Build with the " + p.name + " design language from the UI Design Languages library: the " + current.comp.title + " component.\n" +
+      "First read " + root + p.id + "/DESIGN.md and " + root + p.id + "/AGENTS.md. Link " + root + p.id + "/css/" + p.id + ".css (and " + root + p.id + "/js/" + p.id + ".js for interactive parts) plus the fonts named in DESIGN.md.\n" +
+      "Use only ." + p.id + "-* classes and var(--" + p.id + "-*) tokens; page CSS is for layout only. Reference markup from " + p.id + "/components.html:\n\n" +
+      current.comp.demos.map(function (d) { return "<!-- " + d.label + " -->\n" + d.html; }).join("\n\n"));
+  });
 
-  /* ---------- rendering ---------- */
-  function renderPacks() {
-    packsEl.innerHTML = "";
-    PACKS.forEach(function (p) {
-      var a = document.createElement("a");
-      a.className = "lang";
-      a.href = "#/" + p.id + (state.comp ? "/" + state.comp : "");
-      a.innerHTML = '<i style="background:' + p.dot + '"></i><span style="' + p.font + '"></span>';
-      a.querySelector("span").textContent = p.name;
-      if (p.id === state.pack) a.setAttribute("aria-current", "true");
-      packsEl.appendChild(a);
+  /* ---------- theme ---------- */
+  document.querySelectorAll("[data-wtheme]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      state.theme = b.getAttribute("data-wtheme");
+      document.querySelectorAll("[data-wtheme]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      W.setTheme(state.theme);
+      if (frame && frame.contentWindow && current && current.pack !== "sketch") frame.contentWindow.postMessage({ type: "demo-attrs", attrs: { theme: state.theme === "dark" ? "dark" : "" } }, "*");
+      setTimeout(relayout, 60);
     });
-  }
-  function renderList(cat) {
-    if (search.value.trim()) { runSearch(); return; }
-    listEl.innerHTML = "";
-    cat.items.forEach(function (it) {
-      var li = document.createElement("li"), a = document.createElement("a");
-      a.href = "#/" + state.pack + "/" + it.id;
-      a.textContent = it.title;
-      if (it.id === state.comp) a.setAttribute("aria-current", "page");
-      li.appendChild(a);
-      listEl.appendChild(li);
-    });
-  }
-  function renderDemos(pack, item) {
-    dropFrames(demosEl);
-    item.demos.forEach(function (dm) {
-      var card = document.createElement("article");
-      card.className = "demo";
-      card.innerHTML =
-        '<header class="demo__head"><h2></h2><div class="seg" role="group" aria-label="View"><button type="button" aria-pressed="true" data-v="preview">Preview</button><button type="button" aria-pressed="false" data-v="code">Code</button></div>' +
-        '<button class="pill pill--sm" type="button" data-copy-demo><span>Copy</span></button></header>' +
-        '<div class="demo__view"></div><pre class="demo__code" hidden><code></code></pre>';
-      card.querySelector("h2").textContent = dm.label;
-      card.querySelector("code").textContent = dm.html;
-      card.querySelector(".demo__view").appendChild(makeFrame(pack.id, item.id, dm.id, pack.name + " " + item.title + ": " + dm.label));
-      card.querySelectorAll("[data-v]").forEach(function (b) {
-        b.addEventListener("click", function () {
-          var code = b.getAttribute("data-v") === "code";
-          card.querySelectorAll("[data-v]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-          card.querySelector(".demo__view").hidden = code;
-          card.querySelector(".demo__code").hidden = !code;
-        });
-      });
-      card.querySelector("[data-copy-demo]").addEventListener("click", function () { copy(this, dm.html); });
-      demosEl.appendChild(card);
-    });
-  }
-  function renderOthers(item) {
-    dropFrames(othersEl);
-    $(".cmp__related").hidden = true;
-    PACKS.forEach(function (p) {
-      if (p.id === state.pack) return;
-      var slot = document.createElement("article");
-      slot.className = "other";
-      othersEl.appendChild(slot);
-      load(p.id).then(function (cat) {
-        var match = cat.items.filter(function (it) { return it.id === item.id; })[0];
-        if (!match || !match.demos.length || state.comp !== item.id) { slot.remove(); return; }
-        $(".cmp__related").hidden = false;
-        slot.innerHTML = '<a class="other__head" href="#/' + p.id + "/" + match.id + '"><b style="' + p.font + '"></b><span></span></a><div class="other__view"></div>';
-        slot.querySelector("b").textContent = p.name;
-        slot.querySelector("span").textContent = match.demos[0].label;
-        slot.querySelector(".other__view").appendChild(makeFrame(p.id, match.id, match.demos[0].id, p.name + " " + match.title));
-      }, function () { slot.remove(); });
-    });
-  }
-  function setPager(el, it) {
-    if (!it) { el.hidden = true; return; }
-    el.hidden = false;
-    el.href = "#/" + state.pack + "/" + it.id;
-    el.querySelector("span").textContent = it.title;
-  }
-  function render() {
-    var pack = packOf(state.pack);
-    load(pack.id).then(function (cat) {
-      var i = 0;
-      cat.items.some(function (it, n) { if (it.id === state.comp) { i = n; return true; } return false; });
-      var item = cat.items[i];
-      state.comp = item.id;
-      state.item = item;
-      renderPacks();
-      renderList(cat);
-      $("[data-crumb]").innerHTML = '<span style="' + pack.font + '"></span> · Components';
-      $("[data-crumb] span").textContent = pack.name;
-      $("[data-title]").textContent = item.title;
-      $("[data-sub]").textContent = item.summary + " Live " + pack.name + " components: hover, press and type. Code comes from " + pack.id + "/components.html.";
-      document.title = item.title + " · " + pack.name + " · UI Design Languages";
-      $("[data-act=open]").href = pack.id + "/components.html#" + item.id;
-      setPager($("[data-prev]"), cat.items[i - 1]);
-      setPager($("[data-next]"), cat.items[i + 1]);
-      renderOpts();
-      renderDemos(pack, item);
-      renderOthers(item);
-    }).catch(function () {
-      renderPacks();
-      $("[data-crumb]").textContent = "Could not load " + pack.id + "/components.html. Open this page over http (GitHub Pages or a local server), not file://.";
-    });
-  }
-  function route() {
+  });
+
+  /* ---------- hash: #clay filters, #clay/button opens a card ---------- */
+  function fromHash() {
     var parts = location.hash.replace(/^#\/?/, "").split("/");
-    var pack = packOf(parts[0]) ? parts[0] : PACKS[0].id;
-    var comp = parts[1] || state.comp; // switching language keeps the component when it exists there
-    if (pack === state.pack && comp === state.comp) return;
-    state.pack = pack;
-    state.comp = comp;
-    render();
-  }
-
-  /* ---------- search across every language ---------- */
-  function runSearch() {
-    var q = search.value.trim().toLowerCase();
-    if (!q) { load(state.pack).then(renderList); return; }
-    Promise.all(PACKS.map(function (p) { return load(p.id).then(function (c) { return { pack: p, items: c.items }; }, function () { return { pack: p, items: [] }; }); })).then(function (groups) {
-      if (search.value.trim().toLowerCase() !== q) return;
-      listEl.innerHTML = "";
-      var total = 0;
-      groups.forEach(function (g) {
-        var hits = g.items.filter(function (it) { return (it.title + " " + it.summary).toLowerCase().indexOf(q) !== -1; });
-        var inCode = g.items.filter(function (it) { return hits.indexOf(it) === -1 && it.demos.some(function (d) { return d.html.toLowerCase().indexOf(q) !== -1; }); });
-        hits = hits.concat(inCode);
-        if (!hits.length) return;
-        var head = document.createElement("li");
-        head.className = "cmp__group";
-        head.innerHTML = '<span style="' + g.pack.font + '"></span>';
-        head.firstChild.textContent = g.pack.name;
-        listEl.appendChild(head);
-        hits.forEach(function (it) {
-          var li = document.createElement("li"), a = document.createElement("a");
-          a.href = "#/" + g.pack.id + "/" + it.id;
-          a.textContent = it.title;
-          if (inCode.indexOf(it) !== -1) { var m = document.createElement("small"); m.textContent = "in markup"; a.appendChild(m); }
-          if (g.pack.id === state.pack && it.id === state.comp) a.setAttribute("aria-current", "page");
-          li.appendChild(a);
-          listEl.appendChild(li);
-          total++;
-        });
-      });
-      if (!total) {
-        var li = document.createElement("li");
-        li.className = "cmp__empty";
-        li.textContent = "Nothing matches “" + q + "”. Try button, toggle, card or table.";
-        listEl.appendChild(li);
+    if (W.byId[parts[0]]) {
+      if (state.style !== parts[0]) { state.style = parts[0]; syncFilters(); apply(true); }
+      if (parts[1]) {
+        var pick = (PICKS[parts[0]] || []).filter(function (pk) { return pk[0] === parts[1]; })[0];
+        openDrawer(parts[0], parts[1], pick ? pick[1] : null, true);
       }
-    });
+    }
   }
-  search.addEventListener("input", runSearch);
-  search.addEventListener("keydown", function (e) {
-    var first = listEl.querySelector("a");
-    if (e.key === "Enter" && first) { location.hash = first.getAttribute("href"); e.preventDefault(); }
-    if (e.key === "ArrowDown" && first) { first.focus(); e.preventDefault(); }
-    if (e.key === "Escape") { search.value = ""; runSearch(); search.blur(); }
-  });
 
-  /* ---------- keyboard: left/right previous / next, "/" search ---------- */
-  document.addEventListener("keydown", function (e) {
-    var t = e.target;
-    if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
-    if (t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable)) return;
-    if (e.key === "/") { search.focus(); search.select(); e.preventDefault(); return; }
-    var link = e.key === "ArrowLeft" ? $("[data-prev]") : e.key === "ArrowRight" ? $("[data-next]") : null;
-    if (link && !link.hidden) { location.hash = link.getAttribute("href"); e.preventDefault(); }
-  });
+  /* ---------- sticky bar gets a frosted background once it sticks ---------- */
+  var bar = $("[data-bar]");
+  function stuck() { bar.classList.toggle("is-stuck", bar.getBoundingClientRect().top <= 65); }
+  window.addEventListener("scroll", stuck, { passive: true });
+  stuck();
 
-  $("[data-act=ai]").addEventListener("click", function () {
-    if (!state.item) return;
-    var pack = packOf(state.pack), root = new URL("./", location.href).href;
-    var text = "Build with the " + pack.name + " design language from the UI Design Languages library: the " + state.item.title + " component.\n" +
-      "First read " + root + pack.id + "/DESIGN.md and " + root + pack.id + "/AGENTS.md. Link " + root + pack.id + "/css/" + pack.id + ".css (and " + root + pack.id + "/js/" + pack.id + ".js for interactive parts) plus the fonts named in DESIGN.md.\n" +
-      "Use only ." + pack.id + "-* classes and var(--" + pack.id + "-*) tokens; page CSS is for layout only. Reference markup from " + pack.id + "/components.html:\n\n" +
-      state.item.demos.map(function (d) { return "<!-- " + d.label + " -->\n" + d.html; }).join("\n\n");
-    copy(this, text);
+  /* ---------- boot ---------- */
+  W.ready().then(function () {
+    interleave().forEach(function (pk) {
+      var c = buildCard(pk[0], pk[1], pk[2]);
+      if (c) { cards.push(c); grid.appendChild(c.el); }
+    });
+    var total = document.querySelector("[data-total]");
+    if (total) total.textContent = cards.length;
+    buildFilters();
+    var start = location.hash.replace(/^#\/?/, "").split("/")[0];
+    if (W.byId[start]) state.style = start;
+    syncFilters();
+    apply(false);
+    reveal();
+    W.scripts().then(function () { relayout(); fromHash(); });
+    if (document.fonts) document.fonts.ready.then(relayout);
+    if ("ResizeObserver" in window) {
+      var ro = new ResizeObserver(relayout);
+      ro.observe(grid);
+      cards.forEach(function (c) { ro.observe(c.el.firstChild); });
+    } else window.addEventListener("resize", relayout);
+    window.addEventListener("hashchange", fromHash);
+  }).catch(function () {
+    note.textContent = "The component catalogs could not be loaded. Open this page over http (GitHub Pages or a local server), not file://.";
   });
-
-  window.addEventListener("hashchange", route);
-  route();
 })();

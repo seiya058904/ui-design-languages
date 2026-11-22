@@ -36,7 +36,7 @@ Status in this environment (checked 2026-11-22): the Design artifact type is ava
 
 ## 5. Verify in a real browser
 
-- `node scripts/snap.mjs <pack>` — full-page screenshots at 1280 and 390 (real mobile emulation) into `.snapshots/`, and a non-zero exit if any page overflows horizontally (it names the culprit elements).
+- `node scripts/snap.mjs <pack>` (or `site`) — full-page screenshots at 1280 and 390 (real mobile emulation) into `.snapshots/`, and a non-zero exit if any page overflows horizontally (it names the culprit elements). It captures in slices and stitches them (a single capture of a page full of live iframes and components exceeds headless raster memory), freezes infinite animations and shows scroll reveals in their final state.
 - Put the screenshot next to the reference and check: layout proportions, alignment, type, colors, spacing, shadows, image crops, states, responsive behaviour. Fix, re-run.
 - For motion (sliding indicators, knobs), sample positions over real time via the DevTools protocol; headless "virtual time" screenshots freeze CSS transitions.
 

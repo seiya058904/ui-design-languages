@@ -17,6 +17,49 @@ import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { join, extname, dirname, relative, sep } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
+import { inflateSync, deflateSync, crc32 } from "node:zlib";
+
+/* ---------- minimal PNG decode / encode, to stitch slice captures into one page image ---------- */
+function decodePNG(buf) {
+  let pos = 8, width = 0, height = 0, type = 6;
+  const idat = [];
+  while (pos < buf.length) {
+    const len = buf.readUInt32BE(pos), name = buf.toString("ascii", pos + 4, pos + 8), d = buf.subarray(pos + 8, pos + 8 + len);
+    if (name === "IHDR") { width = d.readUInt32BE(0); height = d.readUInt32BE(4); type = d[9]; }
+    else if (name === "IDAT") idat.push(d);
+    else if (name === "IEND") break;
+    pos += 12 + len;
+  }
+  const bpp = type === 6 ? 4 : 3, stride = width * bpp, raw = inflateSync(Buffer.concat(idat)), out = Buffer.alloc(stride * height);
+  for (let y = 0; y < height; y++) {
+    const f = raw[y * (stride + 1)], src = y * (stride + 1) + 1, o = y * stride;
+    for (let x = 0; x < stride; x++) {
+      const a = x >= bpp ? out[o + x - bpp] : 0, b = y ? out[o - stride + x] : 0, c = x >= bpp && y ? out[o - stride + x - bpp] : 0;
+      let v = raw[src + x];
+      if (f === 1) v += a; else if (f === 2) v += b; else if (f === 3) v += (a + b) >> 1;
+      else if (f === 4) { const pp = a + b - c, pa = Math.abs(pp - a), pb = Math.abs(pp - b), pc = Math.abs(pp - c); v += pa <= pb && pa <= pc ? a : pb <= pc ? b : c; }
+      out[o + x] = v & 255;
+    }
+  }
+  return { width, height, bpp, data: out };
+}
+function encodePNG({ width, height, bpp, data }) {
+  const stride = width * bpp, raw = Buffer.alloc((stride + 1) * height);
+  for (let y = 0; y < height; y++) data.copy(raw, y * (stride + 1) + 1, y * stride, (y + 1) * stride);
+  const chunk = (name, d) => {
+    const b = Buffer.alloc(12 + d.length);
+    b.writeUInt32BE(d.length, 0); b.write(name, 4, "ascii"); d.copy(b, 8);
+    b.writeUInt32BE(crc32(b.subarray(4, 8 + d.length)), 8 + d.length);
+    return b;
+  };
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(width, 0); ihdr.writeUInt32BE(height, 4); ihdr[8] = 8; ihdr[9] = bpp === 4 ? 6 : 2;
+  return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk("IHDR", ihdr), chunk("IDAT", deflateSync(raw)), chunk("IEND", Buffer.alloc(0))]);
+}
+function stitch(slices) {
+  const parts = slices.map(decodePNG), first = parts[0];
+  return encodePNG({ width: first.width, height: parts.reduce((h, p) => h + p.height, 0), bpp: first.bpp, data: Buffer.concat(parts.map((p) => p.data)) });
+}
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -87,8 +130,12 @@ const send = (method, params = {}) => new Promise((r) => { const i = ++id; pendi
   .then((m) => { if (m.error) throw new Error(`${method}: ${m.error.message}`); return m.result; });
 const nextEvent = (name) => new Promise((r) => { const fn = (m) => { if (m.method === name) { listeners.delete(fn); r(m); } }; listeners.add(fn); });
 const evaluate = async (expression) => (await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true })).result.value;
-// Jump finite entrance animations (ring fills, dialog pops) to their end so captures are deterministic.
-const SETTLE = "document.getAnimations().forEach((a) => { try { if (a.effect && a.effect.getComputedTiming().endTime !== Infinity) a.finish(); } catch (e) {} })";
+// Jump finite entrance animations (ring fills, dialog pops) to their end and freeze infinite loops
+// (marquees, auroras), so captures are deterministic and a tall headless viewport isn't repainted every frame.
+// Scroll-triggered reveals and scroll-linked tilts are shown in their final state.
+const SETTLE = "document.getAnimations().forEach((a) => { try { if (a.effect && a.effect.getComputedTiming().endTime !== Infinity) a.finish(); else a.pause(); } catch (e) {} }); document.querySelectorAll('.rise, .reveal-words, .wcard').forEach((el) => el.classList.add('is-in', 'is-revealed')); document.documentElement.setAttribute('data-static', ''); document.querySelectorAll('.show').forEach((el) => el.style.setProperty('--p', 1))";
+// Lazy iframes below the fold would stay blank in a beyond-viewport capture.
+const EAGER = "document.querySelectorAll('iframe[loading=lazy]').forEach((f) => { f.loading = 'eager'; })";
 
 await send("Page.enable");
 let overflowing = 0;
@@ -120,17 +167,25 @@ try {
       const loaded = nextEvent("Page.loadEventFired");
       await send("Page.navigate", { url: `${base}/${page.path}` });
       await loaded;
-      await evaluate("document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 700)))");
+      await evaluate(EAGER);
+      await evaluate(SETTLE);
+      await evaluate("document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 900)))");
       const overflow = await evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth");
       const height = await evaluate("Math.min(document.documentElement.scrollHeight, 9000)");
-      await metrics(height);
       await evaluate(SETTLE);
-      await evaluate("new Promise((r) => setTimeout(r, 400))");
-      const { data } = await send("Page.captureScreenshot", { format: "png" });
+      await evaluate("new Promise((r) => setTimeout(r, 1200))"); // let reveal transitions finish so slices match
+      // Capture beyond the viewport (no 100vh reflow), in slices: one full-page capture of a page with
+      // many live iframes and components exceeds headless Chrome's raster budget and never returns.
+      const slices = [];
+      for (let y = 0; y < height; y += 1800) {
+        const clip = { x: 0, y, width, height: Math.min(1800, height - y), scale: 1 };
+        slices.push(Buffer.from((await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: true, clip })).data, "base64"));
+      }
+      const png = slices.length === 1 ? slices[0] : stitch(slices);
       const name = page.path.replace(/^[^/]+\/(?=.)/, page.group === "_site" ? "" : "").replace(/\//g, "_").replace(/\.html$/, "");
       const out = join(root, ".snapshots", page.group, `${page.group === "_site" ? name : name.replace(`${page.group}_`, "")}@${width}.png`);
       await mkdir(dirname(out), { recursive: true });
-      await writeFile(out, Buffer.from(data, "base64"));
+      await writeFile(out, png);
       if (overflow > 1) overflowing++;
       console.log(`${overflow > 1 ? `OVERFLOW ${overflow}px` : "ok"}\t${page.path} @${width}\t→ ${relative(root, out)}`);
       if (overflow > 1) {

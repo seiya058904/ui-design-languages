@@ -2,16 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script>document.documentElement.classList.add("js")</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Components · UI Design Languages</title>
-  <meta name="description" content="Every component of every design language as real, working markup: variants, sizes and states rendered live with the language's own CSS and JS, the exact code to copy, and the same component in the other languages.">
+  <meta name="description" content="A wall of real, working components from five design languages. Mix them all, or filter to one language to see it as a complete system. Open any card for its code.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@700&family=Cormorant+Garamond:wght@500&family=Archivo:wdth,wght@112,800&family=Plus+Jakarta+Sans:wght@800&family=Itim&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <!-- The five languages, live on one page (every class and token is prefixed, so they coexist) -->
+  <link rel="stylesheet" href="clay/css/clay.css">
+  <link rel="stylesheet" href="lilac/css/lilac.css">
+  <link rel="stylesheet" href="atelier/css/atelier.css">
+  <link rel="stylesheet" href="tactile/css/tactile.css">
+  <link rel="stylesheet" href="sketch/css/sketch.css">
+  <!-- Site chrome last, so the page itself stays neutral -->
   <link rel="stylesheet" href="site/site.css">
   <link rel="stylesheet" href="site/components.css">
 </head>
-<body>
+<body class="cw-page">
 <header class="top">
   <div class="wrap top__in">
     <a class="brand" href="./"><span class="brand__dots" aria-hidden="true"><i style="background:#A8E6CF"></i><i style="background:#7C55FF"></i><i style="background:#2F7BF5"></i><i style="background:#2C8C8F"></i><i style="background:#A9C7EC"></i></span>UI Design Languages</a>
@@ -20,47 +28,59 @@
   </div>
 </header>
 
-<main class="wrap cmp">
-  <aside class="cmp__side" aria-label="Browse">
-    <label class="cmp__search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><input type="search" placeholder="Search all components" aria-label="Search components in every language" autocomplete="off" spellcheck="false" data-search><kbd aria-hidden="true">/</kbd></label>
-    <p class="cmp__label" id="lang-label">Language</p>
-    <div class="cmp__packs" role="group" aria-labelledby="lang-label" data-packs></div>
-    <p class="cmp__label" id="list-label">Components</p>
-    <nav class="cmp__list" aria-labelledby="list-label"><ol data-list></ol></nav>
-  </aside>
+<main>
+  <section class="wrap cw-hero" aria-labelledby="cw-title">
+    <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <span class="chip"><b data-total>37</b>live components · 5 languages</span>
+    <h1 id="cw-title" class="reveal-words">Every component, <span>in every language.</span></h1>
+    <p class="cw-hero__lede">Real, working components — press them, type in them. Mix all five languages on one wall, or pick one and watch it gather into a complete system. Open any card for its code.</p>
+  </section>
 
-  <section class="cmp__main" aria-labelledby="cmp-title">
-    <div class="cmp__head">
-      <p class="cmp__crumb" data-crumb>Loading…</p>
-      <h1 id="cmp-title" data-title>&nbsp;</h1>
-      <p class="cmp__sub" data-sub></p>
-    </div>
-
-    <div class="cmp__bar">
-      <div class="cmp__opts" data-opts></div>
-      <div class="cmp__actions">
-        <button class="pill pill--sm" type="button" data-act="ai"><span>Copy for AI</span></button>
-        <a class="pill pill--sm" href="#" data-act="open">Open the catalog page</a>
+  <div class="cw-bar" data-bar>
+    <div class="wrap cw-bar__in">
+      <div class="cw-filter" role="group" aria-label="Language" data-styles></div>
+      <div class="cw-bar__end">
+        <div class="cw-cats" role="group" aria-label="Kind of component" data-cats></div>
+        <div class="seg" role="group" aria-label="Theme" data-theme-seg>
+          <button type="button" aria-pressed="true" data-wtheme="light">Light</button>
+          <button type="button" aria-pressed="false" data-wtheme="dark">Dark</button>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="cmp__demos" data-demos></div>
-
-    <p class="cmp__keys" aria-hidden="true"><kbd>←</kbd><kbd>→</kbd> previous / next · <kbd>/</kbd> search</p>
-    <nav class="cmp__pager" aria-label="Previous and next component">
-      <a href="#" rel="prev" data-prev><small>Previous</small><span></span></a>
-      <a href="#" rel="next" data-next><small>Next</small><span></span></a>
-    </nav>
-
-    <section class="cmp__related" aria-labelledby="rel-t">
-      <h2 id="rel-t">The same component in the other languages</h2>
-      <div class="cmp__others" data-others></div>
-    </section>
+  <section class="wrap cw" aria-label="Component wall">
+    <div class="cw-backdrops" aria-hidden="true" data-backdrops></div>
+    <div class="cw-grid" data-grid aria-live="polite"></div>
+    <p class="cw-note" data-note></p>
   </section>
 </main>
 
+<aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title" data-drawer hidden>
+  <div class="drawer__scrim" data-close></div>
+  <div class="drawer__panel">
+    <header class="drawer__head">
+      <span class="drawer__tag" data-dr-tag></span>
+      <button class="drawer__close" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </header>
+    <h2 id="dr-title" data-dr-title></h2>
+    <p class="drawer__sub" data-dr-sub></p>
+    <div class="seg drawer__tabs" role="group" aria-label="Demo" data-dr-tabs></div>
+    <div class="drawer__view" data-dr-view></div>
+    <div class="drawer__code">
+      <div class="drawer__codebar"><span data-dr-file>components.html</span><button class="pill pill--sm" type="button" data-dr-copy><span>Copy code</span></button></div>
+      <pre><code data-dr-code></code></pre>
+    </div>
+    <div class="drawer__actions">
+      <button class="pill pill--solid pill--sm" type="button" data-dr-ai><span>Copy for AI</span></button>
+      <a class="pill pill--sm" href="#" data-dr-open>Open the full catalog</a>
+    </div>
+  </div>
+</aside>
+
 <footer class="wrap foot"><span>UI Design Languages · MIT</span><a href="./">Back to all styles</a></footer>
 <script src="site/home.js"></script>
+<script src="site/wall.js"></script>
 <script src="site/components.js"></script>
 <script src="site/smooth-scroll.js" defer></script>
 </body>

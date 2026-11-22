@@ -12,7 +12,7 @@
     var base = parseFloat(iframe.getAttribute("width")) || 1280;
     iframe.style.transform = "scale(" + view.clientWidth / base + ")";
   }
-  var views = document.querySelectorAll(".frame__view, .same__view");
+  var views = document.querySelectorAll(".frame__view");
   views.forEach(fit);
   if ("ResizeObserver" in window) {
     var ro = new ResizeObserver(function (entries) { entries.forEach(function (e) { fit(e.target); }); });
@@ -54,4 +54,186 @@
       ta.remove(); done(ok);
     }
   });
+})();
+
+/* ---------- Motion (homepage + component wall): word reveals, rising blocks, hero parallax,
+   scroll-linked frames, live marquee and count-ups. Everything stops at prefers-reduced-motion. ---------- */
+(function () {
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* Split headings into words that rise out of a mask. */
+  function split(el) {
+    var i = 0;
+    (function walk(node) {
+      Array.prototype.slice.call(node.childNodes).forEach(function (n) {
+        if (n.nodeType === 3) {
+          var frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(function (part) {
+            if (!part) return;
+            if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+            var w = document.createElement("span"), inner = document.createElement("span");
+            w.className = "w"; inner.textContent = part; inner.style.setProperty("--i", i++);
+            w.appendChild(inner); frag.appendChild(w);
+          });
+          n.parentNode.replaceChild(frag, n);
+        } else if (n.nodeType === 1) walk(n);
+      });
+    })(el);
+  }
+  var heads = Array.prototype.slice.call(document.querySelectorAll(".reveal-words"));
+  heads.forEach(split);
+
+  var io = "IntersectionObserver" in window ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);
+      e.target.classList.add(e.target.classList.contains("reveal-words") ? "is-revealed" : "is-in");
+      if (e.target.hasAttribute("data-count")) countUp(e.target);
+    });
+  }, { rootMargin: "0px 0px -10% 0px" }) : null;
+
+  /* Grid items rise in with a small stagger. */
+  [".same figure", ".way", ".legal > p"].forEach(function (sel) {
+    document.querySelectorAll(sel).forEach(function (el, n) { el.classList.add("rise"); el.style.setProperty("--d", n); });
+  });
+  function start() {
+    heads.forEach(function (h) { if (!h.hasAttribute("data-reveal-on-scroll")) h.classList.add("is-revealed"); else if (io) io.observe(h); else h.classList.add("is-revealed"); });
+    document.querySelectorAll(".rise").forEach(function (el) {
+      if (el.closest("[data-hero], .cw-hero")) el.classList.add("is-in");
+      else if (io) io.observe(el); else el.classList.add("is-in");
+    });
+    document.querySelectorAll("[data-count]").forEach(function (el) { if (io) io.observe(el); });
+  }
+  if (document.fonts && document.fonts.ready) Promise.race([document.fonts.ready, new Promise(function (r) { setTimeout(r, 700); })]).then(start);
+  else start();
+
+  function countUp(el) {
+    var to = +el.getAttribute("data-count"), t0 = performance.now(), dur = 1400;
+    if (reduce || !to) { el.textContent = to; return; }
+    (function tick(t) {
+      var k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 4);
+      el.textContent = Math.round(to * e);
+      if (k < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+
+  if (reduce) return;
+
+  /* Hero: the page wall leans toward the pointer, and a soft light follows it. */
+  var hero = document.querySelector("[data-hero]");
+  if (hero && window.matchMedia("(hover: hover)").matches) {
+    var pending = null, queued = false;
+    hero.addEventListener("pointermove", function (e) {
+      pending = e;
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () {
+        queued = false;
+        var r = hero.getBoundingClientRect(), ev = pending;
+        hero.style.setProperty("--px", ((ev.clientX - r.left) / r.width * 2 - 1).toFixed(3));
+        hero.style.setProperty("--py", ((ev.clientY - r.top) / r.height * 2 - 1).toFixed(3));
+        hero.style.setProperty("--sx", ev.clientX - r.left + "px");
+        hero.style.setProperty("--sy", ev.clientY - r.top + "px");
+      });
+    });
+    hero.addEventListener("pointerleave", function () { hero.style.setProperty("--px", 0); hero.style.setProperty("--py", 0); });
+  }
+
+  /* Showcases: frames tilt up out of the page and land flat as they scroll in. */
+  var medias = Array.prototype.slice.call(document.querySelectorAll(".show"));
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      ticking = false;
+      if (document.documentElement.hasAttribute("data-static")) return; // screenshot mode: keep the final state
+      var vh = window.innerHeight;
+      medias.forEach(function (m) {
+        var r = m.getBoundingClientRect();
+        var p = (vh - r.top) / (vh * 0.7);
+        p = Math.max(0, Math.min(1, p));
+        p = 1 - Math.pow(1 - p, 3);
+        m.style.setProperty("--p", p.toFixed(3));
+      });
+    });
+  }
+  if (medias.length) {
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    onScroll();
+  }
+
+  /* "Same markup": each card is the identical HTML from site/compare/<pack>.html, rendered inline with
+     the pack's own CSS and JS (no iframe), scaled from its 360px design width to the column. */
+  var compares = document.querySelectorAll("[data-compare]");
+  if (compares.length && window.UIWall) {
+    var fitCompare = function (view) {
+      var inner = view.firstElementChild;
+      if (!inner) return;
+      var s = view.clientWidth / 360;
+      inner.style.transform = "scale(" + s + ")";
+      view.style.height = Math.ceil(inner.offsetHeight * s) + "px";
+    };
+    var cro = "ResizeObserver" in window ? new ResizeObserver(function (es) { es.forEach(function (e) { fitCompare(e.target.closest ? e.target.closest("[data-compare]") || e.target : e.target); }); }) : null;
+    compares.forEach(function (view) {
+      var id = view.getAttribute("data-compare"), p = UIWall.byId[id];
+      fetch("site/compare/" + id + ".html").then(function (r) { return r.text(); }).then(function (text) {
+        var doc = new DOMParser().parseFromString(text, "text/html");
+        var wrap = doc.querySelector(".wrap");
+        var pad = (doc.querySelector("style") || {}).textContent || "";
+        var m = pad.match(/\.wrap\s*\{\s*padding:\s*([^;]+);/);
+        var inner = document.createElement("div");
+        inner.className = "same__inner";
+        inner.setAttribute("style", p.root + ";" + (p.page || "") + ";padding:" + (m ? m[1] : "22px"));
+        inner.innerHTML = wrap.innerHTML.replace(/min-height:\s*100vh;?/g, "");
+        view.appendChild(inner);
+        fitCompare(view);
+        if (cro) { cro.observe(view); cro.observe(inner); }
+        UIWall.scripts();
+      });
+    });
+  }
+
+  /* Live marquee: real components from every language (site/wall.js). */
+  var rows = document.querySelectorAll("[data-marquee]");
+  if (rows.length && window.UIWall) {
+    var ROWS = [
+      [["clay", "button", "variants"], ["lilac", "selection", "toggle"], ["atelier", "tabs", "pill-tabs"], ["tactile", "selection", "switch"], ["sketch", "tabs", "folder-tabs"], ["clay", "segmented", "segmented-control"], ["lilac", "chips", "chips"], ["atelier", "appearance", "accent-swatches"]],
+      [["lilac", "progress", "ring-and-steps"], ["sketch", "chips", "badges-and-status"], ["tactile", "button", "states"], ["atelier", "button", "variants"], ["clay", "selection", "toggle"], ["sketch", "button", "variants"], ["tactile", "segmented", "segmented-tabs"], ["lilac", "button", "variants"]]
+    ];
+    UIWall.ready().then(function () {
+      rows.forEach(function (row) {
+        var track = row.querySelector(".marquee__track"), set = document.createDocumentFragment();
+        ROWS[+row.getAttribute("data-marquee")].forEach(function (pk) {
+          var st = UIWall.stage(pk[0], pk[1], pk[2]), p = UIWall.byId[pk[0]], hit = UIWall.demo(pk[0], pk[1], pk[2]);
+          if (!st) return;
+          var card = document.createElement("div");
+          card.className = "mq-card";
+          card.appendChild(st);
+          var tag = document.createElement("a");
+          tag.className = "mq-tag";
+          tag.href = "components.html#" + pk[0] + "/" + pk[1];
+          tag.innerHTML = '<i style="background:' + p.dot + '"></i><b style="' + p.font + '"></b><span></span>';
+          tag.querySelector("b").textContent = p.name;
+          tag.querySelector("span").textContent = hit.component.title;
+          card.appendChild(tag);
+          set.appendChild(card);
+        });
+        track.appendChild(set);
+        // A second, identical copy makes the loop seamless; it is hidden from assistive tech and has no ids.
+        Array.prototype.slice.call(track.children).forEach(function (card) {
+          var clone = card.cloneNode(true);
+          clone.setAttribute("aria-hidden", "true");
+          clone.querySelectorAll("[id]").forEach(function (n) { n.removeAttribute("id"); });
+          clone.querySelectorAll("[for]").forEach(function (n) { n.removeAttribute("for"); });
+          clone.querySelectorAll("input[type=radio]").forEach(function (n) { n.name += "-copy"; });
+          clone.querySelectorAll("a, button, input, select, textarea").forEach(function (n) { n.tabIndex = -1; });
+          track.appendChild(clone);
+        });
+        requestAnimationFrame(function () { row.style.setProperty("--mq-dur", Math.max(40, track.scrollWidth / 2 / 45) + "s"); });
+      });
+      UIWall.scripts();
+    });
+  }
 })();

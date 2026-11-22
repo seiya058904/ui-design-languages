@@ -130,6 +130,16 @@ const send = (method, params = {}) => new Promise((r) => { const i = ++id; pendi
   .then((m) => { if (m.error) throw new Error(`${method}: ${m.error.message}`); return m.result; });
 const nextEvent = (name) => new Promise((r) => { const fn = (m) => { if (m.method === name) { listeners.delete(fn); r(m); } }; listeners.add(fn); });
 const evaluate = async (expression) => (await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true })).result.value;
+/* Close Chrome and wait until it has really exited before removing its temp profile (on Windows a
+   profile still held by Chrome can't be deleted, and leftovers pile up in the temp folder). */
+async function shutdown() {
+  try { ws.close(); } catch { /* already closed */ }
+  server.close();
+  const exited = chrome.exitCode !== null ? Promise.resolve() : new Promise((r) => chrome.once("exit", r));
+  chrome.kill();
+  await Promise.race([exited, new Promise((r) => setTimeout(r, 5000))]);
+  try { rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); } catch { /* leave it to the OS temp cleanup */ }
+}
 // Jump finite entrance animations (ring fills, dialog pops) to their end and freeze infinite loops
 // (marquees, auroras), so captures are deterministic and a tall headless viewport isn't repainted every frame.
 // Scroll-triggered reveals and scroll-linked tilts are shown in their final state.
@@ -156,7 +166,7 @@ if (thumbs) {
       await writeFile(out, Buffer.from(data, "base64"));
       console.log(`thumb	${page.path}	→ ${relative(root, out)}`);
     }
-  } finally { ws.close(); chrome.kill(); server.close(); }
+  } finally { await shutdown(); }
   process.exit(0);
 }
 try {
@@ -208,10 +218,7 @@ try {
     }
   }
 } finally {
-  ws.close();
-  chrome.kill();
-  server.close();
-  setTimeout(() => { try { rmSync(profile, { recursive: true, force: true }); } catch { /* Chrome may still hold the temp profile */ } }, 500);
+  await shutdown();
 }
 console.log(overflowing ? `\n${overflowing} page/width combination(s) overflow horizontally.` : "\nNo horizontal overflow.");
 process.exitCode = overflowing ? 1 : 0;

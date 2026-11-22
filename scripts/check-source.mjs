@@ -173,10 +173,12 @@ try {
   console.error("check-source failed:", e.message);
   failed = failed || 1;
 } finally {
-  ws.close();
-  chrome.kill();
+  // Wait for Chrome to exit before removing its temp profile (Windows keeps it locked until then).
+  try { ws.close(); } catch { /* already closed */ }
   server.close();
-  await sleep(300);
-  try { rmSync(profile, { recursive: true, force: true }); } catch { /* Chrome may still hold the profile on Windows */ }
+  const exited = chrome.exitCode !== null ? Promise.resolve() : new Promise((r) => chrome.once("exit", r));
+  chrome.kill();
+  await Promise.race([exited, sleep(5000)]);
+  try { rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); } catch { /* leave it to the OS temp cleanup */ }
 }
 process.exit(failed ? 1 : 0);

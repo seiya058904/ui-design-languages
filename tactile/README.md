@@ -41,6 +41,7 @@ Dark theme: `<html data-theme="dark">` (or `"auto"`), or `[data-theme-set="light
 | Data | `.tactile-card` (`__icon`, `__title`, `__text`), `.tactile-list` (`__item[aria-selected]`), `.tactile-badge` (`--soft` `--danger` `--warning`), `.tactile-avatar` (`.is-active`), `.tactile-table` (raised header) |
 | Feedback | `.tactile-dialog`, `.tactile-warning-mark`, `.tactile-toast(-stack)`, `.tactile-alert` (`--danger`), `.tactile-progress`, `.tactile-spinner`, `.tactile-skeleton`, `.tactile-empty` |
 | Annotation | `.tactile-tip` (static bubble), `.tactile-tooltip[data-tip]`, `.tactile-note` (dot + dashed leader) |
+| Entrance | `.tactile-enter` (children enter one after another on page load) |
 
 ## Tokens
 

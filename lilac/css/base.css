@@ -104,6 +104,27 @@ a { color: inherit; }
   white-space: nowrap; border: 0;
 }
 
+/* ---------- Entrance: the one orchestrated page-load moment ----------
+   <main class="lilac-enter">…</main> — tiles drift up out of a soft blur: each child enters after the previous one,
+   once, on load. Nest it (a grid of cards inside) for a cascade. Skipped with reduced motion. */
+.lilac-enter > * {
+  --lilac-enter-i: 0;
+  animation: lilac-enter var(--lilac-motion-duration-enter) var(--lilac-motion-easing-spring) backwards;
+  animation-delay: calc(var(--lilac-enter-i) * var(--lilac-motion-stagger));
+}
+.lilac-enter > :nth-child(2) { --lilac-enter-i: 1; }
+.lilac-enter > :nth-child(3) { --lilac-enter-i: 2; }
+.lilac-enter > :nth-child(4) { --lilac-enter-i: 3; }
+.lilac-enter > :nth-child(5) { --lilac-enter-i: 4; }
+.lilac-enter > :nth-child(6) { --lilac-enter-i: 5; }
+.lilac-enter > :nth-child(7) { --lilac-enter-i: 6; }
+.lilac-enter > :nth-child(8) { --lilac-enter-i: 7; }
+.lilac-enter > :nth-child(9) { --lilac-enter-i: 8; }
+.lilac-enter > :nth-child(10) { --lilac-enter-i: 9; }
+.lilac-enter > :nth-child(n+11) { --lilac-enter-i: 10; }
+@keyframes lilac-enter { from { opacity: 0; transform: translateY(14px); filter: blur(6px); } }
+@media (prefers-reduced-motion: reduce) { .lilac-enter > * { animation: none !important; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     transition-duration: 0.01ms !important;

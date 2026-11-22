@@ -44,6 +44,7 @@ Appearance controls are plain markup — `data-appearance="theme|accent|density|
 | Board | `.atelier-board` (`--columns`), `.atelier-column` (+ `__head`, `__count`), `.atelier-task` (+ `__foot`), `.atelier-done` |
 | Feedback | `.atelier-toast` (`--success` `--warning` `--danger` `--inverse`), `.atelier-confirm`, `.atelier-empty`, `.atelier-dialog`, `.atelier-tooltip[data-tip]` |
 | Appearance | `.atelier-swatch` (`--pick` for accent pickers) |
+| Entrance | `.atelier-enter` (children enter one after another on page load) |
 
 ## Tokens
 

@@ -35,6 +35,7 @@ Hand-drawn ink on cream paper: uneven outlines, drawn offset shadows, diagonal h
 | Data | `.sketch-card`, `.sketch-placeholder`, `.sketch-list`, `.sketch-table`, `.sketch-empty` |
 | Progress | `.sketch-progress`, `.sketch-steps`, `.sketch-ring`, `.sketch-skeleton`, `.sketch-spinner` |
 | Color | `.sketch-swatch` (`--pick` with `data-label`), `.sketch-ramp`, `.sketch-code` |
+| Entrance | `.sketch-enter` (children enter one after another on page load) |
 
 ## Tokens
 

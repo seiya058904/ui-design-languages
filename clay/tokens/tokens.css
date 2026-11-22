@@ -138,6 +138,8 @@
   --clay-motion-easing-press: cubic-bezier(0.3, 0, 0.5, 1);
   --clay-motion-easing-release: cubic-bezier(0.34, 1.56, 0.64, 1); /* Squish: the clay springs back past rest, then settles */
   --clay-motion-easing-pop: cubic-bezier(0.34, 1.8, 0.5, 1); /* Check marks and radio dots appearing */
+  --clay-motion-duration-enter: 760ms; /* Page-load entrance (pieces rise and squish into place) */
+  --clay-motion-stagger: 70ms; /* Delay between siblings in an entrance */
 }
 
 /* Dark theme — GENERATED from clay/tokens/tokens.dark.json.

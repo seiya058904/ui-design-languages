@@ -52,7 +52,7 @@ Source: one "Product UI Styleguide" board (mint clay on a matte grid). What the 
 
 **Depth** — Raised: `inset 0 1.5px 0 rgba(255,255,255,.85), inset 0 -2px 3px rgba(84,74,60,.12), 0 1px 1px rgba(84,74,60,.08), 0 4px 10px -2px rgba(84,74,60,.22)`. Carved: `inset 0 2px 4px rgba(84,74,60,.18), inset 0 -1.5px 0 rgba(255,255,255,.75)`. Glow: `0 0 0 2px rgba(124,242,198,.95), 0 0 16px 2px rgba(124,242,198,.55)`. Elevation 1–5 tokens.
 
-**Motion** — Squish. Press 110ms (`easing-press`): buttons sink 1px and scale to 0.97, chips to 0.95. Release and hover 460ms on `easing-release` `cubic-bezier(.34,1.56,.64,1)`, so the clay springs back past rest and settles. Check marks and radio dots pop in on `easing-pop`. 180ms color, 280ms knobs and dialogs, 380ms sliding indicators on `cubic-bezier(.32,.72,0,1)`. Reduced motion respected.
+**Motion** — Squish. Press 110ms (`easing-press`): buttons sink 1px and scale to 0.97, chips to 0.95. Release and hover 460ms on `easing-release` `cubic-bezier(.34,1.56,.64,1)`, so the clay springs back past rest and settles. Check marks and radio dots pop in on `easing-pop`. 180ms color, 280ms knobs and dialogs, 380ms sliding indicators on `cubic-bezier(.32,.72,0,1)`. Reduced motion respected. Page load: `.clay-enter` on a container makes its children rise and squish into place one after another (760ms, 70ms stagger), once.
 
 ## 4. Components
 

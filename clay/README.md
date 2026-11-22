@@ -52,7 +52,7 @@ With `js/clay.js`, any `[data-theme-set="light|dark|auto"]` control (for example
 | `tokens/tokens.dark.json` | Dark-theme overrides |
 | `tokens/tokens.css` | CSS custom properties generated from both JSON files |
 | `css/clay.css` | Entry point: tokens + base + all components |
-| `css/base.css` | Reset, typography, board, grid, ruler, layout helpers |
+| `css/base.css` | Reset, typography, board, grid, ruler, layout helpers, `.clay-enter` page-load entrance |
 | `css/components/` | Button, input, chip & badge, tabs, alert, card, surfaces (swatch, elevation, avatar, progress), controls (toggle, checkbox, radio), navigation (nav, top bar, table, dialog, tooltip) |
 | `js/clay.js` | Optional behaviour for tabs, chips and dialogs |
 | `assets/icons.html` | Inline SVG icon sprite |

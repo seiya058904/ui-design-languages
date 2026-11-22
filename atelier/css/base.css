@@ -103,6 +103,27 @@ a { color: inherit; }
 .atelier-divider { height: 1px; border: 0; background: var(--atelier-color-hairline); margin: var(--atelier-space-5) 0; }
 .atelier-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
+/* ---------- Entrance: the one orchestrated page-load moment ----------
+   <main class="atelier-enter">…</main> — a quick, precise fade-up: each child enters after the previous one,
+   once, on load. Nest it (a grid of cards inside) for a cascade. Skipped with reduced motion. */
+.atelier-enter > * {
+  --atelier-enter-i: 0;
+  animation: atelier-enter var(--atelier-motion-duration-enter) var(--atelier-motion-easing) backwards;
+  animation-delay: calc(var(--atelier-enter-i) * var(--atelier-motion-stagger));
+}
+.atelier-enter > :nth-child(2) { --atelier-enter-i: 1; }
+.atelier-enter > :nth-child(3) { --atelier-enter-i: 2; }
+.atelier-enter > :nth-child(4) { --atelier-enter-i: 3; }
+.atelier-enter > :nth-child(5) { --atelier-enter-i: 4; }
+.atelier-enter > :nth-child(6) { --atelier-enter-i: 5; }
+.atelier-enter > :nth-child(7) { --atelier-enter-i: 6; }
+.atelier-enter > :nth-child(8) { --atelier-enter-i: 7; }
+.atelier-enter > :nth-child(9) { --atelier-enter-i: 8; }
+.atelier-enter > :nth-child(10) { --atelier-enter-i: 9; }
+.atelier-enter > :nth-child(n+11) { --atelier-enter-i: 10; }
+@keyframes atelier-enter { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) { .atelier-enter > * { animation: none !important; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }

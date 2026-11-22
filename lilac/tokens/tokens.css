@@ -96,6 +96,8 @@
   --lilac-motion-easing-press: cubic-bezier(0.4, 0, 0.6, 1);
   --lilac-motion-easing-release: cubic-bezier(0.22, 1.25, 0.36, 1); /* Soft settle: pieces float back with a gentle overshoot */
   --lilac-motion-easing-pop: cubic-bezier(0.22, 1.35, 0.36, 1); /* Check marks and radio dots appearing */
+  --lilac-motion-duration-enter: 1000ms; /* Page-load entrance (tiles drift up out of a soft blur) */
+  --lilac-motion-stagger: 90ms; /* Delay between siblings in an entrance */
 }
 
 /* Dark theme — GENERATED from lilac/tokens/tokens.dark.json.

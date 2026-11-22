@@ -73,6 +73,27 @@ a { color: inherit; }
 .tactile-row   { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap, var(--tactile-space-3)); }
 .tactile-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
+/* ---------- Entrance: the one orchestrated page-load moment ----------
+   <main class="tactile-enter">…</main> — surfaces lift out of the flat material (shadows grow in): each child enters after the previous one,
+   once, on load. Nest it (a grid of cards inside) for a cascade. Skipped with reduced motion. */
+.tactile-enter > * {
+  --tactile-enter-i: 0;
+  animation: tactile-enter var(--tactile-motion-duration-enter) var(--tactile-motion-easing-release) backwards;
+  animation-delay: calc(var(--tactile-enter-i) * var(--tactile-motion-stagger));
+}
+.tactile-enter > :nth-child(2) { --tactile-enter-i: 1; }
+.tactile-enter > :nth-child(3) { --tactile-enter-i: 2; }
+.tactile-enter > :nth-child(4) { --tactile-enter-i: 3; }
+.tactile-enter > :nth-child(5) { --tactile-enter-i: 4; }
+.tactile-enter > :nth-child(6) { --tactile-enter-i: 5; }
+.tactile-enter > :nth-child(7) { --tactile-enter-i: 6; }
+.tactile-enter > :nth-child(8) { --tactile-enter-i: 7; }
+.tactile-enter > :nth-child(9) { --tactile-enter-i: 8; }
+.tactile-enter > :nth-child(10) { --tactile-enter-i: 9; }
+.tactile-enter > :nth-child(n+11) { --tactile-enter-i: 10; }
+@keyframes tactile-enter { from { opacity: 0; transform: scale(0.97); box-shadow: none; } }
+@media (prefers-reduced-motion: reduce) { .tactile-enter > * { animation: none !important; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }

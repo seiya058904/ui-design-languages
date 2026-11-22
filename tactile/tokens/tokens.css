@@ -92,6 +92,8 @@
   --tactile-motion-easing-press: cubic-bezier(0.55, 0, 0.75, 0.3);
   --tactile-motion-easing-release: cubic-bezier(0.2, 1.3, 0.45, 1); /* Key spring: rises back with a small overshoot */
   --tactile-motion-easing-pop: cubic-bezier(0.25, 1.4, 0.5, 1); /* Check marks and radio dots appearing */
+  --tactile-motion-duration-enter: 720ms; /* Page-load entrance (surfaces lift out of the flat material (shadows grow in)) */
+  --tactile-motion-stagger: 80ms; /* Delay between siblings in an entrance */
 }
 
 /* Dark theme — GENERATED from tactile/tokens/tokens.dark.json.

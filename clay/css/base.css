@@ -155,6 +155,27 @@ a { color: inherit; }
   white-space: nowrap; border: 0;
 }
 
+/* ---------- Entrance: the one orchestrated page-load moment ----------
+   <main class="clay-enter">…</main> — pieces rise and squish into place: each child enters after the previous one,
+   once, on load. Nest it (a grid of cards inside) for a cascade. Skipped with reduced motion. */
+.clay-enter > * {
+  --clay-enter-i: 0;
+  animation: clay-enter var(--clay-motion-duration-enter) var(--clay-motion-easing-release) backwards;
+  animation-delay: calc(var(--clay-enter-i) * var(--clay-motion-stagger));
+}
+.clay-enter > :nth-child(2) { --clay-enter-i: 1; }
+.clay-enter > :nth-child(3) { --clay-enter-i: 2; }
+.clay-enter > :nth-child(4) { --clay-enter-i: 3; }
+.clay-enter > :nth-child(5) { --clay-enter-i: 4; }
+.clay-enter > :nth-child(6) { --clay-enter-i: 5; }
+.clay-enter > :nth-child(7) { --clay-enter-i: 6; }
+.clay-enter > :nth-child(8) { --clay-enter-i: 7; }
+.clay-enter > :nth-child(9) { --clay-enter-i: 8; }
+.clay-enter > :nth-child(10) { --clay-enter-i: 9; }
+.clay-enter > :nth-child(n+11) { --clay-enter-i: 10; }
+@keyframes clay-enter { from { opacity: 0; transform: translateY(22px) scale(0.96); } }
+@media (prefers-reduced-motion: reduce) { .clay-enter > * { animation: none !important; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     transition-duration: 0.01ms !important;

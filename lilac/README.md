@@ -45,6 +45,7 @@ Dark theme: `<html data-theme="dark">` (or `"auto"` to follow the OS), or `[data
 | Cards | `.lilac-card` (`--interactive`) · `.lilac-profile` · `.lilac-avatar` (`--xl`, `--avatar-size`, `--avatar-bg`) |
 | Navigation | `.lilac-nav` sidebar · `.lilac-bottom-nav` mobile bar — both with a gliding wash |
 | Data, overlays | `.lilac-table`, `.lilac-dialog`, `.lilac-tooltip[data-tip]` |
+| Entrance | `.lilac-enter` (children enter one after another on page load) |
 
 Usage snippets are at the top of each block in [`css/components.css`](css/components.css); every component appears in [`index.html`](index.html).
 

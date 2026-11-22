@@ -86,5 +86,7 @@
   --sketch-motion-easing-press: cubic-bezier(0.4, 0, 1, 1);
   --sketch-motion-easing-release: cubic-bezier(0.3, 1.9, 0.5, 1); /* Cartoon snap-back: drawn pieces overshoot like an animated doodle */
   --sketch-motion-easing-pop: cubic-bezier(0.3, 1.9, 0.5, 1); /* Check marks and radio dots appearing */
+  --sketch-motion-duration-enter: 360ms; /* Page-load entrance (drawn in frame by frame) */
+  --sketch-motion-stagger: 90ms; /* Delay between siblings in an entrance */
   --sketch-motion-duration-boil: 480ms; /* One loop of the hover line-boil (three drawn frames) */
 }

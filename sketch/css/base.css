@@ -121,6 +121,27 @@ a { color: inherit; }
 .sketch-rule  { height: 0; border: 0; border-top: 1.4px dashed var(--sketch-color-ink-faint); margin: var(--sketch-space-4) 0; }
 .sketch-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
+/* ---------- Entrance: the one orchestrated page-load moment ----------
+   <main class="sketch-enter">…</main> — drawn in frame by frame: each child enters after the previous one,
+   once, on load. Nest it (a grid of cards inside) for a cascade. Skipped with reduced motion. */
+.sketch-enter > * {
+  --sketch-enter-i: 0;
+  animation: sketch-enter var(--sketch-motion-duration-enter) steps(4, end) backwards;
+  animation-delay: calc(var(--sketch-enter-i) * var(--sketch-motion-stagger));
+}
+.sketch-enter > :nth-child(2) { --sketch-enter-i: 1; }
+.sketch-enter > :nth-child(3) { --sketch-enter-i: 2; }
+.sketch-enter > :nth-child(4) { --sketch-enter-i: 3; }
+.sketch-enter > :nth-child(5) { --sketch-enter-i: 4; }
+.sketch-enter > :nth-child(6) { --sketch-enter-i: 5; }
+.sketch-enter > :nth-child(7) { --sketch-enter-i: 6; }
+.sketch-enter > :nth-child(8) { --sketch-enter-i: 7; }
+.sketch-enter > :nth-child(9) { --sketch-enter-i: 8; }
+.sketch-enter > :nth-child(10) { --sketch-enter-i: 9; }
+.sketch-enter > :nth-child(n+11) { --sketch-enter-i: 10; }
+@keyframes sketch-enter { from { opacity: 0; transform: translate(-4px, 8px) rotate(-1.5deg); } }
+@media (prefers-reduced-motion: reduce) { .sketch-enter > * { animation: none !important; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }

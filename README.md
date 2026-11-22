@@ -2,7 +2,7 @@
 
 A library of complete UI design languages ("Style Packs"). Each one is shown as real, working pages — so you can compare styles by how they actually look and behave — and each one ships both the **design spec** (Markdown) and the **code** (tokens, CSS components, optional JS, demos).
 
-**Live library:** https://seiya058904.github.io/ui-design-languages/
+**Live library:** https://seiya058904.github.io/ui-design-languages/ · **Components:** [browse one at a time](https://seiya058904.github.io/ui-design-languages/components.html) — live preview, copyable markup and the same component in the other languages
 
 | Pack | Character | Spec | Styleguide + code | Example |
 | --- | --- | --- | --- | --- |
@@ -23,7 +23,7 @@ A library of complete UI design languages ("Style Packs"). Each one is shown as 
 <script src="https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/atelier/js/atelier.js"></script>
 ```
 
-Or copy the pack folder into your project. Every styleguide has a **Code** button under each component showing the exact HTML from the delivered file. For AI assistants, hand over the pack's `DESIGN.md` and `AGENTS.md`.
+Or copy the pack folder into your project. Every styleguide has a **`</>`** button in each component's title row showing the exact HTML from the delivered file, and [components.html](https://seiya058904.github.io/ui-design-languages/components.html) lists every component of every pack with a live preview, the markup, and a "Copy for AI" prompt. For AI assistants, hand over the pack's `DESIGN.md` and `AGENTS.md`.
 
 ## Repository layout
 

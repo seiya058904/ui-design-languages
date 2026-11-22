@@ -1,0 +1,79 @@
+/* Components browser — site chrome only (no pack styles). Builds on site/site.css. */
+[hidden] { display: none !important; }
+.top nav a[aria-current="page"] { color: var(--ink); }
+
+.cmp { display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 48px; align-items: start; padding: 28px 0 80px; }
+
+/* Sidebar */
+.cmp__side { position: sticky; top: 84px; display: flex; flex-direction: column; max-height: calc(100vh - 104px); }
+.cmp__label { margin: 0 0 10px; font-size: 12px; font-weight: 500; color: var(--faint); }
+.cmp__packs { display: flex; flex-direction: column; gap: 2px; margin-bottom: 26px; }
+.lang { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; border-radius: 10px; color: var(--muted); font-size: 18px; transition: background-color .2s, color .2s; }
+.lang i { width: 8px; height: 8px; flex: none; border-radius: 50%; opacity: .55; transition: opacity .2s, box-shadow .2s; }
+.lang:hover { background: rgba(255, 255, 255, 0.04); color: var(--ink); }
+.lang[aria-current="true"] { background: rgba(255, 255, 255, 0.07); color: var(--ink); }
+.lang[aria-current="true"] i { opacity: 1; box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06); }
+.cmp__list { min-height: 0; overflow: auto; margin-right: -8px; padding-right: 8px; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.15) transparent; }
+.cmp__list ol { margin: 0; padding: 0 0 0 1px; list-style: none; border-left: 1px solid var(--line); }
+.cmp__list a { position: relative; display: block; padding: 7px 0 7px 16px; font-size: 14px; line-height: 1.35; color: var(--muted); transition: color .2s; }
+.cmp__list a::before { content: ""; position: absolute; left: -1px; top: 6px; bottom: 6px; width: 1px; background: transparent; transition: background-color .2s; }
+.cmp__list a:hover { color: var(--ink); }
+.cmp__list a[aria-current="page"] { color: var(--ink); }
+.cmp__list a[aria-current="page"]::before { background: var(--ink); }
+
+/* Main */
+.cmp__head { margin-bottom: 26px; }
+.cmp__crumb { font-size: 14px; color: var(--faint); }
+.cmp__crumb span { font-size: 17px; color: var(--muted); }
+.cmp__head h1 { margin: 8px 0 10px; font-size: clamp(34px, 4.4vw, 56px); line-height: 1; letter-spacing: -0.04em; font-weight: 600; }
+.cmp__sub { max-width: 64ch; color: var(--muted); font-size: 15px; }
+.cmp__sub:empty { display: none; }
+
+.cmp__bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+.cmp__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.cmp__stage { position: relative; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 28px 0 18px; border: 1px solid var(--line); border-radius: var(--radius);
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 0) 0 0 / 22px 22px,
+    var(--bg-raise); }
+.cmp__view { position: relative; max-width: calc(100% - 2px); min-height: 120px; overflow: hidden; border-radius: 14px; box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 0, 0, 0.35); transition: height .45s var(--ease), width .45s var(--ease); }
+.cmp__view iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 2000px; border: 0; transform-origin: 0 0; background: transparent; }
+.cmp__view.is-loading { opacity: .4; }
+.cmp__hint { padding: 0 16px; font-size: 12.5px; color: var(--faint); text-align: center; }
+
+.cmp__code { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #0B0B0D; }
+.cmp__codebar { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 18px; border-bottom: 1px solid var(--line); font: 12.5px/1.4 "Geist Mono", ui-monospace, monospace; color: var(--faint); }
+.cmp__code pre { margin: 0; max-height: 640px; overflow: auto; padding: 18px; color: #D7D7DA; font-size: 12.5px; line-height: 1.6; white-space: pre; tab-size: 2; }
+
+.cmp__pager { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
+.cmp__pager a { display: flex; flex-direction: column; gap: 2px; padding: 16px 20px; border: 1px solid var(--line); border-radius: 14px; transition: border-color .2s, background-color .2s; }
+.cmp__pager a:hover { border-color: var(--line-strong); background: rgba(255, 255, 255, 0.025); }
+.cmp__pager small { font-size: 12px; color: var(--faint); }
+.cmp__pager span { font-size: 16px; font-weight: 500; }
+.cmp__pager [rel="next"] { grid-column: 2; text-align: right; }
+
+.cmp__related { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--line); }
+.cmp__related h2 { margin-bottom: 18px; font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+.cmp__minis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.mini { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.mini__view { position: relative; display: block; max-width: 100%; min-height: 60px; overflow: hidden; border-radius: 12px; box-shadow: 0 0 0 1px var(--line-strong); pointer-events: none; transition: box-shadow .2s; }
+.mini__view iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 2000px; border: 0; transform-origin: 0 0; }
+.mini:hover .mini__view { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4); }
+.mini__cap { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); }
+.mini__cap b { font-size: 16px; color: var(--ink); }
+.mini__cap span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (max-width: 980px) {
+  .cmp { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-top: 16px; }
+  .cmp__side { position: static; max-height: none; }
+  .cmp__packs { flex-direction: row; flex-wrap: wrap; gap: 4px; margin-bottom: 18px; }
+  .lang { height: 36px; font-size: 16px; }
+  .cmp__list { max-height: 220px; padding: 4px 8px 4px 0; border: 1px solid var(--line); border-radius: 12px; }
+  .cmp__list ol { border-left: 0; }
+  .cmp__minis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .cmp__stage { padding: 16px 0 12px; }
+  .cmp__pager { grid-template-columns: minmax(0, 1fr); }
+  .cmp__pager [rel="next"] { grid-column: auto; }
+}

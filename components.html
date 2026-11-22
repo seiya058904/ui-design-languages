@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Components · UI Design Languages</title>
+  <meta name="description" content="Browse every component of every design language one at a time: live preview with the language's own CSS and JS, the exact markup to copy, and the same component in the other languages.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@700&family=Cormorant+Garamond:wght@500&family=Archivo:wdth,wght@112,800&family=Plus+Jakarta+Sans:wght@800&family=Itim&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site/site.css">
+  <link rel="stylesheet" href="site/components.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top__in">
+    <a class="brand" href="./"><span class="brand__dots" aria-hidden="true"><i style="background:#A8E6CF"></i><i style="background:#7C55FF"></i><i style="background:#2F7BF5"></i><i style="background:#2C8C8F"></i><i style="background:#A9C7EC"></i></span>UI Design Languages</a>
+    <nav aria-label="Site"><a href="./#styles">Styles</a><a href="components.html" aria-current="page">Components</a><a href="./#same">Compare</a><a href="./#use">Use</a></nav>
+    <a class="pill pill--sm" href="https://github.com/seiya058904/ui-design-languages">GitHub</a>
+  </div>
+</header>
+
+<main class="wrap cmp">
+  <aside class="cmp__side" aria-label="Browse">
+    <p class="cmp__label" id="lang-label">Language</p>
+    <div class="cmp__packs" role="group" aria-labelledby="lang-label" data-packs></div>
+    <p class="cmp__label" id="list-label">Components</p>
+    <nav class="cmp__list" aria-labelledby="list-label"><ol data-list></ol></nav>
+  </aside>
+
+  <section class="cmp__main" aria-labelledby="cmp-title">
+    <div class="cmp__head">
+      <p class="cmp__crumb" data-crumb>Loading…</p>
+      <h1 id="cmp-title" data-title>&nbsp;</h1>
+      <p class="cmp__sub" data-sub></p>
+    </div>
+
+    <div class="cmp__bar">
+      <div class="seg" role="group" aria-label="View">
+        <button type="button" aria-pressed="true" data-view="preview">Preview</button>
+        <button type="button" aria-pressed="false" data-view="code">Code</button>
+      </div>
+      <div class="cmp__actions">
+        <button class="pill pill--sm" type="button" data-act="copy"><span>Copy code</span></button>
+        <button class="pill pill--sm" type="button" data-act="ai"><span>Copy for AI</span></button>
+        <a class="pill pill--sm" href="#" data-act="open">Open in styleguide</a>
+      </div>
+    </div>
+
+    <div class="cmp__stage" data-stage>
+      <div class="cmp__view" data-view-box><iframe title="Live preview" tabindex="0" data-frame></iframe></div>
+      <p class="cmp__hint">Live: hover, press and type — it runs on the language's own CSS and JS.</p>
+    </div>
+    <div class="cmp__code" data-code hidden>
+      <div class="cmp__codebar"><span data-codefile>index.html</span><span>HTML · uses the language's CSS</span></div>
+      <pre><code data-code-text></code></pre>
+    </div>
+
+    <nav class="cmp__pager" aria-label="Previous and next component">
+      <a href="#" rel="prev" data-prev><small>Previous</small><span></span></a>
+      <a href="#" rel="next" data-next><small>Next</small><span></span></a>
+    </nav>
+
+    <section class="cmp__related" aria-labelledby="rel-t">
+      <h2 id="rel-t">The same idea in the other languages</h2>
+      <div class="cmp__minis" data-minis></div>
+    </section>
+  </section>
+</main>
+
+<footer class="wrap foot"><span>UI Design Languages · MIT</span><a href="./">Back to all styles</a></footer>
+<script src="site/home.js"></script>
+<script src="site/components.js"></script>
+<script src="site/smooth-scroll.js" defer></script>
+</body>
+</html>

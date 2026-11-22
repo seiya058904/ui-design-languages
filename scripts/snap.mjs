@@ -54,7 +54,8 @@ const langs = (await readdir(root, { withFileTypes: true }))
   .filter((d) => d.isDirectory() && existsSync(join(root, d.name, "tokens", "tokens.json")))
   .map((d) => d.name)
   .filter((n) => !only.length || only.includes(n));
-const pages = only.length || thumbs ? [] : [{ group: "_site", path: "index.html" }];
+const sitePages = [{ group: "_site", path: "index.html" }, { group: "_site", path: "components.html" }];
+const pages = thumbs ? [] : !only.length || only.includes("site") ? sitePages : [];
 for (const lang of langs) {
   pages.push({ group: lang, path: `${lang}/index.html` });
   const ex = join(root, lang, "examples");

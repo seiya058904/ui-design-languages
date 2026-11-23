@@ -885,7 +885,7 @@
         "root": "font-family:var(--terrarium-font-family-sans);color:var(--terrarium-color-text);font-size:var(--terrarium-font-size-body);line-height:1.55",
         "canvas": "background:var(--terrarium-texture-paper),var(--terrarium-color-canvas)",
         "page": "background:var(--terrarium-texture-paper),var(--terrarium-color-canvas)",
-        "hooks": ".terrarium-segmented, .terrarium-tabs, .terrarium-nav, .terrarium-pagination, .terrarium-chip[aria-pressed], .terrarium-slider, [data-terrarium-open], [data-terrarium-close], [data-terrarium-dismiss], [data-theme-set], [data-theme-toggle]",
+        "hooks": ".terrarium-segmented, .terrarium-tabs, .terrarium-nav, .terrarium-pagination, .terrarium-chip[aria-pressed], .terrarium-slider, [data-terrarium-open], [data-terrarium-close], [data-terrarium-dismiss], [data-theme-set], [data-theme-toggle], .terrarium-garden, .terrarium-calendar, .terrarium-mood",
         "wall": [
           [
             "card",
@@ -918,6 +918,18 @@
           [
             "elevation",
             "pebbles"
+          ],
+          [
+            "garden",
+            "habit-garden"
+          ],
+          [
+            "mood",
+            "mood-dial"
+          ],
+          [
+            "calendar",
+            "watering-calendar"
           ]
         ]
       }

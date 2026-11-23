@@ -36,6 +36,9 @@ Evening theme: `<html data-theme="dark">` (or `"auto"`), or `[data-theme-set="li
 | Navigation | `.terrarium-segmented` (`--block`), `.terrarium-tabs`, `.terrarium-nav` (`__item[aria-current]`, `__count`), `.terrarium-breadcrumb`, `.terrarium-pagination` |
 | Data | `.terrarium-feature` (`__art` `__text` `__badges`), `.terrarium-badge` (`--active` `--paused` `--draft`), `.terrarium-ring` (`--sm`), `.terrarium-progress` (`--terracotta`), `.terrarium-table`, `.terrarium-avatar` (`--sm` `--lg`, `.terrarium-avatar-stack`), `.terrarium-list` |
 | Feedback | `.terrarium-toast`, `.terrarium-alert` (`--ochre` `--terracotta`), `.terrarium-dialog` (`__icon` `__title` `__text` `__actions`), `.terrarium-tooltip[data-tip]`, `.terrarium-tip` |
+| Garden | `.terrarium-garden` (`__plant` with `__stem` / `__leaf--1…3` / `__bloom` / `__pot` / `__soil`, `__body`, `__list`, `__note`) + a `.terrarium-ring` — habits, sprout and ring grow together |
+| Calendar | `.terrarium-calendar` (`__head`, `__streak`, `__grid`, `__dow`, `__pad`, `__day[aria-pressed]`, `[aria-current="date"]`) |
+| Mood | `.terrarium-mood` (`--terrarium-mood` 0–4, `data-mood`) > `__fan[role=radiogroup]` > `__option[role=radio]` (`--a` angle), `__knob`, `__label` |
 | Material | `.terrarium-pebble` (`--2…--5`, `--breathe`), `.terrarium-surface` (`--1…--3`) |
 
 ## Tokens

@@ -41,7 +41,19 @@ a { color: inherit; }
 
 /* ---------- Cards: glazed cream ceramic with a warm shadow ----------
    <section class="terrarium-card">…</section> (--flat · --raised) */
-.terrarium-card { position: relative; padding: var(--terrarium-space-6); border-radius: var(--terrarium-radius-xl); background: var(--terrarium-color-surface); box-shadow: var(--terrarium-shadow-level-2); }
+.terrarium-card { position: relative; isolation: isolate; padding: var(--terrarium-space-6); border-radius: var(--terrarium-radius-xl); background: var(--terrarium-color-surface); box-shadow: var(--terrarium-shadow-level-2); }
+/* Glaze: on hover a band of warm window light glides slowly across the card, under its content. */
+.terrarium-card::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(112deg, transparent 38%, var(--terrarium-color-glaze-warm) 50%, transparent 62%) 140% 0 / 260% 100% no-repeat;
+  pointer-events: none;
+  transition: background-position var(--terrarium-motion-duration-glaze) var(--terrarium-motion-easing-out);
+}
+.terrarium-card:hover::after { background-position: -40% 0; }
 .terrarium-card--flat { box-shadow: var(--terrarium-shadow-level-1); }
 .terrarium-card--raised { background: var(--terrarium-color-surface-raised); box-shadow: var(--terrarium-shadow-level-3); }
 .terrarium-divider { height: 0; margin: var(--terrarium-space-5) 0; border: 0; border-top: 1px solid var(--terrarium-color-line); }

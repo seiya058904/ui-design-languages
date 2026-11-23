@@ -27,7 +27,7 @@ Primary reference: `UI参考图/terrarium-earth.jpg` (kept local, never committe
 | Controls | Continue (terracotta), Save Draft (moss), Cancel (cream outline); input "Enter your journal title" with a sprout; checked terracotta checkbox; terracotta radio; moss switch with "On" inside and a cream "Off"; slider at 68% with terracotta label | **Terracotta buttons use #B9502B** (white on #C85A32 is 4.2:1); the switch word comes from `data-on` / `data-off` |
 | Navigation | Segmented Today / Journal / Archive (terracotta pill); breadcrumb ⌂ Home › Journal › New Entry in a pill; pagination 1 2 3 … 8; sidebar with Habits as a moss pill | Pills slide on the spring; breadcrumb current item in terracotta text (#A9471F, 5.4:1) |
 | Data & feedback | "Daily Journal" card with a botanical tile and Active / Paused / Draft badges; 75% Progress ring in moss; "Entry saved" toast; Ava / Noah / Maya list with photos; "Save changes?" dialog with a sprout | Photos replaced by **illustrated portraits** (no external images); the ring counts up in CSS; the dialog's sprout grows as it opens |
-| Not in the reference | — | Hover / pressed / focus / disabled states, tabs, chips, notes, tooltip, table, progress bars, the evening theme, the journal example |
+| Not in the reference | — | Hover / pressed / focus / disabled states, tabs, chips, notes, tooltip, table, progress bars, habit garden, watering calendar, mood dial, glaze light, the evening theme, the journal example |
 
 ## 3. Foundations
 
@@ -45,7 +45,7 @@ Primary reference: `UI参考图/terrarium-earth.jpg` (kept local, never committe
 **Depth** — every level pairs a glaze highlight (`inset 0 1px 0`) with a hairline of warm shade and a soft warm drop: 1 (base) · 2 (+4px) · 3 (+8px). Terracotta and moss pieces cast shadows of their own color.
 **Evening (added)** — "Deep moss reading light": dark moss-charcoal walls, glazed cards one step lighter, cream ink, terracotta and moss lifted so they still glow; text on them turns dark.
 
-**Motion** — Organic botanical ease: 300ms on `cubic-bezier(.34,1.35,.64,1)`. Segmented, tabs and sidebar indicators sway to the new item; buttons lift 1px toward the pointer and give way (`scale(.97)`, 120ms) when pressed; switch knobs stretch while held; chips plant a moss seed; the ring grows on load and tweens whenever habits change (`@property --terrarium-value`, counted up in CSS); the dialog blooms and its sprout grows; cards unfold one after another on load (`.terrarium-grow`). All of it stops under `prefers-reduced-motion`.
+**Motion** — Organic botanical ease: 300ms on `cubic-bezier(.34,1.35,.64,1)`. Knobs and indicators settle on a soft physical spring (`easing-spring`, a `linear()` curve with one 3% overshoot that decays like a leaf, 560ms). Segmented, tabs and sidebar indicators sway to the new item; cards catch a band of warm window light that glides across their glaze on hover (`--terrarium-color-glaze-warm`, 1.1s); ticking a habit grows the ring and the sprout together — the stem draws taller, leaves unfurl at 25 / 50 / 75 %, the bud opens at 100 %; a watered day's drop falls in on the spring; buttons lift 1px toward the pointer and give way (`scale(.97)`, 120ms) when pressed; switch knobs stretch while held; chips plant a moss seed; the ring grows on load and tweens whenever habits change (`@property --terrarium-value`, counted up in CSS); the dialog blooms and its sprout grows; cards unfold one after another on load (`.terrarium-grow`). All of it stops under `prefers-reduced-motion`.
 
 ## 4. Components
 

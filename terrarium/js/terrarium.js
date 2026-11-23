@@ -8,7 +8,11 @@
    - dialogs: [data-terrarium-open="#id"] / [data-terrarium-close]; toasts and alerts: [data-terrarium-dismiss]
    - theme: [data-theme-set="light|dark|auto"] or a [data-theme-toggle] button / checkbox switches
      <html data-theme>, remembered in localStorage "terrarium-theme"; fires "terrarium:themechange"
-   Hooks: window.TerrariumUI.setValue(el, n), .toast(title, text), .refresh(list), .setTheme(name), .selectTab(tab) */
+   - gardens (.terrarium-garden): ticking a habit grows the ring and the sprout together (the share of
+     ticked habits becomes --terrarium-value on both) and rewrites the note
+   - watering calendars (.terrarium-calendar): days toggle aria-pressed; the streak recounts
+   - mood dials (.terrarium-mood): click or ←/→ pick a mood (role=radio, roving focus), turning the knob
+   Hooks: window.TerrariumUI.setValue(el, n), .toast(title, text), .refresh(list), .setTheme(name), .selectTab(tab), .setMood(el, i) */
 (function () {
   var P = "terrarium";
   var LISTS = [
@@ -149,8 +153,57 @@
 
   /* ---------- events ---------- */
   document.addEventListener("input", function (e) { if (e.target.matches && e.target.matches("." + P + "-slider")) syncSlider(e.target); });
-  document.addEventListener("change", function (e) { if (e.target.matches && e.target.matches("input[data-theme-toggle]")) setTheme(e.target.checked ? "dark" : "light"); });
+  /* ---------- garden ---------- */
+  var WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six"];
+  function tendGarden(g) {
+    var boxes = Array.prototype.slice.call(g.querySelectorAll("." + P + "-garden__list input[type=checkbox]"));
+    if (!boxes.length) return;
+    var done = boxes.filter(function (b) { return b.checked; }).length, left = boxes.length - done;
+    var pct = Math.round(done / boxes.length * 100);
+    setValue(g, pct);
+    var ring = g.querySelector("." + P + "-ring");
+    if (ring) setValue(ring, pct);
+    var note = g.querySelector("." + P + "-garden__note");
+    if (note) note.textContent = left === 0 ? "Today is fully tended. Lovely." : (left === 1 ? "One more" : (WORDS[left] || left) + " more") + " and today is fully tended.";
+  }
+
+  /* ---------- watering calendar ---------- */
+  function countStreak(cal) {
+    var days = Array.prototype.slice.call(cal.querySelectorAll("." + P + "-calendar__day"));
+    var today = days.filter(function (d) { return d.getAttribute("aria-current") === "date"; })[0];
+    var i = today ? days.indexOf(today) : days.length - 1, n = 0;
+    if (today && today.getAttribute("aria-pressed") !== "true") i--; // today not watered yet: the streak runs to yesterday
+    for (; i >= 0 && days[i].getAttribute("aria-pressed") === "true"; i--) n++;
+    var out = cal.querySelector("." + P + "-calendar__streak b");
+    if (out) out.textContent = String(n);
+  }
+
+  /* ---------- mood dial ---------- */
+  function setMood(dial, i) {
+    var opts = Array.prototype.slice.call(dial.querySelectorAll("." + P + "-mood__option"));
+    i = Math.max(0, Math.min(opts.length - 1, i));
+    opts.forEach(function (o, k) { o.setAttribute("aria-checked", k === i ? "true" : "false"); o.tabIndex = k === i ? 0 : -1; });
+    dial.style.setProperty("--" + P + "-mood", String(i));
+    dial.setAttribute("data-mood", String(i));
+    var label = dial.querySelector("." + P + "-mood__label");
+    if (label && opts[i]) label.textContent = opts[i].getAttribute("data-label") || opts[i].textContent.trim();
+    dial.dispatchEvent(new CustomEvent(P + ":mood", { bubbles: true, detail: { index: i, label: label ? label.textContent : "" } }));
+  }
+
+  document.addEventListener("change", function (e) {
+    if (e.target.matches && e.target.matches("input[data-theme-toggle]")) setTheme(e.target.checked ? "dark" : "light");
+    var g = e.target.closest && e.target.closest("." + P + "-garden");
+    if (g) tendGarden(g);
+  });
   document.addEventListener("click", function (e) {
+    var day = e.target.closest && e.target.closest("." + P + "-calendar__day");
+    if (day && !day.disabled) {
+      day.setAttribute("aria-pressed", day.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      var cal = day.closest("." + P + "-calendar");
+      if (cal) countStreak(cal);
+    }
+    var mood = e.target.closest && e.target.closest("." + P + "-mood__option");
+    if (mood) { var md = mood.closest("." + P + "-mood"); if (md) setMood(md, Array.prototype.indexOf.call(md.querySelectorAll("." + P + "-mood__option"), mood)); }
     var t = e.target;
     var tab = t.closest(TAB_ITEM);
     if (tab && !tab.disabled) selectTab(tab);
@@ -182,6 +235,16 @@
     if (dismiss) { var box = dismiss.closest("." + P + "-toast, ." + P + "-alert"); if (box) box.hidden = true; }
   });
   document.addEventListener("keydown", function (e) {
+    var mopt = e.target.closest && e.target.closest("." + P + "-mood__option");
+    if (mopt && (e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Home" || e.key === "End")) {
+      var dl = mopt.closest("." + P + "-mood"), opts = Array.prototype.slice.call(dl.querySelectorAll("." + P + "-mood__option"));
+      var at = opts.indexOf(mopt), to = e.key === "Home" ? 0 : e.key === "End" ? opts.length - 1 : at + (e.key === "ArrowRight" || e.key === "ArrowUp" ? 1 : -1);
+      to = Math.max(0, Math.min(opts.length - 1, to));
+      setMood(dl, to);
+      opts[to].focus();
+      e.preventDefault();
+      return;
+    }
     var tab = e.target.closest && e.target.closest(TAB_ITEM);
     if (!tab) return;
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
@@ -210,5 +273,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
-  window.TerrariumUI = { initIndicators: initIndicators, refresh: refresh, selectTab: selectTab, selectNavItem: selectNavItem, setValue: setValue, syncSlider: syncSlider, toast: toast, setTheme: setTheme };
+  window.TerrariumUI = { initIndicators: initIndicators, refresh: refresh, selectTab: selectTab, selectNavItem: selectNavItem, setValue: setValue, syncSlider: syncSlider, toast: toast, setTheme: setTheme, setMood: setMood };
 })();

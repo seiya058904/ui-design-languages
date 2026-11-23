@@ -19,7 +19,7 @@ Terrarium / Earth is warm botanical ceramics: oat linen, glazed cream cards, peb
 | Type | Fraunces (SOFT 100) for display, section and card titles; Plus Jakarta Sans for the interface | Serif body text, all-caps body, light weights on cream |
 | Text on color | White on terracotta `#B9502B` and moss; dark ink on ochre; terracotta text uses `--terrarium-color-primary-text` | White on `#C85A32` or ochre |
 | Focus | `--terrarium-shadow-focus` (moss ring, cream gap) on every interactive element | Removing focus to keep it soft |
-| Motion | 300ms `cubic-bezier(.34,1.35,.64,1)`; indicators sway, rings grow, presses give way gently | Linear motion, hard snaps, big bounces, `transition: all` |
+| Motion | 300ms `cubic-bezier(.34,1.35,.64,1)`; knobs and indicators settle on `--terrarium-motion-easing-spring` (one 3% overshoot, decaying); rings and sprouts grow with the habits; warm glaze light glides across cards; presses give way gently | Linear motion, hard snaps, big bounces, overshoot above 5%, `transition: all` |
 
 ## 3. Recipes
 

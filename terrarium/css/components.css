@@ -179,7 +179,8 @@ textarea.terrarium-input { height: auto; min-height: 120px; padding: var(--terra
   border-radius: 50%;
   background: var(--terrarium-color-surface-raised);
   box-shadow: 0 2px 6px var(--terrarium-color-shade), inset 0 -1px 1px var(--terrarium-color-shade-soft);
-  transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing), width var(--terrarium-motion-duration) var(--terrarium-motion-easing);
+  /* a soft physical spring: one small overshoot that settles like a leaf */
+  transition: transform var(--terrarium-motion-duration-spring) var(--terrarium-motion-easing-spring), width var(--terrarium-motion-duration) var(--terrarium-motion-easing);
 }
 /* the word in the track: data-off on the right, data-on on the left */
 .terrarium-switch::after {
@@ -256,7 +257,7 @@ textarea.terrarium-input { height: auto; min-height: 120px; padding: var(--terra
 }
 .terrarium-segmented.is-animated::before,
 .terrarium-tabs.is-animated::before,
-.terrarium-nav.is-animated::before { transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing), width var(--terrarium-motion-duration) var(--terrarium-motion-easing), height var(--terrarium-motion-duration) var(--terrarium-motion-easing); }
+.terrarium-nav.is-animated::before { transition: transform var(--terrarium-motion-duration-spring) var(--terrarium-motion-easing-spring), width var(--terrarium-motion-duration-spring) var(--terrarium-motion-easing-spring), height var(--terrarium-motion-duration) var(--terrarium-motion-easing); }
 
 /* ---------- Segmented tabs: a terracotta pill in a cream track ----------
    <div class="terrarium-segmented" role="tablist"><button class="terrarium-segmented__item" role="tab" aria-selected="true">Today</button> …</div> */
@@ -401,8 +402,20 @@ textarea.terrarium-input { height: auto; min-height: 120px; padding: var(--terra
    Feature card — an illustrated tile beside a title, a sentence and badges ("Daily Journal")
    <article class="terrarium-feature"><span class="terrarium-feature__art">(svg)</span><div><h3 class="terrarium-title">Daily Journal</h3><p class="terrarium-feature__text">…</p></div></article>
    ========================================================================= */
-.terrarium-feature { display: flex; align-items: center; gap: var(--terrarium-space-5); min-width: 0; padding: var(--terrarium-space-4); border-radius: var(--terrarium-radius-lg); background: var(--terrarium-color-surface-raised); box-shadow: var(--terrarium-shadow-level-2); transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing), box-shadow var(--terrarium-motion-duration) var(--terrarium-motion-easing-out); }
+.terrarium-feature { position: relative; isolation: isolate; display: flex; align-items: center; gap: var(--terrarium-space-5); min-width: 0; padding: var(--terrarium-space-4); border-radius: var(--terrarium-radius-lg); background: var(--terrarium-color-surface-raised); box-shadow: var(--terrarium-shadow-level-2); transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing), box-shadow var(--terrarium-motion-duration) var(--terrarium-motion-easing-out); }
 .terrarium-feature:hover { transform: translateY(-2px); box-shadow: var(--terrarium-shadow-level-3); }
+/* the same warm glaze light as the card, gliding across on hover */
+.terrarium-feature::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(112deg, transparent 38%, var(--terrarium-color-glaze-warm) 50%, transparent 62%) 140% 0 / 260% 100% no-repeat;
+  pointer-events: none;
+  transition: background-position var(--terrarium-motion-duration-glaze) var(--terrarium-motion-easing-out);
+}
+.terrarium-feature:hover::after { background-position: -40% 0; }
 .terrarium-feature__art { display: grid; place-items: center; flex: none; width: 104px; aspect-ratio: 1; border-radius: var(--terrarium-radius-md); background: var(--terrarium-color-linen); }
 .terrarium-feature__art svg { width: 76%; height: 76%; }
 .terrarium-feature:hover .terrarium-feature__art svg { animation: terrarium-sway 1.2s var(--terrarium-motion-easing-out); transform-origin: 50% 90%; }
@@ -544,3 +557,187 @@ a.terrarium-list__item:focus-visible { box-shadow: var(--terrarium-shadow-focus)
 .terrarium-surface--1 { box-shadow: var(--terrarium-shadow-level-1); }
 .terrarium-surface--2 { box-shadow: var(--terrarium-shadow-level-2); }
 .terrarium-surface--3 { box-shadow: var(--terrarium-shadow-level-3); }
+
+/* =========================================================================
+   Garden — today's habits, a sprout and a ring that grow together. Tick a habit and the ring fills on
+   the spring, the stem draws taller, leaves unfurl at 25 / 50 / 75 % and the bud opens at 100 %.
+   <section class="terrarium-garden" style="--terrarium-value:50">
+     <svg class="terrarium-garden__plant" viewBox="0 0 120 150" aria-hidden="true">
+       <path class="terrarium-garden__stem" pathLength="100" d="…"/>
+       <path class="terrarium-garden__leaf terrarium-garden__leaf--1" d="…"/> … --2, --3
+       <g class="terrarium-garden__bloom">…</g>
+       <path class="terrarium-garden__pot" d="…"/>
+     </svg>
+     <div class="terrarium-garden__body">
+       <div class="terrarium-ring terrarium-ring--sm" data-label="tended" role="img" aria-label="50% tended" style="--terrarium-value:50">…</div>
+       <ul class="terrarium-garden__list"><li><label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox" checked> Water the fern</label></li> …</ul>
+       <p class="terrarium-garden__note" aria-live="polite">Two more and today is fully tended.</p>
+     </div>
+   </section>
+   js/terrarium.js keeps --terrarium-value (the share of ticked habits) on the garden and its ring.
+   ========================================================================= */
+.terrarium-garden {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: var(--terrarium-space-5);
+  align-items: center;
+  width: 100%;
+  padding: var(--terrarium-space-5);
+  border-radius: var(--terrarium-radius-xl);
+  background: var(--terrarium-color-surface);
+  box-shadow: var(--terrarium-shadow-level-2);
+  transition: --terrarium-value var(--terrarium-motion-duration-grow) var(--terrarium-motion-easing);
+}
+.terrarium-garden__plant { width: 100%; height: auto; overflow: visible; }
+.terrarium-garden__plant path,
+.terrarium-garden__plant circle { vector-effect: non-scaling-stroke; }
+.terrarium-garden__stem { fill: none; stroke: var(--terrarium-color-secondary); stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: calc(100 - max(18, var(--terrarium-value))); }
+.terrarium-garden__leaf { fill: var(--terrarium-color-secondary); transform-box: fill-box; }
+.terrarium-garden__leaf--1 { transform-origin: 100% 100%; scale: clamp(0, (var(--terrarium-value) - 15) / 12, 1); }
+.terrarium-garden__leaf--2 { transform-origin: 0 100%; scale: clamp(0, (var(--terrarium-value) - 40) / 12, 1); }
+.terrarium-garden__leaf--3 { transform-origin: 100% 100%; scale: clamp(0, (var(--terrarium-value) - 65) / 12, 1); }
+.terrarium-garden__bloom { transform-box: fill-box; transform-origin: 50% 50%; scale: clamp(0, (var(--terrarium-value) - 88) / 12, 1); }
+.terrarium-garden__bloom circle { fill: var(--terrarium-color-primary); }
+.terrarium-garden__bloom circle:last-child { fill: var(--terrarium-color-ochre); }
+.terrarium-garden__pot { fill: var(--terrarium-color-terracotta); }
+.terrarium-garden__soil { fill: var(--terrarium-color-espresso); opacity: 0.8; }
+.terrarium-garden__body { display: grid; gap: var(--terrarium-space-3); min-width: 0; }
+.terrarium-garden__body .terrarium-ring { justify-self: start; }
+.terrarium-garden__list { display: grid; gap: var(--terrarium-space-2); margin: 0; padding: 0; list-style: none; }
+.terrarium-garden__note { font-family: var(--terrarium-font-family-serif); font-variation-settings: var(--terrarium-font-soft); font-size: var(--terrarium-font-size-body); color: var(--terrarium-color-text-muted); }
+@media (max-width: 460px) { .terrarium-garden { grid-template-columns: 96px minmax(0, 1fr); gap: var(--terrarium-space-4); padding: var(--terrarium-space-4); } }
+
+/* =========================================================================
+   Watering calendar — a month of small pebbles; a watered day holds a drop that falls in on the spring.
+   <section class="terrarium-calendar" aria-label="Watering in March">
+     <header class="terrarium-calendar__head"><h3 class="terrarium-title">March</h3><span class="terrarium-calendar__streak"><b>4</b> day streak</span></header>
+     <div class="terrarium-calendar__grid">
+       <span class="terrarium-calendar__dow">Mo</span> … <span class="terrarium-calendar__pad"></span>
+       <button class="terrarium-calendar__day" type="button" aria-pressed="true" aria-label="March 1">1</button> …
+       <button class="terrarium-calendar__day" type="button" aria-pressed="false" aria-current="date" aria-label="March 14, today">14</button>
+       <button class="terrarium-calendar__day" type="button" disabled aria-label="March 15">15</button> …
+     </div>
+   </section>
+   js/terrarium.js flips aria-pressed and recounts the streak (watered days in a row, ending today).
+   ========================================================================= */
+.terrarium-calendar { display: grid; gap: var(--terrarium-space-4); width: 100%; padding: var(--terrarium-space-5); border-radius: var(--terrarium-radius-xl); background: var(--terrarium-color-surface); box-shadow: var(--terrarium-shadow-level-2); }
+.terrarium-calendar__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--terrarium-space-3); }
+.terrarium-calendar__streak { font-size: var(--terrarium-font-size-small); color: var(--terrarium-color-text-muted); }
+.terrarium-calendar__streak b { font-family: var(--terrarium-font-family-serif); font-variation-settings: var(--terrarium-font-soft); font-size: 20px; color: var(--terrarium-color-secondary); }
+.terrarium-calendar__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.terrarium-calendar__dow { padding-bottom: 2px; text-align: center; font-size: 11px; font-weight: var(--terrarium-font-weight-semibold); letter-spacing: 0.06em; text-transform: uppercase; color: var(--terrarium-color-text-subtle); }
+.terrarium-calendar__day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: var(--terrarium-radius-pebble);
+  background: var(--terrarium-color-well);
+  color: var(--terrarium-color-text);
+  font: inherit;
+  font-size: var(--terrarium-font-size-caption);
+  font-weight: var(--terrarium-font-weight-semibold);
+  cursor: pointer;
+  box-shadow: inset 0 1px 2px var(--terrarium-color-shade-soft);
+  transition: background-color var(--terrarium-motion-duration-fast) var(--terrarium-motion-easing-out), transform var(--terrarium-motion-duration-spring) var(--terrarium-motion-easing-spring), color var(--terrarium-motion-duration-fast) var(--terrarium-motion-easing-out);
+}
+.terrarium-calendar__day:hover { background: var(--terrarium-color-hover); transform: translateY(-1px); }
+.terrarium-calendar__day:active { transform: scale(0.9); transition-duration: var(--terrarium-motion-duration-press); transition-timing-function: var(--terrarium-motion-easing-press); }
+.terrarium-calendar__day:focus-visible { outline: none; box-shadow: var(--terrarium-shadow-focus); }
+.terrarium-calendar__day:disabled { background: transparent; color: var(--terrarium-color-disabled-ink); box-shadow: none; cursor: default; transform: none; }
+.terrarium-calendar__day[aria-current="date"] { box-shadow: inset 0 0 0 2px var(--terrarium-color-primary); color: var(--terrarium-color-primary-text); }
+/* a watered day: the wash rises and a drop falls in on the spring */
+.terrarium-calendar__day[aria-pressed="true"] { background: var(--terrarium-color-water-soft); color: var(--terrarium-color-ink); }
+.terrarium-calendar__day::after {
+  content: "";
+  position: absolute;
+  right: 12%;
+  top: 10%;
+  width: 7px;
+  height: 9px;
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: var(--terrarium-color-water);
+  rotate: 0deg;
+  opacity: 0;
+  translate: 0 -6px;
+  transition: opacity var(--terrarium-motion-duration-fast) var(--terrarium-motion-easing-out), translate var(--terrarium-motion-duration-spring) var(--terrarium-motion-easing-spring);
+}
+.terrarium-calendar__day[aria-pressed="true"]::after { opacity: 1; translate: 0 0; }
+.terrarium-calendar__pad { aspect-ratio: 1; }
+
+/* =========================================================================
+   Mood dial — a glazed ceramic knob under a fan of five moods; it turns to the one you pick on the soft
+   spring and its glaze takes that mood's colour.
+   <div class="terrarium-mood" data-mood="2" style="--terrarium-mood:2">
+     <div class="terrarium-mood__fan" role="radiogroup" aria-label="How are you today?">
+       <button class="terrarium-mood__option" type="button" role="radio" aria-checked="false" style="--a:-72deg" tabindex="-1">Low</button> …
+     </div>
+     <div class="terrarium-mood__knob" aria-hidden="true"></div>
+     <p class="terrarium-mood__label">Okay</p>
+   </div>
+   js/terrarium.js: click or ←/→ (roving focus) picks a mood, sets --terrarium-mood (0–4) and data-mood.
+   ========================================================================= */
+.terrarium-mood {
+  --terrarium-mood: 2;
+  --mood: var(--terrarium-color-ochre);
+  position: relative;
+  display: grid;
+  justify-items: center;
+  width: 280px;
+  max-width: 100%;
+  padding-top: 112px;
+}
+.terrarium-mood[data-mood="0"] { --mood: var(--terrarium-color-sand); }
+.terrarium-mood[data-mood="1"] { --mood: var(--terrarium-color-rose); }
+.terrarium-mood[data-mood="2"] { --mood: var(--terrarium-color-ochre); }
+.terrarium-mood[data-mood="3"] { --mood: var(--terrarium-color-secondary-soft); }
+.terrarium-mood[data-mood="4"] { --mood: var(--terrarium-color-primary-soft); }
+.terrarium-mood__fan { position: absolute; left: 0; right: 0; top: 0; height: 164px; }
+.terrarium-mood__option {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  min-width: 52px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1.5px solid var(--terrarium-color-sand);
+  border-radius: var(--terrarium-radius-pill);
+  background: var(--terrarium-color-surface-raised);
+  color: var(--terrarium-color-text);
+  font: inherit;
+  font-size: var(--terrarium-font-size-caption);
+  font-weight: var(--terrarium-font-weight-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transform: translate(-50%, -50%) rotate(var(--a, 0deg)) translateY(-104px) rotate(calc(var(--a, 0deg) * -1));
+  transition: background-color var(--terrarium-motion-duration-fast) var(--terrarium-motion-easing-out), border-color var(--terrarium-motion-duration-fast) var(--terrarium-motion-easing-out), color var(--terrarium-motion-duration-fast) var(--terrarium-motion-easing-out);
+}
+.terrarium-mood__option:hover { border-color: var(--terrarium-color-text-subtle); }
+.terrarium-mood__option:focus-visible { outline: none; box-shadow: var(--terrarium-shadow-focus); }
+.terrarium-mood__option[aria-checked="true"] { border-color: transparent; background: var(--terrarium-color-secondary); color: var(--terrarium-color-secondary-ink); }
+.terrarium-mood__knob {
+  position: relative;
+  width: 112px;
+  height: 104px;
+  border-radius: var(--terrarium-radius-pebble);
+  background: radial-gradient(circle at 34% 26%, var(--terrarium-color-glaze), transparent 48%), var(--mood);
+  box-shadow: inset 0 -6px 12px var(--terrarium-color-shade), 0 14px 26px -12px var(--terrarium-color-shade), 0 0 0 1px var(--terrarium-color-shade-soft);
+  rotate: calc(var(--terrarium-mood) * 36deg - 72deg);
+  transition: rotate var(--terrarium-motion-duration-spring) var(--terrarium-motion-easing-spring), background-color var(--terrarium-motion-duration) var(--terrarium-motion-easing-out);
+}
+/* the notch, glazed darker, points at the chosen mood */
+.terrarium-mood__knob::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 9px;
+  width: 8px;
+  height: 22px;
+  margin-left: -4px;
+  border-radius: var(--terrarium-radius-pill);
+  background: var(--terrarium-color-espresso);
+  opacity: 0.72;
+}
+.terrarium-mood__label { margin-top: var(--terrarium-space-3); font-family: var(--terrarium-font-family-serif); font-variation-settings: var(--terrarium-font-soft); font-size: 22px; color: var(--terrarium-color-ink); }

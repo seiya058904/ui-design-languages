@@ -38,6 +38,9 @@
   --terrarium-color-disabled: #EDE6DA;
   --terrarium-color-disabled-ink: #A69B8B;
   --terrarium-color-backdrop: rgba(38, 34, 30, 0.32);
+  --terrarium-color-glaze-warm: rgba(255, 241, 214, 0.6); /* Warm window light gliding across a glazed surface */
+  --terrarium-color-water: #5E8C8A; /* Watered days on the calendar: a muted pond green-blue that sits with moss */
+  --terrarium-color-water-soft: #DCE8E4; /* Wash behind a watered day */
 
   --terrarium-texture-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='l'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.35 0 0 0 0 0.2 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23l)'/%3E%3C/svg%3E"); /* Linen fibre under the page */
 
@@ -94,6 +97,9 @@
   --terrarium-motion-easing: cubic-bezier(0.34, 1.35, 0.64, 1); /* Organic spring: settles with a small, warm overshoot */
   --terrarium-motion-easing-out: cubic-bezier(0.25, 0.8, 0.3, 1);
   --terrarium-motion-easing-press: cubic-bezier(0.4, 0, 0.6, 1);
+  --terrarium-motion-easing-spring: linear(0, 0.18 7%, 0.52 16%, 0.82 27%, 0.98 38%, 1.03 47%, 1.025 56%, 1.006 68%, 0.998 82%, 1); /* A soft physical spring: one 3% overshoot that decays like a leaf settling (knobs, indicators, sways) */
+  --terrarium-motion-duration-spring: 560ms; /* Time for the soft spring to settle */
+  --terrarium-motion-duration-glaze: 1100ms; /* Light gliding across a glaze on hover */
 }
 
 /* Dark theme — GENERATED from terrarium/tokens/tokens.dark.json.
@@ -133,6 +139,9 @@
   --terrarium-color-disabled: #2A302A;
   --terrarium-color-disabled-ink: #6E695E;
   --terrarium-color-backdrop: rgba(8, 10, 8, 0.6);
+  --terrarium-color-glaze-warm: rgba(255, 214, 160, 0.09);
+  --terrarium-color-water: #7FB0AC;
+  --terrarium-color-water-soft: #22332F;
 
   --terrarium-texture-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='l'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.85 0 0 0 0 0.7 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23l)'/%3E%3C/svg%3E");
 
@@ -176,6 +185,9 @@
     --terrarium-color-disabled: #2A302A;
     --terrarium-color-disabled-ink: #6E695E;
     --terrarium-color-backdrop: rgba(8, 10, 8, 0.6);
+    --terrarium-color-glaze-warm: rgba(255, 214, 160, 0.09);
+    --terrarium-color-water: #7FB0AC;
+    --terrarium-color-water-soft: #22332F;
 
     --terrarium-texture-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='l'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.85 0 0 0 0 0.7 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23l)'/%3E%3C/svg%3E");
 

@@ -63,7 +63,7 @@
   <h1 class="terrarium-display">Components</h1>
   <p>Glazed ceramics on oat linen: terracotta for the main action, moss for calm and "on", ochre for paused, clay for drafts. Everything settles on a soft organic spring. Every block below is live markup — open it in the <a href="../components.html#terrarium">components browser</a> for the code.</p>
 </div>
-<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Checkbox &amp; switch</a><a href="#segmented">Segmented</a><a href="#tabs">Tabs</a><a href="#chips">Badges &amp; chips</a><a href="#slider">Slider</a><a href="#progress">Ring &amp; progress</a><a href="#alert">Toasts &amp; notes</a><a href="#card">Cards</a><a href="#avatar">People</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#elevation">Pebbles</a></nav>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Checkbox &amp; switch</a><a href="#segmented">Segmented</a><a href="#tabs">Tabs</a><a href="#chips">Badges &amp; chips</a><a href="#slider">Slider</a><a href="#progress">Ring &amp; progress</a><a href="#alert">Toasts &amp; notes</a><a href="#card">Cards</a><a href="#avatar">People</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#garden">Garden</a><a href="#calendar">Watering calendar</a><a href="#mood">Mood dial</a><a href="#elevation">Pebbles</a></nav>
 <main>
   <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
     <h2 class="terrarium-section-title" id="h-button">Button</h2>
@@ -371,6 +371,75 @@
       <div class="demo__stage">
         <span class="terrarium-tooltip" data-tip="Your longest streak: 21 days"><button class="terrarium-btn" type="button"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>12 days</button></span>
         <span class="terrarium-tip">Your longest streak: 21 days</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="garden" data-component="garden" aria-labelledby="h-garden">
+    <h2 id="h-garden">Garden</h2>
+    <p>Today's habits, a sprout and a ring that grow together: tick one and the ring fills, the stem draws taller and a leaf unfurls; the bud opens when everything is tended.</p>
+    <div class="demo" data-demo="habit-garden">
+      <h3>Habit garden</h3>
+      <div class="demo__stage">
+        <section class="terrarium-garden" style="--terrarium-value:50;width:min(100%,460px)" aria-label="Today's garden">
+          <svg class="terrarium-garden__plant" viewBox="0 0 120 150" aria-hidden="true">
+            <path class="terrarium-garden__stem" pathLength="100" d="M60 114C61 98 57 84 60 66C62 54 59 44 60 34"/>
+            <path class="terrarium-garden__leaf terrarium-garden__leaf--1" d="M59 96C50 96 40 90 36 80C47 80 56 86 59 96Z"/>
+            <path class="terrarium-garden__leaf terrarium-garden__leaf--2" d="M61 78C70 78 80 72 84 62C73 62 64 68 61 78Z"/>
+            <path class="terrarium-garden__leaf terrarium-garden__leaf--3" d="M59 58C51 57 44 51 42 43C51 44 57 49 59 58Z"/>
+            <g class="terrarium-garden__bloom"><circle cx="60" cy="22" r="7"/><circle cx="51" cy="29" r="7"/><circle cx="69" cy="29" r="7"/><circle cx="54" cy="38" r="7"/><circle cx="66" cy="38" r="7"/><circle cx="60" cy="31" r="5"/></g>
+            <ellipse class="terrarium-garden__soil" cx="60" cy="114" rx="27" ry="4"/>
+            <path class="terrarium-garden__pot" d="M30 110h60l-2 8H32zM34 120h52l-6 26H40z"/>
+          </svg>
+          <div class="terrarium-garden__body">
+            <div class="terrarium-ring terrarium-ring--sm" data-label="tended" role="img" aria-label="50% tended" style="--terrarium-value:50">
+              <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="terrarium-ring__track" cx="60" cy="60" r="50" pathLength="100"/><circle class="terrarium-ring__arc" cx="60" cy="60" r="50" pathLength="100"/></svg>
+              <span class="terrarium-ring__label" aria-hidden="true"><b></b></span>
+            </div>
+            <ul class="terrarium-garden__list">
+              <li><label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox" checked> Water the fern</label></li>
+              <li><label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox" checked> Ten quiet minutes</label></li>
+              <li><label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox"> A walk outside</label></li>
+              <li><label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox"> One line in the journal</label></li>
+            </ul>
+            <p class="terrarium-garden__note" aria-live="polite">Two more and today is fully tended.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="calendar" data-component="calendar" aria-labelledby="h-calendar">
+    <h2 id="h-calendar">Watering calendar</h2>
+    <p>A month of small pebbles. Tap a day to water it: the wash rises and a drop falls in on the spring, and the streak counts itself.</p>
+    <div class="demo" data-demo="watering-calendar">
+      <h3>Watering calendar</h3>
+      <div class="demo__stage">
+        <section class="terrarium-calendar" aria-label="Watering in March" style="width:min(100%,380px)">
+          <header class="terrarium-calendar__head"><h3 class="terrarium-title">March</h3><span class="terrarium-calendar__streak"><b>4</b> day streak</span></header>
+          <div class="terrarium-calendar__grid"><span class="terrarium-calendar__dow" aria-hidden="true">Mo</span><span class="terrarium-calendar__dow" aria-hidden="true">Tu</span><span class="terrarium-calendar__dow" aria-hidden="true">We</span><span class="terrarium-calendar__dow" aria-hidden="true">Th</span><span class="terrarium-calendar__dow" aria-hidden="true">Fr</span><span class="terrarium-calendar__dow" aria-hidden="true">Sa</span><span class="terrarium-calendar__dow" aria-hidden="true">Su</span><span class="terrarium-calendar__pad" aria-hidden="true"></span><span class="terrarium-calendar__pad" aria-hidden="true"></span><span class="terrarium-calendar__pad" aria-hidden="true"></span><span class="terrarium-calendar__pad" aria-hidden="true"></span><span class="terrarium-calendar__pad" aria-hidden="true"></span><button class="terrarium-calendar__day" type="button" aria-pressed="true" aria-label="March 1">1</button><button class="terrarium-calendar__day" type="button" aria-pressed="true" aria-label="March 2">2</button><button class="terrarium-calendar__day" type="button" aria-pressed="true" aria-label="March 3">3</button><button class="terrarium-calendar__day" type="button" aria-pressed="false" aria-label="March 4">4</button><button class="terrarium-calendar__day" type="button" aria-pressed="true" aria-label="March 5">5</button><button class="terrarium-calendar__day" type="button" aria-pressed="true" aria-label="March 6">6</button><button class="terrarium-calendar__day" type="button" aria-pressed="false" aria-label="March 7">7</button><button class="terrarium-calendar__day" type="button" aria-pressed="true" aria-label="March 8">8</button><button class="terrarium-calendar__day" type="button" aria-pressed="false" aria-label="March 9">9</button><button class="terrarium-calendar__day" type="button" aria-pressed="true" aria-label="March 10">10</button><button class="terrarium-calendar__day" type="button" aria-pressed="true" aria-label="March 11">11</button><button class="terrarium-calendar__day" type="button" aria-pressed="true" aria-label="March 12">12</button><button class="terrarium-calendar__day" type="button" aria-pressed="true" aria-label="March 13">13</button><button class="terrarium-calendar__day" type="button" aria-pressed="false" aria-current="date" aria-label="March 14, today">14</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 15">15</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 16">16</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 17">17</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 18">18</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 19">19</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 20">20</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 21">21</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 22">22</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 23">23</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 24">24</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 25">25</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 26">26</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 27">27</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 28">28</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 29">29</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 30">30</button><button class="terrarium-calendar__day" type="button" disabled aria-label="March 31">31</button></div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="mood" data-component="mood" aria-labelledby="h-mood">
+    <h2 id="h-mood">Mood dial</h2>
+    <p>A glazed ceramic knob under a fan of moods. Pick one and the knob turns to it on the soft spring, taking that mood's glaze.</p>
+    <div class="demo" data-demo="mood-dial">
+      <h3>Mood dial</h3>
+      <div class="demo__stage">
+        <div class="terrarium-mood" data-mood="2" style="--terrarium-mood:2">
+          <div class="terrarium-mood__fan" role="radiogroup" aria-label="How are you today?">
+            <button class="terrarium-mood__option" type="button" role="radio" aria-checked="false" tabindex="-1" style="--a:-72deg">Low</button>
+            <button class="terrarium-mood__option" type="button" role="radio" aria-checked="false" tabindex="-1" style="--a:-36deg">Meh</button>
+            <button class="terrarium-mood__option" type="button" role="radio" aria-checked="true" tabindex="0" style="--a:0deg">Okay</button>
+            <button class="terrarium-mood__option" type="button" role="radio" aria-checked="false" tabindex="-1" style="--a:36deg">Good</button>
+            <button class="terrarium-mood__option" type="button" role="radio" aria-checked="false" tabindex="-1" style="--a:72deg">Bright</button>
+          </div>
+          <div class="terrarium-mood__knob" aria-hidden="true"></div>
+          <p class="terrarium-mood__label">Okay</p>
+        </div>
       </div>
     </div>
   </section>

@@ -89,7 +89,14 @@ const server = createServer(async (req, res) => {
     res.end(body);
   } catch { res.writeHead(404); res.end(); }
 });
-await new Promise((r) => server.listen(0, "127.0.0.1", r));
+// Ports Chrome and Node's fetch / WebSocket refuse to connect to (the WHATWG "bad port" list). A random port
+// can land on one, so the static server and Chrome's DevTools port are picked again when that happens.
+const BAD_PORTS = new Set([1, 7, 9, 11, 13, 15, 17, 19, 20, 21, 22, 23, 25, 37, 42, 43, 53, 69, 77, 79, 87, 95, 101, 102, 103, 104, 109, 110, 111, 113, 115, 117, 119, 123, 135, 137, 139, 143, 161, 179, 389, 427, 465, 512, 513, 514, 515, 526, 530, 531, 532, 540, 548, 554, 556, 563, 587, 601, 636, 989, 990, 993, 995, 1719, 1720, 1723, 2049, 3659, 4045, 4190, 5060, 5061, 6000, 6566, 6665, 6666, 6667, 6668, 6669, 6679, 6697, 10080]);
+for (;;) {
+  await new Promise((r) => server.listen(0, "127.0.0.1", r));
+  if (!BAD_PORTS.has(server.address().port)) break;
+  await new Promise((r) => server.close(r));
+}
 const base = `http://127.0.0.1:${server.address().port}`;
 
 /* ---------- pages ---------- */
@@ -107,19 +114,30 @@ for (const lang of langs) {
 }
 
 /* ---------- Chrome ---------- */
-const profile = mkdtempSync(join(tmpdir(), "uidl-snap-"));
-const chrome = spawn(CHROME, ["--headless=new", "--disable-gpu", "--hide-scrollbars", "--remote-debugging-port=0", `--user-data-dir=${profile}`, "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });
-const browserWs = await new Promise((resolve, reject) => {
-  let buf = "";
-  chrome.stderr.on("data", (d) => { buf += d; const m = buf.match(/DevTools listening on (ws:\/\/\S+)/); if (m) resolve(m[1]); });
-  setTimeout(() => reject(new Error("Chrome did not start within 15s")), 15000);
-});
-const port = new URL(browserWs).port;
+async function launch(attempt) {
+  const dir = mkdtempSync(join(tmpdir(), "uidl-snap-"));
+  const proc = spawn(CHROME, ["--headless=new", "--disable-gpu", "--hide-scrollbars", "--remote-debugging-port=0", `--user-data-dir=${dir}`, "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });
+  const wsUrl = await new Promise((resolve, reject) => {
+    let buf = "";
+    proc.stderr.on("data", (d) => { buf += d; const m = buf.match(/DevTools listening on (ws:\/\/\S+)/); if (m) resolve(m[1]); });
+    setTimeout(() => reject(new Error("Chrome did not start within 15s")), 15000);
+  });
+  const p = +new URL(wsUrl).port;
+  if (!BAD_PORTS.has(p) || attempt >= 4) return { proc, dir, p };
+  const gone = new Promise((r) => proc.once("exit", r));
+  proc.kill();
+  await Promise.race([gone, new Promise((r) => setTimeout(r, 5000))]);
+  try { rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); } catch { /* left to the OS temp cleanup */ }
+  return launch(attempt + 1);
+}
+const { proc: chrome, dir: profile, p: port } = await launch(1);
 const target = (await (await fetch(`http://127.0.0.1:${port}/json/list`)).json()).find((t) => t.type === "page");
 const ws = new WebSocket(target.webSocketDebuggerUrl);
 await new Promise((r) => ws.addEventListener("open", r, { once: true }));
 let id = 0;
 const pending = new Map();
+// If the DevTools connection drops, fail every waiting call instead of hanging forever.
+ws.addEventListener("close", () => { for (const r of pending.values()) r({ error: { message: "DevTools connection closed" } }); pending.clear(); });
 const listeners = new Set();
 ws.addEventListener("message", (e) => {
   const m = JSON.parse(e.data);
@@ -144,6 +162,9 @@ async function shutdown() {
 // (marquees, auroras), so captures are deterministic and a tall headless viewport isn't repainted every frame.
 // Scroll-triggered reveals and scroll-linked tilts are shown in their final state.
 const SETTLE = "document.getAnimations().forEach((a) => { try { if (a.effect && a.effect.getComputedTiming().endTime !== Infinity) a.finish(); else a.pause(); } catch (e) {} }); document.querySelectorAll('.rise, .reveal-words, .wcard').forEach((el) => el.classList.add('is-in', 'is-revealed')); document.documentElement.setAttribute('data-static', ''); document.querySelectorAll('.show, .show .frame, .show__body').forEach((el) => el.style.setProperty('--p', 1))";
+// Wait for web fonts, but never for long: a stalled font request must not hang the run (the capture then
+// shows fallback type, which is better than no check at all).
+const FONTS_READY = "Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 8000))]).then(() => new Promise((r) => setTimeout(r, 900)))";
 // Lazy iframes below the fold would stay blank in a beyond-viewport capture.
 const EAGER = "document.querySelectorAll('iframe[loading=lazy]').forEach((f) => { f.loading = 'eager'; })";
 
@@ -157,7 +178,7 @@ if (thumbs) {
       const loaded = nextEvent("Page.loadEventFired");
       await send("Page.navigate", { url: `${base}/${page.path}` });
       await loaded;
-      await evaluate("document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 900)))");
+      await evaluate(FONTS_READY);
       await evaluate(SETTLE);
       const { data } = await send("Page.captureScreenshot", { format: "jpeg", quality: 82 });
       const name = page.path.replace(`${page.group}/`, "").replace(/\//g, "-").replace(/\.html$/, "");
@@ -179,7 +200,7 @@ try {
       await loaded;
       await evaluate(EAGER);
       await evaluate(SETTLE);
-      await evaluate("document.fonts.ready.then(() => new Promise((r) => setTimeout(r, 900)))");
+      await evaluate(FONTS_READY);
       const overflow = await evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth");
       const height = await evaluate("Math.min(document.documentElement.scrollHeight, 9000)");
       await evaluate(SETTLE);

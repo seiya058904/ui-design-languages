@@ -5,6 +5,8 @@
 // demo (site/demo.html, which links the pack's full CSS and JS) in headless Chrome and compares
 // the computed styles of every element and its ::before / ::after — in light and dark.
 // Any difference means the export missed a rule, a token or the script.
+// Web fonts are blocked during the check: computed styles (font-family included) are the same with or
+// without them, and a slow or stalled font request can't hold the page's scripts back or hang the run.
 // Zero dependencies: a tiny static server + the Chrome DevTools protocol over Node's WebSocket.
 //
 // Usage:
@@ -57,23 +59,41 @@ const server = createServer(async (req, res) => {
     res.end(body);
   } catch { res.writeHead(404); res.end(); }
 });
-await new Promise((r) => server.listen(0, "127.0.0.1", r));
+// Ports Chrome and Node's fetch / WebSocket refuse to connect to (the WHATWG "bad port" list). A random port
+// can land on one, so the static server and Chrome's DevTools port are picked again when that happens.
+const BAD_PORTS = new Set([1, 7, 9, 11, 13, 15, 17, 19, 20, 21, 22, 23, 25, 37, 42, 43, 53, 69, 77, 79, 87, 95, 101, 102, 103, 104, 109, 110, 111, 113, 115, 117, 119, 123, 135, 137, 139, 143, 161, 179, 389, 427, 465, 512, 513, 514, 515, 526, 530, 531, 532, 540, 548, 554, 556, 563, 587, 601, 636, 989, 990, 993, 995, 1719, 1720, 1723, 2049, 3659, 4045, 4190, 5060, 5061, 6000, 6566, 6665, 6666, 6667, 6668, 6669, 6679, 6697, 10080]);
+for (;;) {
+  await new Promise((r) => server.listen(0, "127.0.0.1", r));
+  if (!BAD_PORTS.has(server.address().port)) break;
+  await new Promise((r) => server.close(r));
+}
 const base = `http://127.0.0.1:${server.address().port}`;
 
 /* ---------- Chrome ---------- */
-const profile = mkdtempSync(join(tmpdir(), "uidl-source-"));
-const chrome = spawn(CHROME, ["--headless=new", "--disable-gpu", "--remote-debugging-port=0", `--user-data-dir=${profile}`, "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });
-const browserWs = await new Promise((resolve, reject) => {
-  let buf = "";
-  chrome.stderr.on("data", (d) => { buf += d; const m = buf.match(/DevTools listening on (ws:\/\/\S+)/); if (m) resolve(m[1]); });
-  setTimeout(() => reject(new Error("Chrome did not start within 15s")), 15000);
-});
-const port = new URL(browserWs).port;
+async function launch(attempt) {
+  const dir = mkdtempSync(join(tmpdir(), "uidl-source-"));
+  const proc = spawn(CHROME, ["--headless=new", "--disable-gpu", "--remote-debugging-port=0", `--user-data-dir=${dir}`, "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });
+  const wsUrl = await new Promise((resolve, reject) => {
+    let buf = "";
+    proc.stderr.on("data", (d) => { buf += d; const m = buf.match(/DevTools listening on (ws:\/\/\S+)/); if (m) resolve(m[1]); });
+    setTimeout(() => reject(new Error("Chrome did not start within 15s")), 15000);
+  });
+  const p = +new URL(wsUrl).port;
+  if (!BAD_PORTS.has(p) || attempt >= 4) return { proc, dir, p };
+  const gone = new Promise((r) => proc.once("exit", r));
+  proc.kill();
+  await Promise.race([gone, new Promise((r) => setTimeout(r, 5000))]);
+  try { rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); } catch { /* left to the OS temp cleanup */ }
+  return launch(attempt + 1);
+}
+const { proc: chrome, dir: profile, p: port } = await launch(1);
 const target = (await (await fetch(`http://127.0.0.1:${port}/json/list`)).json()).find((t) => t.type === "page");
 const ws = new WebSocket(target.webSocketDebuggerUrl);
 await new Promise((r) => ws.addEventListener("open", r, { once: true }));
 let id = 0;
 const pending = new Map();
+// If the DevTools connection drops, fail every waiting call instead of hanging forever.
+ws.addEventListener("close", () => { for (const r of pending.values()) r({ error: { message: "DevTools connection closed" } }); pending.clear(); });
 ws.addEventListener("message", (e) => { const m = JSON.parse(e.data); if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); } });
 const send = (method, params = {}) => new Promise((r) => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); })
   .then((m) => { if (m.error) throw new Error(`${method}: ${m.error.message}`); return m.result; });
@@ -92,7 +112,8 @@ async function open(url, ready) {
   await send("Page.navigate", { url });
   await sleep(150);
   await waitFor(`document.readyState === "complete" && ${ready}`);
-  await evaluate("document.fonts ? document.fonts.ready.then(() => true) : true");
+  // never wait on fonts for more than a few seconds (they're blocked anyway; this is belt and braces)
+  await evaluate("document.fonts ? Promise.race([document.fonts.ready.then(() => true), new Promise((r) => setTimeout(() => r(false), 4000))]) : true");
   await sleep(350); // indicators place themselves on the next frames
 }
 
@@ -136,22 +157,31 @@ function diff(a, b, dark) {
 
 let failed = 0, checked = 0;
 try {
+  await send("Network.enable");
+  await send("Network.setBlockedURLs", { urls: ["*fonts.googleapis.com*", "*fonts.gstatic.com*"] });
   /* Build every single file inside the real components page. */
   await open(`${base}/components.html`, `!!window.UISource && !!window.UIWall && document.querySelectorAll(".wcard").length > 0`);
+  // The files stay in the page and come over one at a time: all of them in a single reply is several MB,
+  // more than one DevTools message carries reliably.
   const list = await evaluate(`(async () => {
     const out = [];
+    window.__uidlBuilt = {};
     for (const p of UIWall.packs) {
       const pk = UIWall.data[p.id]; if (!pk) continue;
       for (const c of pk.order) for (const d of pk.items[c].demos) {
         const s = await UISource.build(p.id, c, d.id);
-        out.push({ p: p.id, c, d: d.id, file: s.file, dark: /data-theme="dark"/.test(s.css) });
+        window.__uidlBuilt[p.id + "--" + c + "--" + d.id] = s.file;
+        out.push({ p: p.id, c, d: d.id, dark: /data-theme="dark"/.test(s.css) });
       }
     }
     return out;
   })()`);
   const demos = list.filter((x) => (!only.length || only.includes(x.p)) && (!comp || x.c === comp));
   if (!demos.length) throw new Error("no demos found");
-  for (const x of demos) built.set(`${x.p}--${x.c}--${x.d}.html`, x.file);
+  for (const x of demos) {
+    const name = `${x.p}--${x.c}--${x.d}`;
+    built.set(`${name}.html`, await evaluate(`window.__uidlBuilt[${JSON.stringify(name)}]`));
+  }
 
   for (const x of demos) {
     const key = `${x.p}/${x.c}/${x.d}`, file = `${base}/__source/${x.p}--${x.c}--${x.d}.html`;

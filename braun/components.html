@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var m=localStorage.getItem("braun-theme");if(m&&m!=="light")document.documentElement.setAttribute("data-theme",m)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Braun / Field components</title>
+  <link rel="icon" href="../site/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../site/assets/apple-touch-icon.png">
+  <meta name="description" content="Every Braun / Field component as real, working markup: keycaps, a rotary dial, LED meters, switches and status plates.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/braun.css">
+  <style>
+    /* Page layout only — every component below is the real Braun / Field markup, styled by css/braun.css. */
+    body { padding: 24px 16px 72px; }
+    .cat-top, .cat { width: min(100%, 1080px); margin-inline: auto; }
+    .cat-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-bottom: 40px; font-size: var(--braun-font-size-small); }
+    .cat-top a { color: var(--braun-color-text-muted); text-decoration: none; }
+    .cat-top a:hover { color: var(--braun-color-ink); }
+    .cat-top a:first-child { margin-right: auto; }
+    .cat-head h1 { margin: 0 0 14px; }
+    .cat-head p { max-width: 64ch; color: var(--braun-color-text-muted); }
+    .cat-toc { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 28px 0 8px; padding: 14px 0; border-top: var(--braun-border-rule) solid var(--braun-color-line-strong); border-bottom: 1px solid var(--braun-color-line); font-size: var(--braun-font-size-small); }
+    .cat-toc a { color: var(--braun-color-text-muted); text-decoration: none; }
+    .cat-toc a:hover { color: var(--braun-color-ink); }
+    .cat-section { padding-top: 56px; scroll-margin-top: 24px; }
+    .cat-section > h2 { font-family: var(--braun-font-family-display); font-size: var(--braun-font-size-section); font-weight: var(--braun-font-weight-bold); text-transform: uppercase; color: var(--braun-color-ink); margin: 0 0 6px; }
+    .cat-section > p { color: var(--braun-color-text-muted); margin: 0 0 22px; }
+    .demo + .demo { margin-top: 22px; }
+    .demo > h3 { font-size: var(--braun-font-size-micro); font-weight: var(--braun-font-weight-medium); letter-spacing: var(--braun-font-tracking-spec); text-transform: uppercase; color: var(--braun-color-text-muted); margin: 0 0 10px; }
+    .demo__stage { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 22px; min-height: 140px; padding: 40px 28px; border-radius: var(--braun-radius-lg); box-shadow: inset 0 0 0 1px var(--braun-color-line); }
+    @media (max-width: 560px) { .demo__stage { padding: 32px 16px; } }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-device" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="1.5"/><rect x="8" y="6.5" width="8" height="5"/><path d="M9 16h.01M15 16h.01"/></symbol>
+  <symbol id="i-warning" viewBox="0 0 36 32"><path d="M18 2 34.5 30.5h-33Z" fill="currentColor" stroke="none"/><path d="M18 12v8.5M18 24.5v1" stroke="var(--braun-color-plate)" stroke-width="3" fill="none"/></symbol>
+  <symbol id="i-info" viewBox="0 0 36 32"><circle cx="18" cy="16" r="14" fill="currentColor" stroke="none"/><path d="M18 14.5v8M18 9.5v1" stroke="var(--braun-color-plate)" stroke-width="3" fill="none"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3.5v8"/><path d="M7.2 6.6a7 7 0 1 0 9.6 0"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.3-5.4"/><path d="M4.5 4.5v4h4"/></symbol>
+</svg>
+
+<header class="cat-top"><a href="../index.html">UI Design Languages</a><a href="index.html">Styleguide</a><a href="examples/console.html">Console example</a><a href="../components.html#braun">Browse with code</a></header>
+<div class="cat">
+<div class="cat-head">
+  <h1 class="braun-display">Components</h1>
+  <p>A precision instrument panel: every pressable part is a keycap with a lit face and a solid skirt, everything you fill is sunk into the aluminium, and International Orange marks the one thing that matters. Every block below is live markup — press the keys, turn the dial. Open it in the <a href="../components.html#braun">components browser</a> for the code.</p>
+</div>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Switch, checkbox &amp; radio</a><a href="#segmented">Keys</a><a href="#tabs">Tabs</a><a href="#chips">Badges &amp; chips</a><a href="#slider">Dial &amp; fader</a><a href="#progress">Meters</a><a href="#alert">Alerts &amp; toasts</a><a href="#card">Status card</a><a href="#avatar">Operators</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#material">Materials</a></nav>
+<main>
+  <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
+    <h2 id="h-button">Button</h2>
+    <p>Keycaps: a lit face over a solid skirt. A press travels 1.5 mm in 55 ms and springs back in 140 ms.</p>
+    <div class="demo" data-demo="variants">
+      <h3>Variants</h3>
+      <div class="demo__stage">
+        <button class="braun-btn braun-btn--primary braun-btn--pill braun-btn--lg" type="button">Execute</button>
+        <button class="braun-btn braun-btn--inverse braun-btn--pill braun-btn--lg" type="button">Cancel</button>
+        <button class="braun-btn" type="button">Calibrate</button>
+        <button class="braun-btn braun-btn--ghost" type="button">Details</button>
+      </div>
+    </div>
+    <div class="demo" data-demo="sizes">
+      <h3>Sizes and icon keys</h3>
+      <div class="demo__stage">
+        <button class="braun-btn braun-btn--primary braun-btn--lg" type="button">Start run</button>
+        <button class="braun-btn braun-btn--primary" type="button">Start run</button>
+        <button class="braun-btn braun-btn--primary braun-btn--sm" type="button">Start run</button>
+        <button class="braun-btn braun-btn--icon braun-btn--pill" type="button" aria-label="Power"><svg class="braun-icon" aria-hidden="true"><use href="#i-power"/></svg></button>
+        <button class="braun-btn braun-btn--icon" type="button" aria-label="Add module"><svg class="braun-icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+        <button class="braun-btn braun-btn--icon braun-btn--sm braun-btn--inverse" type="button" aria-label="Reset"><svg class="braun-icon" aria-hidden="true"><use href="#i-reset"/></svg></button>
+      </div>
+    </div>
+    <div class="demo" data-demo="states">
+      <h3>States</h3>
+      <div class="demo__stage">
+        <button class="braun-btn braun-btn--primary" type="button">Rest</button>
+        <button class="braun-btn braun-btn--primary is-hover" type="button">Hover</button>
+        <button class="braun-btn braun-btn--primary is-active" type="button">Pressed</button>
+        <button class="braun-btn" type="button" aria-pressed="true">Latched</button>
+        <button class="braun-btn" type="button" disabled>Locked</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="input" data-component="input" aria-labelledby="h-input">
+    <h2 id="h-input">Text field</h2>
+    <p>Fields are sunk into the panel behind an engraved outline; the caret is orange.</p>
+    <div class="demo" data-demo="text-field">
+      <h3>Text field</h3>
+      <div class="demo__stage">
+        <div class="braun-stack" style="--gap:18px;width:min(100%,360px)">
+          <label class="braun-field"><span class="braun-field__label">Module ID</span><input class="braun-input braun-input--lg" value="MODULE_01" spellcheck="false"></label>
+          <label class="braun-field"><span class="braun-field__label">Serial number</span><input class="braun-input" placeholder="BF-0000-0000"><span class="braun-hint">Printed on the rear plate</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="states">
+      <h3>Focus, error, disabled</h3>
+      <div class="demo__stage">
+        <div class="braun-stack" style="--gap:18px;width:min(100%,360px)">
+          <label class="braun-field"><span class="braun-field__label">Focus</span><input class="braun-input is-focus" value="CAL-2" aria-label="Calibration profile"></label>
+          <label class="braun-field"><span class="braun-field__label">Threshold °C</span><input class="braun-input" value="120" aria-invalid="true"><span class="braun-hint braun-hint--error">Above the rated maximum of 85 °C</span></label>
+          <label class="braun-field"><span class="braun-field__label">Firmware</span><input class="braun-input" value="4.26.1" disabled></label>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="search">
+      <h3>Search</h3>
+      <div class="demo__stage">
+        <span class="braun-affix" style="width:min(100%,360px)"><svg class="braun-icon" aria-hidden="true"><use href="#i-search"/></svg><input class="braun-input" type="search" placeholder="Find a module" aria-label="Find a module"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="selection" data-component="selection" aria-labelledby="h-selection">
+    <h2 id="h-selection">Switch, checkbox &amp; radio</h2>
+    <p>An over-centre switch with a lamp in its knob, and square and round keycaps that light orange.</p>
+    <div class="demo" data-demo="toggle">
+      <h3>Switch</h3>
+      <div class="demo__stage">
+        <label class="braun-toggle"><input class="braun-switch braun-switch--lg" type="checkbox" checked aria-label="Power"><span class="braun-toggle__legend" aria-hidden="true"><span>Off</span><span>On</span></span></label>
+        <label class="braun-toggle"><input class="braun-switch" type="checkbox" aria-label="Standby"><span class="braun-toggle__legend" aria-hidden="true"><span>Off</span><span>On</span></span></label>
+        <input class="braun-switch braun-switch--sm" type="checkbox" checked aria-label="Fan">
+        <input class="braun-switch" type="checkbox" disabled aria-label="Remote access (locked)">
+      </div>
+    </div>
+    <div class="demo" data-demo="checkbox-and-radio">
+      <h3>Checkbox and radio</h3>
+      <div class="demo__stage">
+        <div class="braun-stack" style="--gap:14px">
+          <label class="braun-check"><input class="braun-checkbox" type="checkbox" checked> Log to disk</label>
+          <label class="braun-check"><input class="braun-checkbox" type="checkbox"> Send telemetry</label>
+          <label class="braun-check"><input class="braun-checkbox" type="checkbox" disabled> Remote write</label>
+        </div>
+        <div class="braun-stack" style="--gap:14px">
+          <label class="braun-check"><input class="braun-radio" type="radio" name="b-ch" checked> Channel A</label>
+          <label class="braun-check"><input class="braun-radio" type="radio" name="b-ch"> Channel B</label>
+          <label class="braun-check"><input class="braun-radio" type="radio" name="b-ch" disabled> Channel C</label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="segmented" data-component="segmented" aria-labelledby="h-segmented">
+    <h2 id="h-segmented">Keys</h2>
+    <p>Interlocking push-buttons: pressing one latches it down and pops the last one back up.</p>
+    <div class="demo" data-demo="keys">
+      <h3>Keys</h3>
+      <div class="demo__stage">
+        <div class="braun-keys" role="tablist" aria-label="Module view">
+          <button class="braun-keys__item" role="tab" aria-selected="true">Overview</button>
+          <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1">System</button>
+          <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1">Logs</button>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="range-keys">
+      <h3>Small, full width</h3>
+      <div class="demo__stage">
+        <div class="braun-keys braun-keys--sm braun-keys--block" role="tablist" aria-label="Time range" style="width:min(100%,360px)">
+          <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1">1H</button>
+          <button class="braun-keys__item" role="tab" aria-selected="true">24H</button>
+          <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1">7D</button>
+          <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1">30D</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tabs" data-component="tabs" aria-labelledby="h-tabs">
+    <h2 id="h-tabs">Tabs</h2>
+    <p>Mono caps on a hairline; an orange needle travels to the current tab.</p>
+    <div class="demo" data-demo="needle-tabs">
+      <h3>Needle tabs</h3>
+      <div class="demo__stage">
+        <div class="braun-stack" style="--gap:16px;width:min(100%,460px)">
+          <div class="braun-tabs" role="tablist" aria-label="Module">
+            <button class="braun-tabs__item" role="tab" aria-selected="true" aria-controls="b-tab-1" id="b-tabh-1">Inputs</button>
+            <button class="braun-tabs__item" role="tab" aria-selected="false" aria-controls="b-tab-2" id="b-tabh-2" tabindex="-1">Outputs</button>
+            <button class="braun-tabs__item" role="tab" aria-selected="false" aria-controls="b-tab-3" id="b-tabh-3" tabindex="-1">Firmware</button>
+            <button class="braun-tabs__item" role="tab" aria-selected="false" aria-controls="b-tab-4" id="b-tabh-4" tabindex="-1">Logs</button>
+          </div>
+          <p class="braun-caption" role="tabpanel" id="b-tab-1" aria-labelledby="b-tabh-1">4 analog inputs · 0–10 V · sampled at 1 kHz</p>
+          <p class="braun-caption" role="tabpanel" id="b-tab-2" aria-labelledby="b-tabh-2" hidden>2 relay outputs · 24 V · 2 A max</p>
+          <p class="braun-caption" role="tabpanel" id="b-tab-3" aria-labelledby="b-tabh-3" hidden>Version 4.26.1 · up to date</p>
+          <p class="braun-caption" role="tabpanel" id="b-tab-4" aria-labelledby="b-tabh-4" hidden>17:42:36 · threshold restored</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="chips" data-component="chips" aria-labelledby="h-chips">
+    <h2 id="h-chips">Badges &amp; chips</h2>
+    <p>Status is a lamp and a word. Filter chips carry their own indicator lamp that lights when latched.</p>
+    <div class="demo" data-demo="status-and-badges">
+      <h3>Status and badges</h3>
+      <div class="demo__stage">
+        <span class="braun-status"><span class="braun-led" aria-hidden="true"></span>Online</span>
+        <span class="braun-status"><span class="braun-led braun-led--warn" aria-hidden="true"></span>Syncing</span>
+        <span class="braun-status"><span class="braun-led braun-led--off" aria-hidden="true"></span>Offline</span>
+        <span class="braun-badge"><span class="braun-led" aria-hidden="true"></span>Live</span>
+        <span class="braun-badge braun-badge--primary">Alarm</span>
+        <span class="braun-badge braun-badge--inverse">v4.26</span>
+        <span class="braun-badge braun-badge--outline">Beta</span>
+      </div>
+    </div>
+    <div class="demo" data-demo="filter-chips">
+      <h3>Filter chips</h3>
+      <div class="demo__stage">
+        <button class="braun-chip" type="button" aria-pressed="true">Voltage</button>
+        <button class="braun-chip" type="button" aria-pressed="true">Current</button>
+        <button class="braun-chip" type="button" aria-pressed="false">Temperature</button>
+        <button class="braun-chip" type="button" aria-pressed="false">Uptime</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="slider" data-component="slider" aria-labelledby="h-slider">
+    <h2 id="h-slider">Dial &amp; fader</h2>
+    <p>Turn the knob — drag around it or up and down, use the wheel or the arrow keys. Every step is one detent, and the scale lights up behind the pointer.</p>
+    <div class="demo" data-demo="rotary-dial">
+      <h3>Rotary dial</h3>
+      <div class="demo__stage">
+        <div class="braun-row" style="--gap:26px">
+          <div class="braun-dial" style="--braun-value:72"><div class="braun-dial__knob" id="b-dial" role="slider" tabindex="0" aria-label="Output level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="72"></div></div>
+          <div class="braun-readout"><output class="braun-readout__value" for="b-dial">72</output><span class="braun-readout__range">0 – 100</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="fader">
+      <h3>Fader</h3>
+      <div class="demo__stage">
+        <div class="braun-stack" style="--gap:6px;width:min(100%,380px)">
+          <div class="braun-row" style="justify-content:space-between"><span class="braun-field__label">Gain</span><span class="braun-label"><output for="b-gain">40</output> dB</span></div>
+          <input class="braun-fader" id="b-gain" type="range" min="0" max="60" value="40" style="--braun-value:66.67" aria-label="Gain">
+          <div class="braun-scale" aria-hidden="true"><span>0</span><span>20</span><span>40</span><span>60</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="progress" data-component="progress" aria-labelledby="h-progress">
+    <h2 id="h-progress">Meters</h2>
+    <p>24 LED segments light up one at a time as the value changes; a thin bar for quieter places.</p>
+    <div class="demo" data-demo="led-meter">
+      <h3>LED meter</h3>
+      <div class="demo__stage">
+        <div class="braun-card" style="width:min(100%,420px)">
+          <div class="braun-gauge">
+            <div class="braun-meter" role="progressbar" aria-label="Sync progress" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100" style="--braun-value:68"></div>
+            <span class="braun-gauge__value">68%</span>
+            <span class="braun-gauge__label">Syncing data to device…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="bars">
+      <h3>Small meters and bar</h3>
+      <div class="demo__stage">
+        <div class="braun-stack" style="--gap:16px;width:min(100%,380px)">
+          <div class="braun-row" style="justify-content:space-between"><span class="braun-field__label">Channel load</span><span class="braun-caption">A 35% · B 82%</span></div>
+          <div class="braun-meter braun-meter--sm" role="progressbar" aria-label="Channel A load" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" style="--braun-value:35"></div>
+          <div class="braun-meter braun-meter--sm" role="progressbar" aria-label="Channel B load" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100" style="--braun-value:82"></div>
+          <div class="braun-progress" role="progressbar" aria-label="Firmware download" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--braun-value:40"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="alert" data-component="alert" aria-labelledby="h-alert">
+    <h2 id="h-alert">Alerts &amp; toasts</h2>
+    <p>A threshold crossed gets an orange-washed plate; confirmations arrive as a matte-black strip with a lamp.</p>
+    <div class="demo" data-demo="alerts">
+      <h3>Alerts</h3>
+      <div class="demo__stage">
+        <div class="braun-stack" style="--gap:14px;width:min(100%,520px)">
+          <div class="braun-alert" role="alert">
+            <svg class="braun-alert__icon" aria-hidden="true"><use href="#i-warning"/></svg>
+            <div><p class="braun-alert__title">Temperature threshold exceeded</p><p class="braun-alert__text">Module_01 operating at 78.4 °C</p></div>
+            <button class="braun-alert__close" type="button" aria-label="Dismiss alert" data-braun-dismiss><svg class="braun-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+          <div class="braun-alert braun-alert--neutral" role="status">
+            <svg class="braun-alert__icon" aria-hidden="true"><use href="#i-info"/></svg>
+            <div><p class="braun-alert__title">Calibration due in 6 days</p><p class="braun-alert__text">Last calibrated 21.10 by M. Kovač</p></div>
+            <button class="braun-alert__close" type="button" aria-label="Dismiss" data-braun-dismiss><svg class="braun-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="toast">
+      <h3>Toast</h3>
+      <div class="demo__stage">
+        <div class="braun-toast" role="status" style="width:min(100%,420px)"><span class="braun-led" aria-hidden="true"></span>Synced to device<span class="braun-toast__time">2 min ago</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="card" data-component="card" aria-labelledby="h-card">
+    <h2 id="h-card">Status card</h2>
+    <p>A module plate: what it is, whether it is alive, and the values it reports.</p>
+    <div class="demo" data-demo="status-card">
+      <h3>Status card</h3>
+      <div class="demo__stage">
+        <article class="braun-card" style="width:min(100%,320px)">
+          <header class="braun-card__head"><span class="braun-glyph"><svg class="braun-icon" aria-hidden="true"><use href="#i-device"/></svg></span><h3 class="braun-card__title">MODULE_01</h3><span class="braun-status"><span class="braun-led" aria-hidden="true"></span>Online</span></header>
+          <dl class="braun-readings">
+            <div><dt>Voltage</dt><dd>12.4 V</dd></div>
+            <div><dt>Current</dt><dd>0.8 A</dd></div>
+            <div><dt>Temperature</dt><dd>36.1 °C</dd></div>
+            <div><dt>Uptime</dt><dd>17:42:36</dd></div>
+          </dl>
+        </article>
+      </div>
+    </div>
+    <div class="demo" data-demo="module-card">
+      <h3>Module card with actions</h3>
+      <div class="demo__stage">
+        <article class="braun-card" style="width:min(100%,320px)">
+          <header class="braun-card__head"><span class="braun-glyph"><svg class="braun-icon" aria-hidden="true"><use href="#i-device"/></svg></span><h3 class="braun-card__title">MODULE_04</h3><span class="braun-badge braun-badge--primary">Alarm</span></header>
+          <p class="braun-card__text">Fan speed below set point for 12 minutes. Inspect the intake grille, then reset the module.</p>
+          <div class="braun-card__actions"><button class="braun-btn braun-btn--primary braun-btn--sm" type="button">Reset</button><button class="braun-btn braun-btn--sm" type="button">Open log</button></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="avatar" data-component="avatar" aria-labelledby="h-avatar">
+    <h2 id="h-avatar">Operators</h2>
+    <p>Initials stamped into a round keycap; a lamp shows who is on shift.</p>
+    <div class="demo" data-demo="operators">
+      <h3>Operator tokens and list</h3>
+      <div class="demo__stage">
+        <div class="braun-row" style="--gap:14px">
+          <span class="braun-avatar braun-avatar--lg">MK<span class="braun-led" aria-hidden="true"></span></span>
+          <span class="braun-avatar braun-avatar--lg braun-avatar--inverse">JS</span>
+          <span class="braun-avatar braun-avatar--lg braun-avatar--square">AL</span>
+        </div>
+        <div class="braun-stack" style="--gap:14px;width:min(100%,260px)">
+          <div class="braun-person"><span class="braun-avatar">MK<span class="braun-led" aria-hidden="true"></span></span><div><b>Mira Kovač</b><span>Calibration · on shift</span></div></div>
+          <div class="braun-person"><span class="braun-avatar">JS</span><div><b>Jun Sato</b><span>Diagnostics</span></div></div>
+          <div class="braun-person"><span class="braun-avatar">AL</span><div><b>Ana Lima</b><span>Firmware</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="navigation" data-component="navigation" aria-labelledby="h-navigation">
+    <h2 id="h-navigation">Navigation</h2>
+    <p>A sidebar whose orange needle travels along a rail, a breadcrumb, and pagination keys.</p>
+    <div class="demo" data-demo="sidebar">
+      <h3>Sidebar</h3>
+      <div class="demo__stage">
+        <nav class="braun-nav" aria-label="Sections" style="width:min(100%,240px)">
+          <a class="braun-nav__item" href="#" aria-current="page">Modules<span class="braun-nav__count">12</span></a>
+          <a class="braun-nav__item" href="#">Calibration<span class="braun-nav__count">4</span></a>
+          <a class="braun-nav__item" href="#">Diagnostics<span class="braun-nav__count">8</span></a>
+          <a class="braun-nav__item" href="#">Settings<span class="braun-nav__count">6</span></a>
+        </nav>
+      </div>
+    </div>
+    <div class="demo" data-demo="breadcrumb-and-pagination">
+      <h3>Breadcrumb and pagination</h3>
+      <div class="demo__stage">
+        <div class="braun-stack" style="--gap:24px;align-items:center">
+          <nav class="braun-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Devices</a></li><li><a href="#">Module</a></li><li aria-current="page">Configuration</li></ol></nav>
+          <nav class="braun-pagination" aria-label="Pages"><a href="#" aria-label="Previous page"><svg class="braun-icon" aria-hidden="true"><use href="#i-left"/></svg></a><a href="#">1</a><a href="#" aria-current="page">2</a><a href="#">3</a><span class="braun-pagination__gap">…</span><a href="#">8</a><a href="#" aria-label="Next page"><svg class="braun-icon" aria-hidden="true"><use href="#i-right"/></svg></a></nav>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="table" data-component="table" aria-labelledby="h-table">
+    <h2 id="h-table">Table</h2>
+    <p>Readings in rows: caps header on a black rule, tabular figures, a lamp per row.</p>
+    <div class="demo" data-demo="table">
+      <h3>Table</h3>
+      <div class="demo__stage">
+        <div class="braun-table-wrap">
+          <table class="braun-table">
+            <thead><tr><th>Module</th><th>Status</th><th class="is-num">Voltage</th><th class="is-num">Temp</th><th class="is-num">Uptime</th></tr></thead>
+            <tbody>
+              <tr><td>MODULE_01</td><td><span class="braun-status"><span class="braun-led" aria-hidden="true"></span>Online</span></td><td class="is-num">12.4 V</td><td class="is-num">36.1 °C</td><td class="is-num">17:42:36</td></tr>
+              <tr aria-selected="true"><td>MODULE_04</td><td><span class="braun-status"><span class="braun-led braun-led--warn" aria-hidden="true"></span>Alarm</span></td><td class="is-num">11.9 V</td><td class="is-num">78.4 °C</td><td class="is-num">03:12:09</td></tr>
+              <tr><td>MODULE_07</td><td><span class="braun-status"><span class="braun-led braun-led--off" aria-hidden="true"></span>Offline</span></td><td class="is-num">0.0 V</td><td class="is-num">—</td><td class="is-num">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="dialog" data-component="dialog" aria-labelledby="h-dialog">
+    <h2 id="h-dialog">Dialog</h2>
+    <p>A raised plate drops into place: the question and its consequence on the left, the keys on the right. Press the key to open it again.</p>
+    <div class="demo" data-demo="dialog" data-min-height="300" data-open-dialog>
+      <h3>Dialog</h3>
+      <div class="demo__stage">
+        <button class="braun-btn braun-btn--primary" type="button" data-braun-open="#b-dialog">Reset module</button>
+        <dialog class="braun-dialog" id="b-dialog" aria-labelledby="b-dialog-t">
+          <div class="braun-dialog__body">
+            <div><h2 class="braun-dialog__title" id="b-dialog-t">Reset module?</h2><p class="braun-dialog__text">This will clear all configuration data.</p></div>
+            <div class="braun-dialog__actions"><button class="braun-btn" type="button" data-braun-close>Cancel</button><button class="braun-btn braun-btn--primary" type="button" data-braun-close>Reset</button></div>
+          </div>
+        </dialog>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tooltip" data-component="tooltip" aria-labelledby="h-tooltip">
+    <h2 id="h-tooltip">Tooltip</h2>
+    <p>A black legend strip on hover or focus.</p>
+    <div class="demo" data-demo="tooltip">
+      <h3>Tooltip</h3>
+      <div class="demo__stage">
+        <span class="braun-tooltip" data-tip="Hold 3 s to calibrate"><button class="braun-btn" type="button">Calibrate</button></span>
+        <span class="braun-tip">Hold 3 s to calibrate</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="material" data-component="material" aria-labelledby="h-material">
+    <h2 id="h-material">Materials</h2>
+    <p>The panel itself: surfaces and colors as physical samples, four heights, a perforated grille and an engraved groove.</p>
+    <div class="demo" data-demo="surfaces">
+      <h3>Surfaces and colors</h3>
+      <div class="demo__stage">
+        <span class="braun-specimen" style="--braun-swatch:var(--braun-color-chassis);width:72px" title="Chassis"></span>
+        <span class="braun-specimen" style="--braun-swatch:var(--braun-color-keycap);width:72px" title="Keycap"></span>
+        <span class="braun-specimen" style="--braun-swatch:var(--braun-color-inverse);width:72px" title="Recessed"></span>
+        <span class="braun-specimen" style="--braun-swatch:var(--braun-color-bezel);width:72px" title="Bezel"></span>
+        <span class="braun-swatch" style="--braun-swatch:var(--braun-color-primary)" title="International Orange"></span>
+        <span class="braun-swatch" style="--braun-swatch:var(--braun-color-signal)" title="Signal Green"></span>
+      </div>
+    </div>
+    <div class="demo" data-demo="elevation">
+      <h3>Elevation</h3>
+      <div class="demo__stage">
+        <div class="braun-level-0" style="width:84px;height:48px"></div>
+        <div class="braun-level-1" style="width:84px;height:48px"></div>
+        <div class="braun-level-2" style="width:84px;height:48px"></div>
+        <div class="braun-level-3" style="width:84px;height:48px"></div>
+      </div>
+    </div>
+    <div class="demo" data-demo="grille">
+      <h3>Speaker grille</h3>
+      <div class="demo__stage">
+        <div class="braun-grille" role="img" aria-label="Speaker grille: 1.5 millimetre holes at 3 millimetre pitch" style="width:min(100%,300px);height:120px"></div>
+      </div>
+    </div>
+    <div class="demo" data-demo="engraved">
+      <h3>Engraved border</h3>
+      <div class="demo__stage">
+        <div class="braun-engraved" style="width:min(100%,380px)"><p>1 px engraved border<br>Subtle, precise, permanent.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script src="js/braun.js"></script>
+<script src="../site/smooth-scroll.js" defer></script>
+</body>
+</html>

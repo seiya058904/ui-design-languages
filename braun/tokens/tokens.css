@@ -1,0 +1,287 @@
+/* braun tokens — GENERATED from braun/tokens/tokens.json. Do not edit by hand.
+   Regenerate with: node scripts/build-tokens.mjs braun */
+:root {
+  --braun-color-canvas: #E5E5E0; /* Aluminium — the front panel every module sits on */
+  --braun-color-surround: #D5D5D0; /* The bench behind the panel (page edge) */
+  --braun-color-chassis: #C9C9C6; /* Anodized Al — tracks, wells, sunken bays */
+  --braun-color-plate: #ECECE8; /* Raised plates: cards, dialogs, sheets */
+  --braun-color-keycap: #F4F4F1; /* POM keycap top face */
+  --braun-color-keycap-hover: #FAFAF8; /* Keycap face under the pointer */
+  --braun-color-key: #E2E2DD; /* Neutral push-key face (buttons, tabs, pagination, chips) */
+  --braun-color-key-hover: #EAEAE6;
+  --braun-color-skirt: #B3B3AD; /* Keycap side wall, seen below the face */
+  --braun-color-knob-light: #FBFBF8; /* Turned aluminium knob: lit crown */
+  --braun-color-knob: #DDDDD8; /* Knob face */
+  --braun-color-knob-dark: #BDBDB7; /* Knob rim in shade */
+  --braun-color-knurl: rgba(0, 0, 0, 0.13); /* Knurled edge: groove */
+  --braun-color-knurl-light: rgba(255, 255, 255, 0.5); /* Knurled edge: ridge */
+  --braun-color-bezel: #DADADA; /* Aluminium bezel: plate outlines */
+  --braun-color-inverse: #1B1B1B; /* Matte black — the contrasting key, toast, tooltip */
+  --braun-color-inverse-hover: #2A2A29;
+  --braun-color-inverse-skirt: #000000;
+  --braun-color-inverse-ink: #F4F4F1; /* Legend on matte black */
+  --braun-color-inverse-muted: #A3A39D; /* Secondary legend on matte black */
+  --braun-color-slot: #1B1B1B; /* Machined slot of a fader — dark in both editions */
+  --braun-color-ink: #1B1B1B; /* Headings, numerals, focus ring */
+  --braun-color-text: #2B2B29; /* Body text */
+  --braun-color-text-muted: #5E5E58; /* Specs and captions (5.2:1 on aluminium) */
+  --braun-color-text-subtle: #8C8C86; /* Placeholders, dial ticks — never body copy */
+  --braun-color-line: #C4C4BE; /* Hairlines and column dividers */
+  --braun-color-line-strong: #1B1B1B; /* Section rules */
+  --braun-color-engrave: rgba(0, 0, 0, 0.24); /* Dark half of an engraved line */
+  --braun-color-engrave-light: rgba(255, 255, 255, 0.78); /* Light half of an engraved line */
+  --braun-color-highlight: rgba(255, 255, 255, 0.85); /* Lit top edge of raised parts */
+  --braun-color-shade: rgba(38, 38, 28, 0.2); /* Contact shadow under raised parts */
+  --braun-color-shade-deep: rgba(38, 38, 28, 0.34); /* Inner shadow of pressed and sunken parts */
+  --braun-color-primary: #FF4F00; /* International Orange — the one accent: primary key, pointer, lit segments, current item */
+  --braun-color-primary-hover: #FF6119;
+  --braun-color-primary-skirt: #C23B00; /* Side wall of orange keys */
+  --braun-color-primary-ink: #161616; /* Legend on orange — ink, not white (5.2:1; white is 3.3:1) */
+  --braun-color-primary-text: #B23500; /* Orange used as text on aluminium (4.9:1) */
+  --braun-color-primary-soft: #F7E0D3; /* Alert wash */
+  --braun-color-primary-line: #EFA27F; /* Alert outline */
+  --braun-color-primary-glow: rgba(255, 79, 0, 0.45); /* Glow of lit orange segments */
+  --braun-color-signal: #18D259; /* Signal green — status LED only */
+  --braun-color-signal-glow: rgba(24, 210, 89, 0.55);
+  --braun-color-led-off: #C2C2BC; /* Unlit LED segment */
+  --braun-color-danger: #B8330F; /* Error text (4.7:1 on aluminium) */
+  --braun-color-grille-hole: #1B1B1B; /* Perforation in the speaker grille */
+  --braun-color-disabled: #DCDCD7;
+  --braun-color-disabled-ink: #93938D;
+  --braun-color-backdrop: rgba(27, 27, 27, 0.32);
+
+  --braun-texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); /* Bead-blasted anodizing: a fine matte grain laid over the panel */
+  --braun-texture-brushed: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, rgba(0, 0, 0, 0.018) 1px 2px, transparent 2px 4px); /* Brushed aluminium: fine horizontal grain for plates and the engraved border */
+  --braun-texture-turned: repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.16) 0 1px, rgba(0, 0, 0, 0.025) 1px 2.5px); /* Concentric turning marks on the knob crown */
+
+  --braun-gradient-face: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 58%, rgba(0, 0, 0, 0.035)); /* Keycap face: lit from above, the lower half falls away */
+  --braun-gradient-face-primary: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 55%, rgba(0, 0, 0, 0.06));
+  --braun-gradient-face-inverse: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 55%);
+  --braun-gradient-led: linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 46%, rgba(0, 0, 0, 0.1)); /* Lit LED segment: a bright core under a curved lens */
+  --braun-gradient-led-off: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.28)); /* Unlit segment: a concave, empty lens */
+  --braun-gradient-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.05)); /* A soft sheen for material samples and plates (subtler than a keycap face) */
+
+  --braun-font-family-display: "Space Grotesk", "Helvetica Neue", Arial, sans-serif; /* Display, section titles, big numerals */
+  --braun-font-family-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace; /* Everything an instrument prints: labels, values, legends */
+
+  --braun-font-size-display: 84px;
+  --braun-font-size-section: 26px;
+  --braun-font-size-readout: 52px; /* Dial readout */
+  --braun-font-size-value: 28px; /* Meter percentage, KPI numerals */
+  --braun-font-size-title: 18px;
+  --braun-font-size-body: 14px;
+  --braun-font-size-small: 13px;
+  --braun-font-size-caption: 12px;
+  --braun-font-size-micro: 11px;
+
+  --braun-font-weight-regular: 400;
+  --braun-font-weight-medium: 500;
+  --braun-font-weight-semibold: 600;
+  --braun-font-weight-bold: 700;
+
+  --braun-font-tracking-display: -0.045em;
+  --braun-font-tracking-spec: 0.14em; /* Mono caps: spec lines, section notes */
+  --braun-font-tracking-label: 0.02em;
+
+  --braun-space-1: 4px;
+  --braun-space-2: 8px;
+  --braun-space-3: 12px;
+  --braun-space-4: 16px;
+  --braun-space-5: 20px;
+  --braun-space-6: 24px;
+  --braun-space-8: 32px;
+  --braun-space-10: 40px;
+  --braun-space-14: 56px;
+
+  --braun-radius-xs: 2px; /* Badges, LED windows */
+  --braun-radius-sm: 4px; /* Checkboxes, chips, fields */
+  --braun-radius-md: 6px; /* Keys */
+  --braun-radius-lg: 8px; /* Plates, cards, dialogs */
+  --braun-radius-xl: 14px; /* The panel itself */
+  --braun-radius-pill: 999px; /* Capsule keys, switch tracks */
+
+  --braun-border-hair: 1px;
+  --braun-border-rule: 2px; /* Section rule */
+
+  --braun-size-control-sm: 32px;
+  --braun-size-control: 40px;
+  --braun-size-control-lg: 52px;
+  --braun-size-dial: 176px; /* Rotary dial with its scale */
+  --braun-size-dial-sm: 148px; /* Compact dial for dense rows */
+  --braun-size-led: 8px;
+  --braun-size-grille-pitch: 12px; /* 3 mm pitch at 4 px/mm */
+  --braun-size-grille-hole: 6px; /* Ø 1.5 mm */
+  --braun-size-meter-gap: 3px; /* Gap between LED segments */
+
+  --braun-shadow-level-0: inset 0 0 0 1px var(--braun-color-engrave), 0 1px 0 var(--braun-color-engrave-light), 0 0 0 transparent; /* 0 mm — flush with the panel, defined only by its seam */
+  --braun-shadow-level-1: inset 0 1px 0 var(--braun-color-highlight), 0 1px 0 var(--braun-color-skirt), 0 2px 3px var(--braun-color-shade); /* 0.5 mm — low */
+  --braun-shadow-level-2: inset 0 1px 0 var(--braun-color-highlight), 0 2px 0 var(--braun-color-skirt), 0 5px 8px -2px var(--braun-color-shade); /* 1 mm — mid */
+  --braun-shadow-level-3: inset 0 1px 0 var(--braun-color-highlight), 0 4px 0 var(--braun-color-skirt), 0 12px 18px -6px var(--braun-color-shade); /* 2 mm — high */
+  --braun-shadow-well: inset 0 1px 2px var(--braun-color-shade-deep), inset 0 0 0 1px var(--braun-color-engrave), 0 1px 0 var(--braun-color-engrave-light); /* Sunken bays, switch tracks, fields */
+  --braun-shadow-key: inset 0 1px 0 var(--braun-color-highlight), inset 0 -1px 0 rgba(0, 0, 0, 0.05), 0 2px 0 var(--braun-color-skirt), 0 3px 4px -1px var(--braun-color-shade), 0 8px 14px -8px var(--braun-color-shade); /* A keycap at rest: lit top edge, lower lip, 2px skirt, contact and ambient shadow */
+  --braun-shadow-key-pressed: inset 0 1px 3px var(--braun-color-shade-deep), inset 0 -1px 0 transparent, 0 0.5px 0 var(--braun-color-skirt), 0 1px 1px -1px var(--braun-color-shade), 0 2px 4px -4px var(--braun-color-shade); /* Bottomed out: the skirt disappears into the panel, the top edge falls into shadow. Same five layers as key, so the press interpolates */
+  --braun-shadow-key-latched: inset 0 1px 0 var(--braun-color-highlight), inset 0 -1px 0 rgba(0, 0, 0, 0.05), 0 1px 0 var(--braun-color-skirt), 0 2px 2px -1px var(--braun-color-shade), 0 4px 8px -6px var(--braun-color-shade); /* Latched down (a selected key): half its travel, held */
+  --braun-shadow-key-primary: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.08), 0 2px 0 var(--braun-color-primary-skirt), 0 3px 4px -1px var(--braun-color-shade), 0 8px 16px -8px var(--braun-color-primary-glow);
+  --braun-shadow-key-primary-pressed: inset 0 1px 3px rgba(80, 20, 0, 0.45), inset 0 -1px 0 transparent, 0 0.5px 0 var(--braun-color-primary-skirt), 0 1px 1px -1px var(--braun-color-shade), 0 2px 4px -4px var(--braun-color-primary-glow);
+  --braun-shadow-key-primary-latched: inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -1px 0 rgba(0, 0, 0, 0.08), 0 1px 0 var(--braun-color-primary-skirt), 0 2px 2px -1px var(--braun-color-shade), 0 6px 12px -6px var(--braun-color-primary-glow); /* A selected orange key, latched at half travel */
+  --braun-shadow-key-inverse: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 2px 0 var(--braun-color-inverse-skirt), 0 3px 4px -1px var(--braun-color-shade), 0 8px 14px -8px var(--braun-color-shade-deep);
+  --braun-shadow-key-inverse-pressed: inset 0 1px 3px rgba(0, 0, 0, 0.6), inset 0 -1px 0 transparent, 0 0.5px 0 var(--braun-color-inverse-skirt), 0 1px 1px -1px var(--braun-color-shade), 0 2px 4px -4px var(--braun-color-shade);
+  --braun-shadow-knob: inset 0 2px 1px rgba(255, 255, 255, 0.9), inset 0 -3px 6px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.08), 0 6px 0 -1px var(--braun-color-skirt), 0 16px 24px -8px var(--braun-color-shade-deep); /* Turned aluminium knob standing off the panel */
+  --braun-shadow-led: 0 0 0 1.5px rgba(0, 0, 0, 0.14), 0 0 8px 1px var(--braun-color-signal-glow); /* Lit status LED in its bezel */
+  --braun-shadow-overlay: inset 0 1px 0 var(--braun-color-highlight), 0 4px 0 var(--braun-color-skirt), 0 28px 48px -16px rgba(20, 20, 14, 0.38); /* Dialogs */
+
+  --braun-motion-duration-press: 55ms; /* A key bottoms out: one crisp detent */
+  --braun-motion-duration-release: 140ms; /* The spring returns it — fast, no overshoot */
+  --braun-motion-duration-detent: 55ms; /* The dial clicks from one step to the next */
+  --braun-motion-duration-snap: 120ms; /* Toggle knob snapping over centre */
+  --braun-motion-duration-travel: 220ms; /* Needles travelling along a rail (sidebar, tabs) */
+  --braun-motion-duration-fade: 160ms;
+  --braun-motion-duration-fill: 640ms; /* LED meter lighting segment by segment */
+  --braun-motion-duration-enter: 420ms; /* Power-on: modules settle into the panel */
+  --braun-motion-stagger: 45ms;
+  --braun-motion-easing-press: cubic-bezier(0.55, 0, 1, 0.45); /* Accelerates into the stop */
+  --braun-motion-easing-release: cubic-bezier(0.2, 0, 0, 1); /* Decelerates home; never overshoots */
+  --braun-motion-easing-snap: cubic-bezier(0.7, 0, 0.25, 1); /* Spring-loaded over-centre switch: resists, then snaps */
+  --braun-motion-easing-travel: cubic-bezier(0.45, 0, 0.2, 1); /* A motor-driven needle */
+  --braun-motion-easing-fill: linear;
+}
+
+/* Dark theme — GENERATED from braun/tokens/tokens.dark.json.
+   <html data-theme="dark"> forces it; <html data-theme="auto"> follows the OS setting. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --braun-color-canvas: #1F1F1E;
+  --braun-color-surround: #141413;
+  --braun-color-chassis: #161615;
+  --braun-color-plate: #272726;
+  --braun-color-keycap: #3A3A37;
+  --braun-color-keycap-hover: #42423F;
+  --braun-color-key: #383835;
+  --braun-color-key-hover: #41413E;
+  --braun-color-skirt: #0C0C0B;
+  --braun-color-knob-light: #5A5A55;
+  --braun-color-knob: #3A3A37;
+  --braun-color-knob-dark: #242422;
+  --braun-color-knurl: rgba(0, 0, 0, 0.45);
+  --braun-color-knurl-light: rgba(255, 255, 255, 0.1);
+  --braun-color-bezel: #333331;
+  --braun-color-inverse: #E2E2DD;
+  --braun-color-inverse-hover: #EEEEEA;
+  --braun-color-inverse-skirt: #8F8F89;
+  --braun-color-inverse-ink: #1B1B1B;
+  --braun-color-inverse-muted: #55554F;
+  --braun-color-slot: #0B0B0A;
+  --braun-color-ink: #F1F1EC;
+  --braun-color-text: #DADAD4;
+  --braun-color-text-muted: #A3A39C;
+  --braun-color-text-subtle: #6F6F69;
+  --braun-color-line: #393936;
+  --braun-color-line-strong: #C9C9C3;
+  --braun-color-engrave: rgba(0, 0, 0, 0.6);
+  --braun-color-engrave-light: rgba(255, 255, 255, 0.07);
+  --braun-color-highlight: rgba(255, 255, 255, 0.13);
+  --braun-color-shade: rgba(0, 0, 0, 0.5);
+  --braun-color-shade-deep: rgba(0, 0, 0, 0.7);
+  --braun-color-primary: #FF5A12;
+  --braun-color-primary-hover: #FF6D2C;
+  --braun-color-primary-skirt: #A93400;
+  --braun-color-primary-ink: #161616;
+  --braun-color-primary-text: #FF7A3D;
+  --braun-color-primary-soft: #36231A;
+  --braun-color-primary-line: #7E3816;
+  --braun-color-primary-glow: rgba(255, 90, 18, 0.5);
+  --braun-color-signal: #22E066;
+  --braun-color-signal-glow: rgba(34, 224, 102, 0.5);
+  --braun-color-led-off: #3A3A37;
+  --braun-color-danger: #FF8A63;
+  --braun-color-grille-hole: #050505;
+  --braun-color-disabled: #2B2B29;
+  --braun-color-disabled-ink: #6A6A64;
+  --braun-color-backdrop: rgba(0, 0, 0, 0.6);
+
+  --braun-texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --braun-texture-brushed: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, rgba(0, 0, 0, 0.12) 1px 2px, transparent 2px 4px);
+  --braun-texture-turned: repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0 1px, rgba(0, 0, 0, 0.12) 1px 2.5px);
+
+  --braun-gradient-face: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0) 58%, rgba(0, 0, 0, 0.12));
+  --braun-gradient-face-inverse: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 55%, rgba(0, 0, 0, 0.04));
+  --braun-gradient-led-off: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.05));
+  --braun-gradient-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.12));
+
+  --braun-shadow-knob: inset 0 2px 1px rgba(255, 255, 255, 0.22), inset 0 -3px 6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.5), 0 6px 0 -1px var(--braun-color-skirt), 0 16px 24px -8px var(--braun-color-shade-deep);
+  --braun-shadow-key-primary: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 2px 0 var(--braun-color-primary-skirt), 0 3px 4px -1px var(--braun-color-shade), 0 8px 18px -8px var(--braun-color-primary-glow);
+  --braun-shadow-key-inverse: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(0, 0, 0, 0.08), 0 2px 0 var(--braun-color-inverse-skirt), 0 3px 4px -1px var(--braun-color-shade), 0 8px 14px -8px var(--braun-color-shade-deep);
+  --braun-shadow-key-inverse-pressed: inset 0 1px 3px rgba(0, 0, 0, 0.35), inset 0 -1px 0 transparent, 0 0.5px 0 var(--braun-color-inverse-skirt), 0 1px 1px -1px var(--braun-color-shade), 0 2px 4px -4px var(--braun-color-shade);
+  --braun-shadow-overlay: inset 0 1px 0 var(--braun-color-highlight), 0 4px 0 var(--braun-color-skirt), 0 28px 56px -12px rgba(0, 0, 0, 0.7);
+  --braun-shadow-key-primary-latched: inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 1px 0 var(--braun-color-primary-skirt), 0 2px 2px -1px var(--braun-color-shade), 0 6px 14px -6px var(--braun-color-primary-glow);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    color-scheme: dark;
+    --braun-color-canvas: #1F1F1E;
+    --braun-color-surround: #141413;
+    --braun-color-chassis: #161615;
+    --braun-color-plate: #272726;
+    --braun-color-keycap: #3A3A37;
+    --braun-color-keycap-hover: #42423F;
+    --braun-color-key: #383835;
+    --braun-color-key-hover: #41413E;
+    --braun-color-skirt: #0C0C0B;
+    --braun-color-knob-light: #5A5A55;
+    --braun-color-knob: #3A3A37;
+    --braun-color-knob-dark: #242422;
+    --braun-color-knurl: rgba(0, 0, 0, 0.45);
+    --braun-color-knurl-light: rgba(255, 255, 255, 0.1);
+    --braun-color-bezel: #333331;
+    --braun-color-inverse: #E2E2DD;
+    --braun-color-inverse-hover: #EEEEEA;
+    --braun-color-inverse-skirt: #8F8F89;
+    --braun-color-inverse-ink: #1B1B1B;
+    --braun-color-inverse-muted: #55554F;
+    --braun-color-slot: #0B0B0A;
+    --braun-color-ink: #F1F1EC;
+    --braun-color-text: #DADAD4;
+    --braun-color-text-muted: #A3A39C;
+    --braun-color-text-subtle: #6F6F69;
+    --braun-color-line: #393936;
+    --braun-color-line-strong: #C9C9C3;
+    --braun-color-engrave: rgba(0, 0, 0, 0.6);
+    --braun-color-engrave-light: rgba(255, 255, 255, 0.07);
+    --braun-color-highlight: rgba(255, 255, 255, 0.13);
+    --braun-color-shade: rgba(0, 0, 0, 0.5);
+    --braun-color-shade-deep: rgba(0, 0, 0, 0.7);
+    --braun-color-primary: #FF5A12;
+    --braun-color-primary-hover: #FF6D2C;
+    --braun-color-primary-skirt: #A93400;
+    --braun-color-primary-ink: #161616;
+    --braun-color-primary-text: #FF7A3D;
+    --braun-color-primary-soft: #36231A;
+    --braun-color-primary-line: #7E3816;
+    --braun-color-primary-glow: rgba(255, 90, 18, 0.5);
+    --braun-color-signal: #22E066;
+    --braun-color-signal-glow: rgba(34, 224, 102, 0.5);
+    --braun-color-led-off: #3A3A37;
+    --braun-color-danger: #FF8A63;
+    --braun-color-grille-hole: #050505;
+    --braun-color-disabled: #2B2B29;
+    --braun-color-disabled-ink: #6A6A64;
+    --braun-color-backdrop: rgba(0, 0, 0, 0.6);
+
+    --braun-texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --braun-texture-brushed: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, rgba(0, 0, 0, 0.12) 1px 2px, transparent 2px 4px);
+    --braun-texture-turned: repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0 1px, rgba(0, 0, 0, 0.12) 1px 2.5px);
+
+    --braun-gradient-face: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0) 58%, rgba(0, 0, 0, 0.12));
+    --braun-gradient-face-inverse: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 55%, rgba(0, 0, 0, 0.04));
+    --braun-gradient-led-off: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.05));
+    --braun-gradient-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.12));
+
+    --braun-shadow-knob: inset 0 2px 1px rgba(255, 255, 255, 0.22), inset 0 -3px 6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.5), 0 6px 0 -1px var(--braun-color-skirt), 0 16px 24px -8px var(--braun-color-shade-deep);
+    --braun-shadow-key-primary: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 2px 0 var(--braun-color-primary-skirt), 0 3px 4px -1px var(--braun-color-shade), 0 8px 18px -8px var(--braun-color-primary-glow);
+    --braun-shadow-key-inverse: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(0, 0, 0, 0.08), 0 2px 0 var(--braun-color-inverse-skirt), 0 3px 4px -1px var(--braun-color-shade), 0 8px 14px -8px var(--braun-color-shade-deep);
+    --braun-shadow-key-inverse-pressed: inset 0 1px 3px rgba(0, 0, 0, 0.35), inset 0 -1px 0 transparent, 0 0.5px 0 var(--braun-color-inverse-skirt), 0 1px 1px -1px var(--braun-color-shade), 0 2px 4px -4px var(--braun-color-shade);
+    --braun-shadow-overlay: inset 0 1px 0 var(--braun-color-highlight), 0 4px 0 var(--braun-color-skirt), 0 28px 56px -12px rgba(0, 0, 0, 0.7);
+    --braun-shadow-key-primary-latched: inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 1px 0 var(--braun-color-primary-skirt), 0 2px 2px -1px var(--braun-color-shade), 0 6px 14px -6px var(--braun-color-primary-glow);
+  }
+}

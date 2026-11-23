@@ -7,7 +7,7 @@
   "visualCheck": "node scripts/snap.mjs [pack]",
   "check": "node scripts/check.mjs [pack]",
   "scaffold": "node scripts/new-pack.mjs <id> <Name>",
-  "siteFields": "pack.site drives the library website only (never the pack): dot = brand color; label = inline style for the pack name; root = the pack's type and color on a live stage; canvas / page = stage and canvas backgrounds; backdrop = {class|style} for the wall's single-language canvas (defaults to page); hooks = selectors whose markup needs js/<pack>.js; darkHint = how to switch to dark when the script owns the theme; wall = [component, demo] picks from components.html for the component wall.",
+  "siteFields": "pack.site drives the library website only (never the pack): dot = brand color; label = inline style for the pack name; root = the pack's type and color on a live stage; canvas / page = stage and canvas backgrounds; backdrop = {class|style} for the wall's single-language canvas (defaults to page); hooks = selectors whose markup needs js/<pack>.js; darkHint = how to switch to dark when the script owns the theme; tone = \"dark\" when the canvas is dark in every theme (dark-first packs: the wall switches its notes to light ink); wall = [component, demo] picks from components.html for the component wall.",
   "packs": [
     {
       "id": "clay",
@@ -460,6 +460,368 @@
           [
             "navigation",
             "sidebar"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "braun",
+      "name": "Braun",
+      "status": "stable",
+      "summary": "A precision instrument panel: anodized aluminium, POM keycaps with real travel, one International Orange, a rotary dial and LED meters.",
+      "prefix": "braun",
+      "entry": {
+        "css": "braun/css/braun.css",
+        "js": "braun/js/braun.js"
+      },
+      "tokens": [
+        "braun/tokens/tokens.json",
+        "braun/tokens/tokens.dark.json"
+      ],
+      "variants": {
+        "theme": [
+          "light",
+          "dark",
+          "auto"
+        ]
+      },
+      "fonts": [
+        {
+          "family": "Space Grotesk",
+          "url": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap",
+          "license": "OFL-1.1"
+        },
+        {
+          "family": "IBM Plex Mono",
+          "url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap",
+          "license": "OFL-1.1"
+        }
+      ],
+      "pages": {
+        "styleguide": "braun/index.html",
+        "examples": [
+          "braun/examples/console.html"
+        ],
+        "components": "braun/components.html"
+      },
+      "docs": {
+        "design": "braun/DESIGN.md",
+        "agents": "braun/AGENTS.md",
+        "readme": "braun/README.md"
+      },
+      "site": {
+        "dot": "#FF4F00",
+        "label": "font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-0.03em;text-transform:uppercase",
+        "root": "font-family:var(--braun-font-family-mono);color:var(--braun-color-text);font-size:var(--braun-font-size-body);line-height:1.5",
+        "canvas": "background:var(--braun-texture-grain),var(--braun-color-canvas)",
+        "page": "background:var(--braun-texture-grain),var(--braun-color-canvas)",
+        "hooks": ".braun-keys, .braun-tabs, .braun-nav, .braun-dial, .braun-fader, .braun-chip[aria-pressed], .braun-pagination, [data-braun-open], [data-braun-close], [data-braun-dismiss], [data-theme-set], [data-theme-toggle]",
+        "wall": [
+          [
+            "slider",
+            "rotary-dial"
+          ],
+          [
+            "button",
+            "variants"
+          ],
+          [
+            "selection",
+            "toggle"
+          ],
+          [
+            "progress",
+            "led-meter"
+          ],
+          [
+            "segmented",
+            "keys"
+          ],
+          [
+            "card",
+            "status-card"
+          ],
+          [
+            "alert",
+            "toast"
+          ],
+          [
+            "material",
+            "grille"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "obsidian",
+      "name": "Obsidian",
+      "status": "stable",
+      "summary": "Dark-first frosted glass: four glass layers over an obsidian canvas, 1px specular edges, one luminous accent and liquid motion.",
+      "prefix": "obsidian",
+      "entry": {
+        "css": "obsidian/css/obsidian.css",
+        "js": "obsidian/js/obsidian.js"
+      },
+      "tokens": [
+        "obsidian/tokens/tokens.json",
+        "obsidian/tokens/tokens.accent-emerald.json",
+        "obsidian/tokens/tokens.accent-violet.json"
+      ],
+      "variants": {
+        "theme": [
+          "dark"
+        ],
+        "accent": [
+          "cyan",
+          "emerald",
+          "violet"
+        ]
+      },
+      "fonts": [
+        {
+          "family": "Inter",
+          "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
+          "license": "OFL-1.1"
+        },
+        {
+          "family": "JetBrains Mono",
+          "url": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap",
+          "license": "OFL-1.1"
+        }
+      ],
+      "pages": {
+        "styleguide": "obsidian/index.html",
+        "examples": [
+          "obsidian/examples/dashboard.html"
+        ],
+        "components": "obsidian/components.html"
+      },
+      "docs": {
+        "design": "obsidian/DESIGN.md",
+        "agents": "obsidian/AGENTS.md",
+        "readme": "obsidian/README.md"
+      },
+      "site": {
+        "dot": "#38BDF8",
+        "label": "font-family:Inter,sans-serif;font-weight:800;letter-spacing:0.02em;text-transform:uppercase",
+        "root": "font-family:var(--obsidian-font-family-sans);color:var(--obsidian-color-text);font-size:var(--obsidian-font-size-body);line-height:1.5;color-scheme:dark",
+        "canvas": "background:var(--obsidian-color-canvas)",
+        "page": "background:var(--obsidian-atmosphere-page),var(--obsidian-color-canvas)",
+        "tone": "dark",
+        "hooks": ".obsidian-tabs, .obsidian-segmented, .obsidian-nav, .obsidian-slider, .obsidian-menu, .obsidian-pagination, .obsidian-card, .obsidian-panel, [data-obsidian-open], [data-obsidian-close], [data-obsidian-dismiss], [data-accent-set]",
+        "wall": [
+          [
+            "card",
+            "kpi-card"
+          ],
+          [
+            "selection",
+            "switches"
+          ],
+          [
+            "tabs",
+            "pill-tabs"
+          ],
+          [
+            "progress",
+            "ring"
+          ],
+          [
+            "input",
+            "command-search"
+          ],
+          [
+            "alert",
+            "toasts"
+          ],
+          [
+            "navigation",
+            "sidebar"
+          ],
+          [
+            "chips",
+            "status-badges"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "zine",
+      "name": "Zine",
+      "status": "stable",
+      "summary": "Neo-brutalist print: newsprint, 2px black rules, zero-blur hard shadows, acid lime, vermilion and cobalt, folder tabs and stickers.",
+      "prefix": "zine",
+      "entry": {
+        "css": "zine/css/zine.css",
+        "js": "zine/js/zine.js"
+      },
+      "tokens": [
+        "zine/tokens/tokens.json",
+        "zine/tokens/tokens.dark.json"
+      ],
+      "variants": {
+        "theme": [
+          "light",
+          "dark",
+          "auto"
+        ]
+      },
+      "fonts": [
+        {
+          "family": "Archivo Black",
+          "url": "https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap",
+          "license": "OFL-1.1"
+        },
+        {
+          "family": "Space Grotesk",
+          "url": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap",
+          "license": "OFL-1.1"
+        },
+        {
+          "family": "Space Mono",
+          "url": "https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap",
+          "license": "OFL-1.1"
+        }
+      ],
+      "pages": {
+        "styleguide": "zine/index.html",
+        "examples": [
+          "zine/examples/studio.html"
+        ],
+        "components": "zine/components.html"
+      },
+      "docs": {
+        "design": "zine/DESIGN.md",
+        "agents": "zine/AGENTS.md",
+        "readme": "zine/README.md"
+      },
+      "site": {
+        "dot": "#C8FF00",
+        "label": "font-family:'Archivo Black',sans-serif;font-weight:400;letter-spacing:-0.01em;text-transform:uppercase",
+        "root": "font-family:var(--zine-font-family-sans);color:var(--zine-color-ink);font-size:var(--zine-font-size-body);line-height:1.5",
+        "canvas": "background:var(--zine-texture-paper),var(--zine-color-paper)",
+        "page": "background:var(--zine-texture-paper),var(--zine-color-paper)",
+        "hooks": ".zine-tabs, .zine-segmented, .zine-menu, .zine-pagination, .zine-chip[aria-pressed], .zine-slider, .zine-sort, [data-zine-open], [data-zine-close], [data-zine-dismiss], [data-theme-set], [data-theme-toggle]",
+        "wall": [
+          [
+            "button",
+            "variants"
+          ],
+          [
+            "card",
+            "profile-card"
+          ],
+          [
+            "tabs",
+            "folder-tabs"
+          ],
+          [
+            "table",
+            "striped-table"
+          ],
+          [
+            "chips",
+            "stickers"
+          ],
+          [
+            "selection",
+            "checkbox-and-toggle"
+          ],
+          [
+            "progress",
+            "striped-progress"
+          ],
+          [
+            "alert",
+            "toast"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "terrarium",
+      "name": "Terrarium",
+      "status": "stable",
+      "summary": "Warm botanical ceramics: oat linen, glazed cream cards, pebble shapes, terracotta and moss, a soft serif and organic spring motion.",
+      "prefix": "terrarium",
+      "entry": {
+        "css": "terrarium/css/terrarium.css",
+        "js": "terrarium/js/terrarium.js"
+      },
+      "tokens": [
+        "terrarium/tokens/tokens.json",
+        "terrarium/tokens/tokens.dark.json"
+      ],
+      "variants": {
+        "theme": [
+          "light",
+          "dark",
+          "auto"
+        ]
+      },
+      "fonts": [
+        {
+          "family": "Fraunces",
+          "url": "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&display=swap",
+          "license": "OFL-1.1"
+        },
+        {
+          "family": "Plus Jakarta Sans",
+          "url": "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
+          "license": "OFL-1.1"
+        }
+      ],
+      "pages": {
+        "styleguide": "terrarium/index.html",
+        "examples": [
+          "terrarium/examples/journal.html"
+        ],
+        "components": "terrarium/components.html"
+      },
+      "docs": {
+        "design": "terrarium/DESIGN.md",
+        "agents": "terrarium/AGENTS.md",
+        "readme": "terrarium/README.md"
+      },
+      "site": {
+        "dot": "#C85A32",
+        "label": "font-family:Fraunces,serif;font-weight:600;font-variation-settings:'SOFT' 100;letter-spacing:0.01em;text-transform:uppercase",
+        "root": "font-family:var(--terrarium-font-family-sans);color:var(--terrarium-color-text);font-size:var(--terrarium-font-size-body);line-height:1.55",
+        "canvas": "background:var(--terrarium-texture-paper),var(--terrarium-color-canvas)",
+        "page": "background:var(--terrarium-texture-paper),var(--terrarium-color-canvas)",
+        "hooks": ".terrarium-segmented, .terrarium-tabs, .terrarium-nav, .terrarium-pagination, .terrarium-chip[aria-pressed], .terrarium-slider, [data-terrarium-open], [data-terrarium-close], [data-terrarium-dismiss], [data-theme-set], [data-theme-toggle]",
+        "wall": [
+          [
+            "card",
+            "feature-card"
+          ],
+          [
+            "selection",
+            "switches"
+          ],
+          [
+            "progress",
+            "ring"
+          ],
+          [
+            "segmented",
+            "segmented"
+          ],
+          [
+            "button",
+            "variants"
+          ],
+          [
+            "avatar",
+            "activity-list"
+          ],
+          [
+            "navigation",
+            "sidebar"
+          ],
+          [
+            "elevation",
+            "pebbles"
           ]
         ]
       }

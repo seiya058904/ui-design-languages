@@ -121,11 +121,11 @@
           </div>
           <span class="atelier-group-label" style="margin-top:18px">Radius</span>
           <div class="radii">
-            <figure><div style="border-radius:var(--atelier-radius-sm)"></div>sm</figure>
-            <figure><div style="border-radius:var(--atelier-radius-md)"></div>md</figure>
-            <figure><div style="border-radius:var(--atelier-radius-lg)"></div>lg</figure>
-            <figure><div style="border-radius:var(--atelier-radius-xl)"></div>xl</figure>
-            <figure><div style="border-radius:999px;width:52px"></div>pill</figure>
+            <figure title="--atelier-radius-sm"><div style="border-radius:var(--atelier-radius-sm)"></div><span data-radius>sm</span></figure>
+            <figure title="--atelier-radius-md"><div style="border-radius:var(--atelier-radius-md)"></div><span data-radius>md</span></figure>
+            <figure title="--atelier-radius-lg"><div style="border-radius:var(--atelier-radius-lg)"></div><span data-radius>lg</span></figure>
+            <figure title="--atelier-radius-xl"><div style="border-radius:var(--atelier-radius-xl)"></div><span data-radius>xl</span></figure>
+            <figure title="--atelier-radius-pill"><div style="border-radius:999px;width:52px"></div>pill</figure>
           </div>
         </div>
         <div>
@@ -321,6 +321,18 @@
 <script src="../site/code-view.js" data-selector=".grid > .atelier-panel, .settings" data-skip=".atelier-section-title"></script>
 <script src="../site/smooth-scroll.js" defer></script>
 <script>
+  /* Radius specimens print their live value (the Radius slider re-scales the whole set). */
+  (function () {
+    function label() {
+      document.querySelectorAll("[data-radius]").forEach(function (s) {
+        var tile = s.previousElementSibling;
+        s.textContent = Math.round(parseFloat(getComputedStyle(tile).borderTopLeftRadius)) + "";
+      });
+    }
+    label();
+    document.addEventListener("atelier:appearance", function () { requestAnimationFrame(label); });
+    document.addEventListener("input", function (e) { if (e.target.matches && e.target.matches("[data-appearance=radius]")) requestAnimationFrame(label); });
+  })();
   /* Scale the live preview so the full desktop workspace fits the panel. */
   (function () {
     var frame = document.getElementById("pf"), iframe = frame.querySelector("iframe");

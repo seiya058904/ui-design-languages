@@ -1,0 +1,6 @@
+/* Obsidian — single entry point.
+   <link rel="stylesheet" href="css/obsidian.css">
+   Order matters: tokens → base → components. */
+@import url("../tokens/tokens.css");
+@import url("base.css");
+@import url("components.css");

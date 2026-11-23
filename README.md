@@ -17,8 +17,8 @@
 
 <p align="center">
   <a href="https://seiya058904.github.io/ui-design-languages/"><img src="https://img.shields.io/badge/Live-Library-6366F1?style=flat-square&amp;labelColor=121622" alt="Live library" /></a>
-  <img src="https://img.shields.io/badge/Style%20Packs-5%20Complete-14B8A6?style=flat-square&amp;labelColor=121622" alt="5 complete style packs" />
-  <img src="https://img.shields.io/badge/Components-37%20Live%20Demos-3B82F6?style=flat-square&amp;labelColor=121622" alt="37 live component demos" />
+  <img src="https://img.shields.io/badge/Style%20Packs-9%20Complete-14B8A6?style=flat-square&amp;labelColor=121622" alt="9 complete style packs" />
+  <img src="https://img.shields.io/badge/Components-69%20Live%20Demos-3B82F6?style=flat-square&amp;labelColor=121622" alt="69 live component demos" />
   <img src="https://img.shields.io/badge/Dependencies-Zero-F59E0B?style=flat-square&amp;labelColor=121622" alt="Zero dependencies" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-64748B?style=flat-square&amp;labelColor=121622" alt="MIT license" /></a>
 </p>
@@ -28,7 +28,7 @@
   &nbsp;·&nbsp;
   <a href="https://seiya058904.github.io/ui-design-languages/components.html">🧩 Component Wall</a>
   &nbsp;·&nbsp;
-  <a href="#style-packs">🎨 Five Style Packs</a>
+  <a href="#style-packs">🎨 Nine Style Packs</a>
   &nbsp;·&nbsp;
   <a href="#what-each-pack-ships">✨ What's Inside</a>
   &nbsp;·&nbsp;
@@ -43,7 +43,7 @@
 
 <p align="center">
   <a href="https://seiya058904.github.io/ui-design-languages/">
-    <img src="docs/media/library-home.jpg" width="100%" alt="UI Design Languages live library homepage showing all five design languages side by side" />
+    <img src="docs/media/library-home.jpg" width="100%" alt="UI Design Languages live library homepage showing all nine design languages side by side" />
   </a>
   <br>
   <sub>REAL BROWSER CAPTURE · EVERY PACK IS A WORKING SITE WITH TOKENS, COMPONENTS, EXAMPLES AND DESIGN.MD</sub>
@@ -56,7 +56,7 @@
 > Instead of static moodboards or Figma-only kits, every language in this library is built first as real HTML, CSS custom properties, and interactive states. Click the controls, switch light and dark mode, inspect the exact tokens, and hand the `DESIGN.md` + `AGENTS.md` directly to a developer or coding agent.
 
 <a id="style-packs"></a>
-## 🎨 Five Complete Style Packs
+## 🎨 Nine Complete Style Packs
 
 Each top-level folder is completely self-contained. Copy one folder into your project — or link it via CDN — and it works on its own.
 
@@ -133,12 +133,68 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
       </p>
     </td>
     <td width="50%" valign="top">
+      <a href="https://seiya058904.github.io/ui-design-languages/braun/examples/console.html">
+        <img src="docs/media/pack-braun.jpg" width="100%" alt="Braun / Field design language — bench power-supply console in anodized aluminium with a rotary dial, LED meters and an International Orange accent" />
+      </a>
+      <h3>🟠 Braun / Field</h3>
+      <p><sub>ANODIZED ALUMINIUM · POM KEYCAPS · INTERNATIONAL ORANGE · LIGHT + DARK</sub></p>
+      <p>A precision instrument panel: keycaps with real travel, a rotary dial you can turn, 24-segment LED meters and mechanical, never-overshooting motion.</p>
+      <p>
+        <a href="braun/DESIGN.md"><strong>DESIGN.md</strong></a> ·
+        <a href="https://seiya058904.github.io/ui-design-languages/braun/">Styleguide</a> ·
+        <a href="https://seiya058904.github.io/ui-design-languages/braun/examples/console.html">Module Console</a>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://seiya058904.github.io/ui-design-languages/obsidian/examples/dashboard.html">
+        <img src="docs/media/pack-obsidian.jpg" width="100%" alt="Obsidian / Glass design language — dark AI workspace dashboard with frosted glass cards, a glowing cyan sessions chart and KPI tiles" />
+      </a>
+      <h3>🔷 Obsidian / Glass</h3>
+      <p><sub>DARK FIRST · FROSTED GLASS LAYERS · 3 LUMINOUS ACCENTS</sub></p>
+      <p>Four layers of frosted glass over a deep obsidian air, 1px specular edges that catch the pointer's light, liquid motion, and glacier, emerald or violet light.</p>
+      <p>
+        <a href="obsidian/DESIGN.md"><strong>DESIGN.md</strong></a> ·
+        <a href="https://seiya058904.github.io/ui-design-languages/obsidian/">Styleguide</a> ·
+        <a href="https://seiya058904.github.io/ui-design-languages/obsidian/examples/dashboard.html">AI Workspace</a>
+      </p>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://seiya058904.github.io/ui-design-languages/zine/examples/studio.html">
+        <img src="docs/media/pack-zine.jpg" width="100%" alt="Zine / Brutal design language — independent publishing studio on newsprint with black rules, hard shadows, folder tabs and an acid-lime flatplan" />
+      </a>
+      <h3>🟩 Zine / Brutal</h3>
+      <p><sub>NEWSPRINT · 2PX RULES · HARD SHADOWS · ACID LIME · LIGHT + INVERTED</sub></p>
+      <p>Neo-brutalist print: buttons lift off the page and slam flat, checks are stamped on, folder tabs run into their sheets, tables wear a hatched lime header.</p>
+      <p>
+        <a href="zine/DESIGN.md"><strong>DESIGN.md</strong></a> ·
+        <a href="https://seiya058904.github.io/ui-design-languages/zine/">Styleguide</a> ·
+        <a href="https://seiya058904.github.io/ui-design-languages/zine/examples/studio.html">Issue Studio</a>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://seiya058904.github.io/ui-design-languages/terrarium/examples/journal.html">
+        <img src="docs/media/pack-terrarium.jpg" width="100%" alt="Terrarium / Earth design language — daily journal and habit tracker on oat linen with glazed cream cards, terracotta buttons and a moss progress ring" />
+      </a>
+      <h3>🪴 Terrarium / Earth</h3>
+      <p><sub>OAT LINEN · GLAZED CERAMICS · TERRACOTTA + MOSS · LIGHT + EVENING</sub></p>
+      <p>Warm botanical ceramics: pebbles, a soft serif, illustrated portraits and organic spring motion — rings grow as habits are tended.</p>
+      <p>
+        <a href="terrarium/DESIGN.md"><strong>DESIGN.md</strong></a> ·
+        <a href="https://seiya058904.github.io/ui-design-languages/terrarium/">Styleguide</a> ·
+        <a href="https://seiya058904.github.io/ui-design-languages/terrarium/examples/journal.html">Daily Journal</a>
+      </p>
+    </td>
+    <td width="50%" valign="top">
       <a href="https://seiya058904.github.io/ui-design-languages/components.html">
-        <img src="docs/media/component-wall.jpg" width="100%" alt="Component Wall — 37 live components from all five design languages with language, category, and light/dark filters" />
+        <img src="docs/media/component-wall.jpg" width="100%" alt="Component Wall — 69 live components from all nine design languages with language, category, and light/dark filters" />
       </a>
       <h3>🧩 The Component Wall</h3>
-      <p><sub>37 LIVE COMPONENTS · SINGLE-FILE EXPORT · AI PROMPT GENERATOR</sub></p>
-      <p>Browse every component across all five languages on one wall, filter to gather a single system onto its native canvas, and open any card for its exact minimal HTML, CSS, JS, runnable file, and AI prompt.</p>
+      <p><sub>69 LIVE COMPONENTS · SINGLE-FILE EXPORT · AI PROMPT GENERATOR</sub></p>
+      <p>Browse every component across all nine languages on one wall, filter to gather a single system onto its native canvas, and open any card for its exact minimal HTML, CSS, JS, runnable file, and AI prompt.</p>
       <p>
         <a href="https://seiya058904.github.io/ui-design-languages/components.html"><strong>Open Component Wall →</strong></a>
       </p>
@@ -155,6 +211,10 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
 | **Atelier** | [`atelier/`](atelier/) | Precise frosted product UI, cobalt accent, live appearance controls | [DESIGN.md](atelier/DESIGN.md) | [AGENTS.md](atelier/AGENTS.md) | [Open →](https://seiya058904.github.io/ui-design-languages/atelier/) |
 | **Tactile** | [`tactile/`](tactile/) | Warm sand neumorphism, 4 material layers, deep teal, light + dark | [DESIGN.md](tactile/DESIGN.md) | [AGENTS.md](tactile/AGENTS.md) | [Open →](https://seiya058904.github.io/ui-design-languages/tactile/) |
 | **Sketch** | [`sketch/`](sketch/) | Hand-drawn ink on cream paper, hatched fills, watercolor tints | [DESIGN.md](sketch/DESIGN.md) | [AGENTS.md](sketch/AGENTS.md) | [Open →](https://seiya058904.github.io/ui-design-languages/sketch/) |
+| **Braun / Field** | [`braun/`](braun/) | Anodized aluminium instrument panel, POM keycaps, International Orange, rotary dial, light + black | [DESIGN.md](braun/DESIGN.md) | [AGENTS.md](braun/AGENTS.md) | [Open →](https://seiya058904.github.io/ui-design-languages/braun/) |
+| **Obsidian / Glass** | [`obsidian/`](obsidian/) | Dark-first frosted glass, specular edges, cyan / emerald / violet light | [DESIGN.md](obsidian/DESIGN.md) | [AGENTS.md](obsidian/AGENTS.md) | [Open →](https://seiya058904.github.io/ui-design-languages/obsidian/) |
+| **Zine / Brutal** | [`zine/`](zine/) | Newsprint, 2px black rules, hard shadows, acid lime / vermilion / cobalt, light + inverted | [DESIGN.md](zine/DESIGN.md) | [AGENTS.md](zine/AGENTS.md) | [Open →](https://seiya058904.github.io/ui-design-languages/zine/) |
+| **Terrarium / Earth** | [`terrarium/`](terrarium/) | Oat linen, glazed ceramics, pebbles, terracotta + moss, soft serif, light + evening | [DESIGN.md](terrarium/DESIGN.md) | [AGENTS.md](terrarium/AGENTS.md) | [Open →](https://seiya058904.github.io/ui-design-languages/terrarium/) |
 
 <a id="what-each-pack-ships"></a>
 ## ✨ What Every Pack Ships
@@ -167,7 +227,7 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
     </td>
     <td width="50%" valign="top">
       <h3>🧩 Shared Component Anatomy</h3>
-      <p>All five languages share the same component vocabulary (<code>btn</code>, <code>field</code>, <code>chip</code>, <code>badge</code>, <code>segmented</code>, <code>tabs</code>, <code>alert</code>, <code>card</code>, <code>nav</code>, <code>toggle</code>, <code>table</code>, <code>dialog</code>, <code>tooltip</code>) and ARIA state hooks, so markup ports cleanly by swapping prefixes.</p>
+      <p>All nine languages share the same component vocabulary (<code>btn</code>, <code>field</code>, <code>chip</code>, <code>badge</code>, <code>segmented</code>, <code>tabs</code>, <code>alert</code>, <code>card</code>, <code>nav</code>, <code>toggle</code>, <code>table</code>, <code>dialog</code>, <code>tooltip</code>) and ARIA state hooks, so markup ports cleanly by swapping prefixes.</p>
     </td>
   </tr>
   <tr>
@@ -222,7 +282,7 @@ node scripts/check.mjs [pack]           # full pre-commit gate: tokens, 1280/390
 
 ```text
 index.html                 Library homepage (live previews & comparison)
-components.html            Component Wall: all 5 languages, 37 live components + source drawer
+components.html            Component Wall: all 9 languages, 69 live components + source drawer
 packs.json                 Machine-readable registry of packs, tokens, fonts, variants & wall picks
 site/                      Website chrome only (wall.js, source.js, smooth-scroll.js — never part of a pack)
 <pack>/

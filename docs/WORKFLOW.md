@@ -1,6 +1,6 @@
 # Workflow — from a reference image to a finished design language
 
-Five steps, three commands. It works for any visual style; the five languages in this repo were all made this way.
+Five steps, three commands. It works for any visual style; the nine languages in this repo were all made this way.
 
 ```bash
 node scripts/new-pack.mjs <id> [Name] [--dark]   # 1. scaffold: a working language that already passes the checks

@@ -1,0 +1,123 @@
+/* obsidian tokens — GENERATED from obsidian/tokens/tokens.json. Do not edit by hand.
+   Regenerate with: node scripts/build-tokens.mjs obsidian */
+:root {
+  --obsidian-color-canvas: #0B0D12; /* Obsidian — the page */
+  --obsidian-color-surface: #151922; /* Base: solid glass */
+  --obsidian-color-glass: rgba(22, 27, 37, 0.6); /* Frosted: 60% over a 12px blur */
+  --obsidian-color-glass-elevated: rgba(28, 34, 46, 0.8); /* Elevated: 80% over a 16px blur — popovers, dialogs, toasts */
+  --obsidian-color-glass-inset: rgba(3, 5, 9, 0.4); /* Inset: inner depth, 40% — tracks, wells, fields */
+  --obsidian-color-field: rgba(6, 9, 14, 0.55); /* Text fields */
+  --obsidian-color-hover: rgba(255, 255, 255, 0.05); /* Wash under the pointer (rows, items, ghost buttons) */
+  --obsidian-color-control: rgba(255, 255, 255, 0.065); /* Glass controls: secondary buttons, keys, chips */
+  --obsidian-color-control-hover: rgba(255, 255, 255, 0.1);
+  --obsidian-color-border-high: color-mix(in srgb, var(--obsidian-color-primary) 72%, transparent); /* 1px · High (primary): focus, selection, the primary action */
+  --obsidian-color-border-medium: rgba(255, 255, 255, 0.14); /* 1px · Medium: controls, elevated glass, hover */
+  --obsidian-color-border-low: rgba(255, 255, 255, 0.075); /* 1px · Low: panels and cards at rest */
+  --obsidian-color-edge: rgba(255, 255, 255, 0.12); /* Specular top edge of every glass layer */
+  --obsidian-color-edge-hover: rgba(255, 255, 255, 0.24); /* The edge catching more light under the pointer */
+  --obsidian-color-ink: #F1F5F9; /* Ink: headings and values */
+  --obsidian-color-text: #C9D1DC; /* Body text */
+  --obsidian-color-text-muted: #8B95A5; /* Secondary text (5.8:1 on base glass) */
+  --obsidian-color-text-subtle: #6B7586; /* Placeholders, axis labels */
+  --obsidian-color-primary: #38BDF8; /* Glacier cyan — the one luminous accent */
+  --obsidian-color-primary-strong: #0EA5E9; /* Pressed primary */
+  --obsidian-color-primary-ink: #03131D; /* Text on primary (8.9:1) */
+  --obsidian-color-primary-soft: color-mix(in srgb, var(--obsidian-color-primary) 14%, transparent); /* Selected wash */
+  --obsidian-color-primary-glow: color-mix(in srgb, var(--obsidian-color-primary) 38%, transparent); /* Bloom around lit pieces (15–20% softer than the reference) */
+  --obsidian-color-success: #10B981;
+  --obsidian-color-success-text: #34D399;
+  --obsidian-color-success-soft: rgba(16, 185, 129, 0.14);
+  --obsidian-color-warning: #F59E0B;
+  --obsidian-color-warning-text: #FBBF24;
+  --obsidian-color-warning-soft: rgba(245, 158, 11, 0.14);
+  --obsidian-color-danger: #F43F5E;
+  --obsidian-color-danger-text: #FB7185;
+  --obsidian-color-danger-soft: rgba(244, 63, 94, 0.14);
+  --obsidian-color-track: rgba(255, 255, 255, 0.09); /* Unfilled tracks: slider, switch off, rings */
+  --obsidian-color-knob: #E9EEF4; /* Switch and slider knobs */
+  --obsidian-color-backdrop: rgba(3, 5, 9, 0.62);
+  --obsidian-color-disabled: rgba(255, 255, 255, 0.04);
+  --obsidian-color-disabled-ink: #566072;
+
+  --obsidian-atmosphere-page: radial-gradient(1100px 620px at 8% -12%, color-mix(in srgb, var(--obsidian-color-primary) 15%, transparent), transparent 62%), radial-gradient(900px 560px at 100% -6%, color-mix(in srgb, var(--obsidian-color-primary) 9%, transparent), transparent 58%), radial-gradient(1000px 700px at 50% 115%, rgba(16, 185, 129, 0.05), transparent 60%); /* The deep-space air behind the glass: a cold light from the top corners, a faint green floor glow */
+  --obsidian-atmosphere-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.008) 42%, rgba(255, 255, 255, 0)); /* Light falling across a glass face, top to bottom */
+
+  --obsidian-blur-frosted: 12px;
+  --obsidian-blur-elevated: 16px;
+
+  --obsidian-font-family-sans: Inter, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  --obsidian-font-family-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace; /* Statistics, values, keyboard hints */
+
+  --obsidian-font-size-display: 44px;
+  --obsidian-font-size-section: 19px;
+  --obsidian-font-size-stat: 28px; /* KPI values */
+  --obsidian-font-size-title: 16px;
+  --obsidian-font-size-body: 14px;
+  --obsidian-font-size-small: 13px;
+  --obsidian-font-size-caption: 12px;
+  --obsidian-font-size-label: 11px; /* Caps group labels */
+
+  --obsidian-font-weight-regular: 400;
+  --obsidian-font-weight-medium: 500;
+  --obsidian-font-weight-semibold: 600;
+  --obsidian-font-weight-bold: 700;
+  --obsidian-font-weight-heavy: 800;
+
+  --obsidian-font-tracking-display: 0.01em;
+  --obsidian-font-tracking-caps: 0.1em;
+
+  --obsidian-space-1: 4px;
+  --obsidian-space-2: 8px;
+  --obsidian-space-3: 12px;
+  --obsidian-space-4: 16px;
+  --obsidian-space-5: 20px;
+  --obsidian-space-6: 24px;
+  --obsidian-space-8: 32px;
+  --obsidian-space-10: 40px;
+
+  --obsidian-radius-sm: 8px; /* Small controls, checkboxes, menu items */
+  --obsidian-radius-md: 12px; /* Buttons, fields, nav items */
+  --obsidian-radius-lg: 16px; /* Cards */
+  --obsidian-radius-xl: 20px; /* Panels */
+  --obsidian-radius-2xl: 24px; /* Dialogs, sheets */
+  --obsidian-radius-pill: 999px;
+
+  --obsidian-size-control-sm: 32px;
+  --obsidian-size-control: 40px;
+  --obsidian-size-control-lg: 48px;
+
+  --obsidian-shadow-panel: inset 0 1px 0 var(--obsidian-color-edge), 0 24px 48px -24px rgba(0, 0, 0, 0.7); /* Frosted panels and cards: a specular top edge over a deep ambient shadow */
+  --obsidian-shadow-elevated: inset 0 1px 0 var(--obsidian-color-edge-hover), 0 2px 6px rgba(0, 0, 0, 0.3), 0 30px 60px -22px rgba(0, 0, 0, 0.8); /* Popovers, dialogs, toasts */
+  --obsidian-shadow-inset: inset 0 2px 6px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.035); /* Inner depth: tracks, fields, wells */
+  --obsidian-shadow-control: inset 0 1px 0 var(--obsidian-color-edge), 0 1px 2px rgba(0, 0, 0, 0.35); /* Glass controls at rest */
+  --obsidian-shadow-glow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 0 1px var(--obsidian-color-border-high), 0 0 16px -2px var(--obsidian-color-primary-glow), 0 6px 18px -8px var(--obsidian-color-primary-glow); /* A lit primary piece */
+  --obsidian-shadow-glow-hover: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 0 0 1px var(--obsidian-color-primary), 0 0 22px 0 var(--obsidian-color-primary-glow), 0 8px 24px -8px var(--obsidian-color-primary-glow); /* The bloom widens under the pointer */
+  --obsidian-shadow-glow-pressed: inset 0 1px 2px rgba(0, 0, 0, 0.22), 0 0 0 1px var(--obsidian-color-primary-strong), 0 0 8px -2px var(--obsidian-color-primary-glow), 0 2px 8px -6px var(--obsidian-color-primary-glow); /* Pressed: the light pulls in */
+  --obsidian-shadow-focus: 0 0 0 1px var(--obsidian-color-primary), 0 0 0 4px var(--obsidian-color-primary-soft), 0 0 18px -2px var(--obsidian-color-primary-glow);
+
+  --obsidian-motion-duration: 320ms; /* Liquid: glass slides and settles */
+  --obsidian-motion-duration-fast: 180ms; /* Color and light changes */
+  --obsidian-motion-duration-press: 90ms; /* The light pulls in under a press */
+  --obsidian-motion-duration-lead: 240ms; /* Leading edge of a sliding indicator */
+  --obsidian-motion-duration-trail: 440ms; /* Trailing edge: the indicator stretches like a drop, then gathers */
+  --obsidian-motion-duration-draw: 1400ms; /* Charts and rings draw themselves in */
+  --obsidian-motion-duration-enter: 700ms;
+  --obsidian-motion-stagger: 70ms;
+  --obsidian-motion-easing: cubic-bezier(0.22, 1, 0.36, 1); /* Liquid damping: fast start, long soft settle */
+  --obsidian-motion-easing-press: cubic-bezier(0.4, 0, 0.6, 1);
+  --obsidian-motion-easing-draw: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Variant — GENERATED from obsidian/tokens/tokens.accent-emerald.json. Opt in with <html data-accent="emerald">. */
+:root[data-accent="emerald"] {
+  --obsidian-color-primary: #10B981;
+  --obsidian-color-primary-strong: #059669;
+  --obsidian-color-primary-ink: #02140D;
+}
+
+/* Variant — GENERATED from obsidian/tokens/tokens.accent-violet.json. Opt in with <html data-accent="violet">. */
+:root[data-accent="violet"] {
+  --obsidian-color-primary: #A78BFA;
+  --obsidian-color-primary-strong: #8B5CF6;
+  --obsidian-color-primary-ink: #120A24;
+}

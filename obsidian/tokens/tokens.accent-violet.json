@@ -1,0 +1,8 @@
+{
+  "$description": "Electric violet accent. Opt in with <html data-accent=\"violet\">. Glows, washes and the high border follow automatically.",
+  "color": {
+    "primary": { "$value": "#A78BFA" },
+    "primary-strong": { "$value": "#8B5CF6" },
+    "primary-ink": { "$value": "#120A24" }
+  }
+}

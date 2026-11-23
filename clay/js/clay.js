@@ -39,6 +39,20 @@
     });
   }
 
+  /* Layout changes (resize, fonts) move an indicator instantly; only a new selection glides. */
+  function snapTo(list) {
+    var on = list.classList.contains("is-animated");
+    if (on) list.classList.remove("is-animated");
+    refresh(list);
+    if (on) { void list.offsetWidth; list.classList.add("is-animated"); }
+  }
+  /* Turn indicator transitions on only once the page has settled (loaded, fonts ready), after a final
+     measurement — so an indicator never glides in from a stale first-frame position on load. */
+  function settle(fn) {
+    var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    var loaded = document.readyState === "complete" ? Promise.resolve() : new Promise(function (r) { window.addEventListener("load", r, { once: true }); });
+    Promise.all([fonts, loaded]).then(function () { requestAnimationFrame(function () { requestAnimationFrame(fn); }); });
+  }
   /* Move the indicator to the active item (positions come from layout, so any size works). */
   function refresh(list) {
     var g = groupOf(list);
@@ -66,10 +80,10 @@
       refresh(list);
       // Turn transitions on only after the first placement, so nothing slides in on page load.
       requestAnimationFrame(function () {
-        requestAnimationFrame(function () { list.classList.add("is-animated"); });
+        settle(function () { refresh(list); list.classList.add("is-animated"); });
       });
       if ("ResizeObserver" in window) {
-        var ro = new ResizeObserver(function () { refresh(list); });
+        var ro = new ResizeObserver(function () { snapTo(list); });
         ro.observe(list);
         items(list).forEach(function (el) { ro.observe(el); }); // web fonts, label changes
       }

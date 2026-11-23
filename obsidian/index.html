@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var a=localStorage.getItem("obsidian-accent");if(a&&a!=="cyan")document.documentElement.setAttribute("data-accent",a)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Obsidian / Glass — luminous dark frosted interface system</title>
+  <link rel="icon" href="../site/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../site/assets/apple-touch-icon.png">
+  <meta name="description" content="Obsidian / Glass — a dark-first interface language: four layers of frosted glass, 1px specular edges and one luminous accent, with liquid motion.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/obsidian.css">
+  <style>
+    /* Page layout only — every visual comes from Obsidian classes and tokens. */
+    body { padding: 32px 20px 44px; }
+    .sheet { width: min(100%, 1200px); margin: 0 auto; }
+    .head { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 26px; }
+    .head__mark { display: flex; align-items: center; gap: 26px; }
+    .head__mark::after { content: ""; width: 1px; height: 56px; background: var(--obsidian-color-border-medium); }
+    .head__copy { display: grid; gap: 6px; }
+    .head__end { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-left: auto; }
+    .edition { height: 36px; padding: 0 18px; border: 1px solid var(--obsidian-color-border-medium); border-radius: var(--obsidian-radius-pill); display: inline-flex; align-items: center; font-size: var(--obsidian-font-size-small); font-weight: var(--obsidian-font-weight-medium); letter-spacing: 0.12em; color: var(--obsidian-color-ink); box-shadow: inset 0 1px 0 var(--obsidian-color-edge); }
+    .bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin: 24px 0 22px; }
+    .bar nav { display: flex; flex-wrap: wrap; gap: 8px; }
+    .accents { display: flex; align-items: center; gap: 10px; font-size: var(--obsidian-font-size-caption); color: var(--obsidian-color-text-muted); }
+    .accents button { width: 26px; height: 26px; padding: 0; border: 1px solid var(--obsidian-color-border-medium); border-radius: 50%; background: var(--c); cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,.35); transition: box-shadow var(--obsidian-motion-duration) var(--obsidian-motion-easing), transform var(--obsidian-motion-duration) var(--obsidian-motion-easing); }
+    .accents button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--obsidian-color-canvas), 0 0 0 3.5px var(--c), 0 0 16px -2px var(--c); }
+    .accents button:hover { transform: scale(1.08); }
+    .accents button:focus-visible { box-shadow: var(--obsidian-shadow-focus); }
+
+    .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+    .panel-head { margin-bottom: 18px; }
+    .panel-head p { margin-top: 6px; font-size: var(--obsidian-font-size-small); color: var(--obsidian-color-text); }
+    .obsidian-label { margin-bottom: 12px; }
+    .found { display: grid; grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr); gap: 0; }
+    .found > div + div { padding-left: 20px; margin-left: 20px; border-left: 1px solid var(--obsidian-color-border-low); }
+    /* Light leaking through from behind, so the frosted and elevated samples have something to frost */
+    .layers { display: grid; gap: 14px; background: radial-gradient(90px 70px at 22px 46%, var(--obsidian-color-primary-glow), transparent 70%), radial-gradient(70px 60px at 60px 78%, rgba(16, 185, 129, 0.22), transparent 70%); }
+    .layer { display: grid; grid-template-columns: 64px 1fr; gap: 14px; align-items: center; }
+    .layer .obsidian-glass { height: 40px; }
+    .layer b { display: block; font-size: var(--obsidian-font-size-body); font-weight: var(--obsidian-font-weight-medium); color: var(--obsidian-color-ink); }
+    .layer span { font-size: var(--obsidian-font-size-label); color: var(--obsidian-color-text-muted); }
+    .palette { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; text-align: center; }
+    .palette .obsidian-swatch { margin: 0 auto 8px; }
+    .palette b { display: block; font-size: var(--obsidian-font-size-label); font-weight: var(--obsidian-font-weight-medium); color: var(--obsidian-color-ink); }
+    .palette span { font-size: var(--obsidian-font-size-label); color: var(--obsidian-color-text-muted); font-family: var(--obsidian-font-family-mono); }
+    .edges { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; text-align: center; font-size: var(--obsidian-font-size-label); color: var(--obsidian-color-text-muted); }
+    .edges .obsidian-edge { margin-bottom: 8px; }
+    .radii { display: grid; grid-template-columns: repeat(5, minmax(0, 40px)); justify-content: space-between; gap: 10px; text-align: center; font-size: var(--obsidian-font-size-label); color: var(--obsidian-color-text-muted); }
+    .radii div { aspect-ratio: 1; margin-bottom: 8px; }
+    .sub + .sub { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--obsidian-color-border-low); }
+    .btns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .ctl2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0; }
+    .ctl2 > div + div { padding-left: 20px; margin-left: 20px; border-left: 1px solid var(--obsidian-color-border-low); }
+    .pair { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 26px; }
+    .pair label { display: inline-flex; align-items: center; gap: 12px; font-size: var(--obsidian-font-size-small); color: var(--obsidian-color-text); cursor: pointer; }
+    .navp { display: grid; grid-template-columns: 196px minmax(0, 1fr); gap: 0; }
+    .navp .obsidian-tabs__item { padding: 0 13px; }
+    .navp > div + div { padding-left: 20px; margin-left: 20px; border-left: 1px solid var(--obsidian-color-border-low); }
+    .side { padding: 10px; }
+    .side .obsidian-switcher { margin-bottom: 12px; }
+    .data { display: grid; grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr); gap: 14px; }
+    .data .obsidian-card { padding: 16px 18px; }
+    .proj { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: end; gap: 10px; }
+    .ringcard { align-items: center; justify-content: center; }
+    .badges { display: flex; flex-wrap: wrap; gap: 10px; }
+    .preview { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 24px; margin-top: 20px; padding: 22px; }
+    .preview__copy { display: grid; align-content: center; gap: 12px; padding: 0 8px; }
+    .preview__copy h2 { font-size: 26px; font-weight: var(--obsidian-font-weight-bold); line-height: 1.15; color: var(--obsidian-color-ink); }
+    .preview__copy p { color: var(--obsidian-color-text); font-size: var(--obsidian-font-size-small); }
+    .preview__frame { position: relative; overflow: hidden; border: 1px solid var(--obsidian-color-border-low); border-radius: var(--obsidian-radius-lg); }
+    .preview__frame iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 800px; border: 0; transform-origin: 0 0; }
+    .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--obsidian-color-border-low); font-size: var(--obsidian-font-size-caption); letter-spacing: 0.1em; text-transform: uppercase; color: var(--obsidian-color-text-muted); }
+    .acc::before { content: attr(data-cyan); }
+    :root[data-accent="emerald"] .acc::before { content: attr(data-emerald); }
+    :root[data-accent="violet"] .acc::before { content: attr(data-violet); }
+
+    @media (max-width: 1080px) {
+      .grid { grid-template-columns: 1fr; }
+      .preview { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      body { padding: 20px 12px 32px; }
+      .head__mark::after { display: none; }
+      .head__end { margin-left: 0; }
+      .found, .ctl2, .navp, .data, .proj { grid-template-columns: 1fr; }
+      .found > div + div, .ctl2 > div + div, .navp > div + div { padding: 18px 0 0; margin: 18px 0 0; border-left: 0; border-top: 1px solid var(--obsidian-color-border-low); }
+      .palette { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 16px; }
+      .btns { grid-template-columns: 1fr; }
+      .obsidian-panel { padding: 18px; }
+      .preview { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1Z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5A1.5 1.5 0 0 1 5 6h4l2 2h8a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5Z"/></symbol>
+  <symbol id="i-tasks" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.5c.6 3.9 2.6 5.9 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5 3.9-.6 5.9-2.6 6.5-6.5Z"/><path d="M18.5 15.5c.2 1.6 1 2.4 2.5 2.5-1.5.2-2.3 1-2.5 2.5-.2-1.5-1-2.3-2.5-2.5 1.5-.1 2.3-.9 2.5-2.5Z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.5"/><path d="M3 19.5a6 6 0 0 1 12 0"/><path d="M15.5 5.8a3.5 3.5 0 0 1 0 6.4M17.5 14a6 6 0 0 1 3.5 5.5"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><path d="M6 12h.01M12 12h.01M18 12h.01" stroke-width="3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
+
+<div class="sheet">
+  <header class="head">
+    <div class="head__mark"><span class="obsidian-logo" aria-hidden="true"></span></div>
+    <div class="head__copy">
+      <h1 class="obsidian-display">Obsidian / Glass</h1>
+      <p class="obsidian-subtitle">Luminous dark frosted interface system</p>
+    </div>
+    <div class="head__end"><span class="edition">DARK EDITION 1.0</span></div>
+  </header>
+
+  <div class="bar">
+    <nav aria-label="Pages">
+      <a class="obsidian-btn obsidian-btn--sm obsidian-btn--tertiary" href="../index.html">All languages</a>
+      <a class="obsidian-btn obsidian-btn--sm" href="components.html">Components</a>
+      <a class="obsidian-btn obsidian-btn--sm obsidian-btn--primary" href="examples/dashboard.html">Open the dashboard</a>
+    </nav>
+    <div class="accents" role="group" aria-label="Accent">Accent
+      <button type="button" style="--c:#38BDF8" data-accent-set="cyan" aria-pressed="true" aria-label="Glacier cyan"></button>
+      <button type="button" style="--c:#10B981" data-accent-set="emerald" aria-pressed="false" aria-label="Emerald"></button>
+      <button type="button" style="--c:#A78BFA" data-accent-set="violet" aria-pressed="false" aria-label="Electric violet"></button>
+    </div>
+  </div>
+
+  <main class="grid obsidian-enter">
+    <!-- 01 -->
+    <section class="obsidian-panel" aria-labelledby="s1">
+      <header class="panel-head"><h2 class="obsidian-title" id="s1"><span>01.</span>Foundations</h2><p>Core surfaces, color system, borders, and shape tokens.</p></header>
+      <div class="found">
+        <div>
+          <span class="obsidian-label">Glass surface layers</span>
+          <div class="layers">
+            <div class="layer"><div class="obsidian-glass obsidian-glass--base"></div><div><b>Base</b><span>#151922 • Solid glass</span></div></div>
+            <div class="layer"><div class="obsidian-glass obsidian-glass--frosted"></div><div><b>Frosted</b><span>+ Blur 12px • 60%</span></div></div>
+            <div class="layer"><div class="obsidian-glass obsidian-glass--elevated"></div><div><b>Elevated</b><span>+ Blur 16px • 80%</span></div></div>
+            <div class="layer"><div class="obsidian-glass obsidian-glass--inset"></div><div><b>Inset</b><span>Inner depth • 40%</span></div></div>
+          </div>
+        </div>
+        <div>
+          <span class="obsidian-label">Color palette</span>
+          <div class="palette">
+            <div><span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-canvas)"></span><b>Obsidian</b><span>#0B0D12</span></div>
+            <div><span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-surface)"></span><b>Surface</b><span>#151922</span></div>
+            <div><span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-ink)"></span><b>Ink</b><span>#F1F5F9</span></div>
+            <div><span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-primary)"></span><b>Primary</b><span class="acc" data-cyan="#38BDF8" data-emerald="#10B981" data-violet="#A78BFA"></span></div>
+            <div><span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-success)"></span><b>Success</b><span>#10B981</span></div>
+            <div><span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-danger)"></span><b>Danger</b><span>#F43F5E</span></div>
+          </div>
+          <div class="sub" style="margin-top:18px">
+            <span class="obsidian-label">Border luminosity tokens</span>
+            <div class="edges"><div><span class="obsidian-edge obsidian-edge--high"></span>1px • High (Primary)</div><div><span class="obsidian-edge obsidian-edge--medium"></span>1px • Medium</div><div><span class="obsidian-edge"></span>1px • Low</div></div>
+          </div>
+          <div class="sub">
+            <span class="obsidian-label">Radius scale (rounded corners)</span>
+            <div class="radii">
+              <div><div class="obsidian-glass obsidian-glass--frosted" style="border-radius:var(--obsidian-radius-sm)"></div>8px</div>
+              <div><div class="obsidian-glass obsidian-glass--frosted" style="border-radius:var(--obsidian-radius-md)"></div>12px</div>
+              <div><div class="obsidian-glass obsidian-glass--frosted" style="border-radius:var(--obsidian-radius-lg)"></div>16px</div>
+              <div><div class="obsidian-glass obsidian-glass--frosted" style="border-radius:var(--obsidian-radius-xl)"></div>20px</div>
+              <div><div class="obsidian-glass obsidian-glass--frosted" style="border-radius:var(--obsidian-radius-2xl)"></div>24px</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="obsidian-panel" aria-labelledby="s2">
+      <header class="panel-head"><h2 class="obsidian-title" id="s2"><span>02.</span>Controls</h2><p>Core interactive components with glass behavior and states.</p></header>
+      <div class="sub">
+        <span class="obsidian-label">Buttons</span>
+        <div class="btns"><button class="obsidian-btn obsidian-btn--primary" type="button">Primary</button><button class="obsidian-btn" type="button">Secondary</button><button class="obsidian-btn obsidian-btn--tertiary" type="button">Tertiary</button></div>
+      </div>
+      <div class="sub">
+        <span class="obsidian-label">Input field</span>
+        <label class="obsidian-command"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-search"/></svg><input class="obsidian-input is-focus" type="search" placeholder="Search or type a command..." aria-label="Search or type a command"><kbd class="obsidian-kbd">⌘K</kbd></label>
+      </div>
+      <div class="sub ctl2">
+        <div>
+          <span class="obsidian-label">Toggle switch</span>
+          <div class="pair"><label><input class="obsidian-switch" type="checkbox" checked> On</label><label><input class="obsidian-switch" type="checkbox"> Off</label></div>
+        </div>
+        <div>
+          <span class="obsidian-label">Checkboxes</span>
+          <div class="pair"><label><input class="obsidian-checkbox" type="checkbox" checked> Selected</label><label><input class="obsidian-checkbox" type="checkbox"> Unchecked</label></div>
+        </div>
+      </div>
+      <div class="sub">
+        <span class="obsidian-label">Slider</span>
+        <div class="obsidian-range"><input class="obsidian-slider" type="range" min="0" max="100" value="74" style="--obsidian-value:74" aria-label="Glass opacity"><output data-suffix="%">74%</output></div>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section class="obsidian-panel" aria-labelledby="s3">
+      <header class="panel-head"><h2 class="obsidian-title" id="s3"><span>03.</span>Navigation</h2><p>Navigation patterns for workspaces, hierarchy, and pagination.</p></header>
+      <div class="navp">
+        <div>
+          <div class="obsidian-glass obsidian-glass--inset side">
+            <button class="obsidian-switcher" type="button"><span class="obsidian-logo obsidian-logo--sm" aria-hidden="true"></span>Workspace<svg class="obsidian-icon" aria-hidden="true"><use href="#i-down"/></svg></button>
+            <nav class="obsidian-nav" aria-label="Workspace">
+              <a class="obsidian-nav__item" href="#"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-home"/></svg>Overview</a>
+              <a class="obsidian-nav__item" href="#" aria-current="page"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-folder"/></svg>Projects</a>
+              <a class="obsidian-nav__item" href="#"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-tasks"/></svg>Tasks</a>
+              <a class="obsidian-nav__item" href="#"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-spark"/></svg>AI Copilot</a>
+              <a class="obsidian-nav__item" href="#"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-users"/></svg>Team</a>
+              <a class="obsidian-nav__item" href="#"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-gear"/></svg>Settings</a>
+            </nav>
+          </div>
+        </div>
+        <div>
+          <div class="sub" style="padding-top:0">
+            <span class="obsidian-label">Tabs (pill)</span>
+            <div class="obsidian-tabs" role="tablist" aria-label="Filter">
+              <button class="obsidian-tabs__item" role="tab" aria-selected="true">All</button>
+              <button class="obsidian-tabs__item" role="tab" aria-selected="false" tabindex="-1">Active</button>
+              <button class="obsidian-tabs__item" role="tab" aria-selected="false" tabindex="-1">Archived</button>
+              <button class="obsidian-tabs__item" role="tab" aria-selected="false" tabindex="-1">Shared</button>
+            </div>
+          </div>
+          <div class="sub">
+            <span class="obsidian-label">Breadcrumb</span>
+            <nav class="obsidian-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#" aria-label="Home"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-home"/></svg></a></li><li><a href="#">Projects</a></li><li><a href="#">Marketing</a></li><li aria-current="page">Campaign v2</li></ol></nav>
+          </div>
+          <div class="sub">
+            <span class="obsidian-label">Pagination (compact)</span>
+            <nav class="obsidian-pagination" aria-label="Pages"><a class="is-edge" href="#" aria-label="Previous page"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-left"/></svg></a><a href="#" aria-current="page">1</a><a href="#">2</a><a href="#">3</a><span class="obsidian-pagination__gap">…</span><a class="is-edge" href="#">12</a><a class="is-edge" href="#" aria-label="Next page"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-right"/></svg></a></nav>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="obsidian-panel" aria-labelledby="s4">
+      <header class="panel-head"><h2 class="obsidian-title" id="s4"><span>04.</span>Data &amp; Feedback</h2><p>Data presentation, progress, system feedback, and critical actions.</p></header>
+      <div class="data">
+        <article class="obsidian-card">
+          <div class="obsidian-card__head"><span class="obsidian-card__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-folder"/></svg></span><div><span class="obsidian-card__eyebrow">Project</span><h3 class="obsidian-card__title">AI Workspace</h3></div><button class="obsidian-btn obsidian-btn--ghost obsidian-btn--icon obsidian-btn--sm" type="button" aria-label="Project actions"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+          <div class="proj">
+            <div class="obsidian-stat"><span class="obsidian-stat__value">12,540 <span class="obsidian-delta">+12.6%</span></span><span class="obsidian-stat__meta">Total sessions (30d)</span></div>
+            <svg class="obsidian-chart" viewBox="0 0 160 60" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="sg-spark" x1="0" y1="0" x2="0" y2="1"><stop class="obsidian-chart__stop" offset="0"/><stop class="obsidian-chart__stop obsidian-chart__stop--end" offset="1"/></linearGradient></defs><path class="obsidian-chart__area" fill="url(#sg-spark)" d="M0 46 C10 44 14 36 24 38 S38 48 48 40 S62 26 72 30 S86 40 96 32 S110 22 120 24 S136 30 144 18 S154 12 160 8 V60 H0Z"/><path class="obsidian-chart__line" pathLength="1" d="M0 46 C10 44 14 36 24 38 S38 48 48 40 S62 26 72 30 S86 40 96 32 S110 22 120 24 S136 30 144 18 S154 12 160 8"/></svg>
+          </div>
+        </article>
+        <article class="obsidian-card ringcard">
+          <div class="obsidian-ring" style="--obsidian-value:78" role="img" aria-label="78% complete"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="obsidian-ring__track" cx="60" cy="60" r="50" pathLength="100"/><circle class="obsidian-ring__arc" cx="60" cy="60" r="50" pathLength="100"/></svg><span class="obsidian-ring__label" aria-hidden="true"><b></b>Complete</span></div>
+        </article>
+        <div class="obsidian-stack" style="--gap:16px">
+          <div class="obsidian-toast obsidian-toast--success" role="status"><span class="obsidian-toast__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-check"/></svg></span><div><p class="obsidian-toast__title">Workspace saved</p><p class="obsidian-toast__text">Your changes have been applied.</p></div><button class="obsidian-toast__close" type="button" aria-label="Dismiss"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+          <div>
+            <span class="obsidian-label">Status badges</span>
+            <div class="badges"><span class="obsidian-badge obsidian-badge--success">Live</span><span class="obsidian-badge obsidian-badge--warning">Pending</span><span class="obsidian-badge obsidian-badge--danger">Error</span></div>
+          </div>
+        </div>
+        <div class="obsidian-dialog" role="group" aria-labelledby="sg-dlg" style="width:auto">
+          <h3 class="obsidian-dialog__title" id="sg-dlg">Archive workspace?</h3>
+          <p class="obsidian-dialog__text">This will move the workspace to the archive. You can restore it anytime.</p>
+          <div class="obsidian-dialog__actions"><button class="obsidian-btn" type="button">Cancel</button><button class="obsidian-btn obsidian-btn--primary" type="button">Archive</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section class="obsidian-panel preview" aria-labelledby="s5">
+    <div class="preview__copy">
+      <span class="obsidian-label">Preview</span>
+      <h2 id="s5">AI Workspace Dashboard</h2>
+      <p>A complete, real-world example of the Obsidian / Glass system in use.</p>
+      <div><a class="obsidian-btn obsidian-btn--sm" href="examples/dashboard.html">Open full screen</a></div>
+    </div>
+    <div class="preview__frame" id="pf"><iframe src="examples/dashboard.html" title="AI Workspace dashboard example" loading="lazy" tabindex="-1"></iframe></div>
+  </section>
+
+  <footer class="foot"><span>Built for focus · lit by one accent</span><span>Tokens / Components / Patterns</span></footer>
+</div>
+
+<script src="js/obsidian.js"></script>
+<script src="../site/code-view.js" data-selector=".grid > .obsidian-panel" data-skip=".panel-head" data-toggle-in=".panel-head > h2"></script>
+<script src="../site/smooth-scroll.js" defer></script>
+<script>
+  /* Scale the live preview so the full desktop dashboard fits the panel. */
+  (function () {
+    var frame = document.getElementById("pf"), iframe = frame.querySelector("iframe");
+    function fit() { var s = frame.clientWidth / 1280; iframe.style.transform = "scale(" + s + ")"; frame.style.height = Math.round(800 * s) + "px"; }
+    fit();
+    if ("ResizeObserver" in window) new ResizeObserver(fit).observe(frame);
+  })();
+</script>
+</body>
+</html>

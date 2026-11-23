@@ -31,6 +31,20 @@
     return g ? Array.prototype.filter.call(list.querySelectorAll(g.item), function (el) { return el.closest(LIST) === list; }) : [];
   }
 
+  /* Layout changes (resize, fonts) move an indicator instantly; only a new selection glides. */
+  function snapTo(list) {
+    var on = list.classList.contains("is-animated");
+    if (on) list.classList.remove("is-animated");
+    refresh(list);
+    if (on) { void list.offsetWidth; list.classList.add("is-animated"); }
+  }
+  /* Turn indicator transitions on only once the page has settled (loaded, fonts ready), after a final
+     measurement — so an indicator never glides in from a stale first-frame position on load. */
+  function settle(fn) {
+    var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    var loaded = document.readyState === "complete" ? Promise.resolve() : new Promise(function (r) { window.addEventListener("load", r, { once: true }); });
+    Promise.all([fonts, loaded]).then(function () { requestAnimationFrame(function () { requestAnimationFrame(fn); }); });
+  }
   function refresh(list) {
     var g = groupOf(list);
     if (!g) return;
@@ -52,9 +66,9 @@
       list.__lilacIndicator = true;
       list.classList.add("has-indicator");
       refresh(list);
-      requestAnimationFrame(function () { requestAnimationFrame(function () { list.classList.add("is-animated"); }); });
+      settle(function () { refresh(list); list.classList.add("is-animated"); });
       if ("ResizeObserver" in window) {
-        var ro = new ResizeObserver(function () { refresh(list); });
+        var ro = new ResizeObserver(function () { snapTo(list); });
         ro.observe(list);
         items(list).forEach(function (el) { ro.observe(el); });
       }

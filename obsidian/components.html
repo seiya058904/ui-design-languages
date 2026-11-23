@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var a=localStorage.getItem("obsidian-accent");if(a&&a!=="cyan")document.documentElement.setAttribute("data-accent",a)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Obsidian / Glass components</title>
+  <link rel="icon" href="../site/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../site/assets/apple-touch-icon.png">
+  <meta name="description" content="Every Obsidian / Glass component as real, working markup: frosted glass layers, lit controls, liquid indicators, charts and rings.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/obsidian.css">
+  <style>
+    /* Page layout only — every component below is the real Obsidian markup, styled by css/obsidian.css. */
+    body { padding: 24px 16px 72px; }
+    .cat-top, .cat { width: min(100%, 1080px); margin-inline: auto; }
+    .cat-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-bottom: 40px; font-size: var(--obsidian-font-size-small); }
+    .cat-top a { color: var(--obsidian-color-text-muted); text-decoration: none; }
+    .cat-top a:hover { color: var(--obsidian-color-ink); }
+    .cat-top a:first-child { margin-right: auto; }
+    .cat-head h1 { margin: 0 0 12px; }
+    .cat-head p { max-width: 62ch; color: var(--obsidian-color-text-muted); }
+    .cat-head a { color: var(--obsidian-color-primary); }
+    .cat-toc { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 26px 0 8px; padding: 14px 0; border-block: 1px solid var(--obsidian-color-border-low); font-size: var(--obsidian-font-size-small); }
+    .cat-toc a { color: var(--obsidian-color-text-muted); text-decoration: none; }
+    .cat-toc a:hover { color: var(--obsidian-color-ink); }
+    .cat-section { padding-top: 56px; scroll-margin-top: 24px; }
+    .cat-section > h2 { font-size: 26px; font-weight: var(--obsidian-font-weight-bold); color: var(--obsidian-color-ink); margin: 0 0 6px; }
+    .cat-section > p { color: var(--obsidian-color-text-muted); margin: 0 0 22px; }
+    .demo + .demo { margin-top: 22px; }
+    .demo > h3 { font-size: var(--obsidian-font-size-label); font-weight: var(--obsidian-font-weight-semibold); letter-spacing: var(--obsidian-font-tracking-caps); text-transform: uppercase; color: var(--obsidian-color-text-muted); margin: 0 0 10px; }
+    .demo__stage { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 22px; min-height: 140px; padding: 40px 28px; border: 1px solid var(--obsidian-color-border-low); border-radius: var(--obsidian-radius-xl); background: radial-gradient(400px 200px at 20% 0%, var(--obsidian-color-primary-soft), transparent 70%); }
+    @media (max-width: 560px) { .demo__stage { padding: 32px 16px; } }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1Z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5A1.5 1.5 0 0 1 5 6h4l2 2h8a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5Z"/></symbol>
+  <symbol id="i-tasks" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.5c.6 3.9 2.6 5.9 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5 3.9-.6 5.9-2.6 6.5-6.5Z"/><path d="M18.5 15.5c.2 1.6 1 2.4 2.5 2.5-1.5.2-2.3 1-2.5 2.5-.2-1.5-1-2.3-2.5-2.5 1.5-.1 2.3-.9 2.5-2.5Z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.5"/><path d="M3 19.5a6 6 0 0 1 12 0"/><path d="M15.5 5.8a3.5 3.5 0 0 1 0 6.4M17.5 14a6 6 0 0 1 3.5 5.5"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><path d="M6 12h.01M12 12h.01M18 12h.01" stroke-width="3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6Z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3.5h8l4 4V20a.5.5 0 0 1-.5.5h-11A.5.5 0 0 1 6 20Z"/><path d="M13.5 3.5V8H18M9 12.5h6M9 16h6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 2.5 20h19Z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
+</svg>
+
+<header class="cat-top"><a href="../index.html">UI Design Languages</a><a href="index.html">Styleguide</a><a href="examples/dashboard.html">Dashboard example</a><a href="../components.html#obsidian">Browse with code</a></header>
+<div class="cat">
+<div class="cat-head">
+  <h1 class="obsidian-display">Components</h1>
+  <p>Four layers of frosted glass over a deep obsidian air, edged with 1px of specular light, lit by one accent. Every block below is live markup — hover the cards to catch the rim light, slide between tabs. Open it in the <a href="../components.html#obsidian">components browser</a> for the code.</p>
+</div>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Switch &amp; checkbox</a><a href="#segmented">Segmented</a><a href="#tabs">Tabs</a><a href="#chips">Badges</a><a href="#slider">Slider</a><a href="#progress">Ring &amp; progress</a><a href="#alert">Toasts &amp; alerts</a><a href="#card">Cards</a><a href="#avatar">Avatars &amp; list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#menu">Menu</a><a href="#glass">Glass</a></nav>
+<main>
+  <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
+    <h2 id="h-button">Button</h2>
+    <p>The primary action is lit; everything else is glass. A press pulls the light in for 90 ms.</p>
+    <div class="demo" data-demo="variants">
+      <h3>Variants</h3>
+      <div class="demo__stage">
+        <button class="obsidian-btn obsidian-btn--primary" type="button">Primary</button>
+        <button class="obsidian-btn" type="button">Secondary</button>
+        <button class="obsidian-btn obsidian-btn--tertiary" type="button">Tertiary</button>
+        <button class="obsidian-btn obsidian-btn--ghost" type="button">Ghost</button>
+        <button class="obsidian-btn obsidian-btn--danger" type="button">Delete</button>
+      </div>
+    </div>
+    <div class="demo" data-demo="sizes">
+      <h3>Sizes and icons</h3>
+      <div class="demo__stage">
+        <button class="obsidian-btn obsidian-btn--primary obsidian-btn--lg" type="button"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-spark"/></svg>Run Copilot</button>
+        <button class="obsidian-btn obsidian-btn--primary" type="button"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-plus"/></svg>New project</button>
+        <button class="obsidian-btn obsidian-btn--sm" type="button">Small</button>
+        <button class="obsidian-btn obsidian-btn--icon" type="button" aria-label="Copy link"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-copy"/></svg></button>
+        <button class="obsidian-btn obsidian-btn--icon obsidian-btn--pill obsidian-btn--ghost" type="button" aria-label="More"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-more"/></svg></button>
+      </div>
+    </div>
+    <div class="demo" data-demo="states">
+      <h3>States</h3>
+      <div class="demo__stage">
+        <button class="obsidian-btn obsidian-btn--primary" type="button">Rest</button>
+        <button class="obsidian-btn obsidian-btn--primary is-hover" type="button">Hover</button>
+        <button class="obsidian-btn obsidian-btn--primary is-active" type="button">Pressed</button>
+        <button class="obsidian-btn is-hover" type="button">Glass hover</button>
+        <button class="obsidian-btn obsidian-btn--primary" type="button" disabled>Disabled</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="input" data-component="input" aria-labelledby="h-input">
+    <h2 id="h-input">Text field</h2>
+    <p>Fields sit in inset glass; focus lights the edge.</p>
+    <div class="demo" data-demo="command-search">
+      <h3>Command search</h3>
+      <div class="demo__stage">
+        <label class="obsidian-command" style="width:min(100%,460px)"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-search"/></svg><input class="obsidian-input" type="search" placeholder="Search or type a command..." aria-label="Search or type a command"><kbd class="obsidian-kbd">⌘K</kbd></label>
+      </div>
+    </div>
+    <div class="demo" data-demo="fields">
+      <h3>Fields and states</h3>
+      <div class="demo__stage">
+        <div class="obsidian-stack" style="--gap:18px;width:min(100%,380px)">
+          <label class="obsidian-field"><span class="obsidian-field__label">Workspace name</span><input class="obsidian-input" value="AI Workspace"></label>
+          <label class="obsidian-field"><span class="obsidian-field__label">Focused</span><input class="obsidian-input is-focus" placeholder="Describe the brief…"></label>
+          <label class="obsidian-field"><span class="obsidian-field__label">Invite by email</span><input class="obsidian-input" value="noah@" aria-invalid="true"><span class="obsidian-hint obsidian-hint--error">Enter a complete email address</span></label>
+          <label class="obsidian-field"><span class="obsidian-field__label">Workspace ID</span><input class="obsidian-input" value="ws_8f2c41" disabled></label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="selection" data-component="selection" aria-labelledby="h-selection">
+    <h2 id="h-selection">Switch &amp; checkbox</h2>
+    <p>A lit track and a white knob that stretches as you press; checkboxes and radios that glow when chosen.</p>
+    <div class="demo" data-demo="switches">
+      <h3>Switches</h3>
+      <div class="demo__stage">
+        <label class="obsidian-check"><input class="obsidian-switch" type="checkbox" checked> On</label>
+        <label class="obsidian-check"><input class="obsidian-switch" type="checkbox"> Off</label>
+        <label class="obsidian-check"><input class="obsidian-switch" type="checkbox" disabled> Disabled</label>
+      </div>
+    </div>
+    <div class="demo" data-demo="checkbox-and-radio">
+      <h3>Checkbox and radio</h3>
+      <div class="demo__stage">
+        <div class="obsidian-stack" style="--gap:12px">
+          <label class="obsidian-check"><input class="obsidian-checkbox" type="checkbox" checked> Selected</label>
+          <label class="obsidian-check"><input class="obsidian-checkbox" type="checkbox"> Unchecked</label>
+          <label class="obsidian-check"><input class="obsidian-checkbox" type="checkbox" disabled> Disabled</label>
+        </div>
+        <div class="obsidian-stack" style="--gap:12px">
+          <label class="obsidian-check"><input class="obsidian-radio" type="radio" name="o-plan" checked> Team</label>
+          <label class="obsidian-check"><input class="obsidian-radio" type="radio" name="o-plan"> Business</label>
+          <label class="obsidian-check"><input class="obsidian-radio" type="radio" name="o-plan" disabled> Enterprise</label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="segmented" data-component="segmented" aria-labelledby="h-segmented">
+    <h2 id="h-segmented">Segmented control</h2>
+    <p>An elevated glass thumb in an inset track. It stretches toward its target, then gathers.</p>
+    <div class="demo" data-demo="segmented">
+      <h3>Segmented</h3>
+      <div class="demo__stage">
+        <div class="obsidian-segmented" role="tablist" aria-label="Range">
+          <button class="obsidian-segmented__item" role="tab" aria-selected="false" tabindex="-1">Day</button>
+          <button class="obsidian-segmented__item" role="tab" aria-selected="true">Week</button>
+          <button class="obsidian-segmented__item" role="tab" aria-selected="false" tabindex="-1">Month</button>
+          <button class="obsidian-segmented__item" role="tab" aria-selected="false" tabindex="-1">Year</button>
+        </div>
+        <div class="obsidian-segmented" role="tablist" aria-label="Layout">
+          <button class="obsidian-segmented__item" role="tab" aria-selected="true"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-grid"/></svg>Grid</button>
+          <button class="obsidian-segmented__item" role="tab" aria-selected="false" tabindex="-1"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-list"/></svg>List</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tabs" data-component="tabs" aria-labelledby="h-tabs">
+    <h2 id="h-tabs">Tabs</h2>
+    <p>Pill tabs in an inset track; the current one is lit, and the light flows between them.</p>
+    <div class="demo" data-demo="pill-tabs">
+      <h3>Pill tabs</h3>
+      <div class="demo__stage">
+        <div class="obsidian-tabs" role="tablist" aria-label="Filter">
+          <button class="obsidian-tabs__item" role="tab" aria-selected="true">All</button>
+          <button class="obsidian-tabs__item" role="tab" aria-selected="false" tabindex="-1">Active</button>
+          <button class="obsidian-tabs__item" role="tab" aria-selected="false" tabindex="-1">Archived</button>
+          <button class="obsidian-tabs__item" role="tab" aria-selected="false" tabindex="-1">Shared</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="chips" data-component="chips" aria-labelledby="h-chips">
+    <h2 id="h-chips">Badges</h2>
+    <p>Status pills with a glowing dot; neutral and accent tags.</p>
+    <div class="demo" data-demo="status-badges">
+      <h3>Status badges</h3>
+      <div class="demo__stage">
+        <span class="obsidian-badge obsidian-badge--success">Live</span>
+        <span class="obsidian-badge obsidian-badge--warning">Pending</span>
+        <span class="obsidian-badge obsidian-badge--danger">Error</span>
+        <span class="obsidian-badge obsidian-badge--primary">Copilot</span>
+        <span class="obsidian-badge">Draft</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="slider" data-component="slider" aria-labelledby="h-slider">
+    <h2 id="h-slider">Slider</h2>
+    <p>A lit fill on a dark track; the knob sits in a halo that widens under the pointer.</p>
+    <div class="demo" data-demo="slider">
+      <h3>Slider</h3>
+      <div class="demo__stage">
+        <div class="obsidian-range" style="width:min(100%,420px)"><input class="obsidian-slider" type="range" min="0" max="100" value="74" style="--obsidian-value:74" aria-label="Copilot creativity"><output data-suffix="%">74%</output></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="progress" data-component="progress" aria-labelledby="h-progress">
+    <h2 id="h-progress">Ring &amp; progress</h2>
+    <p>A lit arc that fills and counts up on load; thin bars for quieter places.</p>
+    <div class="demo" data-demo="ring">
+      <h3>Ring</h3>
+      <div class="demo__stage">
+        <div class="obsidian-ring" style="--obsidian-value:78" role="img" aria-label="78% complete"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="obsidian-ring__track" cx="60" cy="60" r="50" pathLength="100"/><circle class="obsidian-ring__arc" cx="60" cy="60" r="50" pathLength="100"/></svg><span class="obsidian-ring__label" aria-hidden="true"><b></b>Complete</span></div>
+        <div class="obsidian-ring obsidian-ring--sm" style="--obsidian-value:42" role="img" aria-label="42% used"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="obsidian-ring__track" cx="60" cy="60" r="50" pathLength="100"/><circle class="obsidian-ring__arc" cx="60" cy="60" r="50" pathLength="100"/></svg><span class="obsidian-ring__label" aria-hidden="true"><b></b></span></div>
+      </div>
+    </div>
+    <div class="demo" data-demo="bars">
+      <h3>Progress bars</h3>
+      <div class="demo__stage">
+        <div class="obsidian-stack" style="--gap:14px;width:min(100%,380px)">
+          <div class="obsidian-row" style="justify-content:space-between"><span class="obsidian-caption">Storage</span><span class="obsidian-caption">62 GB of 100 GB</span></div>
+          <div class="obsidian-progress" role="progressbar" aria-label="Storage used" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" style="--obsidian-value:62"></div>
+          <div class="obsidian-row" style="justify-content:space-between"><span class="obsidian-caption">Run quota</span><span class="obsidian-caption">74%</span></div>
+          <div class="obsidian-progress" role="progressbar" aria-label="Run quota" aria-valuenow="74" aria-valuemin="0" aria-valuemax="100" style="--obsidian-value:74"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="alert" data-component="alert" aria-labelledby="h-alert">
+    <h2 id="h-alert">Toasts &amp; alerts</h2>
+    <p>Toasts are elevated glass tinted by their tone; alerts are quiet inline banners.</p>
+    <div class="demo" data-demo="toasts">
+      <h3>Toasts</h3>
+      <div class="demo__stage">
+        <div class="obsidian-stack" style="--gap:12px;width:min(100%,380px)">
+          <div class="obsidian-toast obsidian-toast--success" role="status"><span class="obsidian-toast__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-check"/></svg></span><div><p class="obsidian-toast__title">Workspace saved</p><p class="obsidian-toast__text">Your changes have been applied.</p></div><button class="obsidian-toast__close" type="button" aria-label="Dismiss" data-obsidian-dismiss><svg class="obsidian-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+          <div class="obsidian-toast" role="status"><span class="obsidian-toast__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-spark"/></svg></span><div><p class="obsidian-toast__title">Copilot run finished</p><p class="obsidian-toast__text">“Q3 review deck” is ready to read.</p></div><button class="obsidian-toast__close" type="button" aria-label="Dismiss" data-obsidian-dismiss><svg class="obsidian-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="alerts">
+      <h3>Inline alerts</h3>
+      <div class="demo__stage">
+        <div class="obsidian-stack" style="--gap:12px;width:min(100%,420px)">
+          <div class="obsidian-alert" role="note"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-spark"/></svg><div><b>Copilot can see this project</b>Shared sources are used to ground answers.</div></div>
+          <div class="obsidian-alert obsidian-alert--warning" role="status"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-alert"/></svg><div><b>74% of your run quota used</b>Quota resets on the 1st.</div></div>
+          <div class="obsidian-alert obsidian-alert--danger" role="alert"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-alert"/></svg><div><b>Sync failed</b>Pricing research could not reach its data source.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="card" data-component="card" aria-labelledby="h-card">
+    <h2 id="h-card">Cards</h2>
+    <p>Frosted cards that report numbers. Move the pointer over one: its edge catches the light.</p>
+    <div class="demo" data-demo="kpi-card">
+      <h3>KPI card with sparkline</h3>
+      <div class="demo__stage">
+        <article class="obsidian-card" style="width:min(100%,360px)">
+          <div class="obsidian-card__head"><span class="obsidian-card__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-folder"/></svg></span><div><span class="obsidian-card__eyebrow">Project</span><h3 class="obsidian-card__title">AI Workspace</h3></div><button class="obsidian-btn obsidian-btn--ghost obsidian-btn--icon obsidian-btn--sm" type="button" aria-label="Project actions"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+          <div class="obsidian-stat"><span class="obsidian-stat__value">12,540 <span class="obsidian-delta">+12.6%</span></span><span class="obsidian-stat__meta">Total sessions (30d)</span></div>
+          <svg class="obsidian-chart" viewBox="0 0 160 60" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="c-spark" x1="0" y1="0" x2="0" y2="1"><stop class="obsidian-chart__stop" offset="0"/><stop class="obsidian-chart__stop obsidian-chart__stop--end" offset="1"/></linearGradient></defs><path class="obsidian-chart__area" fill="url(#c-spark)" d="M0 46 C10 44 14 36 24 38 S38 48 48 40 S62 26 72 30 S86 40 96 32 S110 22 120 24 S136 30 144 18 S154 12 160 8 V60 H0Z"/><path class="obsidian-chart__line" pathLength="1" d="M0 46 C10 44 14 36 24 38 S38 48 48 40 S62 26 72 30 S86 40 96 32 S110 22 120 24 S136 30 144 18 S154 12 160 8"/></svg>
+        </article>
+      </div>
+    </div>
+    <div class="demo" data-demo="stat-cards">
+      <h3>Stat cards</h3>
+      <div class="demo__stage">
+        <article class="obsidian-card" style="width:min(100%,220px)"><div class="obsidian-stat"><span class="obsidian-stat__label"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-bolt"/></svg>Active Projects</span><span class="obsidian-stat__value">24 <span class="obsidian-delta">+14%</span></span></div></article>
+        <article class="obsidian-card" style="width:min(100%,220px)"><div class="obsidian-stat"><span class="obsidian-stat__label"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-tasks"/></svg>Failed runs</span><span class="obsidian-stat__value">12 <span class="obsidian-delta obsidian-delta--down">−3.1%</span></span></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="avatar" data-component="avatar" aria-labelledby="h-avatar">
+    <h2 id="h-avatar">Avatars &amp; list</h2>
+    <p>Gradient avatars with a specular highlight; activity lists with glass icon tiles.</p>
+    <div class="demo" data-demo="avatars-and-list">
+      <h3>Avatars and activity</h3>
+      <div class="demo__stage">
+        <div class="obsidian-row" style="--gap:14px">
+          <span class="obsidian-avatar obsidian-avatar--lg" style="--obsidian-avatar:linear-gradient(135deg,#334155,#0F172A)">MA<span class="obsidian-avatar__status"></span></span>
+          <span class="obsidian-avatar-stack"><span class="obsidian-avatar" style="--obsidian-avatar:linear-gradient(135deg,#0EA5E9,#1E293B)">AK</span><span class="obsidian-avatar" style="--obsidian-avatar:linear-gradient(135deg,#8B5CF6,#1E1B4B)">NJ</span><span class="obsidian-avatar" style="--obsidian-avatar:linear-gradient(135deg,#10B981,#064E3B)">RS</span></span>
+        </div>
+        <ul class="obsidian-list" style="width:min(100%,340px)">
+          <li class="obsidian-list__item"><span class="obsidian-list__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-doc"/></svg></span><span class="obsidian-list__title">Generated marketing brief</span><span class="obsidian-list__meta">2 min ago</span></li>
+          <li class="obsidian-list__item"><span class="obsidian-list__icon obsidian-list__icon--success"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-check"/></svg></span><span class="obsidian-list__title">Completed 12 tasks</span><span class="obsidian-list__meta">18 min ago</span></li>
+          <li class="obsidian-list__item"><span class="obsidian-list__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-users"/></svg></span><span class="obsidian-list__title">Invited 2 team members</span><span class="obsidian-list__meta">1 hr ago</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="navigation" data-component="navigation" aria-labelledby="h-navigation">
+    <h2 id="h-navigation">Navigation</h2>
+    <p>A sidebar whose current item is a lit lens that flows between items, a breadcrumb and compact pagination.</p>
+    <div class="demo" data-demo="sidebar">
+      <h3>Sidebar</h3>
+      <div class="demo__stage">
+        <div class="obsidian-glass obsidian-glass--inset" style="width:min(100%,240px);padding:10px">
+          <button class="obsidian-switcher" type="button" style="margin-bottom:12px"><span class="obsidian-logo obsidian-logo--sm" aria-hidden="true"></span>Workspace<svg class="obsidian-icon" aria-hidden="true"><use href="#i-down"/></svg></button>
+          <nav class="obsidian-nav" aria-label="Workspace">
+            <a class="obsidian-nav__item" href="#"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-home"/></svg>Overview</a>
+            <a class="obsidian-nav__item" href="#" aria-current="page"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-folder"/></svg>Projects<span class="obsidian-nav__badge">24</span></a>
+            <a class="obsidian-nav__item" href="#"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-tasks"/></svg>Tasks</a>
+            <a class="obsidian-nav__item" href="#"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-spark"/></svg>AI Copilot</a>
+            <a class="obsidian-nav__item" href="#"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-users"/></svg>Team</a>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="breadcrumb-and-pagination">
+      <h3>Breadcrumb and pagination</h3>
+      <div class="demo__stage">
+        <div class="obsidian-stack" style="--gap:22px;align-items:center">
+          <nav class="obsidian-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#" aria-label="Home"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-home"/></svg></a></li><li><a href="#">Projects</a></li><li><a href="#">Marketing</a></li><li aria-current="page">Campaign v2</li></ol></nav>
+          <nav class="obsidian-pagination" aria-label="Pages"><a class="is-edge" href="#" aria-label="Previous page"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-left"/></svg></a><a href="#" aria-current="page">1</a><a href="#">2</a><a href="#">3</a><span class="obsidian-pagination__gap">…</span><a class="is-edge" href="#">12</a><a class="is-edge" href="#" aria-label="Next page"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-right"/></svg></a></nav>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="table" data-component="table" aria-labelledby="h-table">
+    <h2 id="h-table">Table</h2>
+    <p>Glass rows; the row under the pointer lifts into a soft wash.</p>
+    <div class="demo" data-demo="table">
+      <h3>Projects table</h3>
+      <div class="demo__stage">
+        <div class="obsidian-table-wrap">
+          <table class="obsidian-table">
+            <thead><tr><th>Project</th><th>Status</th><th class="is-num">Sessions</th><th>Updated</th></tr></thead>
+            <tbody>
+              <tr><td><b>Campaign v2</b></td><td><span class="obsidian-badge obsidian-badge--success">Live</span></td><td class="is-num">4,210</td><td>2 min ago</td></tr>
+              <tr aria-selected="true"><td><b>Onboarding emails</b></td><td><span class="obsidian-badge obsidian-badge--warning">Pending</span></td><td class="is-num">862</td><td>1 hr ago</td></tr>
+              <tr><td><b>Pricing research</b></td><td><span class="obsidian-badge obsidian-badge--danger">Error</span></td><td class="is-num">1,407</td><td>3 hr ago</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="dialog" data-component="dialog" aria-labelledby="h-dialog">
+    <h2 id="h-dialog">Dialog</h2>
+    <p>Elevated glass that surfaces into focus over a dimmed, softly blurred page. Press the button to open it again.</p>
+    <div class="demo" data-demo="dialog" data-min-height="300" data-open-dialog>
+      <h3>Dialog</h3>
+      <div class="demo__stage">
+        <button class="obsidian-btn" type="button" data-obsidian-open="#o-dialog">Archive workspace</button>
+        <dialog class="obsidian-dialog" id="o-dialog" aria-labelledby="o-dialog-t">
+          <h2 class="obsidian-dialog__title" id="o-dialog-t">Archive workspace?</h2>
+          <p class="obsidian-dialog__text">This will move the workspace to the archive. You can restore it anytime.</p>
+          <div class="obsidian-dialog__actions"><button class="obsidian-btn" type="button" data-obsidian-close>Cancel</button><button class="obsidian-btn obsidian-btn--primary" type="button" data-obsidian-close>Archive</button></div>
+        </dialog>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tooltip" data-component="tooltip" aria-labelledby="h-tooltip">
+    <h2 id="h-tooltip">Tooltip</h2>
+    <p>A small elevated glass label on hover or focus.</p>
+    <div class="demo" data-demo="tooltip">
+      <h3>Tooltip</h3>
+      <div class="demo__stage">
+        <span class="obsidian-tooltip" data-tip="Copy link"><button class="obsidian-btn obsidian-btn--icon" type="button" aria-label="Copy link"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-copy"/></svg></button></span>
+        <span class="obsidian-tip">Copy link</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="menu" data-component="menu" aria-labelledby="h-menu">
+    <h2 id="h-menu">Menu</h2>
+    <p>A button that opens elevated glass. Arrow keys move, Enter picks, Esc closes.</p>
+    <div class="demo" data-demo="dropdown" data-min-height="260">
+      <h3>Dropdown</h3>
+      <div class="demo__stage" style="align-items:flex-start">
+        <div class="obsidian-menu">
+          <button class="obsidian-btn obsidian-btn--sm" type="button" aria-haspopup="listbox" aria-expanded="false"><span data-obsidian-label>Last 30 days</span><svg class="obsidian-icon" aria-hidden="true"><use href="#i-down"/></svg></button>
+          <div class="obsidian-menu__list" role="listbox" aria-label="Period">
+            <button class="obsidian-menu__item" role="option" aria-selected="false" type="button">Last 7 days</button>
+            <button class="obsidian-menu__item" role="option" aria-selected="true" type="button">Last 30 days</button>
+            <button class="obsidian-menu__item" role="option" aria-selected="false" type="button">Last 90 days</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="glass" data-component="glass" aria-labelledby="h-glass">
+    <h2 id="h-glass">Glass</h2>
+    <p>The four layers, the three edge luminosities, and the palette — the foundations as objects.</p>
+    <div class="demo" data-demo="layers">
+      <h3>Glass surface layers</h3>
+      <div class="demo__stage">
+        <div class="obsidian-row" style="--gap:18px;justify-content:center;padding:24px;border-radius:var(--obsidian-radius-xl);background:radial-gradient(150px 110px at 28% 50%, var(--obsidian-color-primary-glow), transparent 70%), radial-gradient(130px 100px at 72% 50%, var(--obsidian-color-success-soft), transparent 70%)">
+          <div class="obsidian-glass obsidian-glass--base" style="width:96px;height:64px" title="Base"></div>
+          <div class="obsidian-glass obsidian-glass--frosted" style="width:96px;height:64px" title="Frosted"></div>
+          <div class="obsidian-glass obsidian-glass--elevated" style="width:96px;height:64px" title="Elevated"></div>
+          <div class="obsidian-glass obsidian-glass--inset" style="width:96px;height:64px" title="Inset"></div>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="edges-and-palette">
+      <h3>Edges and palette</h3>
+      <div class="demo__stage">
+        <div class="obsidian-stack" style="--gap:12px;width:180px"><span class="obsidian-edge obsidian-edge--high"></span><span class="obsidian-edge obsidian-edge--medium"></span><span class="obsidian-edge"></span></div>
+        <div class="obsidian-row" style="--gap:12px">
+          <span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-canvas)" title="Obsidian"></span>
+          <span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-surface)" title="Surface"></span>
+          <span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-ink)" title="Ink"></span>
+          <span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-primary)" title="Primary"></span>
+          <span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-success)" title="Success"></span>
+          <span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-danger)" title="Danger"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script src="js/obsidian.js"></script>
+<script src="../site/smooth-scroll.js" defer></script>
+</body>
+</html>

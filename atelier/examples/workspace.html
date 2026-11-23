@@ -17,7 +17,7 @@
     /* Page layout only — visuals come from Atelier classes and tokens. */
     body { min-height: 100vh; }
     .app { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100vh; }
-    .side { display: flex; flex-direction: column; gap: 22px; padding: 20px 14px; border-right: 1px solid var(--atelier-color-border); background: var(--atelier-color-panel); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+    .side { position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; gap: 22px; padding: 20px 14px; border-right: 1px solid var(--atelier-color-border); background: var(--atelier-color-panel); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
     .side__logo { padding: 4px 8px; color: var(--atelier-color-primary); }
     .side__user { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 12px 8px 0; border-top: 1px solid var(--atelier-color-hairline); }
     .side__user div { flex: 1; min-width: 0; line-height: 1.25; }

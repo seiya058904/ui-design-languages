@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var m=localStorage.getItem("terrarium-theme");if(m&&m!=="light")document.documentElement.setAttribute("data-theme",m)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Terrarium / Earth components</title>
+  <link rel="icon" href="../site/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../site/assets/apple-touch-icon.png">
+  <meta name="description" content="Every Terrarium / Earth component as real, working markup: pill buttons, pebbles, a growing progress ring, a moss sidebar and gentle dialogs.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/terrarium.css">
+  <style>
+    /* Page layout only — every component below is the real Terrarium markup, styled by css/terrarium.css. */
+    body { padding: 24px 16px 72px; }
+    .cat-top, .cat { width: min(100%, 1080px); margin-inline: auto; }
+    .cat-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-bottom: 40px; font-size: var(--terrarium-font-size-small); }
+    .cat-top a { color: var(--terrarium-color-text-muted); text-decoration: none; }
+    .cat-top a:hover { color: var(--terrarium-color-ink); }
+    .cat-top a:first-child { margin-right: auto; }
+    .cat-head h1 { margin: 0 0 12px; }
+    .cat-head p { max-width: 62ch; color: var(--terrarium-color-text); }
+    .cat-head a { color: var(--terrarium-color-primary-text); }
+    .cat-toc { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 26px 0 8px; padding: 14px 0; border-block: 1px solid var(--terrarium-color-sand); font-size: var(--terrarium-font-size-small); }
+    .cat-toc a { color: var(--terrarium-color-text-muted); text-decoration: none; }
+    .cat-toc a:hover { color: var(--terrarium-color-ink); }
+    .cat-section { padding-top: 56px; scroll-margin-top: 24px; }
+    .cat-section > h2 { margin: 0 0 6px; }
+    .cat-section > p { color: var(--terrarium-color-text-muted); margin: 0 0 22px; }
+    .demo + .demo { margin-top: 22px; }
+    .demo > h3 { font-size: var(--terrarium-font-size-caption); font-weight: var(--terrarium-font-weight-semibold); color: var(--terrarium-color-text-muted); margin: 0 0 10px; }
+    .demo__stage { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 22px; min-height: 140px; padding: 40px 28px; border-radius: var(--terrarium-radius-xl); background: var(--terrarium-color-surface); box-shadow: var(--terrarium-shadow-level-1); }
+    @media (max-width: 560px) { .demo__stage { padding: 32px 16px; } }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12.5C12 8.4 9 6 5 6c0 4 3 6.5 7 6.5Z"/><path d="M12 10.5c0-3.6 2.6-5.8 6.5-5.8 0 3.6-2.6 5.8-6.5 5.8Z"/></symbol>
+  <symbol id="i-house" viewBox="0 0 24 24"><path d="M4 11.2 12 4.5l8 6.7"/><path d="M6 9.8v9.7h12V9.8"/><path d="M10 19.5v-5h4v5"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6.8C10 5.3 7.5 4.8 4 4.8v13c3.5 0 6 .5 8 2 2-1.5 4.5-2 8-2v-13c-3.5 0-6 .5-8 2Z"/><path d="M12 6.8v13"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="15" rx="3.5"/><path d="M4 10.5h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 19.5s-7.5-4.4-7.5-10A4.1 4.1 0 0 1 12 7.2a4.1 4.1 0 0 1 7.5 2.3c0 5.6-7.5 10-7.5 10Z"/></symbol>
+  <symbol id="i-lotus" viewBox="0 0 24 24"><path d="M12 19c-2.4-2-3.8-4.4-3.8-7.2 0-2.5 1.4-4.8 3.8-6.8 2.4 2 3.8 4.3 3.8 6.8 0 2.8-1.4 5.2-3.8 7.2Z"/><path d="M12 19c-3.6 0-7-1.8-9-5 2.6-.6 4.8-.1 6.6 1.2M12 19c3.6 0 7-1.8 9-5-2.6-.6-4.8-.1-6.6 1.2"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20v-7M10 20V6M15 20v-9M20 20v-5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c.8-3.6 3.5-5.6 7-5.6s6.2 2 7 5.6"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M6 18l1.6-1.6M16.4 7.6 18 6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M6 12.5 10.2 16.5 18 8"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7 7 17"/></symbol>
+  <symbol id="art-sprig" viewBox="0 0 100 100"><path d="M50 94C49 74 46 52 55 16" fill="none" stroke="#7A6448" stroke-width="2.2" stroke-linecap="round"/><path d="M49.5 76C37 74 29 66 26 54c13 1 21 8.5 23.5 22Z" fill="#3E5C4A"/><path d="M50.5 64c12-4 19-12 21-24-12.5 2-19.5 10-21 24Z" fill="#5F7D64"/><path d="M49 52c-11.5-4-17-12-17-23 11.5 2.5 16.5 11 17 23Z" fill="#4A6A55"/><path d="M52.5 40c8.5-4 12.5-11 12.5-20-8.5 2.5-12.5 9.5-12.5 20Z" fill="#6F8C6A"/><circle cx="58" cy="21" r="3.3" fill="#C85A32"/><circle cx="63.5" cy="26.5" r="2.8" fill="#D9784E"/><circle cx="66" cy="20" r="2.6" fill="#B9502B"/><circle cx="61" cy="14.5" r="2.4" fill="#D9784E"/><circle cx="69" cy="27" r="2" fill="#C85A32"/></symbol>
+  <symbol id="av-ava" viewBox="0 0 48 48"><path d="M13.5 23C12.5 11 18.5 7.5 24 7.5S35.5 11 34.5 23l1.5 13c-4 2.5-20 2.5-24 0Z" fill="#3B2A1E"/><path d="M6 48c2-10.5 9.5-14.5 18-14.5S40 37.5 42 48Z" fill="#3E5C4A"/><rect x="20.5" y="26" width="7" height="9" rx="3.2" fill="#C8916C"/><ellipse cx="24" cy="20.5" rx="8.2" ry="9.4" fill="#E3B38E"/><path d="M15.6 19c.6-6.4 4.4-9 8.4-9 4.6 0 7.8 2.6 8.4 9-3.4-3.6-11-4.4-16.8 0Z" fill="#3B2A1E"/><circle cx="21" cy="21.4" r="1" fill="#3B2A1E"/><circle cx="27" cy="21.4" r="1" fill="#3B2A1E"/><path d="M21.6 25.2c1.5 1.3 3.3 1.3 4.8 0" fill="none" stroke="#9A5A3C" stroke-width="1.1" stroke-linecap="round"/></symbol>
+  <symbol id="av-noah" viewBox="0 0 48 48"><path d="M6 48c2-10.5 9.5-14.5 18-14.5S40 37.5 42 48Z" fill="#C85A32"/><rect x="20.5" y="26" width="7" height="9" rx="3.2" fill="#A66E4A"/><ellipse cx="24" cy="20.5" rx="8.2" ry="9.4" fill="#C08560"/><g fill="#4A3424"><circle cx="18" cy="13" r="4.2"/><circle cx="24" cy="10.6" r="4.6"/><circle cx="30" cy="13" r="4.2"/><circle cx="16" cy="17.5" r="3"/><circle cx="32" cy="17.5" r="3"/></g><path d="M16.2 22.5c.4 6.6 3.9 8.8 7.8 8.8s7.4-2.2 7.8-8.8c-2.6 3-13 3-15.6 0Z" fill="#4A3424"/><circle cx="21" cy="21.2" r="1" fill="#2E2016"/><circle cx="27" cy="21.2" r="1" fill="#2E2016"/></symbol>
+  <symbol id="av-maya" viewBox="0 0 48 48"><circle cx="24" cy="7" r="4.6" fill="#2E2219"/><path d="M6 48c2-10.5 9.5-14.5 18-14.5S40 37.5 42 48Z" fill="#D49A3A"/><rect x="20.5" y="26" width="7" height="9" rx="3.2" fill="#B57B57"/><ellipse cx="24" cy="20.5" rx="8.2" ry="9.4" fill="#D6A07A"/><path d="M15.4 21c-.6-7.8 3.8-11 8.6-11s9.2 3.2 8.6 11c-1.4-4.6-4.6-6.6-8.6-6.6s-7.2 2-8.6 6.6Z" fill="#2E2219"/><circle cx="21" cy="21.6" r="1" fill="#2E2219"/><circle cx="27" cy="21.6" r="1" fill="#2E2219"/><path d="M21.6 25.4c1.5 1.3 3.3 1.3 4.8 0" fill="none" stroke="#9A5A3C" stroke-width="1.1" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="cat-top"><a href="../index.html">UI Design Languages</a><a href="index.html">Styleguide</a><a href="examples/journal.html">Journal example</a><a href="../components.html#terrarium">Browse with code</a></header>
+<div class="cat">
+<div class="cat-head">
+  <h1 class="terrarium-display">Components</h1>
+  <p>Glazed ceramics on oat linen: terracotta for the main action, moss for calm and "on", ochre for paused, clay for drafts. Everything settles on a soft organic spring. Every block below is live markup — open it in the <a href="../components.html#terrarium">components browser</a> for the code.</p>
+</div>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Checkbox &amp; switch</a><a href="#segmented">Segmented</a><a href="#tabs">Tabs</a><a href="#chips">Badges &amp; chips</a><a href="#slider">Slider</a><a href="#progress">Ring &amp; progress</a><a href="#alert">Toasts &amp; notes</a><a href="#card">Cards</a><a href="#avatar">People</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#elevation">Pebbles</a></nav>
+<main>
+  <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
+    <h2 class="terrarium-section-title" id="h-button">Button</h2>
+    <p>Soft pills. They lift a little toward the pointer and give way gently when pressed.</p>
+    <div class="demo" data-demo="variants">
+      <h3>Variants</h3>
+      <div class="demo__stage">
+        <button class="terrarium-btn terrarium-btn--primary" type="button">Continue</button>
+        <button class="terrarium-btn terrarium-btn--secondary" type="button">Save Draft</button>
+        <button class="terrarium-btn" type="button">Cancel</button>
+        <button class="terrarium-btn terrarium-btn--ghost" type="button">Skip for now</button>
+      </div>
+    </div>
+    <div class="demo" data-demo="sizes">
+      <h3>Sizes and icons</h3>
+      <div class="demo__stage">
+        <button class="terrarium-btn terrarium-btn--primary terrarium-btn--lg" type="button"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>Plant a habit</button>
+        <button class="terrarium-btn terrarium-btn--secondary" type="button"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-book"/></svg>New entry</button>
+        <button class="terrarium-btn terrarium-btn--sm" type="button">Small</button>
+        <button class="terrarium-btn terrarium-btn--icon" type="button" aria-label="Favourite"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-heart"/></svg></button>
+      </div>
+    </div>
+    <div class="demo" data-demo="states">
+      <h3>States</h3>
+      <div class="demo__stage">
+        <button class="terrarium-btn terrarium-btn--primary" type="button">Rest</button>
+        <button class="terrarium-btn terrarium-btn--primary is-hover" type="button">Hover</button>
+        <button class="terrarium-btn terrarium-btn--primary is-active" type="button">Pressed</button>
+        <button class="terrarium-btn terrarium-btn--primary" type="button" disabled>Disabled</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="input" data-component="input" aria-labelledby="h-input">
+    <h2 class="terrarium-section-title" id="h-input">Text field</h2>
+    <p>A soft well with a sand rim. On focus a moss halo appears and the sprout leans in.</p>
+    <div class="demo" data-demo="text-field">
+      <h3>Text field</h3>
+      <div class="demo__stage">
+        <div class="terrarium-stack" style="--gap:18px;width:min(100%,400px)">
+          <label class="terrarium-field"><span class="terrarium-field__label">Entry title</span><span class="terrarium-affix"><input class="terrarium-input" placeholder="Enter your journal title"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg></span></label>
+          <label class="terrarium-field"><span class="terrarium-field__label">Focused</span><input class="terrarium-input is-focus" value="Morning pages"></label>
+          <label class="terrarium-field"><span class="terrarium-field__label">Reminder time</span><input class="terrarium-input" value="25:70" aria-invalid="true"><span class="terrarium-hint terrarium-hint--error">Try a time like 07:30</span></label>
+          <label class="terrarium-field"><span class="terrarium-field__label">Reflection</span><textarea class="terrarium-input" rows="3">Slow walk to the market. The light was soft and the fig tree is fruiting.</textarea></label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="selection" data-component="selection" aria-labelledby="h-selection">
+    <h2 class="terrarium-section-title" id="h-selection">Checkbox &amp; switch</h2>
+    <p>Terracotta checks and radios; a moss switch that names its state.</p>
+    <div class="demo" data-demo="checkbox-and-radio">
+      <h3>Checkbox and radio</h3>
+      <div class="demo__stage">
+        <div class="terrarium-stack" style="--gap:12px">
+          <label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox" checked> Include in habit tracker</label>
+          <label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox"> Send a gentle reminder</label>
+          <label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox" disabled> Share with friends</label>
+        </div>
+        <div class="terrarium-stack" style="--gap:12px">
+          <label class="terrarium-check"><input class="terrarium-radio" type="radio" name="t-freq" checked> Daily</label>
+          <label class="terrarium-check"><input class="terrarium-radio" type="radio" name="t-freq"> Weekly</label>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="switches">
+      <h3>Switches</h3>
+      <div class="demo__stage">
+        <input class="terrarium-switch" type="checkbox" checked data-on="On" data-off="Off" aria-label="Reminders">
+        <input class="terrarium-switch" type="checkbox" data-on="On" data-off="Off" aria-label="Weekly digest">
+        <input class="terrarium-switch terrarium-switch--sm" type="checkbox" checked aria-label="Sounds">
+        <input class="terrarium-switch" type="checkbox" disabled data-on="On" data-off="Off" aria-label="Sync (unavailable)">
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="segmented" data-component="segmented" aria-labelledby="h-segmented">
+    <h2 class="terrarium-section-title" id="h-segmented">Segmented tabs</h2>
+    <p>A terracotta pill that sways from one choice to the next.</p>
+    <div class="demo" data-demo="segmented">
+      <h3>Segmented tabs</h3>
+      <div class="demo__stage">
+        <div class="terrarium-segmented" role="tablist" aria-label="Journal view">
+          <button class="terrarium-segmented__item" role="tab" aria-selected="true">Today</button>
+          <button class="terrarium-segmented__item" role="tab" aria-selected="false" tabindex="-1">Journal</button>
+          <button class="terrarium-segmented__item" role="tab" aria-selected="false" tabindex="-1">Archive</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tabs" data-component="tabs" aria-labelledby="h-tabs">
+    <h2 class="terrarium-section-title" id="h-tabs">Tabs</h2>
+    <p>Quiet words on a hairline; a small moss marker sways under the current one.</p>
+    <div class="demo" data-demo="tabs">
+      <h3>Tabs</h3>
+      <div class="demo__stage">
+        <div class="terrarium-stack" style="--gap:14px;width:min(100%,420px)">
+          <div class="terrarium-tabs" role="tablist" aria-label="Insights">
+            <button class="terrarium-tabs__item" role="tab" aria-selected="true" aria-controls="t-p1" id="t-h1">Mood</button>
+            <button class="terrarium-tabs__item" role="tab" aria-selected="false" aria-controls="t-p2" id="t-h2" tabindex="-1">Sleep</button>
+            <button class="terrarium-tabs__item" role="tab" aria-selected="false" aria-controls="t-p3" id="t-h3" tabindex="-1">Habits</button>
+            <button class="terrarium-tabs__item" role="tab" aria-selected="false" aria-controls="t-p4" id="t-h4" tabindex="-1">Notes</button>
+          </div>
+          <p class="terrarium-caption" role="tabpanel" id="t-p1" aria-labelledby="t-h1">Mostly calm this week, brightest on Saturday.</p>
+          <p class="terrarium-caption" role="tabpanel" id="t-p2" aria-labelledby="t-h2" hidden>7 h 20 min on average — 25 minutes more than last week.</p>
+          <p class="terrarium-caption" role="tabpanel" id="t-p3" aria-labelledby="t-h3" hidden>4 of 5 habits kept every day since Monday.</p>
+          <p class="terrarium-caption" role="tabpanel" id="t-p4" aria-labelledby="t-h4" hidden>12 entries, 3 with photos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="chips" data-component="chips" aria-labelledby="h-chips">
+    <h2 class="terrarium-section-title" id="h-chips">Badges &amp; chips</h2>
+    <p>Badges in natural colors; chips plant a moss seed when chosen.</p>
+    <div class="demo" data-demo="badges">
+      <h3>Badges</h3>
+      <div class="demo__stage">
+        <span class="terrarium-badge terrarium-badge--active">Active</span>
+        <span class="terrarium-badge terrarium-badge--paused">Paused</span>
+        <span class="terrarium-badge terrarium-badge--draft">Draft</span>
+        <span class="terrarium-badge"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>5-day streak</span>
+      </div>
+    </div>
+    <div class="demo" data-demo="mood-chips">
+      <h3>Mood chips</h3>
+      <div class="demo__stage">
+        <button class="terrarium-chip" type="button" aria-pressed="true">Calm</button>
+        <button class="terrarium-chip" type="button" aria-pressed="true">Grateful</button>
+        <button class="terrarium-chip" type="button" aria-pressed="false">Tired</button>
+        <button class="terrarium-chip" type="button" aria-pressed="false">Hopeful</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="slider" data-component="slider" aria-labelledby="h-slider">
+    <h2 class="terrarium-section-title" id="h-slider">Slider</h2>
+    <p>A terracotta stem on a sand track; the knob wears a terracotta ring.</p>
+    <div class="demo" data-demo="slider">
+      <h3>Range slider</h3>
+      <div class="demo__stage">
+        <div class="terrarium-range" style="width:min(100%,440px)"><input class="terrarium-slider" type="range" min="0" max="100" value="68" style="--terrarium-value:68" aria-label="Mindfulness goal"><output data-suffix="%">68%</output></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="progress" data-component="progress" aria-labelledby="h-progress">
+    <h2 class="terrarium-section-title" id="h-progress">Ring &amp; progress</h2>
+    <p>A moss ring that grows on load and tweens whenever its value changes.</p>
+    <div class="demo" data-demo="ring">
+      <h3>Ring</h3>
+      <div class="demo__stage">
+        <div class="terrarium-ring" style="--terrarium-value:75" role="img" aria-label="75% progress"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="terrarium-ring__track" cx="60" cy="60" r="50" pathLength="100"/><circle class="terrarium-ring__arc" cx="60" cy="60" r="50" pathLength="100"/></svg><span class="terrarium-ring__label" aria-hidden="true"><b></b>Progress</span></div>
+        <div class="terrarium-ring terrarium-ring--sm" style="--terrarium-value:40" role="img" aria-label="40% of today's goal"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="terrarium-ring__track" cx="60" cy="60" r="50" pathLength="100"/><circle class="terrarium-ring__arc" cx="60" cy="60" r="50" pathLength="100"/></svg><span class="terrarium-ring__label" aria-hidden="true"><b></b></span></div>
+      </div>
+    </div>
+    <div class="demo" data-demo="bars">
+      <h3>Progress bars</h3>
+      <div class="demo__stage">
+        <div class="terrarium-stack" style="--gap:12px;width:min(100%,380px)">
+          <div class="terrarium-row" style="justify-content:space-between"><span class="terrarium-caption">Water</span><span class="terrarium-caption">6 of 8 glasses</span></div>
+          <div class="terrarium-progress" role="progressbar" aria-label="Water" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="--terrarium-value:75"></div>
+          <div class="terrarium-row" style="justify-content:space-between"><span class="terrarium-caption">Reading</span><span class="terrarium-caption">40 of 100 pages</span></div>
+          <div class="terrarium-progress terrarium-progress--terracotta" role="progressbar" aria-label="Reading" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="--terrarium-value:40"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="alert" data-component="alert" aria-labelledby="h-alert">
+    <h2 class="terrarium-section-title" id="h-alert">Toasts &amp; notes</h2>
+    <p>Toasts rise and settle; notes are soft washes of a natural color.</p>
+    <div class="demo" data-demo="toast">
+      <h3>Toast</h3>
+      <div class="demo__stage">
+        <div class="terrarium-toast" role="status" style="width:min(100%,340px)"><span class="terrarium-toast__icon"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-check"/></svg></span><p class="terrarium-toast__title">Entry saved</p><button class="terrarium-toast__close" type="button" aria-label="Dismiss" data-terrarium-dismiss><svg class="terrarium-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      </div>
+    </div>
+    <div class="demo" data-demo="notes">
+      <h3>Notes</h3>
+      <div class="demo__stage">
+        <div class="terrarium-stack" style="--gap:12px;width:min(100%,420px)">
+          <div class="terrarium-alert" role="note"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg><div><b>New habit planted</b>We'll check in gently at 8:00 tomorrow.</div></div>
+          <div class="terrarium-alert terrarium-alert--ochre" role="status"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-calendar"/></svg><div><b>Streak paused</b>Pick it up whenever you're ready — nothing is lost.</div></div>
+          <div class="terrarium-alert terrarium-alert--terracotta" role="alert"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-heart"/></svg><div><b>Couldn't sync</b>Your entry is safe on this device. We'll try again soon.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="card" data-component="card" aria-labelledby="h-card">
+    <h2 class="terrarium-section-title" id="h-card">Cards</h2>
+    <p>Glazed cream cards; feature cards pair an illustrated tile with a title and badges. Hover the sprig.</p>
+    <div class="demo" data-demo="feature-card">
+      <h3>Feature card</h3>
+      <div class="demo__stage">
+        <article class="terrarium-feature" style="width:min(100%,440px)">
+          <span class="terrarium-feature__art"><svg aria-hidden="true"><use href="#art-sprig"/></svg></span>
+          <div><h3 class="terrarium-title">Daily Journal</h3><p class="terrarium-feature__text">A few mindful minutes to reflect and grow.</p><div class="terrarium-feature__badges"><span class="terrarium-badge terrarium-badge--active">Active</span><span class="terrarium-badge terrarium-badge--paused">Paused</span><span class="terrarium-badge terrarium-badge--draft">Draft</span></div></div>
+        </article>
+      </div>
+    </div>
+    <div class="demo" data-demo="card">
+      <h3>Card</h3>
+      <div class="demo__stage">
+        <section class="terrarium-card" style="width:min(100%,320px)">
+          <h3 class="terrarium-title">Evening wind-down</h3>
+          <p class="terrarium-caption" style="margin:6px 0 16px">Dim the lights, three slow breaths, one line about today.</p>
+          <div class="terrarium-row"><button class="terrarium-btn terrarium-btn--secondary terrarium-btn--sm" type="button">Begin</button><button class="terrarium-btn terrarium-btn--ghost terrarium-btn--sm" type="button">Later</button></div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="avatar" data-component="avatar" aria-labelledby="h-avatar">
+    <h2 class="terrarium-section-title" id="h-avatar">People</h2>
+    <p>Illustrated portraits on natural grounds; a community list whose chevrons lean toward you.</p>
+    <div class="demo" data-demo="activity-list">
+      <h3>Avatars and activity</h3>
+      <div class="demo__stage">
+        <div class="terrarium-avatar-stack">
+          <span class="terrarium-avatar terrarium-avatar--lg" style="--terrarium-avatar:#E9DFD0"><svg aria-hidden="true"><use href="#av-ava"/></svg></span>
+          <span class="terrarium-avatar terrarium-avatar--lg" style="--terrarium-avatar:#DFE7DE"><svg aria-hidden="true"><use href="#av-noah"/></svg></span>
+          <span class="terrarium-avatar terrarium-avatar--lg" style="--terrarium-avatar:#F5E3D8"><svg aria-hidden="true"><use href="#av-maya"/></svg></span>
+        </div>
+        <ul class="terrarium-list" style="width:min(100%,300px)">
+          <li><a class="terrarium-list__item" href="#"><span class="terrarium-avatar" style="--terrarium-avatar:#E9DFD0"><svg aria-hidden="true"><use href="#av-ava"/></svg></span><span><b>Ava</b><span>Journaled today</span></span><svg class="terrarium-icon" aria-hidden="true"><use href="#i-right"/></svg></a></li>
+          <li><a class="terrarium-list__item" href="#"><span class="terrarium-avatar" style="--terrarium-avatar:#DFE7DE"><svg aria-hidden="true"><use href="#av-noah"/></svg></span><span><b>Noah</b><span>On a 5-day streak</span></span><svg class="terrarium-icon" aria-hidden="true"><use href="#i-right"/></svg></a></li>
+          <li><a class="terrarium-list__item" href="#"><span class="terrarium-avatar" style="--terrarium-avatar:#F5E3D8"><svg aria-hidden="true"><use href="#av-maya"/></svg></span><span><b>Maya</b><span>Added a new habit</span></span><svg class="terrarium-icon" aria-hidden="true"><use href="#i-right"/></svg></a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="navigation" data-component="navigation" aria-labelledby="h-navigation">
+    <h2 class="terrarium-section-title" id="h-navigation">Navigation</h2>
+    <p>A sidebar with a moss pill, a pill-shaped breadcrumb, and soft pagination tiles.</p>
+    <div class="demo" data-demo="sidebar">
+      <h3>Sidebar</h3>
+      <div class="demo__stage">
+        <nav class="terrarium-nav" aria-label="Main" style="width:min(100%,220px)">
+          <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-house"/></svg>Home</a>
+          <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-book"/></svg>Journal</a>
+          <a class="terrarium-nav__item" href="#" aria-current="page"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>Habits<span class="terrarium-nav__count">4</span></a>
+          <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-chart"/></svg>Insights</a>
+          <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-user"/></svg>Profile</a>
+        </nav>
+      </div>
+    </div>
+    <div class="demo" data-demo="breadcrumb-and-pagination">
+      <h3>Breadcrumb and pagination</h3>
+      <div class="demo__stage">
+        <div class="terrarium-stack" style="--gap:24px;align-items:center">
+          <nav class="terrarium-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-house"/></svg>Home</a></li><li><a href="#">Journal</a></li><li aria-current="page">New Entry</li></ol></nav>
+          <nav class="terrarium-pagination" aria-label="Pages"><a href="#" aria-label="Previous page"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-left"/></svg></a><a href="#" aria-current="page">1</a><a href="#">2</a><a href="#">3</a><span class="terrarium-pagination__gap">…</span><a href="#">8</a><a href="#" aria-label="Next page"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-right"/></svg></a></nav>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="table" data-component="table" aria-labelledby="h-table">
+    <h2 class="terrarium-section-title" id="h-table">Table</h2>
+    <p>Soft rows; the row under the pointer warms up.</p>
+    <div class="demo" data-demo="table">
+      <h3>Habits this week</h3>
+      <div class="demo__stage">
+        <div class="terrarium-table-wrap">
+          <table class="terrarium-table">
+            <thead><tr><th>Habit</th><th>Status</th><th class="is-num">Streak</th><th>Next</th></tr></thead>
+            <tbody>
+              <tr><td><b>Morning walk</b></td><td><span class="terrarium-badge terrarium-badge--active">Active</span></td><td class="is-num">12 days</td><td>Tomorrow 7:30</td></tr>
+              <tr><td><b>Read 10 pages</b></td><td><span class="terrarium-badge terrarium-badge--paused">Paused</span></td><td class="is-num">—</td><td>When you're ready</td></tr>
+              <tr><td><b>Evening wind-down</b></td><td><span class="terrarium-badge terrarium-badge--draft">Draft</span></td><td class="is-num">0 days</td><td>Tonight 21:30</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="dialog" data-component="dialog" aria-labelledby="h-dialog">
+    <h2 class="terrarium-section-title" id="h-dialog">Dialog</h2>
+    <p>A glazed card that blooms open; its sprout grows as it arrives. Press the button to open it again.</p>
+    <div class="demo" data-demo="dialog" data-min-height="320" data-open-dialog>
+      <h3>Dialog</h3>
+      <div class="demo__stage">
+        <button class="terrarium-btn terrarium-btn--primary" type="button" data-terrarium-open="#t-dialog">Save entry</button>
+        <dialog class="terrarium-dialog" id="t-dialog" aria-labelledby="t-dialog-t">
+          <svg class="terrarium-dialog__icon terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>
+          <h2 class="terrarium-dialog__title" id="t-dialog-t">Save changes?</h2>
+          <p class="terrarium-dialog__text">This will update your journal entry.</p>
+          <div class="terrarium-dialog__actions"><button class="terrarium-btn" type="button" data-terrarium-close>Cancel</button><button class="terrarium-btn terrarium-btn--primary" type="button" data-terrarium-close>Save</button></div>
+        </dialog>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="tooltip" data-component="tooltip" aria-labelledby="h-tooltip">
+    <h2 class="terrarium-section-title" id="h-tooltip">Tooltip</h2>
+    <p>A small espresso pill that grows out of its anchor.</p>
+    <div class="demo" data-demo="tooltip">
+      <h3>Tooltip</h3>
+      <div class="demo__stage">
+        <span class="terrarium-tooltip" data-tip="Your longest streak: 21 days"><button class="terrarium-btn" type="button"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>12 days</button></span>
+        <span class="terrarium-tip">Your longest streak: 21 days</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="elevation" data-component="elevation" aria-labelledby="h-elevation">
+    <h2 class="terrarium-section-title" id="h-elevation">Pebbles &amp; surfaces</h2>
+    <p>The palette as stones from the garden — hover one and it rounds out — and the three surface levels.</p>
+    <div class="demo" data-demo="pebbles">
+      <h3>Palette pebbles</h3>
+      <div class="demo__stage">
+        <span class="terrarium-pebble" style="--terrarium-pebble:var(--terrarium-color-terracotta)" title="Terracotta"></span>
+        <span class="terrarium-pebble terrarium-pebble--2" style="--terrarium-pebble:var(--terrarium-color-moss)" title="Moss"></span>
+        <span class="terrarium-pebble terrarium-pebble--3" style="--terrarium-pebble:var(--terrarium-color-ochre)" title="Ochre"></span>
+        <span class="terrarium-pebble terrarium-pebble--4" style="--terrarium-pebble:#E9DFD0" title="Linen"></span>
+        <span class="terrarium-pebble terrarium-pebble--5" style="--terrarium-pebble:var(--terrarium-color-espresso)" title="Espresso"></span>
+      </div>
+    </div>
+    <div class="demo" data-demo="surfaces">
+      <h3>Surface levels</h3>
+      <div class="demo__stage">
+        <div class="terrarium-surface terrarium-surface--1" style="width:96px;height:84px"></div>
+        <div class="terrarium-surface terrarium-surface--2" style="width:96px;height:84px"></div>
+        <div class="terrarium-surface terrarium-surface--3" style="width:96px;height:84px"></div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script src="js/terrarium.js"></script>
+<script src="../site/smooth-scroll.js" defer></script>
+</body>
+</html>

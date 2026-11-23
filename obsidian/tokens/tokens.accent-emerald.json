@@ -1,0 +1,8 @@
+{
+  "$description": "Emerald accent — the same glass lit green. Opt in with <html data-accent=\"emerald\">. Glows, washes and the high border follow automatically (they are mixed from primary).",
+  "color": {
+    "primary": { "$value": "#10B981" },
+    "primary-strong": { "$value": "#059669" },
+    "primary-ink": { "$value": "#02140D" }
+  }
+}

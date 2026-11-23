@@ -39,7 +39,8 @@
 .cw-grid { position: relative; min-height: 400px; overflow: clip; overflow-clip-margin: 64px; } /* filtered-out cards keep their spot without stretching the page */
 .cw-note { position: relative; margin-top: 24px; text-align: center; font-size: 13.5px; color: var(--faint); transition: color .4s; }
 .cw.is-unified .cw-note { color: rgba(0, 0, 0, 0.55); }
-html[data-theme="dark"] .cw.is-unified:not(.is-light-only) .cw-note { color: rgba(255, 255, 255, 0.6); }
+html[data-theme="dark"] .cw.is-unified:not(.is-light-only) .cw-note,
+.cw.is-unified.is-dark-canvas .cw-note { color: rgba(255, 255, 255, 0.6); }
 
 /* Cards are absolutely positioned by the masonry script; they glide when the filter changes. */
 /* Cards are layers only while they glide; at rest they paint with the page (cheaper to scroll). */

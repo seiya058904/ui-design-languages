@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var a=localStorage.getItem("obsidian-accent");if(a&&a!=="cyan")document.documentElement.setAttribute("data-accent",a)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Obsidian / Glass — AI Workspace dashboard</title>
+  <link rel="icon" href="../../site/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../../site/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../site/assets/apple-touch-icon.png">
+  <meta name="description" content="An AI workspace dashboard built with Obsidian / Glass: KPIs, a sessions chart you can scrub, projects, a command palette and live accent switching.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/obsidian.css">
+  <style>
+    /* Layout only — a real page built from the delivered CSS and JS, unchanged. */
+    body { min-height: 100vh; }
+    .app { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100vh; }
+    .side { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 16px; padding: 20px 14px; border-right: 1px solid var(--obsidian-color-border-low); background: var(--obsidian-color-glass-inset); }
+    .side__foot { margin-top: auto; display: grid; gap: 12px; padding: 14px 8px 4px; border-top: 1px solid var(--obsidian-color-border-low); }
+    .side__foot .obsidian-label { margin: 0; }
+    .main { min-width: 0; padding: 22px 28px 40px; }
+    .top { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; margin-bottom: 22px; }
+    .top h1 { font-size: 24px; font-weight: var(--obsidian-font-weight-semibold); letter-spacing: -0.01em; color: var(--obsidian-color-ink); }
+    .top p { margin-top: 2px; font-size: var(--obsidian-font-size-small); color: var(--obsidian-color-text-muted); }
+    .top__tools { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .search { width: 300px; }
+    .search .obsidian-menu__list { left: 0; right: 0; width: auto; }
+    .bell { position: relative; }
+    .bell::after { content: ""; position: absolute; top: 9px; right: 10px; width: 7px; height: 7px; border-radius: 50%; background: var(--obsidian-color-danger); box-shadow: 0 0 0 2px var(--obsidian-color-canvas), 0 0 8px var(--obsidian-color-danger); }
+    .bell.is-read::after { display: none; }
+    .avatar-btn { padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
+    .avatar-btn:focus-visible { box-shadow: var(--obsidian-shadow-focus); }
+    .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .row2 { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 16px; margin-top: 16px; }
+    .row3 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-top: 16px; }
+    .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .card-head h2 { font-size: var(--obsidian-font-size-title); font-weight: var(--obsidian-font-weight-semibold); color: var(--obsidian-color-ink); }
+    .card-head p { font-size: var(--obsidian-font-size-caption); color: var(--obsidian-color-text-muted); }
+    .chart { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); grid-template-rows: 200px auto; column-gap: 8px; margin-top: 4px; }
+    .chart__y { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; font-size: var(--obsidian-font-size-label); color: var(--obsidian-color-text-subtle); font-family: var(--obsidian-font-family-mono); transform: translateY(-6px); height: calc(100% + 12px); }
+    .chart__plot { position: relative; }
+    .chart__x span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+    .chart__x span:first-child { transform: none; }
+    .chart__x span:last-child:not(:first-child) { transform: translateX(-100%); }
+    .chart__plot svg { width: 100%; height: 100%; }
+    .chart__x { grid-column: 2; position: relative; height: 16px; margin-top: 8px; font-size: var(--obsidian-font-size-label); color: var(--obsidian-color-text-subtle); font-family: var(--obsidian-font-family-mono); }
+    .scrub { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--obsidian-color-border-medium); opacity: 0; pointer-events: none; transition: opacity var(--obsidian-motion-duration-fast); }
+    .scrub i { position: absolute; left: -5px; width: 11px; height: 11px; border-radius: 50%; background: var(--obsidian-color-ink); box-shadow: 0 0 0 3px var(--obsidian-color-primary), 0 0 14px var(--obsidian-color-primary-glow); }
+    .scrub .obsidian-tip { position: absolute; left: 12px; top: -6px; white-space: nowrap; }
+    .chart__plot:hover .scrub, .chart__plot.is-scrubbing .scrub { opacity: 1; }
+    .views > [hidden] { display: none; }
+    .proj-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .bar-cell { display: flex; align-items: center; gap: 10px; min-width: 140px; }
+    .bar-cell .obsidian-progress { flex: 1; }
+    .settings { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+    .form { display: grid; gap: 18px; }
+    .line { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .line b { display: block; font-weight: var(--obsidian-font-weight-medium); color: var(--obsidian-color-ink); font-size: var(--obsidian-font-size-body); }
+    .line span { font-size: var(--obsidian-font-size-caption); color: var(--obsidian-color-text-muted); }
+    .toasts { position: fixed; right: 20px; bottom: 20px; z-index: 60; display: grid; gap: 10px; width: min(360px, calc(100% - 40px)); }
+    .ring-wrap { display: flex; align-items: center; gap: 18px; }
+
+    @media (max-width: 1100px) {
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .row2, .settings { grid-template-columns: 1fr; }
+      .row3 { grid-template-columns: 1fr 1fr; }
+      .search { width: 220px; }
+    }
+    @media (max-width: 760px) {
+      .app { grid-template-columns: minmax(0, 1fr); }
+      .side { position: static; min-width: 0; height: auto; flex-direction: column; padding: 14px; border-right: 0; border-bottom: 1px solid var(--obsidian-color-border-low); }
+      .side .obsidian-nav { flex-direction: row; min-width: 0; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+      .side .obsidian-nav__item { flex: none; }
+      .side__foot { display: none; }
+      .main { padding: 18px 14px 32px; }
+      .top__tools { width: 100%; margin-left: 0; }
+      .search { flex: 1; width: auto; }
+      .kpis, .row3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1Z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5A1.5 1.5 0 0 1 5 6h4l2 2h8a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5Z"/></symbol>
+  <symbol id="i-tasks" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.5c.6 3.9 2.6 5.9 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5 3.9-.6 5.9-2.6 6.5-6.5Z"/><path d="M18.5 15.5c.2 1.6 1 2.4 2.5 2.5-1.5.2-2.3 1-2.5 2.5-.2-1.5-1-2.3-2.5-2.5 1.5-.1 2.3-.9 2.5-2.5Z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.5"/><path d="M3 19.5a6 6 0 0 1 12 0"/><path d="M15.5 5.8a3.5 3.5 0 0 1 0 6.4M17.5 14a6 6 0 0 1 3.5 5.5"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6Z"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5Z"/><path d="m3 13 9 5 9-5"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3.5h8l4 4V20a.5.5 0 0 1-.5.5h-11A.5.5 0 0 1 6 20Z"/><path d="M13.5 3.5V8H18M9 12.5h6M9 16h6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-user-plus" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M3 19.5a6 6 0 0 1 12 0M18.5 8v6M15.5 11h6"/></symbol>
+  <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16Z"/><path d="m13.5 6.5 4 4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M14 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 16l-4-4 4-4M6 12h10"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="side">
+    <div class="obsidian-menu obsidian-menu--start" style="display:block">
+      <button class="obsidian-switcher" type="button" aria-haspopup="menu" aria-expanded="false"><span class="obsidian-logo obsidian-logo--sm" aria-hidden="true"></span><span data-ws-name>AI Workspace</span><svg class="obsidian-icon" aria-hidden="true"><use href="#i-down"/></svg></button>
+      <div class="obsidian-menu__list" role="menu" style="width:100%">
+        <button class="obsidian-menu__item" role="menuitem" type="button" data-value="rename"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-pen"/></svg>Rename workspace</button>
+        <button class="obsidian-menu__item" role="menuitem" type="button" data-value="new"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-plus"/></svg>New project</button>
+        <div class="obsidian-menu__sep" role="separator"></div>
+        <button class="obsidian-menu__item obsidian-menu__item--danger" role="menuitem" type="button" data-value="archive"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-archive"/></svg>Archive workspace…</button>
+      </div>
+    </div>
+    <nav class="obsidian-nav" aria-label="Workspace" data-nav>
+      <a class="obsidian-nav__item" href="#overview" aria-current="page" data-view="overview"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-home"/></svg>Overview</a>
+      <a class="obsidian-nav__item" href="#projects" data-view="projects"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-folder"/></svg>Projects<span class="obsidian-nav__badge">24</span></a>
+      <a class="obsidian-nav__item" href="#tasks" data-view="tasks"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-tasks"/></svg>Tasks</a>
+      <a class="obsidian-nav__item" href="#copilot" data-view="copilot"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-spark"/></svg>AI Copilot</a>
+      <a class="obsidian-nav__item" href="#team" data-view="team"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-users"/></svg>Team</a>
+      <a class="obsidian-nav__item" href="#settings" data-view="settings"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-gear"/></svg>Settings</a>
+    </nav>
+    <div class="side__foot">
+      <span class="obsidian-label">Storage</span>
+      <div class="obsidian-progress" role="progressbar" aria-label="Storage used" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" style="--obsidian-value:62"></div>
+      <span class="obsidian-caption">62 GB of 100 GB used</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div><h1 data-title>Overview</h1><p data-sub>Your AI workspace at a glance.</p></div>
+      <div class="top__tools">
+        <div class="obsidian-menu search" data-palette>
+          <label class="obsidian-command"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-search"/></svg><input class="obsidian-input" type="search" placeholder="Search..." aria-label="Search or run a command" role="combobox" aria-expanded="false" aria-controls="palette-list" autocomplete="off" data-palette-input><kbd class="obsidian-kbd">⌘K</kbd></label>
+          <div class="obsidian-menu__list" role="listbox" id="palette-list" data-palette-list></div>
+        </div>
+        <div class="obsidian-menu">
+          <button class="obsidian-btn obsidian-btn--icon obsidian-btn--ghost bell" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Notifications, 2 unread" data-bell><svg class="obsidian-icon" aria-hidden="true"><use href="#i-bell"/></svg></button>
+          <div class="obsidian-menu__list" role="menu" style="min-width:280px">
+            <button class="obsidian-menu__item" role="menuitem" type="button"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-spark"/></svg>Copilot finished “Q3 review deck”</button>
+            <button class="obsidian-menu__item" role="menuitem" type="button"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-user-plus"/></svg>Noah joined AI Workspace</button>
+          </div>
+        </div>
+        <div class="obsidian-menu">
+          <button class="avatar-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Account: Mara Alvarez"><span class="obsidian-avatar" style="--obsidian-avatar:linear-gradient(135deg,#334155,#0F172A)">MA</span></button>
+          <div class="obsidian-menu__list" role="menu">
+            <button class="obsidian-menu__item" role="menuitemradio" aria-checked="true" type="button" data-accent-set="cyan">Accent: Glacier cyan</button>
+            <button class="obsidian-menu__item" role="menuitemradio" aria-checked="false" type="button" data-accent-set="emerald">Accent: Emerald</button>
+            <button class="obsidian-menu__item" role="menuitemradio" aria-checked="false" type="button" data-accent-set="violet">Accent: Electric violet</button>
+            <div class="obsidian-menu__sep" role="separator"></div>
+            <button class="obsidian-menu__item" role="menuitem" type="button"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-logout"/></svg>Sign out</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="views">
+      <section data-panel="overview" aria-label="Overview">
+        <div class="kpis obsidian-enter">
+          <article class="obsidian-card"><div class="obsidian-stat"><span class="obsidian-stat__label"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-bolt"/></svg>Active Projects</span><span class="obsidian-stat__value"><span data-count="24">24</span><span class="obsidian-delta">+14%</span></span></div></article>
+          <article class="obsidian-card"><div class="obsidian-stat"><span class="obsidian-stat__label"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-layers"/></svg>Tasks Completed</span><span class="obsidian-stat__value"><span data-count="1286">1,286</span><span class="obsidian-delta">+8.2%</span></span></div></article>
+          <article class="obsidian-card"><div class="obsidian-stat"><span class="obsidian-stat__label"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-users"/></svg>Team Members</span><span class="obsidian-stat__value"><span data-count="8">8</span></span></div></article>
+          <article class="obsidian-card"><div class="obsidian-stat"><span class="obsidian-stat__label"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-chart"/></svg>AI Runs</span><span class="obsidian-stat__value"><span data-count="4930">4,930</span><span class="obsidian-delta">+27%</span></span></div></article>
+        </div>
+        <div class="row2">
+          <article class="obsidian-card" aria-labelledby="act-t">
+            <div class="card-head">
+              <div><h2 id="act-t">Activity</h2><p data-chart-sub>Sessions over the last 30 days</p></div>
+              <div class="obsidian-menu" data-period>
+                <button class="obsidian-btn obsidian-btn--sm" type="button" aria-haspopup="listbox" aria-expanded="false"><span data-obsidian-label>Last 30 days</span><svg class="obsidian-icon" aria-hidden="true"><use href="#i-down"/></svg></button>
+                <div class="obsidian-menu__list" role="listbox" aria-label="Period">
+                  <button class="obsidian-menu__item" role="option" aria-selected="false" type="button" data-value="7">Last 7 days</button>
+                  <button class="obsidian-menu__item" role="option" aria-selected="true" type="button" data-value="30">Last 30 days</button>
+                  <button class="obsidian-menu__item" role="option" aria-selected="false" type="button" data-value="90">Last 90 days</button>
+                </div>
+              </div>
+            </div>
+            <div class="chart">
+              <div class="chart__y" aria-hidden="true" data-y><span>12K</span><span>9K</span><span>6K</span><span>3K</span><span>0</span></div>
+              <div class="chart__plot" data-plot>
+                <svg viewBox="0 0 600 200" preserveAspectRatio="none" role="img" aria-label="Sessions per day" data-chart>
+                  <defs><linearGradient id="d-area" x1="0" y1="0" x2="0" y2="1"><stop class="obsidian-chart__stop" offset="0"/><stop class="obsidian-chart__stop obsidian-chart__stop--end" offset="1"/></linearGradient></defs>
+                  <g data-grid></g>
+                  <path class="obsidian-chart__area" fill="url(#d-area)" d="" data-area/>
+                  <path class="obsidian-chart__line" pathLength="1" d="" data-line/>
+                </svg>
+                <div class="scrub" data-scrub aria-hidden="true"><i></i><span class="obsidian-tip" data-scrub-tip></span></div>
+              </div>
+              <div class="chart__x" aria-hidden="true" data-x></div>
+            </div>
+          </article>
+          <article class="obsidian-card" aria-labelledby="rec-t">
+            <div class="card-head"><h2 id="rec-t">Recent Activity</h2><a class="obsidian-btn obsidian-btn--ghost obsidian-btn--sm" href="#projects" data-go="projects">See all<svg class="obsidian-icon" aria-hidden="true"><use href="#i-right"/></svg></a></div>
+            <ul class="obsidian-list" data-feed>
+              <li class="obsidian-list__item"><span class="obsidian-list__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-doc"/></svg></span><span class="obsidian-list__title">Generated marketing brief</span><span class="obsidian-list__meta">2 min ago</span></li>
+              <li class="obsidian-list__item"><span class="obsidian-list__icon obsidian-list__icon--success"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-check"/></svg></span><span class="obsidian-list__title">Completed 12 tasks</span><span class="obsidian-list__meta">18 min ago</span></li>
+              <li class="obsidian-list__item"><span class="obsidian-list__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-users"/></svg></span><span class="obsidian-list__title">Invited 2 team members</span><span class="obsidian-list__meta">1 hr ago</span></li>
+            </ul>
+          </article>
+        </div>
+        <div class="row3">
+          <article class="obsidian-card">
+            <div class="card-head"><h2>Sprint progress</h2><span class="obsidian-badge obsidian-badge--success">Live</span></div>
+            <div class="ring-wrap"><div class="obsidian-ring" style="--obsidian-value:78" role="img" aria-label="78% complete" data-ring><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="obsidian-ring__track" cx="60" cy="60" r="50" pathLength="100"/><circle class="obsidian-ring__arc" cx="60" cy="60" r="50" pathLength="100"/></svg><span class="obsidian-ring__label" aria-hidden="true"><b></b>Complete</span></div>
+              <p class="obsidian-card__text">39 of 50 tasks done. Copilot drafted 14 of them.</p></div>
+          </article>
+          <article class="obsidian-card">
+            <div class="card-head"><h2>Copilot usage</h2><span class="obsidian-badge obsidian-badge--warning">Pending</span></div>
+            <div class="obsidian-stat"><span class="obsidian-stat__value">74% <span class="obsidian-delta">+5%</span></span><span class="obsidian-stat__meta">of the monthly run quota</span></div>
+            <div class="obsidian-progress" role="progressbar" aria-label="Run quota" aria-valuenow="74" aria-valuemin="0" aria-valuemax="100" style="--obsidian-value:74"></div>
+          </article>
+          <article class="obsidian-card">
+            <div class="card-head"><h2>Team</h2><span class="obsidian-avatar-stack"><span class="obsidian-avatar obsidian-avatar--sm" style="--obsidian-avatar:linear-gradient(135deg,#0EA5E9,#1E293B)">AK</span><span class="obsidian-avatar obsidian-avatar--sm" style="--obsidian-avatar:linear-gradient(135deg,#8B5CF6,#1E1B4B)">NJ</span><span class="obsidian-avatar obsidian-avatar--sm" style="--obsidian-avatar:linear-gradient(135deg,#10B981,#064E3B)">RS</span></span></div>
+            <p class="obsidian-card__text">8 members · 3 online now. Invite people to share projects and Copilot history.</p>
+            <div><button class="obsidian-btn obsidian-btn--sm" type="button" data-toast="Invitation link copied">Copy invite link</button></div>
+          </article>
+        </div>
+      </section>
+
+      <section data-panel="projects" aria-label="Projects" hidden>
+        <article class="obsidian-card">
+          <div class="proj-head">
+            <div class="obsidian-tabs" role="tablist" aria-label="Filter projects" data-filter>
+              <button class="obsidian-tabs__item" role="tab" aria-selected="true" data-f="all">All</button>
+              <button class="obsidian-tabs__item" role="tab" aria-selected="false" tabindex="-1" data-f="live">Active</button>
+              <button class="obsidian-tabs__item" role="tab" aria-selected="false" tabindex="-1" data-f="archived">Archived</button>
+              <button class="obsidian-tabs__item" role="tab" aria-selected="false" tabindex="-1" data-f="shared">Shared</button>
+            </div>
+            <button class="obsidian-btn obsidian-btn--primary obsidian-btn--sm" type="button" data-new><svg class="obsidian-icon" aria-hidden="true"><use href="#i-plus"/></svg>New project</button>
+          </div>
+          <div class="obsidian-table-wrap">
+            <table class="obsidian-table">
+              <thead><tr><th>Project</th><th>Status</th><th>Progress</th><th class="is-num">Sessions</th><th>Updated</th></tr></thead>
+              <tbody data-rows></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section data-panel="settings" aria-label="Settings" hidden>
+        <div class="settings">
+          <article class="obsidian-card">
+            <div class="card-head"><h2>Workspace</h2></div>
+            <form class="form" data-settings>
+              <label class="obsidian-field"><span class="obsidian-field__label">Workspace name</span><input class="obsidian-input" value="AI Workspace" data-name required></label>
+              <label class="obsidian-field"><span class="obsidian-field__label">Description</span><textarea class="obsidian-input" rows="3">Research, drafts and launches for the growth team.</textarea></label>
+              <div class="line"><div><b>Allow AI Copilot</b><span>Members can run Copilot on shared projects</span></div><input class="obsidian-switch" type="checkbox" checked aria-label="Allow AI Copilot"></div>
+              <div class="line"><div><b>Weekly digest</b><span>A Monday summary of sessions and runs</span></div><input class="obsidian-switch" type="checkbox" aria-label="Weekly digest"></div>
+              <div class="obsidian-field"><span class="obsidian-field__label">Copilot creativity</span><div class="obsidian-range"><input class="obsidian-slider" type="range" min="0" max="100" value="74" style="--obsidian-value:74" aria-label="Copilot creativity"><output data-suffix="%">74%</output></div></div>
+              <div class="obsidian-row"><button class="obsidian-btn obsidian-btn--primary" type="submit">Save changes</button><button class="obsidian-btn obsidian-btn--tertiary" type="reset">Discard</button></div>
+            </form>
+          </article>
+          <article class="obsidian-card">
+            <div class="card-head"><h2>Appearance</h2></div>
+            <div class="obsidian-field"><span class="obsidian-field__label">Accent</span>
+              <div class="obsidian-segmented obsidian-segmented--block" role="tablist" aria-label="Accent">
+                <button class="obsidian-segmented__item" role="tab" aria-selected="true" data-accent-set="cyan">Glacier</button>
+                <button class="obsidian-segmented__item" role="tab" aria-selected="false" tabindex="-1" data-accent-set="emerald">Emerald</button>
+                <button class="obsidian-segmented__item" role="tab" aria-selected="false" tabindex="-1" data-accent-set="violet">Violet</button>
+              </div>
+            </div>
+            <div class="obsidian-alert" role="note"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-spark"/></svg><div><b>Dark first</b>Obsidian is designed for focus at night; the accent is the only color that changes.</div></div>
+          </article>
+        </div>
+      </section>
+
+      <section data-panel="empty" aria-live="polite" hidden>
+        <article class="obsidian-card"><div class="obsidian-empty"><span class="obsidian-card__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-spark" data-empty-icon/></svg></span><h3 data-empty-title>Nothing here yet</h3><p data-empty-text>…</p><button class="obsidian-btn obsidian-btn--primary obsidian-btn--sm" type="button" data-go="projects">Browse projects</button></div></article>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="toasts" aria-live="polite" data-toasts></div>
+
+<dialog class="obsidian-dialog" id="archive" aria-labelledby="archive-t">
+  <h2 class="obsidian-dialog__title" id="archive-t">Archive workspace?</h2>
+  <p class="obsidian-dialog__text">This will move the workspace to the archive. You can restore it anytime.</p>
+  <div class="obsidian-dialog__actions"><button class="obsidian-btn" type="button" data-obsidian-close>Cancel</button><button class="obsidian-btn obsidian-btn--primary" type="button" data-obsidian-close="archive" value="archive">Archive</button></div>
+</dialog>
+
+<script src="../js/obsidian.js"></script>
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- toasts ---------- */
+  function toast(title, text, tone) {
+    var t = document.createElement("div");
+    t.className = "obsidian-toast obsidian-toast--" + (tone || "success");
+    t.setAttribute("role", "status");
+    t.innerHTML = '<span class="obsidian-toast__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-check"/></svg></span><div><p class="obsidian-toast__title"></p><p class="obsidian-toast__text"></p></div><button class="obsidian-toast__close" type="button" aria-label="Dismiss" data-obsidian-dismiss><svg class="obsidian-icon" aria-hidden="true"><use href="#i-x"/></svg></button>';
+    t.querySelector(".obsidian-toast__title").textContent = title;
+    t.querySelector(".obsidian-toast__text").textContent = text || "";
+    $("[data-toasts]").appendChild(t);
+    setTimeout(function () { t.remove(); }, 4200);
+  }
+  $$("[data-toast]").forEach(function (b) { b.addEventListener("click", function () { toast(b.getAttribute("data-toast"), "Anyone with the link can join as a viewer."); }); });
+
+  /* ---------- views ---------- */
+  var VIEWS = {
+    overview: ["Overview", "Your AI workspace at a glance."],
+    projects: ["Projects", "24 active · 6 shared with you."],
+    tasks: ["Tasks", "Everything assigned to you, across projects.", "i-tasks", "No tasks due", "You are clear for today. New tasks from Copilot and teammates land here."],
+    copilot: ["AI Copilot", "Runs, prompts and drafts.", "i-spark", "Start a Copilot run", "Ask for a brief, a summary or a plan; finished runs appear here with their sources."],
+    team: ["Team", "8 members · 3 online.", "i-users", "Invite your team", "Share projects and Copilot history with up to 25 people on this plan."],
+    settings: ["Settings", "Workspace details, access and appearance."]
+  };
+  function show(view) {
+    var v = VIEWS[view] || VIEWS.overview;
+    $("[data-title]").textContent = v[0];
+    $("[data-sub]").textContent = v[1];
+    var panel = v[2] ? "empty" : view;
+    $$("[data-panel]").forEach(function (p) { p.hidden = p.getAttribute("data-panel") !== panel; });
+    if (v[2]) { $("[data-empty-icon]").setAttribute("href", "#" + v[2]); $("[data-empty-title]").textContent = v[3]; $("[data-empty-text]").textContent = v[4]; }
+    var link = $('[data-view="' + view + '"]');
+    if (link && link.getAttribute("aria-current") !== "page") ObsidianUI.selectNavItem(link);
+    if (view === "overview") drawChart(period, true);
+    if (view === "projects") $$("[data-filter] .obsidian-tabs__item").forEach(function () { ObsidianUI.refresh($("[data-filter]")); });
+  }
+  $$("[data-view]").forEach(function (a) { a.addEventListener("click", function () { show(a.getAttribute("data-view")); }); });
+  $$("[data-go]").forEach(function (a) { a.addEventListener("click", function (e) { e.preventDefault(); show(a.getAttribute("data-go")); }); });
+
+  /* ---------- KPI count-up ---------- */
+  $$("[data-count]").forEach(function (el) {
+    var to = +el.getAttribute("data-count"), t0 = performance.now(), dur = 1200;
+    if (reduce) return;
+    (function tick(t) { var k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 4); el.textContent = Math.round(to * e).toLocaleString("en-US"); if (k < 1) requestAnimationFrame(tick); })(t0);
+  });
+
+  /* ---------- chart ---------- */
+  function series(days) {
+    var seed = days * 7919, out = [];
+    function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    for (var i = 0; i < days; i++) {
+      var k = i / (days - 1);
+      out.push(Math.max(400, 2600 + k * 7600 + Math.sin(i * (days > 40 ? 0.35 : 0.9)) * 1100 + (rnd() - 0.5) * 900));
+    }
+    return out;
+  }
+  function smooth(pts) {
+    var d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
+    for (var i = 0; i < pts.length - 1; i++) {
+      var p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      var c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6, c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+      d += " C" + c1x.toFixed(1) + " " + c1y.toFixed(1) + " " + c2x.toFixed(1) + " " + c2y.toFixed(1) + " " + p2[0].toFixed(1) + " " + p2[1].toFixed(1);
+    }
+    return d;
+  }
+  var period = 30, data = [], MAX = 12000;
+  var start = new Date(2026, 0, 1);
+  function label(i) { var d = new Date(start); d.setDate(d.getDate() + i); return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }); }
+  function drawChart(days, redraw) {
+    period = days;
+    data = series(days);
+    var W = 600, H = 200;
+    var pts = data.map(function (v, i) { return [i / (days - 1) * W, H - v / MAX * H]; });
+    var line = smooth(pts);
+    var svg = $("[data-chart]"), l = $("[data-line]"), a = $("[data-area]");
+    l.setAttribute("d", line);
+    a.setAttribute("d", line + " L" + W + " " + H + " L0 " + H + " Z");
+    $("[data-grid]").innerHTML = [0.25, 0.5, 0.75].map(function (f) { return '<line class="obsidian-chart__grid" x1="0" x2="' + W + '" y1="' + (H * f) + '" y2="' + (H * f) + '"/>'; }).join("");
+    var step = days <= 7 ? 1 : days <= 31 ? 7 : 21, xs = [];
+    for (var t = 0; t < days; t += step) xs.push('<span style="left:' + (t / (days - 1) * 100).toFixed(2) + '%">' + label(t) + "</span>");
+    $("[data-x]").innerHTML = xs.join("");
+    $("[data-chart-sub]").textContent = "Sessions over the last " + days + " days";
+    if (redraw && !reduce) [l, a].forEach(function (p) { p.style.animation = "none"; p.getBoundingClientRect(); p.style.animation = ""; });
+  }
+  drawChart(30);
+  $("[data-period]").addEventListener("obsidian:select", function (e) { drawChart(+e.detail.value, true); });
+
+  var plot = $("[data-plot]"), scrub = $("[data-scrub]"), tip = $("[data-scrub-tip]");
+  function scrubTo(clientX) {
+    var r = plot.getBoundingClientRect(), k = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+    var i = Math.round(k * (period - 1)), x = i / (period - 1) * r.width, y = (1 - data[i] / MAX) * r.height;
+    scrub.style.transform = "translateX(" + x + "px)";
+    scrub.querySelector("i").style.top = (y - 5) + "px";
+    tip.style.top = (y - 34) + "px";
+    tip.textContent = label(i) + " · " + Math.round(data[i]).toLocaleString("en-US") + " sessions";
+    tip.style.left = x > r.width - 170 ? "auto" : "12px";
+    tip.style.right = x > r.width - 170 ? "12px" : "auto";
+  }
+  plot.addEventListener("pointermove", function (e) { scrubTo(e.clientX); });
+  plot.addEventListener("pointerdown", function (e) { plot.classList.add("is-scrubbing"); scrubTo(e.clientX); });
+  plot.addEventListener("pointerleave", function () { plot.classList.remove("is-scrubbing"); });
+
+  /* ---------- projects ---------- */
+  var PROJECTS = [
+    { n: "Campaign v2", s: "live", p: 78, ss: 4210, u: "2 min ago", sh: true },
+    { n: "Q3 review deck", s: "live", p: 92, ss: 1984, u: "18 min ago" },
+    { n: "Onboarding emails", s: "pending", p: 46, ss: 862, u: "1 hr ago", sh: true },
+    { n: "Pricing research", s: "error", p: 31, ss: 1407, u: "3 hr ago" },
+    { n: "Brand voice guide", s: "live", p: 64, ss: 2311, u: "Yesterday", sh: true },
+    { n: "Launch retro 2025", s: "archived", p: 100, ss: 3765, u: "Dec 12" }
+  ];
+  var BADGE = { live: ["success", "Live"], pending: ["warning", "Pending"], error: ["danger", "Error"], archived: ["", "Archived"] };
+  function rows(filter) {
+    $("[data-rows]").innerHTML = PROJECTS.filter(function (p) { return filter === "all" || (filter === "shared" ? p.sh : filter === "live" ? p.s !== "archived" : p.s === filter); }).map(function (p) {
+      var b = BADGE[p.s];
+      return "<tr><td><b>" + p.n + '</b></td><td><span class="obsidian-badge' + (b[0] ? " obsidian-badge--" + b[0] : "") + '">' + b[1] + '</span></td><td><div class="bar-cell"><div class="obsidian-progress" role="progressbar" aria-label="' + p.n + ' progress" aria-valuenow="' + p.p + '" aria-valuemin="0" aria-valuemax="100" style="--obsidian-value:' + p.p + '"></div><span class="obsidian-caption">' + p.p + '%</span></div></td><td class="is-num">' + p.ss.toLocaleString("en-US") + "</td><td>" + p.u + "</td></tr>";
+    }).join("");
+  }
+  rows("all");
+  $("[data-filter]").addEventListener("click", function (e) { var b = e.target.closest("[data-f]"); if (b) rows(b.getAttribute("data-f")); });
+  $("[data-filter]").addEventListener("keydown", function () { setTimeout(function () { var b = $("[data-filter] [aria-selected='true']"); if (b) rows(b.getAttribute("data-f")); }); });
+  function newProject() {
+    PROJECTS.unshift({ n: "Untitled project " + (PROJECTS.length + 1), s: "pending", p: 0, ss: 0, u: "Just now" });
+    show("projects"); rows("all"); ObsidianUI.selectTab($('[data-f="all"]'));
+    toast("Project created", "Untitled project is ready for its first Copilot run.");
+  }
+  $("[data-new]").addEventListener("click", newProject);
+
+  /* ---------- workspace menu, archive ---------- */
+  $(".side .obsidian-menu").addEventListener("obsidian:select", function (e) {
+    if (e.detail.value === "archive") $("#archive").showModal();
+    if (e.detail.value === "new") newProject();
+    if (e.detail.value === "rename") { show("settings"); setTimeout(function () { $("[data-name]").focus(); $("[data-name]").select(); }, 60); }
+  });
+  $("#archive").addEventListener("close", function () { if (this.returnValue === "archive") toast("Workspace archived", "Restore it from Settings → Archive anytime."); });
+  $("[data-bell]").addEventListener("click", function () { this.classList.add("is-read"); this.setAttribute("aria-label", "Notifications"); });
+
+  /* ---------- settings ---------- */
+  $("[data-settings]").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = $("[data-name]").value.trim() || "AI Workspace";
+    $("[data-ws-name]").textContent = name;
+    toast("Workspace saved", "Your changes have been applied.");
+  });
+
+  /* ---------- command palette ---------- */
+  var COMMANDS = [
+    ["Go to Overview", function () { show("overview"); }],
+    ["Go to Projects", function () { show("projects"); }],
+    ["Go to Tasks", function () { show("tasks"); }],
+    ["Open AI Copilot", function () { show("copilot"); }],
+    ["New project", newProject],
+    ["Archive workspace…", function () { $("#archive").showModal(); }],
+    ["Accent: Glacier cyan", function () { ObsidianUI.setAccent("cyan"); }],
+    ["Accent: Emerald", function () { ObsidianUI.setAccent("emerald"); }],
+    ["Accent: Electric violet", function () { ObsidianUI.setAccent("violet"); }],
+    ["Workspace settings", function () { show("settings"); }]
+  ];
+  var pal = $("[data-palette]"), input = $("[data-palette-input]"), list = $("[data-palette-list]"), cur = 0, hits = [];
+  function renderPalette() {
+    var q = input.value.trim().toLowerCase();
+    hits = COMMANDS.filter(function (c) { return !q || c[0].toLowerCase().indexOf(q) >= 0; }).slice(0, 7);
+    cur = Math.min(cur, Math.max(0, hits.length - 1));
+    list.innerHTML = hits.length ? hits.map(function (c, i) { return '<button class="obsidian-menu__item" role="option" type="button" tabindex="-1" aria-selected="' + (i === cur) + '" data-i="' + i + '">' + c[0] + "</button>"; }).join("") : '<span class="obsidian-menu__item" aria-disabled="true">No matches</span>';
+  }
+  function openPalette(on) { pal.classList.toggle("is-open", on); input.setAttribute("aria-expanded", String(on)); if (on) renderPalette(); }
+  function run(i) { var c = hits[i]; if (!c) return; openPalette(false); input.value = ""; input.blur(); c[1](); }
+  input.addEventListener("focus", function () { openPalette(true); });
+  input.addEventListener("input", function () { cur = 0; openPalette(true); });
+  input.addEventListener("blur", function () { setTimeout(function () { openPalette(false); }, 150); });
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); cur = (cur + (e.key === "ArrowDown" ? 1 : -1) + hits.length) % Math.max(1, hits.length); renderPalette(); }
+    else if (e.key === "Enter") { e.preventDefault(); run(cur); }
+    else if (e.key === "Escape") { openPalette(false); input.blur(); }
+  });
+  list.addEventListener("mousedown", function (e) { var b = e.target.closest("[data-i]"); if (b) { e.preventDefault(); run(+b.getAttribute("data-i")); } });
+
+  var start0 = (location.hash || "#overview").slice(1);
+  if (VIEWS[start0] && start0 !== "overview") show(start0);
+})();
+</script>
+<script src="../../site/smooth-scroll.js" defer></script>
+</body>
+</html>

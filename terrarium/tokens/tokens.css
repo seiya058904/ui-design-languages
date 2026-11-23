@@ -1,0 +1,185 @@
+/* terrarium tokens — GENERATED from terrarium/tokens/tokens.json. Do not edit by hand.
+   Regenerate with: node scripts/build-tokens.mjs terrarium */
+:root {
+  --terrarium-color-canvas: #F3EFE6; /* Oat linen — the page */
+  --terrarium-color-surface: #FAF7F0; /* Ceramic cream — cards */
+  --terrarium-color-surface-raised: #FFFCF6; /* Glazed highlight: popovers, dialog, knobs */
+  --terrarium-color-well: #F6F1E8; /* Fields and tracks */
+  --terrarium-color-linen: #E9DFD0; /* Linen — tiles, neutral badges, art grounds */
+  --terrarium-color-sand: #E2D7C6; /* Sand — soft borders */
+  --terrarium-color-line: #E7DECF; /* Hairlines */
+  --terrarium-color-hover: #F1EADF; /* Rows and items under the pointer */
+  --terrarium-color-ink: #26221E; /* Espresso — headings */
+  --terrarium-color-text: #3B342D; /* Body text */
+  --terrarium-color-text-muted: #6E6457; /* Secondary text (5.4:1 on cream) */
+  --terrarium-color-text-subtle: #9A8F80; /* Placeholders */
+  --terrarium-color-terracotta: #C85A32; /* Palette: terracotta */
+  --terrarium-color-moss: #3E5C4A; /* Palette: moss */
+  --terrarium-color-ochre: #D49A3A; /* Palette: ochre */
+  --terrarium-color-espresso: #26221E; /* Palette: espresso */
+  --terrarium-color-rose: #EFCFC2; /* Palette: soft terracotta clay (drafts) */
+  --terrarium-color-primary: #B9502B; /* Terracotta, fired one step deeper so white reads (4.9:1) */
+  --terrarium-color-primary-hover: #A9471F;
+  --terrarium-color-primary-ink: #FFFBF5;
+  --terrarium-color-primary-text: #A9471F; /* Terracotta as text on cream (5.4:1) */
+  --terrarium-color-primary-soft: #F5E3D8; /* Terracotta wash */
+  --terrarium-color-secondary: #3E5C4A; /* Moss — calm actions, on-states, progress */
+  --terrarium-color-secondary-hover: #33503F;
+  --terrarium-color-secondary-ink: #F7F3EA; /* Text on moss (7.4:1) */
+  --terrarium-color-secondary-soft: #DFE7DE; /* Moss wash */
+  --terrarium-color-ochre-ink: #3A2A10; /* Text on ochre (5.6:1) */
+  --terrarium-color-rose-ink: #8A3A1D; /* Text on soft clay */
+  --terrarium-color-danger: #A93B26;
+  --terrarium-color-danger-soft: #F6DDD5;
+  --terrarium-color-track: #E8DFD1; /* Empty tracks: slider, ring, progress */
+  --terrarium-color-shade: rgba(92, 64, 36, 0.14); /* Warm shadow */
+  --terrarium-color-shade-soft: rgba(92, 64, 36, 0.07);
+  --terrarium-color-glaze: rgba(255, 255, 255, 0.75); /* Glaze highlight on the top edge of cards */
+  --terrarium-color-disabled: #EDE6DA;
+  --terrarium-color-disabled-ink: #A69B8B;
+  --terrarium-color-backdrop: rgba(38, 34, 30, 0.32);
+
+  --terrarium-texture-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='l'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.35 0 0 0 0 0.2 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23l)'/%3E%3C/svg%3E"); /* Linen fibre under the page */
+
+  --terrarium-font-family-serif: Fraunces, "Iowan Old Style", Georgia, serif; /* Headings: a soft, organic serif */
+  --terrarium-font-family-sans: "Plus Jakarta Sans", "Avenir Next", "Segoe UI", system-ui, sans-serif; /* Interface text */
+
+  --terrarium-font-size-display: 58px;
+  --terrarium-font-size-section: 26px;
+  --terrarium-font-size-title: 22px;
+  --terrarium-font-size-heading: 17px;
+  --terrarium-font-size-body: 15px;
+  --terrarium-font-size-small: 14px;
+  --terrarium-font-size-caption: 13px;
+  --terrarium-font-size-label: 12px;
+
+  --terrarium-font-weight-regular: 400;
+  --terrarium-font-weight-medium: 500;
+  --terrarium-font-weight-semibold: 600;
+  --terrarium-font-weight-bold: 700;
+  --terrarium-font-soft: "SOFT" 100, "WONK" 0; /* Fraunces variation: fully softened terminals */
+
+  --terrarium-space-1: 4px;
+  --terrarium-space-2: 8px;
+  --terrarium-space-3: 12px;
+  --terrarium-space-4: 16px;
+  --terrarium-space-5: 20px;
+  --terrarium-space-6: 24px;
+  --terrarium-space-8: 32px;
+  --terrarium-space-10: 40px;
+
+  --terrarium-radius-sm: 8px; /* Checkboxes, small tiles */
+  --terrarium-radius-md: 16px; /* Fields, list items, tiles */
+  --terrarium-radius-lg: 20px; /* Inner cards, toasts */
+  --terrarium-radius-xl: 28px; /* Cards, dialogs */
+  --terrarium-radius-pill: 999px; /* Buttons, tabs, badges, switches */
+  --terrarium-radius-pebble: 58% 42% 55% 45% / 52% 58% 42% 48%; /* An organic pebble outline */
+
+  --terrarium-size-control-sm: 34px;
+  --terrarium-size-control: 44px;
+  --terrarium-size-control-lg: 52px;
+
+  --terrarium-shadow-level-1: inset 0 1px 0 var(--terrarium-color-glaze), 0 0 0 1px var(--terrarium-color-shade-soft), 0 1px 2px var(--terrarium-color-shade-soft); /* Surface 1 — base */
+  --terrarium-shadow-level-2: inset 0 1px 0 var(--terrarium-color-glaze), 0 0 0 1px var(--terrarium-color-shade-soft), 0 6px 16px -6px var(--terrarium-color-shade); /* Surface 2 — lifted 4px */
+  --terrarium-shadow-level-3: inset 0 1px 0 var(--terrarium-color-glaze), 0 0 0 1px var(--terrarium-color-shade-soft), 0 16px 34px -12px var(--terrarium-color-shade); /* Surface 3 — lifted 8px */
+  --terrarium-shadow-primary: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 1px transparent, 0 8px 18px -8px rgba(185, 80, 43, 0.6); /* Terracotta casts a warm terracotta shadow */
+  --terrarium-shadow-secondary: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 0 1px transparent, 0 8px 18px -8px rgba(62, 92, 74, 0.6);
+  --terrarium-shadow-focus: 0 0 0 2px var(--terrarium-color-surface), 0 0 0 4px var(--terrarium-color-secondary); /* A moss ring with a cream gap */
+
+  --terrarium-motion-duration: 300ms;
+  --terrarium-motion-duration-fast: 180ms;
+  --terrarium-motion-duration-press: 120ms;
+  --terrarium-motion-duration-grow: 760ms; /* Rings and entrances */
+  --terrarium-motion-stagger: 80ms;
+  --terrarium-motion-easing: cubic-bezier(0.34, 1.35, 0.64, 1); /* Organic spring: settles with a small, warm overshoot */
+  --terrarium-motion-easing-out: cubic-bezier(0.25, 0.8, 0.3, 1);
+  --terrarium-motion-easing-press: cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+/* Dark theme — GENERATED from terrarium/tokens/tokens.dark.json.
+   <html data-theme="dark"> forces it; <html data-theme="auto"> follows the OS setting. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --terrarium-color-canvas: #1B201C;
+  --terrarium-color-surface: #242A25;
+  --terrarium-color-surface-raised: #2C332D;
+  --terrarium-color-well: #1F2520;
+  --terrarium-color-linen: #343A33;
+  --terrarium-color-sand: #3E453D;
+  --terrarium-color-line: #343B34;
+  --terrarium-color-hover: #2C332D;
+  --terrarium-color-ink: #F2EBDD;
+  --terrarium-color-text: #DDD5C6;
+  --terrarium-color-text-muted: #ADA595;
+  --terrarium-color-text-subtle: #7F786B;
+  --terrarium-color-primary: #D9714A;
+  --terrarium-color-primary-hover: #E2835D;
+  --terrarium-color-primary-ink: #1B1410;
+  --terrarium-color-primary-text: #E8916B;
+  --terrarium-color-primary-soft: #3B2A22;
+  --terrarium-color-secondary: #86AE93;
+  --terrarium-color-secondary-hover: #97BCA3;
+  --terrarium-color-secondary-ink: #13201A;
+  --terrarium-color-secondary-soft: #2C3B31;
+  --terrarium-color-ochre-ink: #2A1E0B;
+  --terrarium-color-rose: #4A3029;
+  --terrarium-color-rose-ink: #F2C2AE;
+  --terrarium-color-danger: #E8826C;
+  --terrarium-color-danger-soft: #41281F;
+  --terrarium-color-track: #363D35;
+  --terrarium-color-shade: rgba(0, 0, 0, 0.45);
+  --terrarium-color-shade-soft: rgba(0, 0, 0, 0.3);
+  --terrarium-color-glaze: rgba(255, 245, 225, 0.06);
+  --terrarium-color-disabled: #2A302A;
+  --terrarium-color-disabled-ink: #6E695E;
+  --terrarium-color-backdrop: rgba(8, 10, 8, 0.6);
+
+  --terrarium-texture-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='l'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.85 0 0 0 0 0.7 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23l)'/%3E%3C/svg%3E");
+
+  --terrarium-shadow-primary: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 1px transparent, 0 8px 20px -8px rgba(217, 113, 74, 0.5);
+  --terrarium-shadow-secondary: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 1px transparent, 0 8px 20px -8px rgba(134, 174, 147, 0.45);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    color-scheme: dark;
+    --terrarium-color-canvas: #1B201C;
+    --terrarium-color-surface: #242A25;
+    --terrarium-color-surface-raised: #2C332D;
+    --terrarium-color-well: #1F2520;
+    --terrarium-color-linen: #343A33;
+    --terrarium-color-sand: #3E453D;
+    --terrarium-color-line: #343B34;
+    --terrarium-color-hover: #2C332D;
+    --terrarium-color-ink: #F2EBDD;
+    --terrarium-color-text: #DDD5C6;
+    --terrarium-color-text-muted: #ADA595;
+    --terrarium-color-text-subtle: #7F786B;
+    --terrarium-color-primary: #D9714A;
+    --terrarium-color-primary-hover: #E2835D;
+    --terrarium-color-primary-ink: #1B1410;
+    --terrarium-color-primary-text: #E8916B;
+    --terrarium-color-primary-soft: #3B2A22;
+    --terrarium-color-secondary: #86AE93;
+    --terrarium-color-secondary-hover: #97BCA3;
+    --terrarium-color-secondary-ink: #13201A;
+    --terrarium-color-secondary-soft: #2C3B31;
+    --terrarium-color-ochre-ink: #2A1E0B;
+    --terrarium-color-rose: #4A3029;
+    --terrarium-color-rose-ink: #F2C2AE;
+    --terrarium-color-danger: #E8826C;
+    --terrarium-color-danger-soft: #41281F;
+    --terrarium-color-track: #363D35;
+    --terrarium-color-shade: rgba(0, 0, 0, 0.45);
+    --terrarium-color-shade-soft: rgba(0, 0, 0, 0.3);
+    --terrarium-color-glaze: rgba(255, 245, 225, 0.06);
+    --terrarium-color-disabled: #2A302A;
+    --terrarium-color-disabled-ink: #6E695E;
+    --terrarium-color-backdrop: rgba(8, 10, 8, 0.6);
+
+    --terrarium-texture-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='l'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.85 0 0 0 0 0.7 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23l)'/%3E%3C/svg%3E");
+
+    --terrarium-shadow-primary: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 1px transparent, 0 8px 20px -8px rgba(217, 113, 74, 0.5);
+    --terrarium-shadow-secondary: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 1px transparent, 0 8px 20px -8px rgba(134, 174, 147, 0.45);
+  }
+}

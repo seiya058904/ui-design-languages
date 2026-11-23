@@ -1,0 +1,194 @@
+{
+  "$description": "Braun / Field, black anodized edition (added; the reference is aluminium only). The same instrument in matte-black anodizing: keycaps become graphite POM, the contrasting key turns aluminium, highlights fall to a faint sheen and the orange brightens a step so lit segments still read. Opt in with <html data-theme=\"dark\"> or follow the OS with data-theme=\"auto\".",
+  "color": {
+    "canvas": {
+      "$value": "#1F1F1E"
+    },
+    "surround": {
+      "$value": "#141413"
+    },
+    "chassis": {
+      "$value": "#161615"
+    },
+    "plate": {
+      "$value": "#272726"
+    },
+    "keycap": {
+      "$value": "#3A3A37"
+    },
+    "keycap-hover": {
+      "$value": "#42423F"
+    },
+    "key": {
+      "$value": "#383835"
+    },
+    "key-hover": {
+      "$value": "#41413E"
+    },
+    "skirt": {
+      "$value": "#0C0C0B"
+    },
+    "knob-light": {
+      "$value": "#5A5A55"
+    },
+    "knob": {
+      "$value": "#3A3A37"
+    },
+    "knob-dark": {
+      "$value": "#242422"
+    },
+    "knurl": {
+      "$value": "rgba(0, 0, 0, 0.45)"
+    },
+    "knurl-light": {
+      "$value": "rgba(255, 255, 255, 0.1)"
+    },
+    "bezel": {
+      "$value": "#333331"
+    },
+    "inverse": {
+      "$value": "#E2E2DD"
+    },
+    "inverse-hover": {
+      "$value": "#EEEEEA"
+    },
+    "inverse-skirt": {
+      "$value": "#8F8F89"
+    },
+    "inverse-ink": {
+      "$value": "#1B1B1B"
+    },
+    "inverse-muted": {
+      "$value": "#55554F"
+    },
+    "slot": {
+      "$value": "#0B0B0A"
+    },
+    "ink": {
+      "$value": "#F1F1EC"
+    },
+    "text": {
+      "$value": "#DADAD4"
+    },
+    "text-muted": {
+      "$value": "#A3A39C"
+    },
+    "text-subtle": {
+      "$value": "#6F6F69"
+    },
+    "line": {
+      "$value": "#393936"
+    },
+    "line-strong": {
+      "$value": "#C9C9C3"
+    },
+    "engrave": {
+      "$value": "rgba(0, 0, 0, 0.6)"
+    },
+    "engrave-light": {
+      "$value": "rgba(255, 255, 255, 0.07)"
+    },
+    "highlight": {
+      "$value": "rgba(255, 255, 255, 0.13)"
+    },
+    "shade": {
+      "$value": "rgba(0, 0, 0, 0.5)"
+    },
+    "shade-deep": {
+      "$value": "rgba(0, 0, 0, 0.7)"
+    },
+    "primary": {
+      "$value": "#FF5A12"
+    },
+    "primary-hover": {
+      "$value": "#FF6D2C"
+    },
+    "primary-skirt": {
+      "$value": "#A93400"
+    },
+    "primary-ink": {
+      "$value": "#161616"
+    },
+    "primary-text": {
+      "$value": "#FF7A3D"
+    },
+    "primary-soft": {
+      "$value": "#36231A"
+    },
+    "primary-line": {
+      "$value": "#7E3816"
+    },
+    "primary-glow": {
+      "$value": "rgba(255, 90, 18, 0.5)"
+    },
+    "signal": {
+      "$value": "#22E066"
+    },
+    "signal-glow": {
+      "$value": "rgba(34, 224, 102, 0.5)"
+    },
+    "led-off": {
+      "$value": "#3A3A37"
+    },
+    "danger": {
+      "$value": "#FF8A63"
+    },
+    "grille-hole": {
+      "$value": "#050505"
+    },
+    "disabled": {
+      "$value": "#2B2B29"
+    },
+    "disabled-ink": {
+      "$value": "#6A6A64"
+    },
+    "backdrop": {
+      "$value": "rgba(0, 0, 0, 0.6)"
+    }
+  },
+  "texture": {
+    "grain": {
+      "$value": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
+    },
+    "brushed": {
+      "$value": "repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, rgba(0, 0, 0, 0.12) 1px 2px, transparent 2px 4px)"
+    },
+    "turned": {
+      "$value": "repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0 1px, rgba(0, 0, 0, 0.12) 1px 2.5px)"
+    }
+  },
+  "gradient": {
+    "face": {
+      "$value": "linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0) 58%, rgba(0, 0, 0, 0.12))"
+    },
+    "face-inverse": {
+      "$value": "linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 55%, rgba(0, 0, 0, 0.04))"
+    },
+    "led-off": {
+      "$value": "linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.05))"
+    },
+    "sheen": {
+      "$value": "linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.12))"
+    }
+  },
+  "shadow": {
+    "knob": {
+      "$value": "inset 0 2px 1px rgba(255, 255, 255, 0.22), inset 0 -3px 6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.5), 0 6px 0 -1px var(--braun-color-skirt), 0 16px 24px -8px var(--braun-color-shade-deep)"
+    },
+    "key-primary": {
+      "$value": "inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 2px 0 var(--braun-color-primary-skirt), 0 3px 4px -1px var(--braun-color-shade), 0 8px 18px -8px var(--braun-color-primary-glow)"
+    },
+    "key-inverse": {
+      "$value": "inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(0, 0, 0, 0.08), 0 2px 0 var(--braun-color-inverse-skirt), 0 3px 4px -1px var(--braun-color-shade), 0 8px 14px -8px var(--braun-color-shade-deep)"
+    },
+    "key-inverse-pressed": {
+      "$value": "inset 0 1px 3px rgba(0, 0, 0, 0.35), inset 0 -1px 0 transparent, 0 0.5px 0 var(--braun-color-inverse-skirt), 0 1px 1px -1px var(--braun-color-shade), 0 2px 4px -4px var(--braun-color-shade)"
+    },
+    "overlay": {
+      "$value": "inset 0 1px 0 var(--braun-color-highlight), 0 4px 0 var(--braun-color-skirt), 0 28px 56px -12px rgba(0, 0, 0, 0.7)"
+    },
+    "key-primary-latched": {
+      "$value": "inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 1px 0 var(--braun-color-primary-skirt), 0 2px 2px -1px var(--braun-color-shade), 0 6px 14px -6px var(--braun-color-primary-glow)"
+    }
+  }
+}

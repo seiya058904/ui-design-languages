@@ -1,0 +1,546 @@
+/* Terrarium / Earth — components
+   Glazed ceramics on oat linen. Terracotta is the primary action, moss is calm and "on", ochre is
+   paused, clay-pink is a draft. Pieces are round and soft; depth is a warm layered shadow.
+   Motion is organic: 300ms on a soft spring (cubic-bezier(.34,1.35,.64,1)) that settles with a
+   small warm overshoot — knobs and indicators sway into place, rings grow, chevrons lean.
+   Shared anatomy: btn · input/field · checkbox/radio/switch · slider · segmented · tabs ·
+   breadcrumb · pagination · nav · chip · badge · feature card · ring · progress · toast · alert ·
+   dialog · tooltip · table · avatar · list · pebble · surface samples */
+
+@property --terrarium-value {
+  syntax: "<integer>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* =========================================================================
+   Button — pills; terracotta for the main action, moss for a calm one, a cream outline for the rest
+   <button class="terrarium-btn terrarium-btn--primary">Continue</button>
+   Variants: --primary · --secondary · default (outline) · --ghost   Sizes: --sm · --lg · --icon · --block
+   ========================================================================= */
+.terrarium-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--terrarium-space-2);
+  height: var(--terrarium-size-control);
+  padding: 0 var(--terrarium-space-6);
+  border: 1.5px solid var(--terrarium-color-sand);
+  border-radius: var(--terrarium-radius-pill);
+  background: var(--terrarium-color-surface);
+  color: var(--terrarium-color-ink);
+  font-size: var(--terrarium-font-size-body);
+  font-weight: var(--terrarium-font-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: inset 0 1px 0 var(--terrarium-color-glaze), 0 0 0 1px transparent, 0 2px 6px -3px var(--terrarium-color-shade);
+  transition:
+    transform var(--terrarium-motion-duration) var(--terrarium-motion-easing),
+    box-shadow var(--terrarium-motion-duration) var(--terrarium-motion-easing-out),
+    background-color var(--terrarium-motion-duration-fast) var(--terrarium-motion-easing-out),
+    border-color var(--terrarium-motion-duration-fast) var(--terrarium-motion-easing-out);
+}
+.terrarium-btn:hover,
+.terrarium-btn.is-hover { transform: translateY(-1px); border-color: var(--terrarium-color-text-subtle); box-shadow: inset 0 1px 0 var(--terrarium-color-glaze), 0 0 0 1px transparent, 0 8px 16px -8px var(--terrarium-color-shade); }
+.terrarium-btn:active,
+.terrarium-btn.is-active { transform: scale(0.97); transition-duration: var(--terrarium-motion-duration-press); transition-timing-function: var(--terrarium-motion-easing-press); }
+.terrarium-btn:focus-visible { box-shadow: var(--terrarium-shadow-focus); }
+.terrarium-btn .terrarium-icon { width: 18px; height: 18px; }
+.terrarium-btn--primary { border-color: transparent; background: var(--terrarium-color-primary); color: var(--terrarium-color-primary-ink); box-shadow: var(--terrarium-shadow-primary); }
+.terrarium-btn--primary:hover,
+.terrarium-btn--primary.is-hover { border-color: transparent; background: var(--terrarium-color-primary-hover); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 1px transparent, 0 12px 22px -8px rgba(185, 80, 43, 0.6); }
+.terrarium-btn--secondary { border-color: transparent; background: var(--terrarium-color-secondary); color: var(--terrarium-color-secondary-ink); box-shadow: var(--terrarium-shadow-secondary); }
+.terrarium-btn--secondary:hover,
+.terrarium-btn--secondary.is-hover { border-color: transparent; background: var(--terrarium-color-secondary-hover); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 0 1px transparent, 0 12px 22px -8px rgba(62, 92, 74, 0.55); }
+.terrarium-btn--primary:focus-visible,
+.terrarium-btn--secondary:focus-visible { box-shadow: var(--terrarium-shadow-focus); }
+.terrarium-btn--ghost { border-color: transparent; background: transparent; box-shadow: none; }
+.terrarium-btn--ghost:hover,
+.terrarium-btn--ghost.is-hover { border-color: transparent; background: var(--terrarium-color-hover); box-shadow: none; }
+.terrarium-btn--sm { height: var(--terrarium-size-control-sm); padding: 0 var(--terrarium-space-4); font-size: var(--terrarium-font-size-caption); }
+.terrarium-btn--lg { height: var(--terrarium-size-control-lg); padding: 0 var(--terrarium-space-8); font-size: var(--terrarium-font-size-heading); }
+.terrarium-btn--icon { width: var(--terrarium-size-control); padding: 0; }
+.terrarium-btn--icon.terrarium-btn--sm { width: var(--terrarium-size-control-sm); }
+.terrarium-btn--block { display: flex; width: 100%; }
+.terrarium-btn:disabled,
+.terrarium-btn.is-disabled { border-color: transparent; background: var(--terrarium-color-disabled); color: var(--terrarium-color-disabled-ink); box-shadow: none; transform: none; cursor: not-allowed; pointer-events: none; }
+
+/* =========================================================================
+   Text field — a soft well with a sand rim; an optional trailing icon
+   <label class="terrarium-field"><span class="terrarium-field__label">Title</span><span class="terrarium-affix"><input class="terrarium-input" placeholder="Enter your journal title"><svg class="terrarium-icon">…</svg></span></label>
+   ========================================================================= */
+.terrarium-field { display: grid; gap: var(--terrarium-space-2); min-width: 0; }
+.terrarium-field__label { font-size: var(--terrarium-font-size-small); font-weight: var(--terrarium-font-weight-bold); color: var(--terrarium-color-ink); }
+.terrarium-input {
+  display: block;
+  width: 100%;
+  height: var(--terrarium-size-control);
+  padding: 0 var(--terrarium-space-4);
+  border: 1.5px solid var(--terrarium-color-sand);
+  border-radius: var(--terrarium-radius-md);
+  background: var(--terrarium-color-well);
+  color: var(--terrarium-color-ink);
+  font-size: var(--terrarium-font-size-body);
+  caret-color: var(--terrarium-color-primary);
+  outline: none;
+  appearance: none;
+  box-shadow: inset 0 1px 2px var(--terrarium-color-shade-soft);
+  transition: border-color var(--terrarium-motion-duration-fast) var(--terrarium-motion-easing-out), box-shadow var(--terrarium-motion-duration) var(--terrarium-motion-easing-out), background-color var(--terrarium-motion-duration-fast);
+}
+.terrarium-input::placeholder { color: var(--terrarium-color-text-subtle); }
+.terrarium-input:hover,
+.terrarium-input.is-hover { border-color: var(--terrarium-color-text-subtle); }
+.terrarium-input:focus,
+.terrarium-input.is-focus { border-color: var(--terrarium-color-secondary); background: var(--terrarium-color-surface-raised); box-shadow: 0 0 0 4px var(--terrarium-color-secondary-soft); }
+.terrarium-input[aria-invalid="true"] { border-color: var(--terrarium-color-danger); box-shadow: 0 0 0 4px var(--terrarium-color-danger-soft); }
+.terrarium-input:disabled { border-color: transparent; background: var(--terrarium-color-disabled); color: var(--terrarium-color-disabled-ink); box-shadow: none; cursor: not-allowed; }
+textarea.terrarium-input { height: auto; min-height: 120px; padding: var(--terrarium-space-3) var(--terrarium-space-4); line-height: 1.6; resize: vertical; }
+.terrarium-hint { font-size: var(--terrarium-font-size-caption); color: var(--terrarium-color-text-muted); }
+.terrarium-hint--error { color: var(--terrarium-color-danger); }
+.terrarium-affix { position: relative; display: block; }
+.terrarium-affix > .terrarium-icon { position: absolute; right: 16px; top: 50%; width: 20px; height: 20px; color: var(--terrarium-color-text-muted); transform: translateY(-50%); pointer-events: none; transition: color var(--terrarium-motion-duration-fast), transform var(--terrarium-motion-duration) var(--terrarium-motion-easing); }
+.terrarium-affix > .terrarium-input { padding-right: 46px; }
+.terrarium-affix:focus-within > .terrarium-icon { color: var(--terrarium-color-secondary); transform: translateY(-50%) rotate(-8deg) scale(1.1); }
+.terrarium-affix--start > .terrarium-icon { left: 16px; right: auto; }
+.terrarium-affix--start > .terrarium-input { padding-left: 46px; padding-right: var(--terrarium-space-4); }
+
+/* =========================================================================
+   Checkbox · radio · switch
+   <label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox" checked> Include in habit tracker</label>
+   <input class="terrarium-switch" type="checkbox" checked data-on="On" data-off="Off" aria-label="Reminders">
+   ========================================================================= */
+.terrarium-check { display: inline-flex; align-items: center; gap: var(--terrarium-space-3); font-size: var(--terrarium-font-size-small); color: var(--terrarium-color-text); cursor: pointer; user-select: none; }
+.terrarium-check:has(:disabled) { color: var(--terrarium-color-disabled-ink); cursor: not-allowed; }
+.terrarium-checkbox,
+.terrarium-radio {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  border: 1.5px solid var(--terrarium-color-sand);
+  background-color: var(--terrarium-color-surface-raised);
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--terrarium-motion-duration-fast), border-color var(--terrarium-motion-duration-fast), background-size var(--terrarium-motion-duration) var(--terrarium-motion-easing), transform var(--terrarium-motion-duration) var(--terrarium-motion-easing), box-shadow var(--terrarium-motion-duration) var(--terrarium-motion-easing-out);
+}
+.terrarium-checkbox { border-radius: 7px; background-size: 0; }
+.terrarium-checkbox:checked {
+  border-color: transparent;
+  background-color: var(--terrarium-color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFBF5' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5 10.2 16.5 18 8'/%3E%3C/svg%3E");
+  background-size: 16px;
+  box-shadow: 0 4px 10px -4px rgba(185, 80, 43, 0.55);
+}
+.terrarium-radio { border-radius: 50%; background-size: 0 0; }
+.terrarium-radio:checked { border-color: var(--terrarium-color-primary); background-image: radial-gradient(circle, var(--terrarium-color-primary) 0 5px, transparent 5.5px); background-size: 100% 100%; }
+.terrarium-checkbox:hover,
+.terrarium-radio:hover { border-color: var(--terrarium-color-text-subtle); }
+.terrarium-checkbox:checked:hover { border-color: transparent; }
+.terrarium-checkbox:active,
+.terrarium-radio:active { transform: scale(0.88); transition-duration: var(--terrarium-motion-duration-press); }
+.terrarium-checkbox:focus-visible,
+.terrarium-radio:focus-visible,
+.terrarium-switch:focus-visible { box-shadow: var(--terrarium-shadow-focus); }
+.terrarium-checkbox:disabled,
+.terrarium-radio:disabled { background-color: var(--terrarium-color-disabled); border-color: transparent; cursor: not-allowed; }
+
+.terrarium-switch {
+  position: relative;
+  flex: none;
+  width: 80px;
+  height: 36px;
+  margin: 0;
+  border: 1.5px solid var(--terrarium-color-sand);
+  border-radius: var(--terrarium-radius-pill);
+  background: var(--terrarium-color-well);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: inset 0 1px 3px var(--terrarium-color-shade-soft);
+  transition: background-color var(--terrarium-motion-duration) var(--terrarium-motion-easing-out), border-color var(--terrarium-motion-duration-fast);
+}
+/* the knob */
+.terrarium-switch::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: var(--terrarium-color-surface-raised);
+  box-shadow: 0 2px 6px var(--terrarium-color-shade), inset 0 -1px 1px var(--terrarium-color-shade-soft);
+  transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing), width var(--terrarium-motion-duration) var(--terrarium-motion-easing);
+}
+/* the word in the track: data-off on the right, data-on on the left */
+.terrarium-switch::after {
+  content: attr(data-off);
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  font-size: var(--terrarium-font-size-caption);
+  font-weight: var(--terrarium-font-weight-semibold);
+  line-height: 1;
+  color: var(--terrarium-color-text-muted);
+  transform: translateY(-50%);
+  transition: opacity var(--terrarium-motion-duration-fast);
+}
+.terrarium-switch:checked { border-color: transparent; background: var(--terrarium-color-secondary); }
+.terrarium-switch:checked::before { transform: translateX(44px); }
+.terrarium-switch:checked::after { content: attr(data-on); right: auto; left: 14px; color: var(--terrarium-color-secondary-ink); }
+.terrarium-switch:active::before { width: 33px; }
+.terrarium-switch:checked:active::before { transform: translateX(38px); }
+.terrarium-switch:disabled { opacity: 0.5; cursor: not-allowed; }
+.terrarium-switch--sm { width: 48px; height: 28px; }
+.terrarium-switch--sm::before { width: 21px; height: 21px; }
+.terrarium-switch--sm::after { content: none; }
+.terrarium-switch--sm:checked::before { transform: translateX(20px); }
+.terrarium-switch--sm:checked::after { content: none; }
+.terrarium-switch--sm:active::before { width: 25px; }
+.terrarium-switch--sm:checked:active::before { transform: translateX(16px); }
+
+/* =========================================================================
+   Slider — a terracotta stem on a sand track; the knob wears a terracotta ring
+   <div class="terrarium-range"><input class="terrarium-slider" type="range" value="68" style="--terrarium-value:68" aria-label="Mood"><output>68%</output></div>
+   ========================================================================= */
+.terrarium-range { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--terrarium-space-4); width: 100%; }
+.terrarium-range > output { min-width: 3.5ch; font-size: var(--terrarium-font-size-heading); font-weight: var(--terrarium-font-weight-bold); color: var(--terrarium-color-primary-text); text-align: right; font-variant-numeric: tabular-nums; }
+.terrarium-slider { width: 100%; height: 30px; margin: 0; background: transparent; cursor: pointer; appearance: none; -webkit-appearance: none; -webkit-tap-highlight-color: transparent; }
+.terrarium-slider::-webkit-slider-runnable-track { height: 8px; border-radius: var(--terrarium-radius-pill); background: linear-gradient(90deg, var(--terrarium-color-primary) 0 calc(var(--terrarium-value) * 1%), var(--terrarium-color-track) 0); }
+.terrarium-slider::-moz-range-track { height: 8px; border-radius: var(--terrarium-radius-pill); background: var(--terrarium-color-track); }
+.terrarium-slider::-moz-range-progress { height: 8px; border-radius: var(--terrarium-radius-pill); background: var(--terrarium-color-primary); }
+.terrarium-slider::-webkit-slider-thumb {
+  width: 24px;
+  height: 24px;
+  margin-top: -8px;
+  border: 3px solid var(--terrarium-color-primary);
+  border-radius: 50%;
+  background: var(--terrarium-color-surface-raised);
+  box-shadow: 0 3px 8px var(--terrarium-color-shade);
+  appearance: none;
+  -webkit-appearance: none;
+  transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing), box-shadow var(--terrarium-motion-duration) var(--terrarium-motion-easing-out);
+}
+.terrarium-slider::-moz-range-thumb { width: 18px; height: 18px; border: 3px solid var(--terrarium-color-primary); border-radius: 50%; background: var(--terrarium-color-surface-raised); box-shadow: 0 3px 8px var(--terrarium-color-shade); }
+.terrarium-slider:hover::-webkit-slider-thumb { transform: scale(1.1); }
+.terrarium-slider:active::-webkit-slider-thumb { transform: scale(1.2); box-shadow: 0 0 0 7px var(--terrarium-color-primary-soft), 0 3px 8px var(--terrarium-color-shade); }
+.terrarium-slider:focus-visible::-webkit-slider-thumb { box-shadow: var(--terrarium-shadow-focus); }
+.terrarium-slider:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* =========================================================================
+   Sliding indicators (segmented, tabs, nav) — js/terrarium.js measures the current item and sets
+   --terrarium-indicator-x / -y / -w / -h; the indicator sways into place on the organic spring.
+   ========================================================================= */
+.terrarium-segmented::before,
+.terrarium-tabs::before,
+.terrarium-nav::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  top: 0;
+  width: var(--terrarium-indicator-w, 0);
+  height: var(--terrarium-indicator-h, 0);
+  opacity: var(--terrarium-indicator-o, 0);
+  transform: translate(var(--terrarium-indicator-x, 0), var(--terrarium-indicator-y, 0));
+  pointer-events: none;
+}
+.terrarium-segmented.is-animated::before,
+.terrarium-tabs.is-animated::before,
+.terrarium-nav.is-animated::before { transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing), width var(--terrarium-motion-duration) var(--terrarium-motion-easing), height var(--terrarium-motion-duration) var(--terrarium-motion-easing); }
+
+/* ---------- Segmented tabs: a terracotta pill in a cream track ----------
+   <div class="terrarium-segmented" role="tablist"><button class="terrarium-segmented__item" role="tab" aria-selected="true">Today</button> …</div> */
+.terrarium-segmented { position: relative; isolation: isolate; display: inline-flex; gap: 2px; max-width: 100%; padding: 4px; border-radius: var(--terrarium-radius-pill); background: var(--terrarium-color-surface-raised); box-shadow: var(--terrarium-shadow-level-1); }
+.terrarium-segmented::before { border-radius: var(--terrarium-radius-pill); background: var(--terrarium-color-primary); box-shadow: 0 6px 14px -6px rgba(185, 80, 43, 0.6); }
+.terrarium-segmented__item {
+  position: relative;
+  z-index: 1;
+  flex: 1 0 auto;
+  height: 38px;
+  padding: 0 var(--terrarium-space-5);
+  border: 0;
+  border-radius: var(--terrarium-radius-pill);
+  background: transparent;
+  color: var(--terrarium-color-text);
+  font-size: var(--terrarium-font-size-small);
+  font-weight: var(--terrarium-font-weight-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--terrarium-motion-duration-fast) var(--terrarium-motion-easing-out);
+}
+.terrarium-segmented__item:hover { color: var(--terrarium-color-ink); }
+.terrarium-segmented__item[aria-selected="true"],
+.terrarium-segmented__item.is-active { color: var(--terrarium-color-primary-ink); }
+.terrarium-segmented__item:focus-visible { box-shadow: var(--terrarium-shadow-focus); }
+.terrarium-segmented--block { display: flex; }
+.terrarium-segmented:not(.has-indicator) .terrarium-segmented__item[aria-selected="true"] { background: var(--terrarium-color-primary); }
+
+/* ---------- Tabs: words on a hairline, a small moss leaf-shaped marker sways under the current one ----------
+   <div class="terrarium-tabs" role="tablist"><button class="terrarium-tabs__item" role="tab" aria-selected="true">Entries</button> …</div> */
+.terrarium-tabs { position: relative; isolation: isolate; display: flex; gap: var(--terrarium-space-6); max-width: 100%; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--terrarium-color-line); }
+.terrarium-tabs::before { top: auto; bottom: 0; height: 3px; border-radius: 3px 3px 0 0; background: var(--terrarium-color-secondary); transform: translateX(var(--terrarium-indicator-x, 0)); }
+.terrarium-tabs__item { position: relative; z-index: 1; flex: none; padding: 10px 2px 12px; border: 0; background: none; color: var(--terrarium-color-text-muted); font-size: var(--terrarium-font-size-small); font-weight: var(--terrarium-font-weight-semibold); white-space: nowrap; cursor: pointer; transition: color var(--terrarium-motion-duration-fast); }
+.terrarium-tabs__item:hover,
+.terrarium-tabs__item[aria-selected="true"] { color: var(--terrarium-color-ink); }
+.terrarium-tabs__item:focus-visible { box-shadow: var(--terrarium-shadow-focus); border-radius: var(--terrarium-radius-sm); }
+.terrarium-tabs:not(.has-indicator) .terrarium-tabs__item[aria-selected="true"] { box-shadow: inset 0 -3px 0 var(--terrarium-color-secondary); }
+
+/* ---------- Sidebar nav: a moss pill under the current item ----------
+   <nav class="terrarium-nav" aria-label="Main"><a class="terrarium-nav__item" href="#" aria-current="page"><svg class="terrarium-icon">…</svg>Habits</a> …</nav> */
+.terrarium-nav { position: relative; isolation: isolate; display: flex; flex-direction: column; gap: 4px; }
+.terrarium-nav::before { border-radius: var(--terrarium-radius-pill); background: var(--terrarium-color-secondary); box-shadow: 0 8px 18px -8px rgba(62, 92, 74, 0.55); }
+.terrarium-nav__item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--terrarium-space-3);
+  min-height: 44px;
+  padding: 0 var(--terrarium-space-4);
+  border-radius: var(--terrarium-radius-pill);
+  color: var(--terrarium-color-text);
+  font-size: var(--terrarium-font-size-body);
+  font-weight: var(--terrarium-font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--terrarium-motion-duration-fast), background-color var(--terrarium-motion-duration-fast);
+}
+.terrarium-nav__item:hover { background: var(--terrarium-color-hover); color: var(--terrarium-color-ink); }
+.terrarium-nav__item[aria-current="page"],
+.terrarium-nav__item.is-active { color: var(--terrarium-color-secondary-ink); background: transparent; }
+.terrarium-nav__item .terrarium-icon { width: 20px; height: 20px; transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing); }
+.terrarium-nav__item:hover .terrarium-icon { transform: rotate(-6deg) scale(1.06); }
+.terrarium-nav__item:focus-visible { box-shadow: var(--terrarium-shadow-focus); }
+.terrarium-nav__count { margin-left: auto; font-size: var(--terrarium-font-size-caption); font-weight: var(--terrarium-font-weight-semibold); opacity: 0.8; }
+.terrarium-nav:not(.has-indicator) .terrarium-nav__item[aria-current="page"] { background: var(--terrarium-color-secondary); }
+
+/* =========================================================================
+   Breadcrumb · pagination
+   <nav class="terrarium-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Home</a></li><li><a href="#">Journal</a></li><li aria-current="page">New Entry</li></ol></nav>
+   ========================================================================= */
+.terrarium-breadcrumb { display: inline-flex; max-width: 100%; padding: 9px 16px; border-radius: var(--terrarium-radius-pill); background: var(--terrarium-color-surface-raised); box-shadow: var(--terrarium-shadow-level-1); }
+.terrarium-breadcrumb ol { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 0; margin: 0; padding: 0; list-style: none; font-size: var(--terrarium-font-size-small); }
+.terrarium-breadcrumb li { display: inline-flex; align-items: center; gap: 8px; }
+.terrarium-breadcrumb li + li::before { content: ""; width: 6px; height: 6px; margin: 0 10px 0 6px; border-top: 1.5px solid var(--terrarium-color-text-muted); border-right: 1.5px solid var(--terrarium-color-text-muted); transform: rotate(45deg); }
+.terrarium-breadcrumb a { display: inline-flex; align-items: center; gap: 8px; color: var(--terrarium-color-text); text-decoration: none; border-radius: var(--terrarium-radius-sm); transition: color var(--terrarium-motion-duration-fast); }
+.terrarium-breadcrumb a:hover { color: var(--terrarium-color-ink); }
+.terrarium-breadcrumb a:focus-visible { box-shadow: var(--terrarium-shadow-focus); }
+.terrarium-breadcrumb [aria-current="page"] { color: var(--terrarium-color-primary-text); font-weight: var(--terrarium-font-weight-semibold); }
+.terrarium-breadcrumb .terrarium-icon { width: 18px; height: 18px; }
+
+.terrarium-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.terrarium-pagination > a,
+.terrarium-pagination > button {
+  display: inline-grid;
+  place-items: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--terrarium-color-surface-raised);
+  color: var(--terrarium-color-text);
+  font-size: var(--terrarium-font-size-small);
+  font-weight: var(--terrarium-font-weight-semibold);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--terrarium-shadow-level-1);
+  transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing), background-color var(--terrarium-motion-duration-fast), color var(--terrarium-motion-duration-fast);
+}
+.terrarium-pagination > a:hover,
+.terrarium-pagination > button:hover { transform: translateY(-2px); }
+.terrarium-pagination > [aria-current="page"] { background: var(--terrarium-color-primary); color: var(--terrarium-color-primary-ink); box-shadow: 0 6px 14px -6px rgba(185, 80, 43, 0.6); }
+.terrarium-pagination > :focus-visible { box-shadow: var(--terrarium-shadow-focus); }
+.terrarium-pagination__gap { min-width: 20px; text-align: center; color: var(--terrarium-color-text-muted); }
+.terrarium-pagination .terrarium-icon { width: 16px; height: 16px; }
+
+/* =========================================================================
+   Badge · chip
+   <span class="terrarium-badge terrarium-badge--active">Active</span> (--active · --paused · --draft · neutral)
+   <button class="terrarium-chip" type="button" aria-pressed="true">Grateful</button>
+   ========================================================================= */
+.terrarium-badge { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 13px; border-radius: var(--terrarium-radius-pill); background: var(--terrarium-color-linen); color: var(--terrarium-color-text); font-size: var(--terrarium-font-size-caption); font-weight: var(--terrarium-font-weight-semibold); white-space: nowrap; }
+.terrarium-badge--active { background: var(--terrarium-color-secondary); color: var(--terrarium-color-secondary-ink); }
+.terrarium-badge--paused { background: var(--terrarium-color-ochre); color: var(--terrarium-color-ochre-ink); }
+.terrarium-badge--draft { background: var(--terrarium-color-rose); color: var(--terrarium-color-rose-ink); }
+.terrarium-badge .terrarium-icon { width: 14px; height: 14px; }
+
+.terrarium-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  border: 1.5px solid var(--terrarium-color-sand);
+  border-radius: var(--terrarium-radius-pill);
+  background: var(--terrarium-color-surface-raised);
+  color: var(--terrarium-color-text);
+  font-size: var(--terrarium-font-size-small);
+  font-weight: var(--terrarium-font-weight-medium);
+  cursor: pointer;
+  transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing), background-color var(--terrarium-motion-duration-fast), border-color var(--terrarium-motion-duration-fast), color var(--terrarium-motion-duration-fast);
+}
+.terrarium-chip:hover { transform: translateY(-1px); border-color: var(--terrarium-color-text-subtle); }
+.terrarium-chip:active { transform: scale(0.95); }
+.terrarium-chip[aria-pressed="true"] { border-color: transparent; background: var(--terrarium-color-secondary-soft); color: var(--terrarium-color-ink); }
+.terrarium-chip[aria-pressed="true"]::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--terrarium-color-secondary); animation: terrarium-seed var(--terrarium-motion-duration) var(--terrarium-motion-easing); }
+.terrarium-chip:focus-visible { box-shadow: var(--terrarium-shadow-focus); }
+@keyframes terrarium-seed { from { transform: scale(0); } }
+
+/* =========================================================================
+   Feature card — an illustrated tile beside a title, a sentence and badges ("Daily Journal")
+   <article class="terrarium-feature"><span class="terrarium-feature__art">(svg)</span><div><h3 class="terrarium-title">Daily Journal</h3><p class="terrarium-feature__text">…</p></div></article>
+   ========================================================================= */
+.terrarium-feature { display: flex; align-items: center; gap: var(--terrarium-space-5); min-width: 0; padding: var(--terrarium-space-4); border-radius: var(--terrarium-radius-lg); background: var(--terrarium-color-surface-raised); box-shadow: var(--terrarium-shadow-level-2); transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing), box-shadow var(--terrarium-motion-duration) var(--terrarium-motion-easing-out); }
+.terrarium-feature:hover { transform: translateY(-2px); box-shadow: var(--terrarium-shadow-level-3); }
+.terrarium-feature__art { display: grid; place-items: center; flex: none; width: 104px; aspect-ratio: 1; border-radius: var(--terrarium-radius-md); background: var(--terrarium-color-linen); }
+.terrarium-feature__art svg { width: 76%; height: 76%; }
+.terrarium-feature:hover .terrarium-feature__art svg { animation: terrarium-sway 1.2s var(--terrarium-motion-easing-out); transform-origin: 50% 90%; }
+.terrarium-feature__text { margin: 6px 0 12px; font-size: var(--terrarium-font-size-small); color: var(--terrarium-color-text); }
+.terrarium-feature__badges { display: flex; flex-wrap: wrap; gap: 8px; }
+@keyframes terrarium-sway { 25% { transform: rotate(-4deg); } 60% { transform: rotate(2.5deg); } }
+
+/* =========================================================================
+   Ring — progress as a moss circle; it grows on load and tweens whenever the value changes
+   <div class="terrarium-ring" style="--terrarium-value:75" role="img" aria-label="75% progress"><svg viewBox="0 0 120 120" aria-hidden="true">
+     <circle class="terrarium-ring__track" cx="60" cy="60" r="50" pathLength="100"/><circle class="terrarium-ring__arc" cx="60" cy="60" r="50" pathLength="100"/></svg>
+     <span class="terrarium-ring__label" aria-hidden="true"><b></b>Progress</span></div>
+   ========================================================================= */
+.terrarium-ring {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 124px;
+  aspect-ratio: 1;
+  counter-reset: terrarium-pct var(--terrarium-value);
+  transition: --terrarium-value var(--terrarium-motion-duration-grow) var(--terrarium-motion-easing);
+  animation: terrarium-ring var(--terrarium-motion-duration-grow) var(--terrarium-motion-easing-out) backwards;
+}
+.terrarium-ring > svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+.terrarium-ring__track,
+.terrarium-ring__arc { fill: none; stroke-width: 11; }
+.terrarium-ring__track { stroke: var(--terrarium-color-track); }
+.terrarium-ring__arc { stroke: var(--terrarium-color-secondary); stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: calc(100 - var(--terrarium-value)); }
+.terrarium-ring__label { position: relative; display: grid; justify-items: center; font-size: var(--terrarium-font-size-caption); color: var(--terrarium-color-text); }
+.terrarium-ring__label b { font-family: var(--terrarium-font-family-serif); font-variation-settings: var(--terrarium-font-soft); font-size: 28px; font-weight: var(--terrarium-font-weight-semibold); line-height: 1.1; color: var(--terrarium-color-ink); font-variant-numeric: tabular-nums; }
+.terrarium-ring__label b::before { content: counter(terrarium-pct) "%"; }
+.terrarium-ring--sm { width: 76px; }
+.terrarium-ring--sm .terrarium-ring__label b { font-size: 18px; }
+@keyframes terrarium-ring { from { --terrarium-value: 0; } }
+
+/* Linear progress: <div class="terrarium-progress" role="progressbar" … style="--terrarium-value:40"></div> (--terracotta) */
+.terrarium-progress { position: relative; height: 10px; border-radius: var(--terrarium-radius-pill); background: var(--terrarium-color-track); transition: --terrarium-value var(--terrarium-motion-duration-grow) var(--terrarium-motion-easing); }
+.terrarium-progress::after { content: ""; position: absolute; inset: 0 auto 0 0; width: calc(var(--terrarium-value) * 1%); border-radius: inherit; background: var(--terrarium-color-secondary); }
+.terrarium-progress--terracotta::after { background: var(--terrarium-color-primary); }
+
+/* =========================================================================
+   Toast · alert
+   <div class="terrarium-toast" role="status"><span class="terrarium-toast__icon">✓</span><p class="terrarium-toast__title">Entry saved</p><button class="terrarium-toast__close" aria-label="Dismiss">×</button></div>
+   ========================================================================= */
+.terrarium-toast { display: flex; align-items: center; gap: var(--terrarium-space-3); min-height: 58px; padding: 10px 12px 10px 14px; border-radius: var(--terrarium-radius-lg); background: var(--terrarium-color-surface-raised); color: var(--terrarium-color-ink); box-shadow: var(--terrarium-shadow-level-3); animation: terrarium-toast var(--terrarium-motion-duration-grow) var(--terrarium-motion-easing) backwards; }
+.terrarium-toast__icon { display: inline-grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--terrarium-color-secondary); color: var(--terrarium-color-secondary-ink); }
+.terrarium-toast__icon .terrarium-icon { width: 16px; height: 16px; stroke-width: 2.4; }
+.terrarium-toast__title { flex: 1; font-size: var(--terrarium-font-size-body); font-weight: var(--terrarium-font-weight-bold); }
+.terrarium-toast__text { display: block; font-size: var(--terrarium-font-size-caption); font-weight: var(--terrarium-font-weight-regular); color: var(--terrarium-color-text-muted); }
+.terrarium-toast__close { display: inline-grid; place-items: center; flex: none; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--terrarium-color-text-muted); cursor: pointer; transition: background-color var(--terrarium-motion-duration-fast), transform var(--terrarium-motion-duration) var(--terrarium-motion-easing); }
+.terrarium-toast__close:hover { background: var(--terrarium-color-hover); transform: rotate(90deg); }
+.terrarium-toast__close:focus-visible { box-shadow: var(--terrarium-shadow-focus); }
+.terrarium-toast__close .terrarium-icon { width: 18px; height: 18px; }
+@keyframes terrarium-toast { from { opacity: 0; transform: translateY(12px) scale(0.96); } }
+
+.terrarium-alert { --terrarium-tone: var(--terrarium-color-secondary); display: flex; align-items: flex-start; gap: var(--terrarium-space-3); padding: 14px 16px; border-radius: var(--terrarium-radius-md); background: color-mix(in srgb, var(--terrarium-tone) 13%, var(--terrarium-color-surface)); color: var(--terrarium-color-text); font-size: var(--terrarium-font-size-small); }
+.terrarium-alert > .terrarium-icon { width: 20px; height: 20px; margin-top: 1px; color: var(--terrarium-tone); }
+.terrarium-alert b { display: block; color: var(--terrarium-color-ink); font-weight: var(--terrarium-font-weight-bold); }
+.terrarium-alert--ochre { --terrarium-tone: var(--terrarium-color-ochre); }
+.terrarium-alert--terracotta { --terrarium-tone: var(--terrarium-color-primary); }
+
+/* =========================================================================
+   Dialog — a glazed card with a sprout on top
+   <dialog class="terrarium-dialog" aria-labelledby="t"><svg class="terrarium-dialog__icon">…</svg><h2 class="terrarium-dialog__title" id="t">Save changes?</h2><p class="terrarium-dialog__text">This will update your journal entry.</p>
+     <div class="terrarium-dialog__actions"><button class="terrarium-btn" data-terrarium-close>Cancel</button><button class="terrarium-btn terrarium-btn--primary" data-terrarium-close>Save</button></div></dialog>
+   ========================================================================= */
+.terrarium-dialog { width: min(100% - 32px, 380px); max-width: none; padding: var(--terrarium-space-6); border: 0; border-radius: var(--terrarium-radius-xl); background: var(--terrarium-color-surface-raised); color: var(--terrarium-color-text); text-align: center; box-shadow: var(--terrarium-shadow-level-3), 0 30px 60px -20px var(--terrarium-color-shade); }
+.terrarium-dialog[open] { animation: terrarium-bloom var(--terrarium-motion-duration-grow) var(--terrarium-motion-easing); }
+.terrarium-dialog::backdrop { background: var(--terrarium-color-backdrop); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+.terrarium-dialog__icon { width: 30px; height: 30px; margin: 0 auto 10px; color: var(--terrarium-color-secondary); }
+.terrarium-dialog[open] .terrarium-dialog__icon { animation: terrarium-sprout 900ms var(--terrarium-motion-easing) 120ms backwards; transform-origin: 50% 100%; }
+.terrarium-dialog__title { font-family: var(--terrarium-font-family-serif); font-variation-settings: var(--terrarium-font-soft); font-size: var(--terrarium-font-size-title); font-weight: var(--terrarium-font-weight-semibold); color: var(--terrarium-color-ink); }
+.terrarium-dialog__text { margin-top: 6px; font-size: var(--terrarium-font-size-small); color: var(--terrarium-color-text); }
+.terrarium-dialog__actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--terrarium-space-3); margin-top: var(--terrarium-space-6); }
+@keyframes terrarium-bloom { from { opacity: 0; transform: translateY(16px) scale(0.94); } }
+@keyframes terrarium-sprout { from { transform: scale(0.2); opacity: 0; } }
+
+/* =========================================================================
+   Tooltip — a small espresso label
+   <span class="terrarium-tooltip" data-tip="Your streak"><button class="terrarium-btn">5 days</button></span> · static: <span class="terrarium-tip">Your streak</span>
+   ========================================================================= */
+.terrarium-tooltip { position: relative; display: inline-flex; }
+.terrarium-tooltip::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 10px); z-index: 20; padding: 7px 12px; border-radius: var(--terrarium-radius-pill); background: var(--terrarium-color-ink); color: var(--terrarium-color-surface); font-size: var(--terrarium-font-size-caption); font-weight: var(--terrarium-font-weight-medium); white-space: nowrap; pointer-events: none; opacity: 0; transform: translate(-50%, 6px) scale(0.94); transition: opacity var(--terrarium-motion-duration-fast), transform var(--terrarium-motion-duration) var(--terrarium-motion-easing); }
+.terrarium-tooltip:hover::after,
+.terrarium-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0) scale(1); transition-delay: 120ms; }
+.terrarium-tip { display: inline-block; padding: 7px 12px; border-radius: var(--terrarium-radius-pill); background: var(--terrarium-color-ink); color: var(--terrarium-color-surface); font-size: var(--terrarium-font-size-caption); font-weight: var(--terrarium-font-weight-medium); }
+
+/* =========================================================================
+   Table — soft rows; the row under the pointer warms up
+   <div class="terrarium-table-wrap"><table class="terrarium-table">…</table></div>
+   ========================================================================= */
+.terrarium-table-wrap { width: 100%; overflow-x: auto; }
+.terrarium-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--terrarium-font-size-small); color: var(--terrarium-color-text); }
+.terrarium-table th { padding: 0 14px 10px; border-bottom: 1px solid var(--terrarium-color-line); font-size: var(--terrarium-font-size-label); font-weight: var(--terrarium-font-weight-bold); letter-spacing: 0.06em; text-align: left; text-transform: uppercase; color: var(--terrarium-color-text-muted); white-space: nowrap; }
+.terrarium-table td { padding: 12px 14px; border-bottom: 1px solid var(--terrarium-color-line); white-space: nowrap; transition: background-color var(--terrarium-motion-duration-fast); }
+.terrarium-table tbody tr:last-child td { border-bottom: 0; }
+.terrarium-table tbody tr:hover td { background: var(--terrarium-color-hover); }
+.terrarium-table tbody tr:hover td:first-child { border-radius: 14px 0 0 14px; }
+.terrarium-table tbody tr:hover td:last-child { border-radius: 0 14px 14px 0; }
+.terrarium-table td b { font-weight: var(--terrarium-font-weight-semibold); color: var(--terrarium-color-ink); }
+.terrarium-table .is-num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* =========================================================================
+   Avatar · list
+   <span class="terrarium-avatar">(illustrated svg or initials)</span> (--sm · --lg)
+   <ul class="terrarium-list"><li><a class="terrarium-list__item" href="#"><span class="terrarium-avatar">…</span><span><b>Ava</b><span>Journaled today</span></span></a></li></ul>
+   ========================================================================= */
+.terrarium-avatar { position: relative; display: inline-grid; place-items: center; flex: none; width: 44px; height: 44px; overflow: hidden; border-radius: 50%; background: var(--terrarium-avatar, var(--terrarium-color-linen)); color: var(--terrarium-color-ink); font-family: var(--terrarium-font-family-serif); font-size: var(--terrarium-font-size-heading); font-weight: var(--terrarium-font-weight-semibold); box-shadow: 0 0 0 3px var(--terrarium-color-surface-raised), 0 4px 10px -4px var(--terrarium-color-shade); }
+.terrarium-avatar > svg { width: 100%; height: 100%; }
+.terrarium-avatar--sm { width: 32px; height: 32px; font-size: var(--terrarium-font-size-caption); }
+.terrarium-avatar--lg { width: 64px; height: 64px; font-size: var(--terrarium-font-size-title); }
+.terrarium-avatar-stack { display: inline-flex; }
+.terrarium-avatar-stack > * + * { margin-left: -10px; }
+
+.terrarium-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.terrarium-list__item { display: flex; align-items: center; gap: var(--terrarium-space-3); min-width: 0; padding: 10px 14px 10px 10px; border-radius: var(--terrarium-radius-lg); background: var(--terrarium-color-surface-raised); color: inherit; text-decoration: none; box-shadow: var(--terrarium-shadow-level-1); transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing), box-shadow var(--terrarium-motion-duration) var(--terrarium-motion-easing-out); }
+a.terrarium-list__item:hover,
+button.terrarium-list__item:hover { transform: translateX(3px); box-shadow: var(--terrarium-shadow-level-2); }
+a.terrarium-list__item:focus-visible { box-shadow: var(--terrarium-shadow-focus); }
+.terrarium-list__item b { display: block; font-weight: var(--terrarium-font-weight-bold); color: var(--terrarium-color-ink); }
+.terrarium-list__item span > span { display: block; font-size: var(--terrarium-font-size-caption); color: var(--terrarium-color-text-muted); }
+.terrarium-list__item > .terrarium-icon { margin-left: auto; width: 18px; height: 18px; color: var(--terrarium-color-text-muted); transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing); }
+.terrarium-list__item:hover > .terrarium-icon { transform: translateX(3px); }
+
+/* =========================================================================
+   Pebble · surface samples — the palette as stones from the garden
+   <span class="terrarium-pebble" style="--terrarium-pebble:var(--terrarium-color-moss)"></span> (--2 · --3 · --4 · --5 shapes · --breathe)
+   ========================================================================= */
+.terrarium-pebble { display: block; width: 72px; height: 58px; border-radius: var(--terrarium-radius-pebble); background: radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.28), transparent 55%), var(--terrarium-pebble, var(--terrarium-color-terracotta)); box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.12), 0 6px 12px -6px var(--terrarium-color-shade); transition: border-radius 900ms var(--terrarium-motion-easing-out), transform var(--terrarium-motion-duration) var(--terrarium-motion-easing); }
+.terrarium-pebble--2 { border-radius: 46% 54% 42% 58% / 58% 44% 56% 42%; }
+.terrarium-pebble--3 { border-radius: 62% 38% 50% 50% / 46% 54% 46% 54%; }
+.terrarium-pebble--4 { border-radius: 50% 50% 44% 56% / 60% 50% 50% 40%; }
+.terrarium-pebble--5 { border-radius: 40% 60% 58% 42% / 50% 44% 56% 50%; }
+.terrarium-pebble:hover { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; transform: translateY(-3px) rotate(-3deg); }
+.terrarium-pebble--breathe { animation: terrarium-breathe 7s ease-in-out infinite; }
+@keyframes terrarium-breathe { 50% { border-radius: 48% 52% 60% 40% / 44% 60% 40% 56%; transform: scale(1.03); } }
+.terrarium-surface { border-radius: var(--terrarium-radius-md); background: var(--terrarium-color-surface-raised); }
+.terrarium-surface--1 { box-shadow: var(--terrarium-shadow-level-1); }
+.terrarium-surface--2 { box-shadow: var(--terrarium-shadow-level-2); }
+.terrarium-surface--3 { box-shadow: var(--terrarium-shadow-level-3); }

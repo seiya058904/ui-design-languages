@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var m=localStorage.getItem("braun-theme");if(m&&m!=="light")document.documentElement.setAttribute("data-theme",m)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Braun / Field — precision industrial interface language</title>
+  <link rel="icon" href="../site/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../site/assets/apple-touch-icon.png">
+  <meta name="description" content="Braun / Field — a precision industrial interface language: anodized aluminium, POM keycaps, one International Orange, mechanical motion.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/braun.css">
+  <style>
+    /* Page layout only — every visual comes from Braun classes and tokens. */
+    body { padding: 20px; background: var(--braun-texture-grain), var(--braun-color-surround); }
+    .sheet { width: min(100%, 1320px); margin: 0 auto; padding: 40px 40px 26px; }
+    .head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px 56px; align-items: start; }
+    .head .braun-tagline { margin-top: 18px; }
+    .head__spec { align-self: stretch; padding: 2px 8px 6px 36px; border-left: 1.5px solid var(--braun-color-line-strong); }
+    .head__no { font-size: 24px; letter-spacing: 0.12em; color: var(--braun-color-ink); line-height: 1; margin-bottom: 18px; }
+    .head__spec ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+    .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; margin: 28px 0 22px; }
+    .bar nav { display: flex; flex-wrap: wrap; gap: 10px; }
+    section + section { margin-top: 26px; }
+
+    /* 60-column module grid; dividers are drawn on each cell's left and top edge, and the grid clips the outer ones */
+    .grid { display: grid; grid-template-columns: repeat(60, minmax(0, 1fr)); margin: 0 -14px; overflow: hidden; }
+    .cell { position: relative; min-width: 0; padding: 18px 14px 30px; box-shadow: -1px 0 0 var(--braun-color-line), 0 -1px 0 var(--braun-color-line); }
+    .cell > .braun-label { margin-bottom: 18px; font-size: var(--braun-font-size-small); letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cell .braun-dialog { width: 100%; }
+    .cell code-view-toggle { position: absolute; right: 12px; bottom: 8px; margin: 0; }
+    .s22 { grid-column: span 22; } .s23 { grid-column: span 23; } .s15 { grid-column: span 15; } .s18 { grid-column: span 18; } .s20 { grid-column: span 20; }
+    .s9 { grid-column: span 9; } .s10 { grid-column: span 10; } .s14 { grid-column: span 14; } .s8 { grid-column: span 8; } .s7 { grid-column: span 7; } .s6 { grid-column: span 6; } .s16 { grid-column: span 16; } .s13 { grid-column: span 13; } .s25 { grid-column: span 25; }
+
+    .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .tiles figcaption, .swatches figcaption, .levels figcaption, .radii figcaption { margin-top: 12px; font-size: var(--braun-font-size-caption); line-height: 1.4; color: var(--braun-color-text-muted); }
+    .tiles figcaption b, .swatches figcaption b { display: block; font-weight: var(--braun-font-weight-medium); color: var(--braun-color-ink); }
+    .swatches { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.35fr) minmax(0, 1fr); gap: 10px; }
+    .swatches .braun-swatch { width: min(100%, 64px); }
+    .grille { height: 112px; }
+    .levels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; align-items: end; }
+    .levels div { height: 44px; }
+    .levels div.braun-level-1 { height: 46px; } .levels div.braun-level-2 { height: 48px; } .levels div.braun-level-3 { height: 52px; }
+    .radii { display: grid; grid-template-columns: repeat(4, minmax(0, 64px)); gap: 18px; }
+    .radii div { aspect-ratio: 1; }
+    .engraved { min-height: 118px; }
+    .engraved b { display: block; font-weight: var(--braun-font-weight-regular); color: var(--braun-color-ink); }
+
+    .ctl { display: flex; flex-direction: column; }
+    .ctl__body { flex: 1; display: flex; align-items: center; gap: 14px; min-height: 140px; }
+    .dial-row { display: flex; align-items: center; gap: 18px; }
+    .stack { display: grid; gap: 22px; }
+
+    .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; margin-top: 30px; padding-top: 18px; border-top: var(--braun-border-rule) solid var(--braun-color-line-strong); }
+
+    /* Spec text that changes with the theme: the hex values and material names of the edition on show */
+    .sw::before { content: attr(data-l); }
+    :root[data-theme="dark"] .sw::before { content: attr(data-d); }
+    @media (prefers-color-scheme: dark) { :root[data-theme="auto"] .sw::before { content: attr(data-d); } }
+
+    @media (max-width: 1180px) {
+      .s22, .s23, .s18, .s16, .s13, .s20, .s25, .s14, .s10 { grid-column: span 30; }
+      .s15 { grid-column: span 30; }
+      .found1 > .s15, .found2 > .s20:last-child, .data > .s25 { grid-column: span 60; }
+      .s9, .s8, .s7 { grid-column: span 20; }
+      .ctls .dial-cell { grid-column: span 30; } .ctls .field-cell { grid-column: span 30; }
+      .s6 { grid-column: span 30; }
+    }
+    @media (max-width: 720px) {
+      body { padding: 10px; }
+      .sheet { padding: 26px 18px 20px; }
+      .head { grid-template-columns: 1fr; }
+      .head__spec { padding: 16px 0 0; border-left: 0; border-top: 1.5px solid var(--braun-color-line-strong); display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; }
+      .head__no { margin: 0; font-size: 18px; }
+      .head__spec ul { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+      .grid { margin: 0 -18px; }
+      .cell > .braun-label { white-space: normal; }
+      .cell { padding: 18px; }
+      .grid > .cell { grid-column: span 60; }
+      .grid > .cell.half { grid-column: span 30; }
+      .tiles { grid-template-columns: repeat(2, minmax(0, 104px)); column-gap: 28px; }
+      .swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 20px; }
+      .levels { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 20px; }
+      .ctl__body { min-height: 0; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-device" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="1.5"/><rect x="8" y="6.5" width="8" height="5"/><path d="M9 16h.01M15 16h.01"/></symbol>
+  <symbol id="i-warning" viewBox="0 0 36 32"><path d="M18 2 34.5 30.5h-33Z" fill="currentColor" stroke="none"/><path d="M18 12v8.5M18 24.5v1" stroke="var(--braun-color-plate)" stroke-width="3" fill="none"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+</svg>
+
+<main class="braun-panel sheet braun-boot">
+  <header class="head">
+    <div>
+      <h1 class="braun-display">Braun / Field</h1>
+      <p class="braun-tagline">Precision industrial interface language</p>
+    </div>
+    <div class="head__spec">
+      <p class="head__no">SPEC 04.26</p>
+      <ul class="braun-spec"><li>Interfaces</li><li>Components</li><li>Behaviour</li><li>Systems</li></ul>
+    </div>
+  </header>
+
+  <div class="bar">
+    <nav aria-label="Pages">
+      <a class="braun-btn braun-btn--sm" href="../index.html">All languages</a>
+      <a class="braun-btn braun-btn--sm" href="components.html">Components</a>
+      <a class="braun-btn braun-btn--sm braun-btn--inverse" href="examples/console.html">Open the console example</a>
+    </nav>
+    <div class="braun-keys braun-keys--sm" role="tablist" aria-label="Edition">
+      <button class="braun-keys__item" role="tab" aria-selected="true" data-theme-set="light">Aluminium</button>
+      <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1" data-theme-set="dark">Black</button>
+      <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1" data-theme-set="auto">Auto</button>
+    </div>
+  </div>
+
+  <!-- 01 -->
+  <section aria-labelledby="s1">
+    <header class="braun-section"><h2 id="s1"><span>01.</span>Foundations</h2><p>Materials / Geometry / Construction</p></header>
+    <div class="grid found1 found2">
+      <div class="cell s20">
+        <span class="braun-label">Surfaces</span>
+        <div class="tiles">
+          <figure><span class="braun-specimen" style="--braun-swatch:var(--braun-color-chassis)"></span><figcaption><b>Chassis</b><span class="sw" data-l="Anodized Al" data-d="Black anodized"></span><br><span class="sw" data-l="#C9C9C6" data-d="#161615"></span></figcaption></figure>
+          <figure><span class="braun-specimen" style="--braun-swatch:var(--braun-color-keycap)"></span><figcaption><b>Keycap</b><span class="sw" data-l="POM Plastic" data-d="Graphite POM"></span><br><span class="sw" data-l="#F4F4F1" data-d="#3A3A37"></span></figcaption></figure>
+          <figure><span class="braun-specimen" style="--braun-swatch:var(--braun-color-inverse)"></span><figcaption><b class="sw" data-l="Recessed" data-d="Contrast"></b><span class="sw" data-l="Matte Black" data-d="Satin Al"></span><br><span class="sw" data-l="#1B1B1B" data-d="#E2E2DD"></span></figcaption></figure>
+          <figure><span class="braun-specimen" style="--braun-swatch:var(--braun-color-bezel)"></span><figcaption><b>Bezel</b><span class="sw" data-l="Aluminum" data-d="Gunmetal"></span><br><span class="sw" data-l="#DADADA" data-d="#333331"></span></figcaption></figure>
+        </div>
+      </div>
+      <div class="cell s25">
+        <span class="braun-label">Colors</span>
+        <div class="swatches">
+          <figure><span class="braun-swatch" style="--braun-swatch:var(--braun-color-canvas)"></span><figcaption><b class="sw" data-l="Aluminum" data-d="Anodized"></b><span class="sw" data-l="#E5E5E0" data-d="#1F1F1E"></span></figcaption></figure>
+          <figure><span class="braun-swatch" style="--braun-swatch:var(--braun-color-keycap)"></span><figcaption><b class="sw" data-l="Off-White" data-d="Graphite"></b><span class="sw" data-l="#F4F4F1" data-d="#3A3A37"></span></figcaption></figure>
+          <figure><span class="braun-swatch" style="--braun-swatch:var(--braun-color-inverse)"></span><figcaption><b class="sw" data-l="Obsidian" data-d="Aluminium"></b><span class="sw" data-l="#1B1B1B" data-d="#E2E2DD"></span></figcaption></figure>
+          <figure><span class="braun-swatch" style="--braun-swatch:var(--braun-color-primary)"></span><figcaption><b>International Orange</b><span class="sw" data-l="#FF4F00" data-d="#FF5A12"></span></figcaption></figure>
+          <figure><span class="braun-swatch" style="--braun-swatch:var(--braun-color-signal)"></span><figcaption><b>Signal Green</b><span class="sw" data-l="#18D259" data-d="#22E066"></span></figcaption></figure>
+        </div>
+      </div>
+      <div class="cell s15">
+        <span class="braun-label">Texture</span>
+        <div class="braun-grille grille" role="img" aria-label="Speaker grille: 1.5 millimetre holes at 3 millimetre pitch"></div>
+        <p class="braun-caption" style="margin-top:12px"><b style="font-weight:500;color:var(--braun-color-ink)">Speaker Grille</b><br>Ø 1.5mm &nbsp; 3mm pitch</p>
+      </div>
+
+      <div class="cell s22">
+        <span class="braun-label">Elevation (z-axis)</span>
+        <div class="levels">
+          <figure><div class="braun-level-0"></div><figcaption>0 mm<br>Base</figcaption></figure>
+          <figure><div class="braun-level-1"></div><figcaption>0.5 mm<br>Low</figcaption></figure>
+          <figure><div class="braun-level-2"></div><figcaption>1 mm<br>Mid</figcaption></figure>
+          <figure><div class="braun-level-3"></div><figcaption>2 mm<br>High</figcaption></figure>
+        </div>
+      </div>
+      <div class="cell s18">
+        <span class="braun-label">Radius (corner)</span>
+        <div class="radii">
+          <figure><div class="braun-level-2" style="border-radius:var(--braun-radius-xs)"></div><figcaption>2 px</figcaption></figure>
+          <figure><div class="braun-level-2" style="border-radius:var(--braun-radius-sm)"></div><figcaption>4 px</figcaption></figure>
+          <figure><div class="braun-level-2" style="border-radius:var(--braun-radius-md)"></div><figcaption>6 px</figcaption></figure>
+          <figure><div class="braun-level-2" style="border-radius:var(--braun-radius-lg)"></div><figcaption>8 px</figcaption></figure>
+        </div>
+      </div>
+      <div class="cell s20">
+        <span class="braun-label">Borders</span>
+        <div class="braun-engraved engraved"><p><b>1 px engraved border</b>Subtle, precise, permanent.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section aria-labelledby="s2">
+    <header class="braun-section"><h2 id="s2"><span>02.</span>Controls</h2><p>Tactile / Direct / Confident</p></header>
+    <div class="grid ctls">
+      <div class="cell ctl s8">
+        <span class="braun-label">Primary Button</span>
+        <div class="ctl__body"><button class="braun-btn braun-btn--primary braun-btn--pill braun-btn--lg" type="button">Execute</button></div>
+      </div>
+      <div class="cell ctl s8">
+        <span class="braun-label">Secondary Button</span>
+        <div class="ctl__body"><button class="braun-btn braun-btn--inverse braun-btn--pill braun-btn--lg" type="button">Cancel</button></div>
+      </div>
+      <div class="cell ctl s8">
+        <span class="braun-label">Toggle / Switch</span>
+        <div class="ctl__body"><label class="braun-toggle"><input class="braun-switch braun-switch--lg" type="checkbox" checked aria-label="Power"><span class="braun-toggle__legend" aria-hidden="true"><span>Off</span><span>On</span></span></label></div>
+      </div>
+      <div class="cell ctl s14 dial-cell">
+        <span class="braun-label">Rotary Dial / Slider</span>
+        <div class="ctl__body dial-row">
+          <div class="braun-dial braun-dial--sm" style="--braun-value:72"><div class="braun-dial__knob" id="sg-dial" role="slider" tabindex="0" aria-label="Output level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="72"></div></div>
+          <div class="braun-readout"><output class="braun-readout__value" for="sg-dial">72</output><span class="braun-readout__range">0 – 100</span></div>
+        </div>
+      </div>
+      <div class="cell ctl s10 field-cell">
+        <span class="braun-label">Text Field</span>
+        <div class="ctl__body"><input class="braun-input braun-input--lg" value="MODULE_01" aria-label="Module ID" spellcheck="false"></div>
+      </div>
+      <div class="cell ctl s6 half">
+        <span class="braun-label">Checkbox</span>
+        <div class="ctl__body"><input class="braun-checkbox" type="checkbox" checked aria-label="Log to disk"><input class="braun-checkbox" type="checkbox" aria-label="Send telemetry"></div>
+      </div>
+      <div class="cell ctl s6 half">
+        <span class="braun-label">Radio</span>
+        <div class="ctl__body"><input class="braun-radio" type="radio" name="sg-ch" checked aria-label="Channel A"><input class="braun-radio" type="radio" name="sg-ch" aria-label="Channel B"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section aria-labelledby="s3">
+    <header class="braun-section"><h2 id="s3"><span>03.</span>Navigation</h2><p>Structure / Orientation / Efficiency</p></header>
+    <div class="grid">
+      <div class="cell ctl s16">
+        <span class="braun-label">Tabs</span>
+        <div class="ctl__body">
+          <div class="braun-keys" role="tablist" aria-label="Module view">
+            <button class="braun-keys__item" role="tab" aria-selected="true">Overview</button>
+            <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1">System</button>
+            <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1">Logs</button>
+          </div>
+        </div>
+      </div>
+      <div class="cell ctl s16">
+        <span class="braun-label">Breadcrumb</span>
+        <div class="ctl__body"><nav class="braun-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Devices</a></li><li><a href="#">Module</a></li><li aria-current="page">Configuration</li></ol></nav></div>
+      </div>
+      <div class="cell ctl s15">
+        <span class="braun-label">Pagination</span>
+        <div class="ctl__body"><nav class="braun-pagination" aria-label="Pages"><a href="#" aria-label="Previous page"><svg class="braun-icon" aria-hidden="true"><use href="#i-left"/></svg></a><a href="#">1</a><a href="#" aria-current="page">2</a><a href="#">3</a><a href="#" aria-label="Next page"><svg class="braun-icon" aria-hidden="true"><use href="#i-right"/></svg></a></nav></div>
+      </div>
+      <div class="cell s13">
+        <span class="braun-label">Sidebar</span>
+        <nav class="braun-nav" aria-label="Sections">
+          <a class="braun-nav__item" href="#" aria-current="page">Modules<span class="braun-nav__count">12</span></a>
+          <a class="braun-nav__item" href="#">Calibration<span class="braun-nav__count">4</span></a>
+          <a class="braun-nav__item" href="#">Diagnostics<span class="braun-nav__count">8</span></a>
+          <a class="braun-nav__item" href="#">Settings<span class="braun-nav__count">6</span></a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section aria-labelledby="s4">
+    <header class="braun-section"><h2 id="s4"><span>04.</span>Data &amp; Feedback</h2><p>Inform / Respond / Maintain trust</p></header>
+    <div class="grid data">
+      <div class="cell s15">
+        <span class="braun-label">Status Card</span>
+        <article class="braun-card">
+          <header class="braun-card__head"><span class="braun-glyph"><svg class="braun-icon" aria-hidden="true"><use href="#i-device"/></svg></span><h3 class="braun-card__title">MODULE_01</h3><span class="braun-status"><span class="braun-led" aria-hidden="true"></span>Online</span></header>
+          <dl class="braun-readings">
+            <div><dt>Voltage</dt><dd>12.4 V</dd></div>
+            <div><dt>Current</dt><dd>0.8 A</dd></div>
+            <div><dt>Temperature</dt><dd>36.1 °C</dd></div>
+            <div><dt>Uptime</dt><dd>17:42:36</dd></div>
+          </dl>
+        </article>
+      </div>
+      <div class="cell s20">
+        <span class="braun-label">Progress</span>
+        <div class="stack">
+          <div class="braun-card">
+            <div class="braun-gauge">
+              <div class="braun-meter" role="progressbar" aria-label="Sync progress" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100" style="--braun-value:68"></div>
+              <span class="braun-gauge__value">68%</span>
+              <span class="braun-gauge__label">Syncing data to device…</span>
+            </div>
+          </div>
+          <div class="braun-toast" role="status"><span class="braun-led" aria-hidden="true"></span>Synced to device<span class="braun-toast__time">2 min ago</span></div>
+        </div>
+      </div>
+      <div class="cell s25">
+        <span class="braun-label">Alert</span>
+        <div class="stack">
+          <div class="braun-alert" role="alert">
+            <svg class="braun-alert__icon" aria-hidden="true"><use href="#i-warning"/></svg>
+            <div><p class="braun-alert__title">Temperature threshold exceeded</p><p class="braun-alert__text">Module_01 operating at 78.4 °C</p></div>
+            <button class="braun-alert__close" type="button" aria-label="Dismiss alert"><svg class="braun-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+          <div>
+            <span class="braun-label" style="margin-bottom:14px">Confirmation Modal</span>
+            <div class="braun-dialog" role="group" aria-labelledby="sg-modal-t">
+              <div class="braun-dialog__body">
+                <div><h3 class="braun-dialog__title" id="sg-modal-t">Reset module?</h3><p class="braun-dialog__text">This will clear all configuration data.</p></div>
+                <div class="braun-dialog__actions"><button class="braun-btn" type="button">Cancel</button><button class="braun-btn braun-btn--primary" type="button">Reset</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot braun-spec"><span>Less but better &nbsp;•&nbsp; Functional clarity</span><span>Braun / Field</span></footer>
+</main>
+
+<script src="js/braun.js"></script>
+<script src="../site/code-view.js" data-selector=".sheet .cell" data-skip=".cell > .braun-label"></script>
+<script src="../site/smooth-scroll.js" defer></script>
+</body>
+</html>

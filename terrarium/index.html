@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var m=localStorage.getItem("terrarium-theme");if(m&&m!=="light")document.documentElement.setAttribute("data-theme",m)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Terrarium / Earth — warm botanical &amp; ceramic interface language</title>
+  <link rel="icon" href="../site/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../site/assets/apple-touch-icon.png">
+  <meta name="description" content="Terrarium / Earth — a warm botanical and ceramic interface language: oat linen, glazed cream cards, pebbles, terracotta and moss, organic motion.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/terrarium.css">
+  <style>
+    /* Page layout only — every visual comes from Terrarium classes and tokens. */
+    body { padding: 22px 20px 44px; }
+    .sheet { width: min(100%, 1200px); margin: 0 auto; }
+    .head { display: grid; grid-template-columns: 236px minmax(0, 1fr) 236px; align-items: end; gap: 16px; }
+    .head__art { width: 100%; height: auto; }
+    .head__copy { display: grid; justify-items: center; gap: 10px; padding-bottom: 18px; text-align: center; }
+    .head__tag { display: flex; align-items: center; gap: 18px; }
+    .head__tag::before, .head__tag::after { content: ""; width: 44px; height: 1.5px; background: var(--terrarium-color-sand); }
+    .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 14px 0 22px; }
+    .bar nav { display: flex; flex-wrap: wrap; gap: 10px; }
+    .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; }
+    .card-head { margin-bottom: 20px; }
+    .sub { margin-top: 20px; }
+    .terrarium-label { margin-bottom: 12px; }
+    .pebbles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; text-align: center; }
+    .pebbles .terrarium-pebble { margin: 0 auto 10px; }
+    .pebbles b { display: block; font-size: var(--terrarium-font-size-caption); font-weight: var(--terrarium-font-weight-semibold); color: var(--terrarium-color-ink); }
+    .pebbles span { font-size: var(--terrarium-font-size-label); color: var(--terrarium-color-text-muted); }
+    .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; }
+    .two > div + div { padding-left: 22px; border-left: 1px solid var(--terrarium-color-line); }
+    .surfaces { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; text-align: center; font-size: var(--terrarium-font-size-label); color: var(--terrarium-color-text); line-height: 1.35; }
+    .surfaces .terrarium-surface { aspect-ratio: 1.15; margin-bottom: 10px; }
+    .radii { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: end; text-align: center; font-size: var(--terrarium-font-size-label); color: var(--terrarium-color-text); }
+    .radii .terrarium-surface { width: 100%; max-width: 46px; aspect-ratio: 1; margin: 0 auto 10px; }
+    .icons { display: flex; justify-content: space-between; gap: 12px; color: var(--terrarium-color-ink); }
+    .icons .terrarium-icon { width: 34px; height: 34px; stroke-width: 1.4; transition: transform var(--terrarium-motion-duration) var(--terrarium-motion-easing); }
+    .icons .terrarium-icon:hover { transform: translateY(-3px) rotate(-6deg); }
+    .btns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .stack-12 { display: grid; gap: 12px; }
+    .switches { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
+    .switches .terrarium-label { margin: 0 12px 0 0; }
+    .nav2 { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 22px; }
+    .nav2 > div + div { padding-left: 22px; border-left: 1px solid var(--terrarium-color-line); }
+    .data-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px; padding: 16px; border-radius: var(--terrarium-radius-lg); background: var(--terrarium-color-surface-raised); box-shadow: var(--terrarium-shadow-level-2); }
+    .data-top .terrarium-feature { padding: 0; box-shadow: none; background: none; }
+    .data-top .terrarium-feature:hover { transform: none; box-shadow: none; }
+    .data-bottom { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr); gap: 16px; margin-top: 16px; align-items: start; }
+    .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--terrarium-color-sand); font-size: var(--terrarium-font-size-caption); color: var(--terrarium-color-text-muted); }
+
+    @media (max-width: 1080px) {
+      .grid { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 720px) {
+      body { padding: 14px 12px 32px; }
+      .head { grid-template-columns: 1fr; }
+      .head__art--right { display: none; }
+      .head__art--left { width: 150px; margin: 0 auto -8px; }
+      .head__tag::before, .head__tag::after { width: 18px; }
+      .terrarium-card { padding: 20px 16px; }
+      .pebbles { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 16px; }
+      .two, .nav2, .data-bottom, .btns { grid-template-columns: minmax(0, 1fr); }
+      .two > div + div, .nav2 > div + div { padding: 18px 0 0; border-left: 0; border-top: 1px solid var(--terrarium-color-line); }
+      .data-top { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+      .data-top .terrarium-feature { flex-direction: column; text-align: center; }
+      .icons .terrarium-icon { width: 28px; height: 28px; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12.5C12 8.4 9 6 5 6c0 4 3 6.5 7 6.5Z"/><path d="M12 10.5c0-3.6 2.6-5.8 6.5-5.8 0 3.6-2.6 5.8-6.5 5.8Z"/></symbol>
+  <symbol id="i-house" viewBox="0 0 24 24"><path d="M4 11.2 12 4.5l8 6.7"/><path d="M6 9.8v9.7h12V9.8"/><path d="M10 19.5v-5h4v5"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6.8C10 5.3 7.5 4.8 4 4.8v13c3.5 0 6 .5 8 2 2-1.5 4.5-2 8-2v-13c-3.5 0-6 .5-8 2Z"/><path d="M12 6.8v13"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="15" rx="3.5"/><path d="M4 10.5h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 19.5s-7.5-4.4-7.5-10A4.1 4.1 0 0 1 12 7.2a4.1 4.1 0 0 1 7.5 2.3c0 5.6-7.5 10-7.5 10Z"/></symbol>
+  <symbol id="i-lotus" viewBox="0 0 24 24"><path d="M12 19c-2.4-2-3.8-4.4-3.8-7.2 0-2.5 1.4-4.8 3.8-6.8 2.4 2 3.8 4.3 3.8 6.8 0 2.8-1.4 5.2-3.8 7.2Z"/><path d="M12 19c-3.6 0-7-1.8-9-5 2.6-.6 4.8-.1 6.6 1.2M12 19c3.6 0 7-1.8 9-5-2.6-.6-4.8-.1-6.6 1.2"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20v-7M10 20V6M15 20v-9M20 20v-5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c.8-3.6 3.5-5.6 7-5.6s6.2 2 7 5.6"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M6 18l1.6-1.6M16.4 7.6 18 6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M6 12.5 10.2 16.5 18 8"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7 7 17"/></symbol>
+  <symbol id="art-sprig" viewBox="0 0 100 100"><path d="M50 94C49 74 46 52 55 16" fill="none" stroke="#7A6448" stroke-width="2.2" stroke-linecap="round"/><path d="M49.5 76C37 74 29 66 26 54c13 1 21 8.5 23.5 22Z" fill="#3E5C4A"/><path d="M50.5 64c12-4 19-12 21-24-12.5 2-19.5 10-21 24Z" fill="#5F7D64"/><path d="M49 52c-11.5-4-17-12-17-23 11.5 2.5 16.5 11 17 23Z" fill="#4A6A55"/><path d="M52.5 40c8.5-4 12.5-11 12.5-20-8.5 2.5-12.5 9.5-12.5 20Z" fill="#6F8C6A"/><circle cx="58" cy="21" r="3.3" fill="#C85A32"/><circle cx="63.5" cy="26.5" r="2.8" fill="#D9784E"/><circle cx="66" cy="20" r="2.6" fill="#B9502B"/><circle cx="61" cy="14.5" r="2.4" fill="#D9784E"/><circle cx="69" cy="27" r="2" fill="#C85A32"/></symbol>
+  <symbol id="av-ava" viewBox="0 0 48 48"><path d="M13.5 23C12.5 11 18.5 7.5 24 7.5S35.5 11 34.5 23l1.5 13c-4 2.5-20 2.5-24 0Z" fill="#3B2A1E"/><path d="M6 48c2-10.5 9.5-14.5 18-14.5S40 37.5 42 48Z" fill="#3E5C4A"/><rect x="20.5" y="26" width="7" height="9" rx="3.2" fill="#C8916C"/><ellipse cx="24" cy="20.5" rx="8.2" ry="9.4" fill="#E3B38E"/><path d="M15.6 19c.6-6.4 4.4-9 8.4-9 4.6 0 7.8 2.6 8.4 9-3.4-3.6-11-4.4-16.8 0Z" fill="#3B2A1E"/><circle cx="21" cy="21.4" r="1" fill="#3B2A1E"/><circle cx="27" cy="21.4" r="1" fill="#3B2A1E"/><path d="M21.6 25.2c1.5 1.3 3.3 1.3 4.8 0" fill="none" stroke="#9A5A3C" stroke-width="1.1" stroke-linecap="round"/></symbol>
+  <symbol id="av-noah" viewBox="0 0 48 48"><path d="M6 48c2-10.5 9.5-14.5 18-14.5S40 37.5 42 48Z" fill="#C85A32"/><rect x="20.5" y="26" width="7" height="9" rx="3.2" fill="#A66E4A"/><ellipse cx="24" cy="20.5" rx="8.2" ry="9.4" fill="#C08560"/><g fill="#4A3424"><circle cx="18" cy="13" r="4.2"/><circle cx="24" cy="10.6" r="4.6"/><circle cx="30" cy="13" r="4.2"/><circle cx="16" cy="17.5" r="3"/><circle cx="32" cy="17.5" r="3"/></g><path d="M16.2 22.5c.4 6.6 3.9 8.8 7.8 8.8s7.4-2.2 7.8-8.8c-2.6 3-13 3-15.6 0Z" fill="#4A3424"/><circle cx="21" cy="21.2" r="1" fill="#2E2016"/><circle cx="27" cy="21.2" r="1" fill="#2E2016"/></symbol>
+  <symbol id="av-maya" viewBox="0 0 48 48"><circle cx="24" cy="7" r="4.6" fill="#2E2219"/><path d="M6 48c2-10.5 9.5-14.5 18-14.5S40 37.5 42 48Z" fill="#D49A3A"/><rect x="20.5" y="26" width="7" height="9" rx="3.2" fill="#B57B57"/><ellipse cx="24" cy="20.5" rx="8.2" ry="9.4" fill="#D6A07A"/><path d="M15.4 21c-.6-7.8 3.8-11 8.6-11s9.2 3.2 8.6 11c-1.4-4.6-4.6-6.6-8.6-6.6s-7.2 2-8.6 6.6Z" fill="#2E2219"/><circle cx="21" cy="21.6" r="1" fill="#2E2219"/><circle cx="27" cy="21.6" r="1" fill="#2E2219"/><path d="M21.6 25.4c1.5 1.3 3.3 1.3 4.8 0" fill="none" stroke="#9A5A3C" stroke-width="1.1" stroke-linecap="round"/></symbol>
+</svg>
+
+<div class="sheet">
+  <header class="head">
+    <svg class="head__art head__art--left" viewBox="0 0 210 150" aria-hidden="true">
+      <ellipse cx="62" cy="146" rx="52" ry="4" fill="#D9CDBA" opacity=".6"/>
+      <path d="M62 64c-6-14-18-22-34-22" fill="none" stroke="#5F7D64" stroke-width="2" stroke-linecap="round"/>
+      <path d="M60 64c2-16-2-30-12-42" fill="none" stroke="#5F7D64" stroke-width="2" stroke-linecap="round"/>
+      <path d="M64 64c8-12 20-18 34-16" fill="none" stroke="#5F7D64" stroke-width="2" stroke-linecap="round"/>
+      <path d="M58 70c-10 6-18 18-22 34" fill="none" stroke="#5F7D64" stroke-width="2" stroke-linecap="round"/>
+      <g fill="#3E5C4A"><path d="M28 42c-7-1-11 4-10 11 5 0 11-4 10-11Z"/><path d="M48 22c-2-7-8-9-13-6 2 5 7 8 13 6Z"/><path d="M98 48c3-7 0-12-6-13-2 6 0 11 6 13Z"/><path d="M36 104c-6 3-8 9-4 14 5-3 7-8 4-14Z"/><path d="M40 82c-7-2-12 2-12 8 6 1 11-2 12-8Z"/></g>
+      <g fill="#6F8C6A"><path d="M44 50c-6-4-12-2-14 4 6 3 11 1 14-4Z"/><path d="M56 34c-1-7-6-10-11-8 1 6 5 9 11 8Z"/><path d="M80 50c5-5 4-11-1-13-4 5-4 10 1 13Z"/><path d="M48 92c-7 1-10 7-7 12 6-1 9-6 7-12Z"/></g>
+      <path d="M44 144c-16 0-21-16-17-32 3-14 11-20 11-34h48c0 14 8 20 11 34 4 16-1 32-17 32Z" fill="#EFE6D7"/>
+      <path d="M80 112c4 16-1 32-17 32h-6c14 0 19-14 16-30-2-12-8-20-9-36h4c0 14 8 20 11 34Z" fill="#DCCFBC"/>
+      <rect x="36" y="74" width="52" height="8" rx="4" fill="#E4D9C7"/>
+      <g fill="#C9BBA6"><circle cx="48" cy="100" r="1"/><circle cx="58" cy="118" r="1"/><circle cx="70" cy="96" r="1"/><circle cx="52" cy="130" r="1"/><circle cx="66" cy="126" r="1"/></g>
+      <ellipse cx="160" cy="146" rx="40" ry="4" fill="#D9CDBA" opacity=".6"/>
+      <path d="M126 104h68l-8 40h-52Z" fill="#C85A32"/>
+      <path d="M186 104h8l-8 40h-6Z" fill="#B24E2A"/>
+      <rect x="120" y="94" width="80" height="14" rx="4" fill="#D16A42"/>
+      <rect x="120" y="104" width="80" height="4" fill="#B9502B" opacity=".5"/>
+    </svg>
+    <div class="head__copy">
+      <h1 class="terrarium-display">Terrarium <em>/</em> Earth</h1>
+      <p class="terrarium-tagline head__tag">Warm botanical &amp; ceramic interface language</p>
+    </div>
+    <svg class="head__art head__art--right" viewBox="0 0 210 150" aria-hidden="true">
+      <ellipse cx="62" cy="146" rx="52" ry="4" fill="#D9CDBA" opacity=".6"/>
+      <path d="M16 112c0 22 20 32 46 32s46-10 46-32Z" fill="#EFE6D7"/>
+      <path d="M86 112h22c0 22-20 32-46 32 18-2 24-14 24-32Z" fill="#DCCFBC"/>
+      <ellipse cx="62" cy="112" rx="46" ry="7" fill="#E4D9C7"/>
+      <ellipse cx="62" cy="112" rx="38" ry="4.5" fill="#D6C8B3"/>
+      <g fill="none" stroke="#8C6A44" stroke-width="1.6" stroke-linecap="round"><path d="M160 76c-2-22-10-40-24-56"/><path d="M162 76c0-24 4-44 14-62"/><path d="M158 76c-10-14-22-22-38-26"/><path d="M164 76c10-14 20-22 34-24"/><path d="M161 76c-4-18-4-34 2-50"/></g>
+      <g fill="#D49A3A"><circle cx="136" cy="20" r="3.4"/><circle cx="141" cy="15" r="2.6"/><circle cx="131" cy="15" r="2.4"/><circle cx="176" cy="14" r="3.2"/><circle cx="181" cy="9" r="2.4"/><circle cx="171" cy="9" r="2.2"/><circle cx="120" cy="50" r="3"/><circle cx="115" cy="46" r="2.2"/><circle cx="198" cy="52" r="3"/><circle cx="163" cy="26" r="3"/><circle cx="168" cy="22" r="2.2"/></g>
+      <g fill="#C85A32"><circle cx="137" cy="24" r="1.8"/><circle cx="177" cy="18" r="1.8"/><circle cx="121" cy="54" r="1.6"/><circle cx="199" cy="56" r="1.6"/></g>
+      <path d="M146 146c-12 0-16-12-14-26 2-12 10-18 12-30 2-8 0-10 6-10h20c6 0 4 2 6 10 2 12 10 18 12 30 2 14-2 26-14 26Z" fill="#EFE6D7"/>
+      <path d="M178 120c2 14-2 26-14 26h-4c10 0 13-12 11-26-2-12-9-18-11-30-1-6 0-9 2-10h4c6 0 4 2 6 10 2 12 10 18 12 30Z" fill="#DCCFBC"/>
+      <rect x="148" y="74" width="30" height="8" rx="4" fill="#E4D9C7"/>
+    </svg>
+  </header>
+
+  <div class="bar">
+    <nav aria-label="Pages">
+      <a class="terrarium-btn terrarium-btn--sm" href="../index.html">All languages</a>
+      <a class="terrarium-btn terrarium-btn--sm" href="components.html">Components</a>
+      <a class="terrarium-btn terrarium-btn--sm terrarium-btn--secondary" href="examples/journal.html">Open the journal</a>
+    </nav>
+    <div class="terrarium-segmented" role="tablist" aria-label="Time of day">
+      <button class="terrarium-segmented__item" role="tab" aria-selected="true" data-theme-set="light">Daylight</button>
+      <button class="terrarium-segmented__item" role="tab" aria-selected="false" tabindex="-1" data-theme-set="dark">Evening</button>
+    </div>
+  </div>
+
+  <main class="grid terrarium-grow">
+    <!-- 01 -->
+    <section class="terrarium-card" aria-labelledby="s1">
+      <header class="card-head"><h2 class="terrarium-section-title" id="s1">01. Foundations</h2><p class="terrarium-lede">Core colors, surfaces, radii, and icon language for a warm, natural, tactile interface.</p></header>
+      <span class="terrarium-label">Color Palette <small>(organic, earthy accents)</small></span>
+      <div class="pebbles">
+        <div><span class="terrarium-pebble terrarium-pebble--breathe" style="--terrarium-pebble:var(--terrarium-color-terracotta)"></span><b>Terracotta</b><span>#C85A32</span></div>
+        <div><span class="terrarium-pebble terrarium-pebble--2" style="--terrarium-pebble:var(--terrarium-color-moss)"></span><b>Moss</b><span>#3E5C4A</span></div>
+        <div><span class="terrarium-pebble terrarium-pebble--3" style="--terrarium-pebble:var(--terrarium-color-ochre)"></span><b>Ochre</b><span>#D49A3A</span></div>
+        <div><span class="terrarium-pebble terrarium-pebble--4" style="--terrarium-pebble:#E9DFD0"></span><b>Linen</b><span>#E9DFD0</span></div>
+        <div><span class="terrarium-pebble terrarium-pebble--5" style="--terrarium-pebble:var(--terrarium-color-espresso)"></span><b>Espresso</b><span>#26221E</span></div>
+      </div>
+      <div class="two sub">
+        <div>
+          <span class="terrarium-label">Surface Elevation <small>(layering &amp; depth)</small></span>
+          <div class="surfaces">
+            <div><div class="terrarium-surface terrarium-surface--1"></div>Surface 1<br>(Base)</div>
+            <div><div class="terrarium-surface terrarium-surface--2"></div>Surface 2<br>(+4px)</div>
+            <div><div class="terrarium-surface terrarium-surface--3"></div>Surface 3<br>(+8px)</div>
+          </div>
+        </div>
+        <div>
+          <span class="terrarium-label">Radius Scale <small>(corner radius)</small></span>
+          <div class="radii">
+            <div><div class="terrarium-surface terrarium-surface--2" style="border-radius:var(--terrarium-radius-sm)"></div>8px</div>
+            <div><div class="terrarium-surface terrarium-surface--2" style="border-radius:var(--terrarium-radius-md)"></div>16px</div>
+            <div><div class="terrarium-surface terrarium-surface--2" style="border-radius:var(--terrarium-radius-lg)"></div>20px</div>
+            <div><div class="terrarium-surface terrarium-surface--2" style="border-radius:var(--terrarium-radius-xl)"></div>28px</div>
+          </div>
+        </div>
+      </div>
+      <div class="sub">
+        <span class="terrarium-label">Icon Language <small>(soft, organic outlines)</small></span>
+        <div class="icons"><svg class="terrarium-icon" aria-label="Sprout" role="img"><use href="#i-sprout"/></svg><svg class="terrarium-icon" aria-label="Home" role="img"><use href="#i-house"/></svg><svg class="terrarium-icon" aria-label="Journal" role="img"><use href="#i-book"/></svg><svg class="terrarium-icon" aria-label="Calendar" role="img"><use href="#i-calendar"/></svg><svg class="terrarium-icon" aria-label="Care" role="img"><use href="#i-heart"/></svg><svg class="terrarium-icon" aria-label="Calm" role="img"><use href="#i-lotus"/></svg></div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="terrarium-card" aria-labelledby="s2">
+      <header class="card-head"><h2 class="terrarium-section-title" id="s2">02. Controls</h2><p class="terrarium-lede">Core interactive elements with a soft, friendly, and tactile feel.</p></header>
+      <div class="btns"><button class="terrarium-btn terrarium-btn--primary" type="button">Continue</button><button class="terrarium-btn terrarium-btn--secondary" type="button">Save Draft</button><button class="terrarium-btn" type="button">Cancel</button></div>
+      <div class="sub">
+        <label class="terrarium-field"><span class="terrarium-field__label">Text Input</span><span class="terrarium-affix"><input class="terrarium-input" placeholder="Enter your journal title"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg></span></label>
+      </div>
+      <div class="two sub">
+        <div>
+          <span class="terrarium-label">Checkboxes</span>
+          <div class="stack-12"><label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox" checked> Include in habit tracker</label><label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox"> Send a gentle reminder</label></div>
+        </div>
+        <div>
+          <span class="terrarium-label">Radio Buttons</span>
+          <div class="stack-12"><label class="terrarium-check"><input class="terrarium-radio" type="radio" name="sg-freq" checked> Daily</label><label class="terrarium-check"><input class="terrarium-radio" type="radio" name="sg-freq"> Weekly</label></div>
+        </div>
+      </div>
+      <div class="sub switches"><span class="terrarium-label">Toggle Switch</span><input class="terrarium-switch" type="checkbox" checked data-on="On" data-off="Off" aria-label="Reminders on"><input class="terrarium-switch" type="checkbox" data-on="On" data-off="Off" aria-label="Weekly digest"></div>
+      <div class="sub">
+        <span class="terrarium-label">Range Slider <small>(68%)</small></span>
+        <div class="terrarium-range"><input class="terrarium-slider" type="range" min="0" max="100" value="68" style="--terrarium-value:68" aria-label="Mindfulness goal"><output data-suffix="%">68%</output></div>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section class="terrarium-card" aria-labelledby="s3">
+      <header class="card-head"><h2 class="terrarium-section-title" id="s3">03. Navigation</h2><p class="terrarium-lede">Gentle, intuitive navigation for a calm, focused experience.</p></header>
+      <div class="nav2">
+        <div>
+          <span class="terrarium-label">Segmented Tabs</span>
+          <div class="terrarium-segmented" role="tablist" aria-label="Journal view">
+            <button class="terrarium-segmented__item" role="tab" aria-selected="true">Today</button>
+            <button class="terrarium-segmented__item" role="tab" aria-selected="false" tabindex="-1">Journal</button>
+            <button class="terrarium-segmented__item" role="tab" aria-selected="false" tabindex="-1">Archive</button>
+          </div>
+          <div class="sub">
+            <span class="terrarium-label">Breadcrumb</span>
+            <nav class="terrarium-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-house"/></svg>Home</a></li><li><a href="#">Journal</a></li><li aria-current="page">New Entry</li></ol></nav>
+          </div>
+          <div class="sub">
+            <span class="terrarium-label">Pagination</span>
+            <nav class="terrarium-pagination" aria-label="Pages"><a href="#" aria-label="Previous page"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-left"/></svg></a><a href="#" aria-current="page">1</a><a href="#">2</a><a href="#">3</a><span class="terrarium-pagination__gap">…</span><a href="#">8</a><a href="#" aria-label="Next page"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-right"/></svg></a></nav>
+          </div>
+        </div>
+        <div>
+          <span class="terrarium-label">Sidebar Navigation</span>
+          <nav class="terrarium-nav" aria-label="Main">
+            <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-house"/></svg>Home</a>
+            <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-book"/></svg>Journal</a>
+            <a class="terrarium-nav__item" href="#" aria-current="page"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>Habits</a>
+            <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-chart"/></svg>Insights</a>
+            <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-user"/></svg>Profile</a>
+            <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-gear"/></svg>Settings</a>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="terrarium-card" aria-labelledby="s4">
+      <header class="card-head"><h2 class="terrarium-section-title" id="s4">04. Data &amp; Feedback</h2><p class="terrarium-lede">Support progress, provide feedback, and build a sense of care and continuity.</p></header>
+      <div class="data-top">
+        <article class="terrarium-feature">
+          <span class="terrarium-feature__art"><svg aria-hidden="true"><use href="#art-sprig"/></svg></span>
+          <div><h3 class="terrarium-title">Daily Journal</h3><p class="terrarium-feature__text">A few mindful minutes to reflect and grow.</p><div class="terrarium-feature__badges"><span class="terrarium-badge terrarium-badge--active">Active</span><span class="terrarium-badge terrarium-badge--paused">Paused</span><span class="terrarium-badge terrarium-badge--draft">Draft</span></div></div>
+        </article>
+        <div class="terrarium-ring" style="--terrarium-value:75" role="img" aria-label="75% progress"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="terrarium-ring__track" cx="60" cy="60" r="50" pathLength="100"/><circle class="terrarium-ring__arc" cx="60" cy="60" r="50" pathLength="100"/></svg><span class="terrarium-ring__label" aria-hidden="true"><b></b>Progress</span></div>
+      </div>
+      <div class="data-bottom">
+        <div class="stack-12">
+          <div class="terrarium-toast" role="status"><span class="terrarium-toast__icon"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-check"/></svg></span><p class="terrarium-toast__title">Entry saved</p><button class="terrarium-toast__close" type="button" aria-label="Dismiss"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+          <ul class="terrarium-list">
+            <li><a class="terrarium-list__item" href="#"><span class="terrarium-avatar" style="--terrarium-avatar:#E9DFD0"><svg aria-hidden="true"><use href="#av-ava"/></svg></span><span><b>Ava</b><span>Journaled today</span></span><svg class="terrarium-icon" aria-hidden="true"><use href="#i-right"/></svg></a></li>
+            <li><a class="terrarium-list__item" href="#"><span class="terrarium-avatar" style="--terrarium-avatar:#DFE7DE"><svg aria-hidden="true"><use href="#av-noah"/></svg></span><span><b>Noah</b><span>On a 5-day streak</span></span><svg class="terrarium-icon" aria-hidden="true"><use href="#i-right"/></svg></a></li>
+            <li><a class="terrarium-list__item" href="#"><span class="terrarium-avatar" style="--terrarium-avatar:#F5E3D8"><svg aria-hidden="true"><use href="#av-maya"/></svg></span><span><b>Maya</b><span>Added a new habit</span></span><svg class="terrarium-icon" aria-hidden="true"><use href="#i-right"/></svg></a></li>
+          </ul>
+        </div>
+        <div class="terrarium-dialog" role="group" aria-labelledby="sg-dlg" style="width:auto">
+          <svg class="terrarium-dialog__icon terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>
+          <h3 class="terrarium-dialog__title" id="sg-dlg">Save changes?</h3>
+          <p class="terrarium-dialog__text">This will update your journal entry.</p>
+          <div class="terrarium-dialog__actions"><button class="terrarium-btn" type="button">Cancel</button><button class="terrarium-btn terrarium-btn--primary" type="button">Save</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot"><span>Grown slowly · made with care</span><span>Terrarium / Earth · tokens, components, patterns</span></footer>
+</div>
+
+<script src="js/terrarium.js"></script>
+<script src="../site/code-view.js" data-selector=".grid > .terrarium-card" data-skip=".card-head" data-toggle-in=".card-head > h2"></script>
+<script src="../site/smooth-scroll.js" defer></script>
+</body>
+</html>

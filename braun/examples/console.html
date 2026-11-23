@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var m=localStorage.getItem("braun-theme");if(m&&m!=="light")document.documentElement.setAttribute("data-theme",m)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Braun / Field — module console</title>
+  <link rel="icon" href="../../site/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../../site/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../site/assets/apple-touch-icon.png">
+  <meta name="description" content="A bench power-supply console built with Braun / Field: turn the output dial, watch current, power and temperature respond, and calibrate or reset modules.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/braun.css">
+  <style>
+    /* Layout only — a real page built from the delivered CSS and JS, unchanged. */
+    body { padding: 16px; background: var(--braun-texture-grain), var(--braun-color-surround); min-height: 100vh; }
+    .app { width: min(100%, 1360px); margin: 0 auto; display: grid; grid-template-columns: 236px minmax(0, 1fr); grid-template-rows: auto 1fr; overflow: hidden; }
+    .top { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 16px 24px; border-bottom: var(--braun-border-rule) solid var(--braun-color-line-strong); }
+    .brand { font-family: var(--braun-font-family-display); font-weight: var(--braun-font-weight-bold); font-size: 22px; letter-spacing: -0.03em; text-transform: uppercase; color: var(--braun-color-ink); text-decoration: none; white-space: nowrap; }
+    .top .braun-spec { color: var(--braun-color-text-muted); }
+    .top__end { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-left: auto; }
+    .clock { font-size: var(--braun-font-size-small); color: var(--braun-color-ink); min-width: 8ch; }
+    .side { display: flex; flex-direction: column; gap: 14px; padding: 22px 20px 24px 24px; border-right: 1px solid var(--braun-color-line); }
+    .side .braun-field__label { margin-top: 10px; }
+    .side .braun-field__label:first-child { margin-top: 0; }
+    .sounder { display: grid; gap: 12px; margin-top: auto; }
+    .sounder .braun-grille { min-height: 72px; }
+    .sounder__row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .main { padding: 22px 28px 28px; min-width: 0; }
+    .main__head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 24px; padding-bottom: 18px; margin-bottom: 22px; border-bottom: 1px solid var(--braun-color-line); }
+    .main__head h1 { font-family: var(--braun-font-family-display); font-size: 34px; font-weight: var(--braun-font-weight-bold); letter-spacing: -0.02em; line-height: 1; color: var(--braun-color-ink); }
+    .main__head p { margin-top: 8px; color: var(--braun-color-text-muted); font-size: var(--braun-font-size-small); }
+    .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+    .tiles > .wide { grid-column: span 2; }
+    .tiles > .strip { grid-column: 1 / -1; display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 28px; }
+    .strip .braun-card__text { max-width: 62ch; margin-top: 4px; }
+    .strip .braun-card__actions { margin: 0; }
+    .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .output { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 36px; align-items: center; }
+    .output .braun-dial { margin: 6px 0 10px 6px; }
+    .output .card-head { grid-column: 1 / -1; justify-self: stretch; }
+    .output__ctl { display: grid; gap: 20px; min-width: 0; }
+    .output__value { display: flex; align-items: baseline; gap: 8px; }
+    .output__value .braun-readout__value { min-width: 3.4ch; }
+    .unit { font-family: var(--braun-font-family-display); font-size: 22px; color: var(--braun-color-text-muted); }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .big { font-family: var(--braun-font-family-display); font-size: var(--braun-font-size-value); font-weight: var(--braun-font-weight-medium); line-height: 1; color: var(--braun-color-ink); letter-spacing: -0.02em; }
+    .thermal { display: grid; gap: 14px; align-content: start; }
+    .thermal__temp { display: flex; align-items: baseline; gap: 10px; }
+    .thermal__temp .big { font-size: 44px; }
+    .scale { display: flex; justify-content: space-between; font-size: var(--braun-font-size-micro); color: var(--braun-color-text-muted); }
+    .kv { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .kv div { display: grid; gap: 4px; }
+    .kv dd { font-family: var(--braun-font-family-display); font-size: 22px; font-weight: var(--braun-font-weight-medium); color: var(--braun-color-ink); }
+    .sys { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    .toasts { position: fixed; right: 20px; bottom: 20px; z-index: 50; display: grid; gap: 10px; width: min(380px, calc(100% - 40px)); }
+    [hidden] { display: none !important; }
+
+    @media (max-width: 1100px) {
+      .tiles { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .tiles > .wide { grid-column: 1 / -1; }
+    }
+    @media (max-width: 760px) {
+      body { padding: 8px; }
+      .app { grid-template-columns: 1fr; }
+      .top { padding: 14px 16px; }
+      .top .braun-breadcrumb { order: 3; width: 100%; }
+      .side { border-right: 0; border-bottom: 1px solid var(--braun-color-line); padding: 16px; }
+      .sounder { display: none; }
+      .main { padding: 18px 16px 22px; }
+      .tiles, .sys { grid-template-columns: 1fr; }
+      .output { grid-template-columns: 1fr; justify-items: center; }
+      .output__ctl { width: 100%; }
+      .kv { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-warning" viewBox="0 0 36 32"><path d="M18 2 34.5 30.5h-33Z" fill="currentColor" stroke="none"/><path d="M18 12v8.5M18 24.5v1" stroke="var(--braun-color-plate)" stroke-width="3" fill="none"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-device" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="1.5"/><rect x="8" y="6.5" width="8" height="5"/><path d="M9 16h.01M15 16h.01"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.3-5.4"/><path d="M4.5 4.5v4h4"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</svg>
+
+<div class="app braun-panel">
+  <header class="top">
+    <a class="brand" href="../index.html">Braun / Field</a>
+    <span class="braun-spec">Console · Bay 2</span>
+    <nav class="braun-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Devices</a></li><li><a href="#">Bay 2</a></li><li aria-current="page" data-bind="name">MODULE_01</li></ol></nav>
+    <div class="top__end">
+      <span class="braun-status"><span class="braun-led" aria-hidden="true"></span>Link</span>
+      <span class="clock" data-clock aria-label="Local time">17:42:36</span>
+      <div class="braun-keys braun-keys--sm" role="tablist" aria-label="Edition">
+        <button class="braun-keys__item" role="tab" aria-selected="true" data-theme-set="light">Aluminium</button>
+        <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1" data-theme-set="dark">Black</button>
+      </div>
+    </div>
+  </header>
+
+  <aside class="side braun-boot">
+    <span class="braun-field__label">Modules</span>
+    <nav class="braun-nav" aria-label="Modules" data-modules>
+      <a class="braun-nav__item" href="#" data-module="01" aria-current="page">MODULE_01<span class="braun-nav__count"><span class="braun-led" aria-hidden="true"></span></span></a>
+      <a class="braun-nav__item" href="#" data-module="02">MODULE_02<span class="braun-nav__count"><span class="braun-led" aria-hidden="true"></span></span></a>
+      <a class="braun-nav__item" href="#" data-module="03">MODULE_03<span class="braun-nav__count"><span class="braun-led" aria-hidden="true"></span></span></a>
+      <a class="braun-nav__item" href="#" data-module="04">MODULE_04<span class="braun-nav__count"><span class="braun-led braun-led--warn" aria-hidden="true"></span></span></a>
+      <a class="braun-nav__item" href="#" data-module="05">MODULE_05<span class="braun-nav__count"><span class="braun-led braun-led--off" aria-hidden="true"></span></span></a>
+    </nav>
+    <span class="braun-field__label">Operator</span>
+    <div class="braun-person"><span class="braun-avatar">MK<span class="braun-led" aria-hidden="true"></span></span><div><b>Mira Kovač</b><span>Calibration · on shift</span></div></div>
+    <div class="sounder">
+      <span class="braun-field__label">Alarm sounder</span>
+      <div class="braun-grille" role="img" aria-label="Sounder grille"></div>
+      <div class="sounder__row"><span class="braun-status" data-sounder><span class="braun-led braun-led--off" aria-hidden="true"></span>Quiet</span><button class="braun-btn braun-btn--sm" type="button" aria-pressed="false" data-mute>Mute</button></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="main__head">
+      <div><h1 data-bind="name">MODULE_01</h1><p data-bind="kind">Bench supply · 0–24 V · 3 A · rack slot 2.1</p></div>
+      <div class="braun-keys" role="tablist" aria-label="Module view">
+        <button class="braun-keys__item" role="tab" aria-selected="true" aria-controls="p-overview" id="t-overview">Overview</button>
+        <button class="braun-keys__item" role="tab" aria-selected="false" aria-controls="p-system" id="t-system" tabindex="-1">System</button>
+        <button class="braun-keys__item" role="tab" aria-selected="false" aria-controls="p-logs" id="t-logs" tabindex="-1">Logs</button>
+      </div>
+    </div>
+
+    <div id="p-overview" role="tabpanel" aria-labelledby="t-overview">
+      <div class="tiles braun-boot">
+        <section class="braun-card output wide" aria-labelledby="h-out">
+          <div class="card-head"><h2 class="braun-label" id="h-out">Output</h2><span class="braun-badge" data-mode><span class="braun-led" aria-hidden="true"></span>CV</span></div>
+          <div class="braun-dial" style="--braun-value:51.67"><div class="braun-dial__knob" id="dial-v" role="slider" tabindex="0" aria-label="Output voltage" aria-valuemin="0" aria-valuemax="24" aria-valuenow="12.4" data-step="0.1" data-unit="V"></div></div>
+          <div class="output__ctl">
+            <div class="full">
+              <span class="braun-field__label">Set point</span>
+              <div class="output__value"><output class="braun-readout__value" for="dial-v" data-decimals="1">12.4</output><span class="unit">V</span></div>
+            </div>
+            <div class="braun-row" style="--gap:8px">
+              <button class="braun-btn braun-btn--icon braun-btn--sm" type="button" data-nudge="-0.5" aria-label="Lower 0.5 volts"><svg class="braun-icon" aria-hidden="true"><use href="#i-minus"/></svg></button>
+              <button class="braun-btn braun-btn--icon braun-btn--sm" type="button" data-nudge="0.5" aria-label="Raise 0.5 volts"><svg class="braun-icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+              <button class="braun-btn braun-btn--sm" type="button" data-preset="5">5 V</button>
+              <button class="braun-btn braun-btn--sm" type="button" data-preset="12">12 V</button>
+            </div>
+            <div class="braun-stack full" style="--gap:6px">
+              <div class="row"><span class="braun-field__label">Current limit</span><span class="braun-label"><output for="limit" data-scale="0.1">1.6</output> A</span></div>
+              <input class="braun-fader" id="limit" type="range" min="1" max="30" value="16" aria-label="Current limit, tenths of an ampere">
+              <div class="braun-scale" aria-hidden="true"><span>0.1</span><span>1.5</span><span>3.0</span></div>
+            </div>
+            <label class="row braun-check" style="justify-content:space-between">Output enabled<input class="braun-switch braun-switch--sm" type="checkbox" checked data-enable></label>
+          </div>
+        </section>
+
+        <section class="braun-card thermal" aria-labelledby="h-th">
+          <div class="card-head"><h2 class="braun-label" id="h-th">Thermal</h2><span class="braun-caption">Limit 75 °C</span></div>
+          <div class="thermal__temp"><span class="big" data-r="t">36.1</span><span class="unit">°C</span></div>
+          <div class="braun-stack" style="--gap:6px">
+            <div class="braun-meter" role="progressbar" aria-label="Temperature, 0 to 100 degrees" aria-valuemin="0" aria-valuemax="100" aria-valuenow="36" style="--braun-value:36" data-meter="temp"></div>
+            <div class="scale" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+          </div>
+          <dl class="braun-readings">
+            <div><dt>Fan</dt><dd data-r="rpm">2,230 rpm</dd></div>
+            <div><dt>Trend</dt><dd data-r="trend">+0.00 °C/s</dd></div>
+          </dl>
+          <label class="row braun-check" style="justify-content:space-between">Cooling fan<input class="braun-switch braun-switch--sm" type="checkbox" checked data-fan></label>
+          <div class="braun-alert" role="alert" data-alarm hidden>
+            <svg class="braun-alert__icon" aria-hidden="true"><use href="#i-warning"/></svg>
+            <div><p class="braun-alert__title">Temperature threshold exceeded</p><p class="braun-alert__text" data-alarm-text>MODULE_01 operating at 78.4 °C</p></div>
+            <button class="braun-alert__close" type="button" aria-label="Acknowledge alarm" data-ack><svg class="braun-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+        </section>
+
+        <section class="braun-card" aria-labelledby="h-read">
+          <div class="card-head"><h2 class="braun-label" id="h-read">Readings</h2><span class="braun-status" data-state><span class="braun-led" aria-hidden="true"></span>Online</span></div>
+          <dl class="braun-readings" aria-live="off">
+            <div><dt>Voltage</dt><dd data-r="v">12.4 V</dd></div>
+            <div><dt>Current</dt><dd data-r="i">0.80 A</dd></div>
+            <div><dt>Power</dt><dd data-r="p">9.9 W</dd></div>
+            <div><dt>Uptime</dt><dd data-r="up">17:42:36</dd></div>
+          </dl>
+          <div class="braun-stack" style="--gap:8px;margin-top:6px">
+            <div class="row"><span class="braun-field__label">Power</span><span class="braun-caption" data-r="pp">14% of 72 W</span></div>
+            <div class="braun-meter braun-meter--sm" role="progressbar" aria-label="Power" aria-valuemin="0" aria-valuemax="100" aria-valuenow="14" style="--braun-value:14" data-meter="power"></div>
+          </div>
+        </section>
+
+        <section class="braun-card wide" aria-labelledby="h-ev">
+          <div class="card-head"><h2 class="braun-label" id="h-ev">Events</h2><div class="braun-row" style="--gap:8px"><button class="braun-chip" type="button" aria-pressed="true" data-filter="all">All</button><button class="braun-chip" type="button" aria-pressed="false" data-filter="alarm">Alarms</button></div></div>
+          <div class="braun-table-wrap">
+            <table class="braun-table">
+              <thead><tr><th>Time</th><th>Module</th><th>Event</th><th class="is-num">Value</th></tr></thead>
+              <tbody data-events>
+                <tr data-kind="info"><td>17:40:12</td><td>MODULE_01</td><td>Output enabled</td><td class="is-num">12.4 V</td></tr>
+                <tr data-kind="alarm"><td>17:31:55</td><td>MODULE_04</td><td>Fan speed below set point</td><td class="is-num">820 rpm</td></tr>
+                <tr data-kind="info"><td>17:12:08</td><td>MODULE_02</td><td>Calibration saved</td><td class="is-num">CAL-03</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="braun-card strip" aria-labelledby="h-act">
+          <div><h2 class="braun-label" id="h-act">Service</h2>
+          <p class="braun-card__text">Reset restores the factory set point, limit and fan profile. The calibration table is kept.</p></div>
+          <div class="braun-card__actions"><button class="braun-btn braun-btn--primary" type="button" data-braun-open="#reset">Reset module</button><button class="braun-btn" type="button" data-goto="t-system">Calibrate</button></div>
+        </section>
+
+      </div>
+    </div>
+
+    <div id="p-system" role="tabpanel" aria-labelledby="t-system" hidden>
+      <div class="sys">
+        <section class="braun-card" aria-labelledby="h-cal">
+          <div class="card-head"><h2 class="braun-label" id="h-cal">Calibration</h2><span class="braun-badge braun-badge--outline" data-cal-id>CAL-03</span></div>
+          <div class="braun-gauge">
+            <div class="braun-meter" role="progressbar" aria-label="Calibration progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="--braun-value:0" data-meter="cal"></div>
+            <span class="braun-gauge__value" data-cal-pct>0%</span>
+            <span class="braun-gauge__label" data-cal-text>Ready. Takes about four seconds; outputs stay on.</span>
+          </div>
+          <div class="braun-card__actions"><button class="braun-btn braun-btn--primary" type="button" data-cal>Start calibration</button></div>
+        </section>
+        <section class="braun-card" aria-labelledby="h-sys">
+          <div class="card-head"><span class="braun-glyph"><svg class="braun-icon" aria-hidden="true"><use href="#i-device"/></svg></span><h2 class="braun-card__title" id="h-sys" data-bind="name">MODULE_01</h2><span class="braun-badge braun-badge--inverse">v4.26.1</span></div>
+          <dl class="braun-readings">
+            <div><dt>Serial</dt><dd data-bind="serial">BF-0412-2601</dd></div>
+            <div><dt>Rated output</dt><dd>0–24 V · 3 A</dd></div>
+            <div><dt>Load</dt><dd data-bind="load">15.5 Ω</dd></div>
+            <div><dt>Last service</dt><dd>21.10.2026</dd></div>
+          </dl>
+        </section>
+      </div>
+    </div>
+
+    <div id="p-logs" role="tabpanel" aria-labelledby="t-logs" hidden>
+      <section class="braun-card" aria-labelledby="h-logs">
+        <div class="card-head"><h2 class="braun-label" id="h-logs">Module log</h2><span class="braun-caption" data-log-count>3 entries</span></div>
+        <div class="braun-table-wrap">
+          <table class="braun-table"><thead><tr><th>Time</th><th>Module</th><th>Event</th><th class="is-num">Value</th></tr></thead><tbody data-log></tbody></table>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="toasts" aria-live="polite" data-toasts></div>
+
+<dialog class="braun-dialog" id="reset" aria-labelledby="reset-t">
+  <div class="braun-dialog__body">
+    <div><h2 class="braun-dialog__title" id="reset-t">Reset module?</h2><p class="braun-dialog__text">This will clear all configuration data.</p></div>
+    <div class="braun-dialog__actions"><button class="braun-btn" type="button" data-braun-close>Cancel</button><button class="braun-btn braun-btn--primary" type="button" data-braun-close="reset" value="reset">Reset</button></div>
+  </div>
+</dialog>
+
+<script src="../js/braun.js"></script>
+<script>
+/* Page logic: a small bench-supply simulation. Output follows the dial (constant voltage) until the
+   current limit takes over (constant current); temperature drifts toward a level set by power and
+   the fan, and crossing 75 °C raises the alarm. */
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var M = {
+    "01": { name: "MODULE_01", kind: "Bench supply · 0–24 V · 3 A · rack slot 2.1", serial: "BF-0412-2601", set: 12.4, limit: 16, load: 15.5, temp: 36.1, fan: true, on: true, up: 63756, online: true },
+    "02": { name: "MODULE_02", kind: "Logic rail · 0–24 V · 3 A · rack slot 2.2", serial: "BF-0412-2602", set: 5, limit: 20, load: 6.2, temp: 31.4, fan: true, on: true, up: 63711, online: true },
+    "03": { name: "MODULE_03", kind: "Motor drive · 0–24 V · 3 A · rack slot 2.3", serial: "BF-0412-2603", set: 18, limit: 25, load: 11, temp: 52.7, fan: true, on: true, up: 2290, online: true },
+    "04": { name: "MODULE_04", kind: "Heater loop · 0–24 V · 3 A · rack slot 2.4", serial: "BF-0412-2604", set: 22, limit: 30, load: 9, temp: 77.9, fan: false, on: true, up: 11529, online: true },
+    "05": { name: "MODULE_05", kind: "Spare · 0–24 V · 3 A · rack slot 2.5", serial: "BF-0412-2605", set: 0, limit: 10, load: 20, temp: 22.4, fan: false, on: false, up: 0, online: false }
+  };
+  var DEF = { set: 12, limit: 15, fan: true };
+  var cur = "01", acked = {}, muted = false, calibrating = false;
+  var dial = $("#dial-v"), limit = $("#limit"), fan = $("[data-fan]"), enable = $("[data-enable]");
+
+  function clock(s) { s = Math.floor(s); var h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60; return [h, m, s % 60].map(function (n) { return String(n).padStart(2, "0"); }).join(":"); }
+  function now() { var d = new Date(); return [d.getHours(), d.getMinutes(), d.getSeconds()].map(function (n) { return String(n).padStart(2, "0"); }).join(":"); }
+  function physics(m) {
+    if (!m.online || !m.on) return { v: 0, i: 0, p: 0, cc: false };
+    var lim = m.limit / 10, i = m.set / m.load, cc = i > lim;
+    if (cc) i = lim;
+    var v = cc ? i * m.load : m.set;
+    return { v: v, i: i, p: v * i, cc: cc };
+  }
+  function toast(text, warn) {
+    var t = document.createElement("div");
+    t.className = "braun-toast";
+    t.setAttribute("role", "status");
+    t.innerHTML = '<span class="braun-led' + (warn ? " braun-led--warn" : "") + '" aria-hidden="true"></span><span></span><span class="braun-toast__time">' + now().slice(0, 5) + "</span>";
+    t.children[1].textContent = text;
+    $("[data-toasts]").appendChild(t);
+    setTimeout(function () { t.remove(); }, 3600);
+  }
+  function log(mod, text, value, kind) {
+    var row = document.createElement("tr");
+    row.setAttribute("data-kind", kind || "info");
+    [now(), mod, text, value].forEach(function (c, n) { var td = document.createElement("td"); td.textContent = c; if (n === 3) td.className = "is-num"; row.appendChild(td); });
+    var ev = $("[data-events]");
+    ev.insertBefore(row, ev.firstChild);
+    while (ev.children.length > 5) ev.lastChild.remove();
+    $("[data-log]").insertBefore(row.cloneNode(true), $("[data-log]").firstChild);
+    $("[data-log-count]").textContent = $("[data-log]").children.length + " entries";
+    applyFilter();
+  }
+  function applyFilter() {
+    var f = ($("[data-filter][aria-pressed='true']") || {}).getAttribute ? $("[data-filter][aria-pressed='true']").getAttribute("data-filter") : "all";
+    $$("[data-events] tr").forEach(function (r) { r.hidden = f === "alarm" && r.getAttribute("data-kind") !== "alarm"; });
+  }
+
+  function load(id) {
+    cur = id;
+    var m = M[id];
+    $$("[data-bind='name']").forEach(function (el) { el.textContent = m.name; });
+    $("[data-bind='kind']").textContent = m.kind;
+    $("[data-bind='serial']").textContent = m.serial;
+    $("[data-bind='load']").textContent = m.load.toFixed(1) + " Ω";
+    BraunUI.setDial(dial, m.set, { silent: true });
+    limit.value = m.limit; BraunUI.syncFader(limit);
+    fan.checked = m.fan; enable.checked = m.on;
+    [dial, limit, fan, enable].forEach(function (el) { if (el === dial) el.setAttribute("aria-disabled", String(!m.online)); else el.disabled = !m.online; });
+    render(true);
+  }
+
+  function render(instant) {
+    var m = M[cur], r = physics(m);
+    $("[data-r='v']").textContent = r.v.toFixed(1) + " V";
+    $("[data-r='i']").textContent = r.i.toFixed(2) + " A";
+    $("[data-r='p']").textContent = r.p.toFixed(1) + " W";
+    $("[data-r='up']").textContent = m.online ? clock(m.up) : "—";
+    $("[data-r='t']").textContent = m.temp.toFixed(1);
+    $("[data-r='rpm']").textContent = m.fan && m.online ? Math.round(1700 + m.temp * 15).toLocaleString("en-US") + " rpm" : "0 rpm";
+    var tr = (m.trend || 0) * 2;
+    $("[data-r='trend']").textContent = (tr >= 0 ? "+" : "−") + Math.abs(tr).toFixed(2) + " °C/s";
+    var pp = Math.round(r.p / 72 * 100);
+    $("[data-r='pp']").textContent = pp + "% of 72 W";
+    BraunUI.setMeter($("[data-meter='power']"), pp);
+    BraunUI.setMeter($("[data-meter='temp']"), m.temp);
+    var mode = $("[data-mode]");
+    mode.lastChild.textContent = !m.online ? "Off" : !m.on ? "Standby" : r.cc ? "CC" : "CV";
+    mode.firstChild.className = "braun-led" + (!m.online || !m.on ? " braun-led--off" : r.cc ? " braun-led--warn" : "");
+    var alarm = m.temp > 75 && m.online;
+    var st = $("[data-state]");
+    st.lastChild.textContent = !m.online ? "Offline" : alarm ? "Alarm" : "Online";
+    st.firstChild.className = "braun-led" + (!m.online ? " braun-led--off" : alarm ? " braun-led--warn" : "");
+    var box = $("[data-alarm]");
+    box.hidden = !alarm || acked[cur];
+    $("[data-alarm-text]").textContent = m.name + " operating at " + m.temp.toFixed(1) + " °C";
+    var sounding = Object.keys(M).some(function (k) { return M[k].temp > 75 && M[k].online && !acked[k]; }) && !muted;
+    var snd = $("[data-sounder]");
+    snd.firstChild.className = "braun-led" + (sounding ? " braun-led--warn braun-led--blink" : " braun-led--off");
+    snd.lastChild.textContent = sounding ? "Sounding" : muted ? "Muted" : "Quiet";
+    $$("[data-module]").forEach(function (a) {
+      var k = a.getAttribute("data-module"), mm = M[k], led = a.querySelector(".braun-led");
+      led.className = "braun-led" + (!mm.online ? " braun-led--off" : mm.temp > 75 ? " braun-led--warn" : "");
+    });
+  }
+
+  function tick() {
+    Object.keys(M).forEach(function (k) {
+      var m = M[k], r = physics(m), was = m.temp > 75;
+      var target = 22.4 + r.p * (m.fan ? 1.38 : 2.9);
+      var d = (target - m.temp) * 0.07 + (Math.random() - 0.5) * 0.06;
+      m.temp += d;
+      m.trend = (m.trend || 0) * 0.8 + d * 0.2;
+      if (m.online) m.up += 0.5;
+      var is = m.temp > 75;
+      if (is && !was) { acked[k] = false; log(m.name, "Temperature threshold exceeded", m.temp.toFixed(1) + " °C", "alarm"); toast(m.name + " over temperature", true); }
+      if (!is && was && m.temp < 74) { log(m.name, "Temperature back in range", m.temp.toFixed(1) + " °C", "info"); }
+    });
+    render();
+  }
+
+  dial.addEventListener("input", function () { M[cur].set = parseFloat(dial.getAttribute("aria-valuenow")); render(); });
+  dial.addEventListener("change", function () { log(M[cur].name, "Set point changed", M[cur].set.toFixed(1) + " V"); });
+  limit.addEventListener("input", function () { M[cur].limit = +limit.value; render(); });
+  fan.addEventListener("change", function () { M[cur].fan = fan.checked; log(M[cur].name, fan.checked ? "Fan on" : "Fan off", fan.checked ? "auto" : "—"); render(); });
+  enable.addEventListener("change", function () { M[cur].on = enable.checked; log(M[cur].name, enable.checked ? "Output enabled" : "Output disabled", M[cur].set.toFixed(1) + " V"); render(); });
+  $$("[data-nudge]").forEach(function (b) { b.addEventListener("click", function () { BraunUI.setDial(dial, M[cur].set + parseFloat(b.getAttribute("data-nudge"))); dial.dispatchEvent(new Event("change", { bubbles: true })); }); });
+  $$("[data-preset]").forEach(function (b) { b.addEventListener("click", function () { BraunUI.setDial(dial, +b.getAttribute("data-preset")); dial.dispatchEvent(new Event("change", { bubbles: true })); }); });
+  $$("[data-module]").forEach(function (a) { a.addEventListener("click", function () { load(a.getAttribute("data-module")); }); });
+  $("[data-ack]").addEventListener("click", function () { acked[cur] = true; log(M[cur].name, "Alarm acknowledged", M[cur].temp.toFixed(1) + " °C", "alarm"); render(); });
+  $("[data-mute]").addEventListener("click", function () { muted = !muted; this.setAttribute("aria-pressed", String(muted)); render(); });
+  $$("[data-filter]").forEach(function (c) { c.addEventListener("click", function () { $$("[data-filter]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === c)); }); applyFilter(); }); });
+  $("[data-goto]").addEventListener("click", function () { var t = document.getElementById(this.getAttribute("data-goto")); t.click(); t.focus(); });
+  $("#reset").addEventListener("close", function () {
+    if (this.returnValue !== "reset") return;
+    var m = M[cur]; m.set = DEF.set; m.limit = DEF.limit; m.fan = DEF.fan; m.on = true; acked[cur] = false;
+    load(cur); log(m.name, "Reset to defaults", DEF.set.toFixed(1) + " V"); toast(m.name + " reset to defaults");
+  });
+  $("[data-cal]").addEventListener("click", function () {
+    if (calibrating) return;
+    calibrating = true;
+    var btn = this, meter = $("[data-meter='cal']"), pct = 0;
+    btn.disabled = true; $("[data-cal-text]").textContent = "Measuring reference points…";
+    var id = setInterval(function () {
+      pct = Math.min(100, pct + 4 + Math.random() * 4);
+      BraunUI.setMeter(meter, pct); $("[data-cal-pct]").textContent = Math.round(pct) + "%";
+      if (pct >= 100) {
+        clearInterval(id); calibrating = false; btn.disabled = false;
+        var n = "CAL-" + String(4 + Math.floor(Math.random() * 5)).padStart(2, "0");
+        $("[data-cal-id]").textContent = n; $("[data-cal-text]").textContent = "Saved as " + n + " · offset −0.02 V";
+        log(M[cur].name, "Calibration saved", n); toast("Calibration saved · " + n);
+      }
+    }, 160);
+  });
+  setInterval(function () { $("[data-clock]").textContent = now(); }, 1000);
+  $("[data-clock]").textContent = now();
+  $$("[data-events] tr").forEach(function (r) { $("[data-log]").appendChild(r.cloneNode(true)); });
+  load("01");
+  setInterval(tick, 500);
+})();
+</script>
+<script src="../../site/smooth-scroll.js" defer></script>
+</body>
+</html>

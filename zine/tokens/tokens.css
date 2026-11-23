@@ -1,0 +1,129 @@
+/* zine tokens — GENERATED from zine/tokens/tokens.json. Do not edit by hand.
+   Regenerate with: node scripts/build-tokens.mjs zine */
+:root {
+  --zine-color-newsprint: #F4F1EA; /* Palette: newsprint */
+  --zine-color-white: #FFFFFF; /* Palette: white stock */
+  --zine-color-black: #111111; /* Palette: black ink */
+  --zine-color-lime: #C8FF00; /* Palette: acid lime — the primary ink */
+  --zine-color-vermilion: #FF3B1F; /* Palette: vermilion — danger and alarms */
+  --zine-color-cobalt: #0057FF; /* Palette: cobalt — links, info, the third ink */
+  --zine-color-paper: #F4F1EA; /* Page */
+  --zine-color-surface: #FFFFFF; /* Cards, fields, secondary buttons */
+  --zine-color-ink: #111111; /* Text, every rule and every hard shadow */
+  --zine-color-text-muted: #4A4741; /* Secondary text (8.2:1 on newsprint) */
+  --zine-color-text-subtle: #6B675F; /* Placeholders and annotations (5.0:1) */
+  --zine-color-primary: #C8FF00; /* Primary fill: acid lime */
+  --zine-color-primary-ink: #111111; /* Text on lime */
+  --zine-color-primary-strong: #B4E600; /* Lime under a press */
+  --zine-color-danger: #FF3B1F;
+  --zine-color-danger-ink: #111111; /* Text on vermilion (5.3:1) */
+  --zine-color-info: #0057FF;
+  --zine-color-info-ink: #FFFFFF; /* Text on cobalt (5.5:1) */
+  --zine-color-highlight: #C8FF00; /* Marker highlight behind text */
+  --zine-color-hover: #EDE8DC; /* Rows and menu items under the pointer */
+  --zine-color-disabled: #E4E0D6;
+  --zine-color-disabled-ink: #8A867D;
+  --zine-color-backdrop: rgba(17, 17, 17, 0.42);
+  --zine-color-halftone: rgba(17, 17, 17, 0.22); /* Dots of the halftone backdrop */
+
+  --zine-texture-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 0 0.1 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E"); /* Uncoated newsprint fibre */
+  --zine-texture-stripes: repeating-linear-gradient(-45deg, var(--zine-color-black) 0 2px, transparent 2px 9px); /* Diagonal hatch printed over a fill (progress, table header) */
+  --zine-texture-halftone: radial-gradient(var(--zine-color-halftone) 1.2px, transparent 1.6px) 0 0 / 7px 7px; /* Halftone dot screen behind dialogs */
+
+  --zine-font-family-display: "Archivo Black", "Arial Black", Impact, sans-serif; /* Headlines, panel titles, button labels */
+  --zine-font-family-sans: "Space Grotesk", "Helvetica Neue", Arial, sans-serif; /* Body copy */
+  --zine-font-family-mono: "Space Mono", ui-monospace, Menlo, Consolas, monospace; /* Labels, meta, code, data */
+
+  --zine-font-size-display: 92px;
+  --zine-font-size-title: 30px; /* Panel titles */
+  --zine-font-size-heading: 22px; /* Card and dialog titles */
+  --zine-font-size-button: 17px;
+  --zine-font-size-body: 15px;
+  --zine-font-size-small: 13px;
+  --zine-font-size-caption: 12px;
+  --zine-font-size-micro: 11px;
+
+  --zine-font-weight-regular: 400;
+  --zine-font-weight-medium: 500;
+  --zine-font-weight-bold: 700;
+
+  --zine-space-1: 4px;
+  --zine-space-2: 8px;
+  --zine-space-3: 12px;
+  --zine-space-4: 16px;
+  --zine-space-5: 20px;
+  --zine-space-6: 24px;
+  --zine-space-8: 32px;
+  --zine-space-10: 40px;
+
+  --zine-radius-none: 0px;
+  --zine-radius-xs: 1px;
+  --zine-radius-sm: 2px; /* Buttons, fields, cards */
+  --zine-radius-md: 4px; /* Panels, stickers */
+  --zine-radius-lg: 6px;
+  --zine-radius-xl: 8px;
+  --zine-radius-pill: 999px; /* Toggles only */
+
+  --zine-border-thin: 1px; /* Table rows, hairlines */
+  --zine-border-regular: 2px; /* Every box, button and field */
+  --zine-border-thick: 3px; /* Emphasis: the panel frame, the issue box */
+
+  --zine-size-control-sm: 34px;
+  --zine-size-control: 44px;
+  --zine-size-control-lg: 54px;
+
+  --zine-shadow-sm: 2px 2px 0 var(--zine-color-ink); /* 2px hard shadow */
+  --zine-shadow-md: 4px 4px 0 var(--zine-color-ink); /* 4px hard shadow — the default for raised pieces */
+  --zine-shadow-lg: 6px 6px 0 var(--zine-color-ink); /* 6px hard shadow — hover, dialogs */
+  --zine-shadow-flat: 0 0 0 var(--zine-color-ink); /* Pressed flat to the page (same shape as the others, so it interpolates) */
+  --zine-shadow-focus: 0 0 0 3px var(--zine-color-lime), 0 0 0 5px var(--zine-color-ink); /* Lime ring with a black edge, so it reads on any paper */
+
+  --zine-motion-duration-hover: 90ms; /* Lift off the page */
+  --zine-motion-duration-press: 60ms; /* Slam flat */
+  --zine-motion-duration-release: 160ms; /* Snap back up */
+  --zine-motion-duration-stamp: 240ms; /* Checks and stickers stamped on */
+  --zine-motion-duration-slide: 200ms;
+  --zine-motion-easing-out: cubic-bezier(0.2, 0, 0, 1);
+  --zine-motion-easing-press: linear;
+  --zine-motion-easing-snap: cubic-bezier(0.3, 1.7, 0.5, 1); /* A hard snap with one tiny overshoot */
+  --zine-motion-easing-stamp: cubic-bezier(0.2, 1.4, 0.4, 1);
+  --zine-motion-stagger: 55ms;
+}
+
+/* Dark theme — GENERATED from zine/tokens/tokens.dark.json.
+   <html data-theme="dark"> forces it; <html data-theme="auto"> follows the OS setting. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --zine-color-paper: #141414;
+  --zine-color-surface: #1D1D1C;
+  --zine-color-ink: #F4F1EA;
+  --zine-color-text-muted: #BDB8AD;
+  --zine-color-text-subtle: #9A958A;
+  --zine-color-primary-strong: #B4E600;
+  --zine-color-hover: #262624;
+  --zine-color-disabled: #2A2A28;
+  --zine-color-disabled-ink: #77736B;
+  --zine-color-backdrop: rgba(0, 0, 0, 0.6);
+  --zine-color-halftone: rgba(244, 241, 234, 0.16);
+
+  --zine-texture-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.95 0 0 0 0 0.85 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    color-scheme: dark;
+    --zine-color-paper: #141414;
+    --zine-color-surface: #1D1D1C;
+    --zine-color-ink: #F4F1EA;
+    --zine-color-text-muted: #BDB8AD;
+    --zine-color-text-subtle: #9A958A;
+    --zine-color-primary-strong: #B4E600;
+    --zine-color-hover: #262624;
+    --zine-color-disabled: #2A2A28;
+    --zine-color-disabled-ink: #77736B;
+    --zine-color-backdrop: rgba(0, 0, 0, 0.6);
+    --zine-color-halftone: rgba(244, 241, 234, 0.16);
+
+    --zine-texture-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.95 0 0 0 0 0.85 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  }
+}

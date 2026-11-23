@@ -1,0 +1,980 @@
+/* Braun / Field — components
+   One rule of construction: everything you press is a keycap (a lit face, a solid skirt below it,
+   a contact shadow); everything you fill is sunk into the panel; orange marks the one thing that
+   matters on each module. Motion is mechanical: 55ms into the detent, 140ms back out, no overshoot.
+   Shared anatomy: btn · keys (segmented) · tabs · breadcrumb · pagination · nav · input/field ·
+   switch/checkbox/radio · dial · fader · meter · progress · led · badge · chip · card · readings ·
+   toast · alert · dialog · tooltip · table · avatar · grille · engraved plate · swatch · levels */
+
+/* One number drives every instrument (dial, fader, meter, progress). Registered so it can be
+   animated: the dial sweeps, the meter lights segment by segment. */
+@property --braun-value {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* =========================================================================
+   Keycap — the construction every pressable part shares
+   Rest: lit face + 2px skirt. Hover: the face brightens. Press: 1.5px down in 55ms, the skirt
+   sinks into the panel and the top edge falls into shadow; the spring returns it in 140ms.
+   ========================================================================= */
+.braun-btn,
+.braun-keys__item,
+.braun-pagination > a,
+.braun-pagination > button,
+.braun-chip {
+  border: 0;
+  background-color: var(--braun-color-key);
+  background-image: var(--braun-gradient-face);
+  color: var(--braun-color-ink);
+  box-shadow: var(--braun-shadow-key);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--braun-motion-duration-release) var(--braun-motion-easing-release),
+    box-shadow var(--braun-motion-duration-release) var(--braun-motion-easing-release),
+    background-color var(--braun-motion-duration-fade) var(--braun-motion-easing-release),
+    color var(--braun-motion-duration-fade) var(--braun-motion-easing-release);
+}
+.braun-btn:hover,
+.braun-btn.is-hover,
+.braun-keys__item:hover,
+.braun-pagination > a:hover,
+.braun-pagination > button:hover,
+.braun-chip:hover { background-color: var(--braun-color-key-hover); }
+.braun-btn:active,
+.braun-btn.is-active,
+.braun-keys__item:active,
+.braun-pagination > a:active,
+.braun-pagination > button:active,
+.braun-chip:active {
+  transform: translateY(1.5px);
+  box-shadow: var(--braun-shadow-key-pressed);
+  transition-duration: var(--braun-motion-duration-press);
+  transition-timing-function: var(--braun-motion-easing-press);
+}
+.braun-btn:focus-visible,
+.braun-keys__item:focus-visible,
+.braun-pagination > a:focus-visible,
+.braun-pagination > button:focus-visible,
+.braun-chip:focus-visible { outline: 2px solid var(--braun-color-ink); outline-offset: 3px; }
+
+/* =========================================================================
+   Button
+   <button class="braun-btn braun-btn--primary braun-btn--pill">Execute</button>
+   Variants: default (POM key) · --primary (orange) · --inverse (matte black) · --ghost
+   Shape: default 6px key · --pill capsule   Sizes: --sm · --lg · --icon · --block
+   Latching: aria-pressed="true" holds it at half travel   States: .is-hover · .is-active · :disabled
+   ========================================================================= */
+.braun-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--braun-space-2);
+  height: var(--braun-size-control);
+  padding: 0 var(--braun-space-5);
+  border-radius: var(--braun-radius-md);
+  font-family: var(--braun-font-family-mono);
+  font-size: var(--braun-font-size-body);
+  font-weight: var(--braun-font-weight-medium);
+  letter-spacing: var(--braun-font-tracking-label);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.braun-btn[aria-pressed="true"] { transform: translateY(1px); box-shadow: var(--braun-shadow-key-latched); transition-duration: var(--braun-motion-duration-press); transition-timing-function: var(--braun-motion-easing-press); }
+.braun-btn .braun-icon { width: 18px; height: 18px; }
+
+.braun-btn--primary {
+  background-color: var(--braun-color-primary);
+  background-image: var(--braun-gradient-face-primary);
+  color: var(--braun-color-primary-ink);
+  box-shadow: var(--braun-shadow-key-primary);
+}
+.braun-btn--primary:hover,
+.braun-btn--primary.is-hover { background-color: var(--braun-color-primary-hover); }
+.braun-btn--primary:active,
+.braun-btn--primary.is-active { box-shadow: var(--braun-shadow-key-primary-pressed); }
+.braun-btn--primary[aria-pressed="true"] { box-shadow: var(--braun-shadow-key-primary-latched); }
+
+.braun-btn--inverse {
+  background-color: var(--braun-color-inverse);
+  background-image: var(--braun-gradient-face-inverse);
+  color: var(--braun-color-inverse-ink);
+  box-shadow: var(--braun-shadow-key-inverse);
+}
+.braun-btn--inverse:hover,
+.braun-btn--inverse.is-hover { background-color: var(--braun-color-inverse-hover); }
+.braun-btn--inverse:active,
+.braun-btn--inverse.is-active { box-shadow: var(--braun-shadow-key-inverse-pressed); }
+
+.braun-btn--ghost { background-color: transparent; background-image: none; box-shadow: none; }
+.braun-btn--ghost:hover,
+.braun-btn--ghost.is-hover { background-color: color-mix(in srgb, var(--braun-color-ink) 7%, transparent); }
+.braun-btn--ghost:active,
+.braun-btn--ghost.is-active { background-color: color-mix(in srgb, var(--braun-color-ink) 11%, transparent); box-shadow: none; transform: translateY(1px); }
+
+.braun-btn--pill { border-radius: var(--braun-radius-pill); padding: 0 var(--braun-space-8); }
+.braun-btn--sm { height: var(--braun-size-control-sm); padding: 0 var(--braun-space-3); font-size: var(--braun-font-size-small); border-radius: var(--braun-radius-sm); }
+.braun-btn--sm.braun-btn--pill { padding: 0 var(--braun-space-5); border-radius: var(--braun-radius-pill); }
+.braun-btn--lg { height: var(--braun-size-control-lg); padding: 0 var(--braun-space-8); font-size: var(--braun-font-size-title); }
+.braun-btn--lg.braun-btn--pill { padding: 0 26px; min-width: 128px; }
+.braun-btn--icon { width: var(--braun-size-control); padding: 0; }
+.braun-btn--icon.braun-btn--sm { width: var(--braun-size-control-sm); }
+.braun-btn--icon.braun-btn--lg { width: var(--braun-size-control-lg); }
+.braun-btn--icon.braun-btn--pill { border-radius: 50%; }
+.braun-btn--block { display: flex; width: 100%; }
+
+/* Disabled: the key is locked flush with the panel */
+.braun-btn:disabled,
+.braun-btn.is-disabled {
+  background-color: var(--braun-color-disabled);
+  background-image: none;
+  color: var(--braun-color-disabled-ink);
+  box-shadow: var(--braun-shadow-level-0);
+  transform: none;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* =========================================================================
+   Keys — interlocking push-buttons (the segmented control)
+   Pressing one latches it down and releases the others, like a hardware selector.
+   <div class="braun-keys" role="tablist" aria-label="View">
+     <button class="braun-keys__item" role="tab" aria-selected="true">Overview</button> …
+   ========================================================================= */
+.braun-keys { display: inline-flex; gap: 3px; max-width: 100%; }
+.braun-keys--block { display: flex; }
+.braun-keys--block > .braun-keys__item { flex: 1; }
+.braun-keys__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: var(--braun-size-control);
+  padding: 0 var(--braun-space-6);
+  border-radius: var(--braun-radius-sm);
+  font-family: var(--braun-font-family-mono);
+  font-size: var(--braun-font-size-body);
+  font-weight: var(--braun-font-weight-medium);
+  white-space: nowrap;
+}
+.braun-keys__item:first-child { border-top-left-radius: var(--braun-radius-md); border-bottom-left-radius: var(--braun-radius-md); }
+.braun-keys__item:last-child { border-top-right-radius: var(--braun-radius-md); border-bottom-right-radius: var(--braun-radius-md); }
+.braun-keys__item[aria-selected="true"],
+.braun-keys__item.is-active {
+  background-color: var(--braun-color-primary);
+  background-image: var(--braun-gradient-face-primary);
+  color: var(--braun-color-primary-ink);
+  transform: translateY(1px);
+  box-shadow: var(--braun-shadow-key-primary-latched);
+  transition-duration: var(--braun-motion-duration-press);
+  transition-timing-function: var(--braun-motion-easing-press);
+}
+.braun-keys__item[aria-selected="true"]:hover { background-color: var(--braun-color-primary-hover); }
+.braun-keys__item[aria-selected="true"]:active { transform: translateY(1.5px); box-shadow: var(--braun-shadow-key-primary-pressed); }
+.braun-keys--sm .braun-keys__item { height: var(--braun-size-control-sm); padding: 0 var(--braun-space-4); font-size: var(--braun-font-size-small); }
+.braun-keys__item:disabled { color: var(--braun-color-disabled-ink); box-shadow: var(--braun-shadow-level-0); background-image: none; background-color: var(--braun-color-disabled); cursor: not-allowed; }
+
+/* =========================================================================
+   Tabs — mono caps on a hairline; an orange needle travels to the current tab
+   <div class="braun-tabs" role="tablist"><button class="braun-tabs__item" role="tab" aria-selected="true">Inputs</button> …</div>
+   js/braun.js moves the needle; without it the current tab carries its own bar.
+   ========================================================================= */
+.braun-tabs {
+  position: relative;
+  display: flex;
+  gap: var(--braun-space-6);
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: var(--braun-border-hair) solid var(--braun-color-line);
+}
+.braun-tabs__item {
+  position: relative;
+  flex: none;
+  padding: 10px 0 12px;
+  border: 0;
+  background: none;
+  font-family: var(--braun-font-family-mono);
+  font-size: var(--braun-font-size-caption);
+  font-weight: var(--braun-font-weight-medium);
+  letter-spacing: var(--braun-font-tracking-spec);
+  text-transform: uppercase;
+  color: var(--braun-color-text-muted);
+  cursor: pointer;
+  transition: color var(--braun-motion-duration-fade) var(--braun-motion-easing-release);
+}
+.braun-tabs__item:hover,
+.braun-tabs__item[aria-selected="true"] { color: var(--braun-color-ink); }
+.braun-tabs__item:focus-visible { outline: 2px solid var(--braun-color-ink); outline-offset: 2px; border-radius: var(--braun-radius-xs); }
+.braun-tabs__item:disabled { color: var(--braun-color-disabled-ink); cursor: not-allowed; }
+.braun-tabs::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: var(--braun-indicator-w, 0);
+  height: 3px;
+  background: var(--braun-color-primary);
+  opacity: var(--braun-indicator-o, 0);
+  transform: translateX(var(--braun-indicator-x, 0));
+}
+.braun-tabs.is-animated::after { transition: transform var(--braun-motion-duration-travel) var(--braun-motion-easing-travel), width var(--braun-motion-duration-travel) var(--braun-motion-easing-travel); }
+.braun-tabs:not(.has-indicator) .braun-tabs__item[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--braun-color-primary); }
+
+/* =========================================================================
+   Breadcrumb · Pagination
+   <nav class="braun-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Devices</a></li> … <li aria-current="page">Configuration</li></ol></nav>
+   <nav class="braun-pagination" aria-label="Pages"><a href="#" aria-label="Previous">‹</a><a href="#">1</a><a href="#" aria-current="page">2</a> …</nav>
+   ========================================================================= */
+.braun-breadcrumb ol { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 0; margin: 0; padding: 0; list-style: none; font-size: var(--braun-font-size-body); }
+.braun-breadcrumb li { display: inline-flex; align-items: center; }
+.braun-breadcrumb li + li::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin: 0 12px 0 10px;
+  border-top: 1.5px solid var(--braun-color-text-muted);
+  border-right: 1.5px solid var(--braun-color-text-muted);
+  transform: rotate(45deg);
+}
+.braun-breadcrumb a { color: var(--braun-color-text); text-decoration: none; border-radius: var(--braun-radius-xs); transition: color var(--braun-motion-duration-fade); }
+.braun-breadcrumb a:hover { color: var(--braun-color-ink); text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
+.braun-breadcrumb a:focus-visible { outline: 2px solid var(--braun-color-ink); outline-offset: 3px; }
+.braun-breadcrumb [aria-current="page"] { color: var(--braun-color-primary-text); }
+
+.braun-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: var(--braun-space-2); }
+.braun-pagination > a,
+.braun-pagination > button {
+  display: inline-grid;
+  place-items: center;
+  min-width: var(--braun-size-control);
+  height: var(--braun-size-control);
+  padding: 0 var(--braun-space-2);
+  border-radius: var(--braun-radius-sm);
+  font-family: var(--braun-font-family-mono);
+  font-size: var(--braun-font-size-body);
+  font-weight: var(--braun-font-weight-medium);
+  text-decoration: none;
+}
+.braun-pagination > [aria-current="page"] {
+  background-color: var(--braun-color-primary);
+  background-image: var(--braun-gradient-face-primary);
+  color: var(--braun-color-primary-ink);
+  transform: translateY(1px);
+  box-shadow: var(--braun-shadow-key-primary-latched);
+}
+.braun-pagination > [aria-current="page"]:hover { background-color: var(--braun-color-primary-hover); }
+.braun-pagination > [aria-disabled="true"] { color: var(--braun-color-disabled-ink); box-shadow: var(--braun-shadow-level-0); background-image: none; background-color: var(--braun-color-disabled); pointer-events: none; }
+.braun-pagination__gap { min-width: 20px; text-align: center; color: var(--braun-color-text-muted); }
+.braun-pagination .braun-icon { width: 16px; height: 16px; }
+
+/* =========================================================================
+   Sidebar nav — items on a rail; an orange needle travels to the current one
+   <nav class="braun-nav" aria-label="Sections"><a class="braun-nav__item" href="#" aria-current="page">Modules<span class="braun-nav__count">12</span></a> …</nav>
+   ========================================================================= */
+.braun-nav { position: relative; display: flex; flex-direction: column; gap: 2px; padding-left: var(--braun-space-5); }
+.braun-nav::before { content: ""; position: absolute; left: 0; top: 2px; bottom: 2px; width: 2px; border-radius: 1px; background: var(--braun-color-line); }
+.braun-nav::after {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 4px;
+  height: var(--braun-indicator-h, 0);
+  border-radius: 1px;
+  background: var(--braun-color-primary);
+  box-shadow: 0 0 6px var(--braun-color-primary-glow);
+  opacity: var(--braun-indicator-o, 0);
+  transform: translateY(var(--braun-indicator-y, 0));
+}
+.braun-nav.is-animated::after { transition: transform var(--braun-motion-duration-travel) var(--braun-motion-easing-travel), height var(--braun-motion-duration-travel) var(--braun-motion-easing-travel); }
+.braun-nav__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--braun-space-3);
+  padding: 8px 2px 8px 0;
+  border-radius: var(--braun-radius-xs);
+  color: var(--braun-color-text-muted);
+  font-size: var(--braun-font-size-body);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--braun-motion-duration-fade) var(--braun-motion-easing-release);
+}
+.braun-nav__item:hover { color: var(--braun-color-ink); }
+.braun-nav__item[aria-current="page"],
+.braun-nav__item.is-active { color: var(--braun-color-ink); font-weight: var(--braun-font-weight-semibold); }
+.braun-nav__item:focus-visible { outline: 2px solid var(--braun-color-ink); outline-offset: 2px; }
+.braun-nav__item .braun-icon { width: 18px; height: 18px; }
+.braun-nav__count { margin-left: auto; font-size: var(--braun-font-size-small); font-weight: var(--braun-font-weight-regular); color: var(--braun-color-text-muted); }
+.braun-nav:not(.has-indicator) .braun-nav__item[aria-current="page"]::before { content: ""; position: absolute; left: calc(-1 * var(--braun-space-5) - 1px); top: 4px; bottom: 4px; width: 4px; border-radius: 1px; background: var(--braun-color-primary); }
+
+/* =========================================================================
+   Text field — sunk into the panel, engraved outline, an orange caret
+   <label class="braun-field"><span class="braun-field__label">Module ID</span><input class="braun-input" value="MODULE_01"></label>
+   Sizes: --lg   States: :hover · :focus/.is-focus · aria-invalid="true" · :disabled
+   ========================================================================= */
+.braun-field { display: grid; gap: var(--braun-space-2); min-width: 0; }
+.braun-field__label { font-size: var(--braun-font-size-micro); font-weight: var(--braun-font-weight-medium); letter-spacing: var(--braun-font-tracking-spec); text-transform: uppercase; color: var(--braun-color-text-muted); }
+.braun-input {
+  display: block;
+  width: 100%;
+  height: var(--braun-size-control);
+  padding: 0 var(--braun-space-4);
+  border: var(--braun-border-hair) solid var(--braun-color-text-subtle);
+  border-radius: var(--braun-radius-sm);
+  background: var(--braun-color-plate);
+  box-shadow: inset 0 1px 3px var(--braun-color-shade), 0 1px 0 var(--braun-color-engrave-light);
+  font-family: var(--braun-font-family-mono);
+  font-size: var(--braun-font-size-body);
+  letter-spacing: 0.04em;
+  color: var(--braun-color-ink);
+  caret-color: var(--braun-color-primary);
+  outline: none;
+  appearance: none;
+  transition: border-color var(--braun-motion-duration-fade) var(--braun-motion-easing-release), box-shadow var(--braun-motion-duration-fade) var(--braun-motion-easing-release);
+}
+.braun-input::placeholder { color: var(--braun-color-text-subtle); }
+.braun-input:hover,
+.braun-input.is-hover { border-color: var(--braun-color-text-muted); }
+.braun-input:focus-visible,
+.braun-input:focus,
+.braun-input.is-focus { border-color: var(--braun-color-ink); box-shadow: inset 0 1px 3px var(--braun-color-shade), 0 0 0 1px var(--braun-color-ink); }
+.braun-input[aria-invalid="true"] { border-color: var(--braun-color-danger); box-shadow: inset 0 1px 3px var(--braun-color-shade), 0 0 0 1px var(--braun-color-danger); }
+.braun-input:disabled { border-color: transparent; background: var(--braun-color-disabled); color: var(--braun-color-disabled-ink); box-shadow: none; cursor: not-allowed; }
+.braun-input--lg { height: var(--braun-size-control-lg); padding: 0 var(--braun-space-5); font-size: var(--braun-font-size-title); }
+textarea.braun-input { height: auto; min-height: 96px; padding: var(--braun-space-3) var(--braun-space-4); line-height: 1.5; resize: vertical; }
+.braun-hint { font-size: var(--braun-font-size-caption); color: var(--braun-color-text-muted); }
+.braun-hint--error { color: var(--braun-color-danger); }
+/* Leading icon: <span class="braun-affix"><svg class="braun-icon">…</svg><input class="braun-input"></span> */
+.braun-affix { position: relative; display: block; }
+.braun-affix > .braun-icon { position: absolute; left: 13px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: var(--braun-color-text-muted); pointer-events: none; }
+.braun-affix > .braun-input { padding-left: 40px; }
+
+/* =========================================================================
+   Switch — an over-centre toggle: a round keycap in an aluminium track, with an indicator
+   lamp in its crown that lights orange when on
+   <label class="braun-toggle"><input class="braun-switch" type="checkbox" checked aria-label="Power">
+     <span class="braun-toggle__legend" aria-hidden="true"><span>Off</span><span>On</span></span></label>
+   ========================================================================= */
+.braun-switch {
+  position: relative;
+  flex: none;
+  width: 76px;
+  height: 38px;
+  margin: 0;
+  border-radius: var(--braun-radius-pill);
+  background: var(--braun-color-plate);
+  box-shadow: var(--braun-shadow-well);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.braun-switch::before,
+.braun-switch::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  transition:
+    transform var(--braun-motion-duration-snap) var(--braun-motion-easing-snap),
+    box-shadow var(--braun-motion-duration-release) var(--braun-motion-easing-release),
+    background-color var(--braun-motion-duration-fade) var(--braun-motion-easing-release);
+}
+/* the knob */
+.braun-switch::before {
+  top: 3px;
+  left: 3px;
+  width: 32px;
+  height: 32px;
+  background-color: var(--braun-color-keycap);
+  background-image: var(--braun-gradient-face);
+  box-shadow: var(--braun-shadow-key);
+}
+/* the lamp in its crown */
+.braun-switch::after {
+  top: 13px;
+  left: 13px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--braun-color-led-off);
+  box-shadow: inset 0 1px 2px var(--braun-color-shade-deep), 0 0 0 transparent;
+}
+.braun-switch:checked::before,
+.braun-switch:checked::after { transform: translateX(38px); }
+.braun-switch:checked::after { background-color: var(--braun-color-primary); box-shadow: inset 0 1px 2px rgba(90, 20, 0, 0.5), 0 0 7px var(--braun-color-primary-glow); }
+.braun-switch:active::before { box-shadow: var(--braun-shadow-key-pressed); transition-duration: var(--braun-motion-duration-snap), var(--braun-motion-duration-press), var(--braun-motion-duration-fade); }
+.braun-switch:focus-visible { outline: 2px solid var(--braun-color-ink); outline-offset: 3px; }
+.braun-switch:disabled { cursor: not-allowed; background: var(--braun-color-disabled); }
+.braun-switch:disabled::before { box-shadow: var(--braun-shadow-level-0); background-image: none; background-color: var(--braun-color-disabled); }
+.braun-switch--sm { width: 54px; height: 28px; }
+.braun-switch--sm::before { width: 22px; height: 22px; }
+.braun-switch--sm::after { top: 10px; left: 10px; width: 8px; height: 8px; }
+.braun-switch--sm:checked::before,
+.braun-switch--sm:checked::after { transform: translateX(26px); }
+
+.braun-switch--lg { width: 96px; height: 46px; }
+.braun-switch--lg::before { width: 40px; height: 40px; }
+.braun-switch--lg::after { top: 16px; left: 17px; width: 14px; height: 14px; }
+.braun-switch--lg:checked::before,
+.braun-switch--lg:checked::after { transform: translateX(50px); }
+
+.braun-toggle { display: inline-grid; gap: var(--braun-space-2); cursor: pointer; }
+.braun-toggle__legend { display: flex; justify-content: space-between; padding: 0 9px; font-size: var(--braun-font-size-caption); letter-spacing: var(--braun-font-tracking-spec); text-transform: uppercase; color: var(--braun-color-text-subtle); }
+.braun-toggle__legend span { transition: color var(--braun-motion-duration-fade); }
+.braun-toggle:has(.braun-switch:checked) .braun-toggle__legend span:last-child,
+.braun-toggle:has(.braun-switch:not(:checked)) .braun-toggle__legend span:first-child { color: var(--braun-color-ink); }
+
+/* =========================================================================
+   Checkbox · Radio — square and round keycaps; checked lights them orange
+   <label class="braun-check"><input class="braun-checkbox" type="checkbox" checked> Log to disk</label>
+   <label class="braun-check"><input class="braun-radio" type="radio" name="r" checked> Channel A</label>
+   ========================================================================= */
+.braun-check { display: inline-flex; align-items: center; gap: var(--braun-space-3); font-size: var(--braun-font-size-body); color: var(--braun-color-text); cursor: pointer; user-select: none; }
+.braun-checkbox,
+.braun-radio {
+  flex: none;
+  margin: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  background-color: var(--braun-color-plate);
+  background-repeat: no-repeat;
+  background-position: center;
+  box-shadow: var(--braun-shadow-well);
+  transition:
+    background-color var(--braun-motion-duration-fade) var(--braun-motion-easing-release),
+    background-size var(--braun-motion-duration-release) var(--braun-motion-easing-release),
+    box-shadow var(--braun-motion-duration-release) var(--braun-motion-easing-release),
+    transform var(--braun-motion-duration-release) var(--braun-motion-easing-release);
+}
+.braun-checkbox { width: 26px; height: 26px; border-radius: var(--braun-radius-sm); background-size: 0; }
+.braun-checkbox:checked {
+  background-color: var(--braun-color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='square'%3E%3Cpath d='M5.5 12.5 10 17 18.5 7.5'/%3E%3C/svg%3E"), var(--braun-gradient-face-primary);
+  background-size: 18px, 100% 100%;
+  box-shadow: var(--braun-shadow-key-primary);
+}
+.braun-radio { width: 28px; height: 28px; border-radius: 50%; background-size: 0 0; }
+.braun-radio:checked {
+  background-color: var(--braun-color-keycap);
+  background-image: radial-gradient(circle, var(--braun-color-primary) 0 6px, var(--braun-color-primary-skirt) 6.5px 7px, transparent 7.5px), var(--braun-gradient-face);
+  background-size: 100% 100%, 100% 100%;
+  box-shadow: var(--braun-shadow-key);
+}
+.braun-checkbox:active,
+.braun-radio:active { transform: translateY(1px); transition-duration: var(--braun-motion-duration-press); }
+.braun-checkbox:focus-visible,
+.braun-radio:focus-visible { outline: 2px solid var(--braun-color-ink); outline-offset: 3px; }
+.braun-checkbox:disabled,
+.braun-radio:disabled { background-color: var(--braun-color-disabled); box-shadow: var(--braun-shadow-level-0); cursor: not-allowed; }
+.braun-check:has(:disabled) { color: var(--braun-color-disabled-ink); cursor: not-allowed; }
+
+/* =========================================================================
+   Rotary dial — a turned aluminium knob in a scale of 25 ticks; ticks light up to the value
+   <div class="braun-dial" style="--braun-value:72">
+     <div class="braun-dial__knob" role="slider" tabindex="0" aria-label="Output" aria-valuemin="0" aria-valuemax="100" aria-valuenow="72"></div>
+   </div>
+   js/braun.js: drag (around or up/down), wheel, ←/→/↑/↓, PgUp/PgDn, Home/End — one detent per step.
+   ========================================================================= */
+.braun-dial {
+  position: relative;
+  flex: none;
+  width: var(--braun-size-dial);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transition: --braun-value var(--braun-motion-duration-detent) linear;
+}
+/* The scale: 25 ticks over 270°, every sixth a heavier major. ::before is unlit, ::after the lit ones. */
+.braun-dial::before,
+.braun-dial::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    repeating-conic-gradient(from -136.2deg, currentColor 0 2.4deg, transparent 2.4deg 67.5deg),
+    repeating-conic-gradient(from -135.6deg, currentColor 0 1.2deg, transparent 1.2deg 11.25deg);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 11px), #000 calc(100% - 10.5px) calc(100% - 1px), transparent 100%), conic-gradient(from -137deg, #000 0 274deg, transparent 0);
+  -webkit-mask-composite: source-in;
+  mask: radial-gradient(closest-side, transparent calc(100% - 11px), #000 calc(100% - 10.5px) calc(100% - 1px), transparent 100%), conic-gradient(from -137deg, #000 0 274deg, transparent 0);
+  mask-composite: intersect;
+  color: var(--braun-color-text-subtle);
+}
+.braun-dial::after {
+  color: var(--braun-color-primary);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 11px), #000 calc(100% - 10.5px) calc(100% - 1px), transparent 100%), conic-gradient(from -137deg, #000 0 calc(round(down, var(--braun-value) * 0.24, 1) * 11.25deg + 5deg), transparent 0);
+  mask: radial-gradient(closest-side, transparent calc(100% - 11px), #000 calc(100% - 10.5px) calc(100% - 1px), transparent 100%), conic-gradient(from -137deg, #000 0 calc(round(down, var(--braun-value) * 0.24, 1) * 11.25deg + 5deg), transparent 0);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.braun-dial__knob {
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+  background: var(--braun-texture-turned), radial-gradient(circle at 50% 26%, var(--braun-color-knob-light), var(--braun-color-knob) 55%, var(--braun-color-knob-dark));
+  box-shadow: var(--braun-shadow-knob);
+  cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.braun-dial__knob:active,
+.braun-dial__knob.is-dragging { cursor: grabbing; }
+/* Pointer and knurling turn; the light on the crown stays where it is */
+.braun-dial__knob::before,
+.braun-dial__knob::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  transform: rotate(calc(-135deg + var(--braun-value) * 2.7deg));
+}
+.braun-dial__knob::before { background: linear-gradient(var(--braun-color-primary), var(--braun-color-primary)) 50% 7% / 3px 21% no-repeat; z-index: 1; }
+.braun-dial__knob::after {
+  background: repeating-conic-gradient(var(--braun-color-knurl) 0 1.5deg, var(--braun-color-knurl-light) 1.5deg 3deg);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+  mask: radial-gradient(closest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+}
+.braun-dial__knob:focus-visible { outline: 2px solid var(--braun-color-ink); outline-offset: 8px; }
+.braun-dial--sm { width: var(--braun-size-dial-sm); }
+
+/* Readout beside a dial: <div class="braun-readout"><output class="braun-readout__value" for="d1">72</output><span class="braun-readout__range">0 – 100</span></div> */
+.braun-readout { display: grid; gap: var(--braun-space-3); align-content: center; }
+.braun-readout__value { display: block; min-width: 2.2ch; font-family: var(--braun-font-family-display); font-size: var(--braun-font-size-readout); font-weight: var(--braun-font-weight-medium); line-height: 0.9; letter-spacing: -0.03em; color: var(--braun-color-ink); font-variant-numeric: tabular-nums; }
+.braun-readout__range { font-size: var(--braun-font-size-small); letter-spacing: 0.06em; color: var(--braun-color-text-muted); }
+
+/* =========================================================================
+   Fader — a linear slider: matte-black slot, orange travel, a keycap thumb with a pointer line
+   <input class="braun-fader" type="range" min="0" max="100" value="40" style="--braun-value:40" aria-label="Gain">
+   ========================================================================= */
+.braun-fader {
+  width: 100%;
+  height: 34px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.braun-fader::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: var(--braun-radius-pill);
+  background: linear-gradient(90deg, var(--braun-color-primary) 0 calc(var(--braun-value) * 1%), transparent 0), var(--braun-color-slot);
+  box-shadow: inset 0 1px 2px var(--braun-color-shade-deep), 0 1px 0 var(--braun-color-engrave-light);
+}
+.braun-fader::-moz-range-track { height: 8px; border-radius: var(--braun-radius-pill); background: var(--braun-color-slot); box-shadow: inset 0 1px 2px var(--braun-color-shade-deep), 0 1px 0 var(--braun-color-engrave-light); }
+.braun-fader::-moz-range-progress { height: 8px; border-radius: var(--braun-radius-pill); background: var(--braun-color-primary); }
+.braun-fader::-webkit-slider-thumb {
+  width: 18px;
+  height: 30px;
+  margin-top: -11px;
+  border: 0;
+  border-radius: 3px;
+  background: linear-gradient(var(--braun-color-primary), var(--braun-color-primary)) 50% 50% / 2px 14px no-repeat, var(--braun-gradient-face), var(--braun-color-keycap);
+  box-shadow: var(--braun-shadow-key);
+  appearance: none;
+  -webkit-appearance: none;
+  transition: transform var(--braun-motion-duration-release) var(--braun-motion-easing-release), box-shadow var(--braun-motion-duration-release) var(--braun-motion-easing-release);
+}
+.braun-fader::-moz-range-thumb { width: 18px; height: 30px; border: 0; border-radius: 3px; background: linear-gradient(var(--braun-color-primary), var(--braun-color-primary)) 50% 50% / 2px 14px no-repeat, var(--braun-gradient-face), var(--braun-color-keycap); box-shadow: var(--braun-shadow-key); }
+.braun-fader:active::-webkit-slider-thumb { transform: translateY(1px); box-shadow: var(--braun-shadow-key-pressed); }
+.braun-fader:focus-visible { outline: 2px solid var(--braun-color-ink); outline-offset: 4px; border-radius: var(--braun-radius-xs); }
+.braun-fader:disabled { cursor: not-allowed; opacity: 0.55; }
+/* Scale under a fader: <div class="braun-scale"><span>0</span><span>50</span><span>100</span></div> */
+.braun-scale {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 12px;
+  background: repeating-linear-gradient(90deg, var(--braun-color-text-subtle) 0 1px, transparent 1px calc((100% - 1px) / 10)) 0 0 / 100% 6px no-repeat;
+  font-size: var(--braun-font-size-micro);
+  letter-spacing: 0.06em;
+  color: var(--braun-color-text-muted);
+}
+
+/* =========================================================================
+   LED meter — 24 segments light up one by one
+   <div class="braun-meter" role="progressbar" aria-label="Sync" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100" style="--braun-value:68"></div>
+   Change --braun-value and the segments fill (or drain) one at a time.
+   ========================================================================= */
+.braun-meter {
+  --braun-meter-segments: 24;
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 30px;
+  transition: --braun-value var(--braun-motion-duration-fill) var(--braun-motion-easing-fill);
+}
+.braun-meter::before,
+.braun-meter::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  -webkit-mask: repeating-linear-gradient(90deg, #000 0 calc((100% + var(--braun-size-meter-gap)) / var(--braun-meter-segments) - var(--braun-size-meter-gap)), transparent 0 calc((100% + var(--braun-size-meter-gap)) / var(--braun-meter-segments)));
+  mask: repeating-linear-gradient(90deg, #000 0 calc((100% + var(--braun-size-meter-gap)) / var(--braun-meter-segments) - var(--braun-size-meter-gap)), transparent 0 calc((100% + var(--braun-size-meter-gap)) / var(--braun-meter-segments)));
+}
+.braun-meter::before { background: var(--braun-gradient-led-off), var(--braun-color-led-off); }
+.braun-meter::after {
+  background: var(--braun-gradient-led), var(--braun-color-primary);
+  clip-path: inset(0 calc(100% - (100% + var(--braun-size-meter-gap)) * round(down, var(--braun-value) * var(--braun-meter-segments) / 100, 1) / var(--braun-meter-segments)) 0 0);
+}
+.braun-meter--sm { height: 14px; }
+/* Meter with its reading: <div class="braun-gauge"><div class="braun-meter" …></div><span class="braun-gauge__value">68%</span><span class="braun-gauge__label">Syncing…</span></div> */
+.braun-gauge { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--braun-space-3) var(--braun-space-5); }
+.braun-gauge__value { font-family: var(--braun-font-family-display); font-size: var(--braun-font-size-value); font-weight: var(--braun-font-weight-medium); line-height: 1; letter-spacing: -0.02em; color: var(--braun-color-ink); font-variant-numeric: tabular-nums; }
+.braun-gauge__label { grid-column: 1 / -1; font-size: var(--braun-font-size-small); letter-spacing: 0.02em; color: var(--braun-color-text-muted); }
+
+/* Thin progress bar: <div class="braun-progress" role="progressbar" … style="--braun-value:40"></div> */
+.braun-progress { position: relative; height: 6px; border-radius: var(--braun-radius-pill); background: var(--braun-color-chassis); box-shadow: inset 0 1px 2px var(--braun-color-shade-deep); overflow: hidden; transition: --braun-value var(--braun-motion-duration-fill) var(--braun-motion-easing-release); }
+.braun-progress::after { content: ""; position: absolute; inset: 0 auto 0 0; width: calc(var(--braun-value) * 1%); border-radius: inherit; background: var(--braun-color-primary); }
+
+/* =========================================================================
+   LED · Badge · Chip
+   <span class="braun-led" aria-hidden="true"></span> (--off · --warn · --blink)
+   <span class="braun-badge"><span class="braun-led"></span>Online</span> (--primary · --inverse · --outline)
+   <button class="braun-chip" type="button" aria-pressed="true">Channel A</button> — its lamp lights when latched
+   ========================================================================= */
+.braun-led {
+  display: inline-block;
+  flex: none;
+  width: var(--braun-size-led);
+  height: var(--braun-size-led);
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.7) 0 1px, transparent 2.5px), var(--braun-color-signal);
+  box-shadow: var(--braun-shadow-led);
+}
+.braun-led--warn { background: radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.7) 0 1px, transparent 2.5px), var(--braun-color-primary); box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.14), 0 0 8px 1px var(--braun-color-primary-glow); }
+.braun-led--off { background: var(--braun-color-led-off); box-shadow: inset 0 1px 2px var(--braun-color-shade-deep), 0 1px 0 var(--braun-color-engrave-light); }
+.braun-led--blink { animation: braun-blink 1.6s steps(1, end) infinite; }
+@keyframes braun-blink { 50% { opacity: 0.25; } }
+
+.braun-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 24px;
+  padding: 0 var(--braun-space-2);
+  border-radius: var(--braun-radius-xs);
+  background: var(--braun-color-chassis);
+  box-shadow: inset 0 1px 1px var(--braun-color-shade), 0 1px 0 var(--braun-color-engrave-light);
+  font-size: var(--braun-font-size-micro);
+  font-weight: var(--braun-font-weight-medium);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--braun-color-ink);
+  white-space: nowrap;
+}
+.braun-badge .braun-led { width: 6px; height: 6px; }
+.braun-badge--primary { background: var(--braun-color-primary); color: var(--braun-color-primary-ink); box-shadow: none; }
+.braun-badge--inverse { background: var(--braun-color-inverse); color: var(--braun-color-inverse-ink); box-shadow: none; }
+.braun-badge--outline { background: transparent; box-shadow: inset 0 0 0 1px var(--braun-color-line-strong); }
+/* Plain status: an LED and a word, no plate ("● Online") */
+.braun-status { display: inline-flex; align-items: center; gap: var(--braun-space-2); font-size: var(--braun-font-size-body); color: var(--braun-color-ink); white-space: nowrap; }
+
+.braun-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--braun-space-2);
+  height: var(--braun-size-control-sm);
+  padding: 0 var(--braun-space-3) 0 10px;
+  border-radius: var(--braun-radius-sm);
+  font-family: var(--braun-font-family-mono);
+  font-size: var(--braun-font-size-small);
+  font-weight: var(--braun-font-weight-medium);
+  white-space: nowrap;
+}
+.braun-chip::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--braun-color-led-off);
+  box-shadow: inset 0 1px 1px var(--braun-color-shade-deep);
+  transition: background-color var(--braun-motion-duration-fade), box-shadow var(--braun-motion-duration-fade);
+}
+.braun-chip[aria-pressed="true"] { transform: translateY(1px); box-shadow: var(--braun-shadow-key-latched); transition-duration: var(--braun-motion-duration-press); transition-timing-function: var(--braun-motion-easing-press); }
+.braun-chip[aria-pressed="true"]::before { background: var(--braun-color-primary); box-shadow: 0 0 6px var(--braun-color-primary-glow); }
+
+/* =========================================================================
+   Card · Readings · Glyph — module plates and the values they report
+   <article class="braun-card"><header class="braun-card__head"><span class="braun-glyph">…</span><h3 class="braun-card__title">MODULE_01</h3><span class="braun-status"><span class="braun-led"></span>Online</span></header>
+     <dl class="braun-readings"><div><dt>Voltage</dt><dd>12.4 V</dd></div> …</dl></article>
+   ========================================================================= */
+.braun-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--braun-space-3);
+  min-width: 0;
+  padding: var(--braun-space-5) var(--braun-space-6);
+  border-radius: var(--braun-radius-lg);
+  background: var(--braun-color-plate);
+  box-shadow: inset 0 0 0 1px var(--braun-color-bezel), var(--braun-shadow-level-1);
+}
+.braun-card__head { display: flex; align-items: center; gap: var(--braun-space-3); padding-bottom: var(--braun-space-4); border-bottom: var(--braun-border-hair) solid var(--braun-color-line); }
+.braun-card__head > :last-child:not(:first-child) { margin-left: auto; }
+.braun-card__title { font-family: var(--braun-font-family-mono); font-size: var(--braun-font-size-body); font-weight: var(--braun-font-weight-medium); letter-spacing: 0.04em; color: var(--braun-color-ink); }
+.braun-card__text { font-size: var(--braun-font-size-small); color: var(--braun-color-text-muted); }
+.braun-card__actions { display: flex; flex-wrap: wrap; gap: var(--braun-space-2); margin-top: var(--braun-space-2); }
+.braun-card--inset { background: var(--braun-color-canvas); box-shadow: var(--braun-shadow-well); }
+.braun-glyph { display: inline-grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: var(--braun-radius-sm); background: var(--braun-color-inverse); color: var(--braun-color-inverse-ink); box-shadow: 0 1px 0 var(--braun-color-engrave-light), inset 0 1px 0 rgba(255, 255, 255, 0.12); }
+.braun-glyph .braun-icon { width: 20px; height: 20px; }
+.braun-readings { display: grid; }
+.braun-readings > div { display: flex; align-items: baseline; justify-content: space-between; gap: var(--braun-space-4); padding: 9px 0; border-bottom: var(--braun-border-hair) solid var(--braun-color-line); }
+.braun-readings > div:last-child { border-bottom: 0; padding-bottom: 0; }
+.braun-readings dt { color: var(--braun-color-text); }
+.braun-readings dd { color: var(--braun-color-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* =========================================================================
+   Toast — a matte-black status strip with an LED
+   <div class="braun-toast" role="status"><span class="braun-led"></span>Synced to device<span class="braun-toast__time">2 min ago</span></div>
+   ========================================================================= */
+.braun-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--braun-space-4);
+  min-height: 56px;
+  padding: var(--braun-space-3) var(--braun-space-5);
+  border-radius: var(--braun-radius-lg);
+  background: var(--braun-gradient-face-inverse), var(--braun-color-inverse);
+  box-shadow: var(--braun-shadow-key-inverse);
+  color: var(--braun-color-inverse-ink);
+  font-size: var(--braun-font-size-body);
+  animation: braun-toast-in var(--braun-motion-duration-enter) var(--braun-motion-easing-release) backwards;
+}
+.braun-toast__time { margin-left: auto; font-size: var(--braun-font-size-small); color: var(--braun-color-inverse-muted); white-space: nowrap; }
+.braun-toast .braun-btn--ghost { color: inherit; }
+@keyframes braun-toast-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* =========================================================================
+   Alert — an orange-washed plate for a threshold crossed
+   <div class="braun-alert" role="alert"><svg class="braun-alert__icon">…</svg><div><p class="braun-alert__title">Temperature threshold exceeded</p><p class="braun-alert__text">Module_01 operating at 78.4 °C</p></div><button class="braun-alert__close" aria-label="Dismiss">×</button></div>
+   Variants: default (warning) · --neutral
+   ========================================================================= */
+.braun-alert {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--braun-space-1) var(--braun-space-5);
+  padding: var(--braun-space-4) var(--braun-space-5);
+  border: var(--braun-border-hair) solid var(--braun-color-primary-line);
+  border-radius: var(--braun-radius-lg);
+  background: var(--braun-color-primary-soft);
+  color: var(--braun-color-text);
+}
+.braun-alert__icon { width: 36px; height: 32px; color: var(--braun-color-primary); }
+.braun-alert__title { font-size: var(--braun-font-size-body); font-weight: var(--braun-font-weight-medium); letter-spacing: 0.02em; color: var(--braun-color-ink); }
+.braun-alert__text { margin-top: 2px; font-size: var(--braun-font-size-small); color: var(--braun-color-text-muted); }
+.braun-alert__close {
+  display: inline-grid;
+  place-items: center;
+  width: var(--braun-size-control-sm);
+  height: var(--braun-size-control-sm);
+  padding: 0;
+  border: 0;
+  border-radius: var(--braun-radius-sm);
+  background: transparent;
+  color: var(--braun-color-ink);
+  cursor: pointer;
+  transition: background-color var(--braun-motion-duration-fade), transform var(--braun-motion-duration-release) var(--braun-motion-easing-release);
+}
+.braun-alert__close:hover { background: color-mix(in srgb, var(--braun-color-ink) 8%, transparent); }
+.braun-alert__close:active { transform: translateY(1px); transition-duration: var(--braun-motion-duration-press); }
+.braun-alert__close:focus-visible { outline: 2px solid var(--braun-color-ink); outline-offset: 2px; }
+.braun-alert__close .braun-icon { width: 20px; height: 20px; }
+.braun-alert--neutral { border-color: var(--braun-color-line); background: var(--braun-color-plate); }
+.braun-alert--neutral .braun-alert__icon { color: var(--braun-color-ink); }
+
+/* =========================================================================
+   Dialog — a raised plate: question and consequence on the left, keys on the right
+   <dialog class="braun-dialog" aria-labelledby="t"><div class="braun-dialog__body"><div><h2 class="braun-dialog__title" id="t">Reset module?</h2><p class="braun-dialog__text">…</p></div>
+     <div class="braun-dialog__actions"><button class="braun-btn" data-braun-close>Cancel</button><button class="braun-btn braun-btn--primary" data-braun-close>Reset</button></div></div></dialog>
+   Open with [data-braun-open="#id"]; any [data-braun-close] inside closes it.
+   ========================================================================= */
+.braun-dialog {
+  width: min(100% - 32px, 560px);
+  max-width: none;
+  padding: var(--braun-space-5) var(--braun-space-6);
+  border: 0;
+  border-radius: var(--braun-radius-lg);
+  background: var(--braun-color-plate);
+  box-shadow: inset 0 0 0 1px var(--braun-color-bezel), var(--braun-shadow-overlay);
+  color: var(--braun-color-text);
+}
+.braun-dialog[open] { animation: braun-dialog-in var(--braun-motion-duration-enter) var(--braun-motion-easing-release); }
+.braun-dialog::backdrop { background: var(--braun-color-backdrop); }
+.braun-dialog__body { display: flex; flex-wrap: wrap; align-items: center; gap: var(--braun-space-4) var(--braun-space-6); }
+.braun-dialog__body > :first-child { flex: 1 1 180px; }
+.braun-dialog__title { font-family: var(--braun-font-family-mono); font-size: 20px; font-weight: var(--braun-font-weight-medium); line-height: 1.25; color: var(--braun-color-ink); }
+.braun-dialog__text { margin-top: var(--braun-space-1); font-size: var(--braun-font-size-small); color: var(--braun-color-text-muted); }
+.braun-dialog__actions { display: flex; flex-wrap: wrap; gap: var(--braun-space-3); margin-left: auto; }
+.braun-dialog__actions .braun-btn { min-width: 96px; }
+@keyframes braun-dialog-in { from { opacity: 0; transform: translateY(-6px); } }
+
+/* =========================================================================
+   Tooltip — a black legend strip
+   <span class="braun-tooltip" data-tip="Hold to calibrate"><button class="braun-btn">Calibrate</button></span>
+   Static bubble for specimens: <span class="braun-tip">Hold to calibrate</span>
+   ========================================================================= */
+.braun-tooltip { position: relative; display: inline-flex; }
+.braun-tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  z-index: 10;
+  padding: 6px 10px;
+  border-radius: var(--braun-radius-xs);
+  background: var(--braun-color-inverse);
+  color: var(--braun-color-inverse-ink);
+  font-size: var(--braun-font-size-caption);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 3px);
+  transition: opacity var(--braun-motion-duration-fade) var(--braun-motion-easing-release), transform var(--braun-motion-duration-fade) var(--braun-motion-easing-release);
+}
+.braun-tooltip:hover::after,
+.braun-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0); transition-delay: 120ms; }
+.braun-tip { position: relative; display: inline-block; padding: 6px 10px; border-radius: var(--braun-radius-xs); background: var(--braun-color-inverse); color: var(--braun-color-inverse-ink); font-size: var(--braun-font-size-caption); letter-spacing: 0.04em; }
+.braun-tip::after { content: ""; position: absolute; left: 50%; top: 100%; border: 5px solid transparent; border-top-color: var(--braun-color-inverse); transform: translateX(-50%); }
+
+/* =========================================================================
+   Table — readings in rows: caps header on a black rule, tabular figures
+   <div class="braun-table-wrap"><table class="braun-table"><thead><tr><th>Channel</th><th class="is-num">Volts</th></tr></thead><tbody>…</tbody></table></div>
+   ========================================================================= */
+.braun-table-wrap { width: 100%; overflow-x: auto; }
+.braun-table { width: 100%; border-collapse: collapse; font-size: var(--braun-font-size-small); color: var(--braun-color-text); }
+.braun-table th {
+  padding: 0 var(--braun-space-3) var(--braun-space-2);
+  border-bottom: var(--braun-border-rule) solid var(--braun-color-line-strong);
+  font-size: var(--braun-font-size-micro);
+  font-weight: var(--braun-font-weight-medium);
+  letter-spacing: var(--braun-font-tracking-spec);
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--braun-color-text-muted);
+  white-space: nowrap;
+}
+.braun-table td { padding: 11px var(--braun-space-3); border-bottom: var(--braun-border-hair) solid var(--braun-color-line); white-space: nowrap; }
+.braun-table tbody tr { transition: background-color var(--braun-motion-duration-fade); }
+.braun-table tbody tr:hover { background: color-mix(in srgb, var(--braun-color-ink) 4%, transparent); }
+.braun-table tbody tr[aria-selected="true"] { background: var(--braun-color-primary-soft); }
+.braun-table .is-num { text-align: right; font-variant-numeric: tabular-nums; }
+.braun-table td:first-child,
+.braun-table th:first-child { padding-left: 0; }
+.braun-table td:last-child,
+.braun-table th:last-child { padding-right: 0; }
+
+/* =========================================================================
+   Avatar — an operator token: initials stamped into a round keycap, an LED for presence
+   <span class="braun-avatar">MK<span class="braun-led"></span></span> (--lg · --square)
+   Person row: <div class="braun-person"><span class="braun-avatar">MK</span><div><b>Mira Kovač</b><span>Calibration</span></div></div>
+   ========================================================================= */
+.braun-avatar {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--braun-gradient-face), var(--braun-color-keycap);
+  box-shadow: var(--braun-shadow-key);
+  font-size: var(--braun-font-size-small);
+  font-weight: var(--braun-font-weight-semibold);
+  letter-spacing: 0.04em;
+  color: var(--braun-color-ink);
+}
+.braun-avatar > .braun-led { position: absolute; right: 0; top: 1px; }
+.braun-avatar--lg { width: 56px; height: 56px; font-size: var(--braun-font-size-title); }
+.braun-avatar--square { border-radius: var(--braun-radius-md); }
+.braun-avatar--inverse { background: var(--braun-gradient-face-inverse), var(--braun-color-inverse); color: var(--braun-color-inverse-ink); box-shadow: var(--braun-shadow-key-inverse); }
+.braun-person { display: flex; align-items: center; gap: var(--braun-space-3); min-width: 0; }
+.braun-person b { display: block; font-size: var(--braun-font-size-body); font-weight: var(--braun-font-weight-medium); color: var(--braun-color-ink); }
+.braun-person span:not([class]) { display: block; font-size: var(--braun-font-size-caption); color: var(--braun-color-text-muted); }
+
+/* =========================================================================
+   Speaker grille — Ø 1.5 mm perforations at 3 mm pitch; whole holes only, never cut at the edge
+   <div class="braun-grille" role="img" aria-label="Speaker grille"></div>
+   ========================================================================= */
+.braun-grille {
+  display: block;
+  min-height: 96px;
+  padding: 10px;
+  border-radius: var(--braun-radius-md);
+  background-color: var(--braun-color-bezel);
+  background-image:
+    radial-gradient(circle at 50% 42%, var(--braun-color-grille-hole) 0 calc(var(--braun-size-grille-hole) / 2 - 0.7px), transparent calc(var(--braun-size-grille-hole) / 2)),
+    radial-gradient(circle at 50% 58%, var(--braun-color-engrave-light) 0 calc(var(--braun-size-grille-hole) / 2 - 0.6px), transparent calc(var(--braun-size-grille-hole) / 2 + 0.3px));
+  background-size: var(--braun-size-grille-pitch) var(--braun-size-grille-pitch);
+  background-repeat: space;
+  background-origin: content-box;
+  background-clip: content-box, content-box;
+  box-shadow: inset 0 1px 2px var(--braun-color-shade), inset 0 0 0 1px var(--braun-color-engrave), 0 1px 0 var(--braun-color-engrave-light);
+}
+
+/* =========================================================================
+   Engraved plate — a brushed plate with a 1px groove cut into it
+   <div class="braun-engraved"><p>1 px engraved border</p></div>
+   ========================================================================= */
+.braun-engraved {
+  position: relative;
+  display: grid;
+  place-content: center;
+  min-height: 140px;
+  padding: var(--braun-space-8) var(--braun-space-10);
+  border-radius: var(--braun-radius-lg);
+  background: var(--braun-texture-brushed), var(--braun-color-chassis);
+  box-shadow: var(--braun-shadow-level-1);
+  font-size: var(--braun-font-size-small);
+  color: var(--braun-color-text);
+  text-align: center;
+}
+.braun-engraved::before {
+  content: "";
+  position: absolute;
+  inset: 16px 16px 0 16px;
+  border-top: var(--braun-border-hair) solid var(--braun-color-engrave);
+  border-left: var(--braun-border-hair) solid var(--braun-color-engrave);
+  border-top-left-radius: 26px;
+  box-shadow: inset 1px 1px 0 var(--braun-color-engrave-light);
+  pointer-events: none;
+}
+.braun-engraved > * { position: relative; }
+
+/* =========================================================================
+   Swatch · Specimen · Levels — the foundations, as physical samples
+   <span class="braun-swatch" style="--braun-swatch:var(--braun-color-primary)"></span>
+   <span class="braun-specimen" style="--braun-swatch:var(--braun-color-chassis)"></span>
+   <div class="braun-level-2"></div> (0 · 1 · 2 · 3 = 0 / 0.5 / 1 / 2 mm)
+   ========================================================================= */
+.braun-swatch { display: block; width: 64px; aspect-ratio: 1; border-radius: 50%; background: var(--braun-gradient-sheen), var(--braun-swatch, var(--braun-color-primary)); box-shadow: var(--braun-shadow-level-2); }
+.braun-specimen { display: block; width: 100%; aspect-ratio: 1; border-radius: var(--braun-radius-md); background: var(--braun-gradient-sheen), var(--braun-swatch, var(--braun-color-keycap)); box-shadow: var(--braun-shadow-level-2); }
+.braun-level-0,
+.braun-level-1,
+.braun-level-2,
+.braun-level-3 { border-radius: var(--braun-radius-sm); background: var(--braun-gradient-sheen), var(--braun-color-bezel); }
+.braun-level-0 { box-shadow: var(--braun-shadow-level-0); }
+.braun-level-1 { box-shadow: var(--braun-shadow-level-1); }
+.braun-level-2 { box-shadow: var(--braun-shadow-level-2); }
+.braun-level-3 { box-shadow: var(--braun-shadow-level-3); }
+
+/* =========================================================================
+   Power-on self-test — inside .braun-boot the instruments check themselves once:
+   the dial sweeps full scale and settles, the meters fill segment by segment.
+   ========================================================================= */
+.braun-boot .braun-dial { animation: braun-sweep 1300ms var(--braun-motion-easing-travel) 200ms backwards; }
+.braun-boot .braun-meter { animation: braun-fill 900ms linear 350ms backwards; }
+@keyframes braun-sweep { 0% { --braun-value: 0; } 48% { --braun-value: 100; } }
+@keyframes braun-fill { from { --braun-value: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .braun-boot .braun-dial,
+  .braun-boot .braun-meter { animation: none; }
+}

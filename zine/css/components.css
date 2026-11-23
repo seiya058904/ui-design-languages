@@ -1,0 +1,605 @@
+/* Zine / Brutal — components
+   Print rules: every box has a 2px black rule; depth is a zero-blur hard shadow (2 / 4 / 6px);
+   color is ink, not decoration — lime for primary and selection, vermilion for danger, cobalt for
+   info. Motion is a snap: lift 2px on hover (shadow grows to 6px), slam flat on press (60ms), spring
+   back up. Checks and stickers are stamped on.
+   Shared anatomy: btn · input/field · checkbox/radio/switch · slider · segmented · tabs (folder) ·
+   breadcrumb · pagination · menu (sidebar) · chip · sticker · card/profile · avatar · progress ·
+   toast · alert · dialog · tooltip · table · swatch · issue box */
+
+@property --zine-value {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* =========================================================================
+   Button
+   <button class="zine-btn zine-btn--primary">Primary</button>
+   Variants: --primary (lime) · default (white) · --danger (vermilion) · --info (cobalt) · --ghost
+   Sizes: --sm · --lg · --icon · --block   States: .is-hover · .is-pressed / :active · :focus-visible · :disabled
+   ========================================================================= */
+.zine-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--zine-space-2);
+  height: var(--zine-size-control);
+  padding: 0 var(--zine-space-6);
+  border: var(--zine-border-regular) solid var(--zine-color-ink);
+  border-radius: var(--zine-radius-sm);
+  background: var(--zine-color-surface);
+  color: var(--zine-color-ink);
+  font-family: var(--zine-font-family-display);
+  font-size: var(--zine-font-size-button);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--zine-shadow-md);
+  transition:
+    transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap),
+    box-shadow var(--zine-motion-duration-release) var(--zine-motion-easing-snap),
+    background-color var(--zine-motion-duration-hover) var(--zine-motion-easing-out);
+}
+.zine-btn:hover,
+.zine-btn.is-hover { transform: translate(-2px, -2px); box-shadow: var(--zine-shadow-lg); transition-duration: var(--zine-motion-duration-hover); transition-timing-function: var(--zine-motion-easing-out); }
+.zine-btn:active,
+.zine-btn.is-pressed { transform: translate(4px, 4px); box-shadow: var(--zine-shadow-flat); transition-duration: var(--zine-motion-duration-press); transition-timing-function: var(--zine-motion-easing-press); }
+.zine-btn:focus-visible { outline: 2px dashed var(--zine-color-ink); outline-offset: 5px; }
+.zine-btn .zine-icon { width: 18px; height: 18px; }
+.zine-btn--primary { background: var(--zine-color-primary); color: var(--zine-color-primary-ink); }
+.zine-btn--primary:active,
+.zine-btn--primary.is-pressed { background: var(--zine-color-primary-strong); }
+.zine-btn--danger { background: var(--zine-color-danger); color: var(--zine-color-danger-ink); }
+.zine-btn--info { background: var(--zine-color-info); color: var(--zine-color-info-ink); }
+.zine-btn--ghost { border-color: transparent; background: transparent; box-shadow: none; }
+.zine-btn--ghost:hover,
+.zine-btn--ghost.is-hover { border-color: var(--zine-color-ink); background: var(--zine-color-surface); box-shadow: var(--zine-shadow-sm); transform: translate(-1px, -1px); }
+.zine-btn--sm { height: var(--zine-size-control-sm); padding: 0 var(--zine-space-4); font-size: var(--zine-font-size-small); box-shadow: var(--zine-shadow-sm); }
+.zine-btn--sm:hover,
+.zine-btn--sm.is-hover { box-shadow: var(--zine-shadow-md); }
+.zine-btn--sm:active,
+.zine-btn--sm.is-pressed { transform: translate(2px, 2px); box-shadow: var(--zine-shadow-flat); }
+.zine-btn--ghost.zine-btn--sm { box-shadow: none; }
+.zine-btn--ghost.zine-btn--sm:hover,
+.zine-btn--ghost.zine-btn--sm.is-hover { box-shadow: var(--zine-shadow-sm); }
+.zine-btn--lg { height: var(--zine-size-control-lg); padding: 0 var(--zine-space-8); font-size: 20px; }
+.zine-btn--icon { width: var(--zine-size-control); padding: 0; }
+.zine-btn--icon.zine-btn--sm { width: var(--zine-size-control-sm); }
+.zine-btn--block { display: flex; width: 100%; }
+.zine-btn:disabled,
+.zine-btn.is-disabled { border-color: var(--zine-color-disabled-ink); background: var(--zine-color-disabled); color: var(--zine-color-disabled-ink); box-shadow: none; transform: none; cursor: not-allowed; pointer-events: none; }
+
+/* =========================================================================
+   Text field — white stock in a 2px rule; focus prints a lime ring with a black edge
+   <label class="zine-field"><span class="zine-field__label">Title</span><input class="zine-input" placeholder="Enter text..."></label>
+   ========================================================================= */
+.zine-field { display: grid; gap: 6px; min-width: 0; }
+.zine-field__label { font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-small); font-weight: var(--zine-font-weight-bold); text-transform: uppercase; color: var(--zine-color-ink); }
+.zine-input {
+  display: block;
+  width: 100%;
+  height: var(--zine-size-control);
+  padding: 0 14px;
+  border: var(--zine-border-regular) solid var(--zine-color-ink);
+  border-radius: var(--zine-radius-sm);
+  background: var(--zine-color-surface);
+  color: var(--zine-color-ink);
+  font-family: var(--zine-font-family-mono);
+  font-size: var(--zine-font-size-body);
+  caret-color: var(--zine-color-ink);
+  outline: none;
+  appearance: none;
+  box-shadow: 0 0 0 0 var(--zine-color-lime), 0 0 0 0 var(--zine-color-ink);
+  transition: box-shadow var(--zine-motion-duration-hover) var(--zine-motion-easing-out), transform var(--zine-motion-duration-hover) var(--zine-motion-easing-out);
+}
+.zine-input::placeholder { color: var(--zine-color-text-subtle); }
+.zine-input:hover,
+.zine-input.is-hover { box-shadow: var(--zine-shadow-sm); }
+.zine-input:focus,
+.zine-input.is-focus { box-shadow: var(--zine-shadow-focus); }
+.zine-input[aria-invalid="true"] { border-color: var(--zine-color-danger); box-shadow: 0 0 0 3px var(--zine-color-danger), 0 0 0 5px var(--zine-color-ink); }
+.zine-input:disabled { border-color: var(--zine-color-disabled-ink); background: var(--zine-color-disabled); color: var(--zine-color-disabled-ink); box-shadow: none; cursor: not-allowed; }
+textarea.zine-input { height: auto; min-height: 104px; padding: var(--zine-space-3) 14px; line-height: 1.5; resize: vertical; }
+.zine-hint { font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-caption); color: var(--zine-color-text-muted); }
+.zine-hint--error { color: var(--zine-color-ink); font-weight: var(--zine-font-weight-bold); }
+.zine-hint--error::before { content: "✕ "; color: var(--zine-color-danger); }
+.zine-search { position: relative; display: block; }
+.zine-search > .zine-icon { position: absolute; left: 13px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); pointer-events: none; }
+.zine-search > .zine-input { padding-left: 40px; }
+
+/* =========================================================================
+   Checkbox · radio · switch
+   <label class="zine-check"><input class="zine-checkbox" type="checkbox" checked> Checked</label>
+   <label class="zine-check"><input class="zine-switch" type="checkbox" checked> On</label>
+   Checking stamps the mark on; the switch knob snaps across.
+   ========================================================================= */
+.zine-check { display: inline-flex; align-items: center; gap: var(--zine-space-3); font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-body); font-weight: var(--zine-font-weight-bold); color: var(--zine-color-ink); cursor: pointer; user-select: none; }
+.zine-check:has(:disabled) { color: var(--zine-color-disabled-ink); cursor: not-allowed; }
+.zine-checkbox,
+.zine-radio {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  border: var(--zine-border-regular) solid var(--zine-color-ink);
+  background-color: var(--zine-color-surface);
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--zine-shadow-flat);
+  transition: transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap), box-shadow var(--zine-motion-duration-release) var(--zine-motion-easing-snap);
+}
+.zine-checkbox { border-radius: var(--zine-radius-sm); }
+.zine-radio { border-radius: 50%; }
+.zine-checkbox:hover,
+.zine-radio:hover { transform: translate(-1px, -1px); box-shadow: var(--zine-shadow-sm); }
+.zine-checkbox:checked {
+  background-color: var(--zine-color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111111' stroke-width='3.6' stroke-linecap='square'%3E%3Cpath d='M5 12.5 10 17.5 19.5 6.5'/%3E%3C/svg%3E");
+  background-size: 17px;
+  animation: zine-stamp var(--zine-motion-duration-stamp) var(--zine-motion-easing-stamp);
+}
+.zine-radio:checked { background-color: var(--zine-color-primary); background-image: radial-gradient(circle, var(--zine-color-black) 0 5px, transparent 5.5px); animation: zine-stamp var(--zine-motion-duration-stamp) var(--zine-motion-easing-stamp); }
+.zine-checkbox:active,
+.zine-radio:active { transform: translate(2px, 2px); box-shadow: var(--zine-shadow-flat); transition-duration: var(--zine-motion-duration-press); }
+.zine-checkbox:focus-visible,
+.zine-radio:focus-visible,
+.zine-switch:focus-visible { outline: 2px dashed var(--zine-color-ink); outline-offset: 4px; }
+.zine-checkbox:disabled,
+.zine-radio:disabled { border-color: var(--zine-color-disabled-ink); background-color: var(--zine-color-disabled); cursor: not-allowed; }
+@keyframes zine-stamp { 0% { transform: scale(1.45) rotate(-8deg); } 60% { transform: scale(0.94) rotate(1deg); } }
+
+.zine-switch {
+  position: relative;
+  flex: none;
+  width: 58px;
+  height: 30px;
+  margin: 0;
+  border: var(--zine-border-regular) solid var(--zine-color-ink);
+  border-radius: var(--zine-radius-pill);
+  background: var(--zine-color-surface);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--zine-motion-duration-hover) var(--zine-motion-easing-out);
+}
+.zine-switch::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border: var(--zine-border-regular) solid var(--zine-color-ink);
+  border-radius: 50%;
+  background: var(--zine-color-ink);
+  transition: transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap), background-color var(--zine-motion-duration-hover);
+}
+.zine-switch:checked { background: var(--zine-color-primary); }
+.zine-switch:checked::before { transform: translateX(28px); background: var(--zine-color-white); }
+.zine-switch:active::before { transform: translateX(3px) scaleX(1.15); }
+.zine-switch:checked:active::before { transform: translateX(24px) scaleX(1.15); }
+.zine-switch:disabled { border-color: var(--zine-color-disabled-ink); background: var(--zine-color-disabled); cursor: not-allowed; }
+.zine-switch:disabled::before { border-color: var(--zine-color-disabled-ink); background: var(--zine-color-disabled-ink); }
+
+/* =========================================================================
+   Slider — a ruled track filled with lime, a square block of a thumb
+   <div class="zine-range"><input class="zine-slider" type="range" value="65" style="--zine-value:65" aria-label="Ink coverage"><output>65%</output></div>
+   ========================================================================= */
+.zine-range { display: flex; align-items: center; gap: var(--zine-space-4); width: 100%; }
+.zine-range > output { min-width: 3.5ch; font-family: var(--zine-font-family-display); font-size: 22px; text-align: right; color: var(--zine-color-ink); }
+.zine-slider { flex: 1; min-width: 0; height: 34px; margin: 0; background: transparent; cursor: pointer; appearance: none; -webkit-appearance: none; -webkit-tap-highlight-color: transparent; }
+.zine-slider::-webkit-slider-runnable-track { height: 22px; border: var(--zine-border-regular) solid var(--zine-color-ink); background: linear-gradient(90deg, var(--zine-color-primary) 0 calc(var(--zine-value) * 1%), var(--zine-color-surface) 0); }
+.zine-slider::-moz-range-track { height: 18px; border: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-color-surface); }
+.zine-slider::-moz-range-progress { height: 18px; background: var(--zine-color-primary); }
+.zine-slider::-webkit-slider-thumb {
+  width: 26px;
+  height: 34px;
+  margin-top: -8px;
+  border: var(--zine-border-regular) solid var(--zine-color-ink);
+  border-radius: var(--zine-radius-sm);
+  background: var(--zine-color-white);
+  box-shadow: var(--zine-shadow-sm);
+  appearance: none;
+  -webkit-appearance: none;
+  transition: transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap), box-shadow var(--zine-motion-duration-release) var(--zine-motion-easing-snap);
+}
+.zine-slider::-moz-range-thumb { width: 22px; height: 30px; border: var(--zine-border-regular) solid var(--zine-color-ink); border-radius: var(--zine-radius-sm); background: var(--zine-color-white); box-shadow: var(--zine-shadow-sm); }
+.zine-slider:hover::-webkit-slider-thumb { transform: translate(-1px, -1px); box-shadow: var(--zine-shadow-md); }
+.zine-slider:active::-webkit-slider-thumb { transform: translate(2px, 2px); box-shadow: var(--zine-shadow-flat); }
+.zine-slider:focus-visible { outline: 2px dashed var(--zine-color-ink); outline-offset: 4px; }
+.zine-slider:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* =========================================================================
+   Folder tabs — the current tab is lime and joins the sheet below it
+   <div class="zine-tabs" role="tablist"><button class="zine-tabs__item" role="tab" aria-selected="true">Overview</button> …</div>
+   <div class="zine-sheet" role="tabpanel">…</div>
+   ========================================================================= */
+.zine-tabs { position: relative; z-index: 1; display: flex; align-items: flex-end; gap: 4px; max-width: 100%; margin-bottom: calc(-1 * var(--zine-border-regular)); overflow-x: auto; scrollbar-width: none; padding-top: 6px; }
+.zine-tabs__item {
+  position: relative;
+  z-index: 0;
+  flex: none;
+  height: 46px;
+  padding: 0 30px 0 15px;
+  border: 0;
+  background: var(--zine-color-ink);
+  color: var(--zine-color-ink);
+  font-family: var(--zine-font-family-display);
+  font-size: var(--zine-font-size-body);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+  transition: transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap);
+}
+.zine-tabs__item::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 2px 2px 2px 2px;
+  background: var(--zine-color-surface);
+  clip-path: polygon(0 0, calc(100% - 17.2px) 0, 100% 17.2px, 100% 100%, 0 100%);
+  transition: background-color var(--zine-motion-duration-hover);
+}
+.zine-tabs__item:hover { transform: translateY(-3px); }
+.zine-tabs__item:hover::before { background: var(--zine-color-hover); }
+.zine-tabs__item[aria-selected="true"],
+.zine-tabs__item.is-active { color: var(--zine-color-black); transform: none; }
+.zine-tabs__item[aria-selected="true"]::before,
+.zine-tabs__item.is-active::before { bottom: 0; background: var(--zine-color-primary); animation: zine-tab-up var(--zine-motion-duration-release) var(--zine-motion-easing-snap); }
+.zine-tabs__item:focus-visible { text-decoration: underline 3px dashed; text-underline-offset: 6px; }
+@keyframes zine-tab-up { from { transform: translateY(5px); } }
+/* The sheet the tabs sit on */
+.zine-sheet { padding: var(--zine-space-5); border: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-color-surface); box-shadow: var(--zine-shadow-md); }
+.zine-sheet[role="tabpanel"]:not([hidden]) { animation: zine-slide var(--zine-motion-duration-slide) var(--zine-motion-easing-out); }
+@keyframes zine-slide { from { opacity: 0; transform: translateX(-6px); } }
+
+/* =========================================================================
+   Segmented — joined keys in one ruled block; the chosen one is inked lime
+   <div class="zine-segmented" role="tablist"><button class="zine-segmented__item" role="tab" aria-selected="true">Grid</button> …</div>
+   ========================================================================= */
+.zine-segmented { display: inline-flex; max-width: 100%; border: var(--zine-border-regular) solid var(--zine-color-ink); border-radius: var(--zine-radius-sm); background: var(--zine-color-surface); box-shadow: var(--zine-shadow-md); }
+.zine-segmented__item {
+  flex: 1 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 var(--zine-space-4);
+  border: 0;
+  border-left: var(--zine-border-regular) solid var(--zine-color-ink);
+  background: transparent;
+  color: var(--zine-color-ink);
+  font-family: var(--zine-font-family-mono);
+  font-size: var(--zine-font-size-small);
+  font-weight: var(--zine-font-weight-bold);
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--zine-motion-duration-hover);
+}
+.zine-segmented__item:first-child { border-left: 0; }
+.zine-segmented__item:hover { background: var(--zine-color-hover); }
+.zine-segmented__item[aria-selected="true"],
+.zine-segmented__item.is-active { background: var(--zine-color-primary); color: var(--zine-color-black); }
+.zine-segmented__item[aria-selected="true"] > * { animation: zine-stamp var(--zine-motion-duration-stamp) var(--zine-motion-easing-stamp); }
+.zine-segmented__item:focus-visible { outline: 2px dashed var(--zine-color-ink); outline-offset: -6px; }
+.zine-segmented__item .zine-icon { width: 16px; height: 16px; }
+
+/* =========================================================================
+   Breadcrumb · pagination
+   <nav class="zine-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Home</a></li> … <li aria-current="page">Issue 01</li></ol></nav>
+   <nav class="zine-pagination" aria-label="Pages"><a href="#" aria-label="Previous">‹</a><a href="#">1</a><a href="#" aria-current="page">2</a> …</nav>
+   ========================================================================= */
+.zine-breadcrumb { display: inline-block; max-width: 100%; padding: 8px 12px; border: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-color-surface); box-shadow: var(--zine-shadow-sm); }
+.zine-breadcrumb ol { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 0; margin: 0; padding: 0; list-style: none; font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-small); font-weight: var(--zine-font-weight-bold); text-transform: uppercase; }
+.zine-breadcrumb li { display: inline-flex; align-items: center; }
+.zine-breadcrumb li:not(:last-child)::after { content: ">"; margin: 0 12px; }
+.zine-breadcrumb a { text-decoration: none; }
+.zine-breadcrumb a:hover { text-decoration: underline 2px; text-underline-offset: 3px; }
+.zine-breadcrumb a:focus-visible { outline: 2px dashed var(--zine-color-ink); outline-offset: 3px; }
+.zine-breadcrumb [aria-current="page"] { padding: 2px 6px; background: var(--zine-color-highlight); color: var(--zine-color-black); }
+
+.zine-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.zine-pagination > a,
+.zine-pagination > button {
+  display: inline-grid;
+  place-items: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 6px;
+  border: var(--zine-border-regular) solid var(--zine-color-ink);
+  background: var(--zine-color-surface);
+  color: var(--zine-color-ink);
+  font-family: var(--zine-font-family-display);
+  font-size: var(--zine-font-size-body);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--zine-shadow-sm);
+  transition: transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap), box-shadow var(--zine-motion-duration-release) var(--zine-motion-easing-snap);
+}
+.zine-pagination > a:hover,
+.zine-pagination > button:hover { transform: translate(-1px, -1px); box-shadow: var(--zine-shadow-md); }
+.zine-pagination > a:active,
+.zine-pagination > button:active { transform: translate(2px, 2px); box-shadow: var(--zine-shadow-flat); transition-duration: var(--zine-motion-duration-press); }
+.zine-pagination > [aria-current="page"] { background: var(--zine-color-primary); color: var(--zine-color-black); }
+.zine-pagination > :focus-visible { outline: 2px dashed var(--zine-color-ink); outline-offset: 4px; }
+.zine-pagination .zine-icon { width: 16px; height: 16px; }
+
+/* =========================================================================
+   Menu (sidebar) — a ruled list; the current item is a lime band
+   <nav class="zine-menu" aria-label="Sections"><a class="zine-menu__item" href="#" aria-current="page"><svg class="zine-icon">…</svg>Projects</a> …</nav>
+   ========================================================================= */
+.zine-menu { display: flex; flex-direction: column; border: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-color-surface); box-shadow: var(--zine-shadow-md); }
+.zine-menu__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-bottom: var(--zine-border-thin) solid var(--zine-color-ink);
+  color: var(--zine-color-ink);
+  font-family: var(--zine-font-family-mono);
+  font-size: var(--zine-font-size-small);
+  font-weight: var(--zine-font-weight-bold);
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--zine-motion-duration-hover), padding-left var(--zine-motion-duration-release) var(--zine-motion-easing-snap);
+}
+.zine-menu__item:last-child { border-bottom: 0; }
+.zine-menu__item:hover { background: var(--zine-color-hover); padding-left: 20px; }
+.zine-menu__item[aria-current="page"],
+.zine-menu__item.is-active { background: var(--zine-color-primary); color: var(--zine-color-black); padding-left: 20px; }
+.zine-menu__item[aria-current="page"]::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--zine-color-black); }
+.zine-menu__item:focus-visible { outline: 2px dashed var(--zine-color-ink); outline-offset: -5px; }
+.zine-menu__item .zine-icon { width: 17px; height: 17px; }
+.zine-menu__count { margin-left: auto; font-family: var(--zine-font-family-display); }
+
+/* =========================================================================
+   Chip · sticker
+   <button class="zine-chip" type="button" aria-pressed="true">PNG</button> — latches flat and lime
+   <span class="zine-sticker zine-sticker--live">Live</span> (default white · --live lime · --beta cobalt · --hot vermilion · --tilt)
+   ========================================================================= */
+.zine-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: var(--zine-border-regular) solid var(--zine-color-ink);
+  background: var(--zine-color-surface);
+  color: var(--zine-color-ink);
+  font-family: var(--zine-font-family-mono);
+  font-size: var(--zine-font-size-caption);
+  font-weight: var(--zine-font-weight-bold);
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--zine-shadow-sm);
+  transition: transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap), box-shadow var(--zine-motion-duration-release) var(--zine-motion-easing-snap), background-color var(--zine-motion-duration-hover);
+}
+.zine-chip:hover { transform: translate(-1px, -1px); box-shadow: var(--zine-shadow-md); }
+.zine-chip[aria-pressed="true"] { background: var(--zine-color-primary); color: var(--zine-color-black); transform: translate(2px, 2px); box-shadow: var(--zine-shadow-flat); transition-duration: var(--zine-motion-duration-press); }
+.zine-chip:focus-visible { outline: 2px dashed var(--zine-color-ink); outline-offset: 4px; }
+
+.zine-sticker {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 9px;
+  border: var(--zine-border-regular) solid var(--zine-color-ink);
+  background: var(--zine-color-surface);
+  color: var(--zine-color-ink);
+  font-family: var(--zine-font-family-mono);
+  font-size: var(--zine-font-size-small);
+  font-weight: var(--zine-font-weight-bold);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: var(--zine-shadow-sm);
+  transition: transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap);
+}
+.zine-sticker--live { background: var(--zine-color-primary); color: var(--zine-color-black); }
+.zine-sticker--beta { background: var(--zine-color-info); color: var(--zine-color-info-ink); }
+.zine-sticker--hot { background: var(--zine-color-danger); color: var(--zine-color-danger-ink); }
+.zine-sticker--tilt { transform: rotate(-3deg); }
+.zine-sticker:hover { transform: rotate(-4deg) scale(1.06); }
+
+/* =========================================================================
+   Card · profile · avatar
+   <article class="zine-card">…</article>
+   <div class="zine-profile"><span class="zine-avatar zine-avatar--lg">(pixel svg)</span><div><h3 class="zine-heading">Alex Kim</h3><p class="zine-meta">@alexkim</p></div></div>
+   ========================================================================= */
+.zine-card { display: flex; flex-direction: column; gap: var(--zine-space-3); min-width: 0; padding: var(--zine-space-4); border: var(--zine-border-regular) solid var(--zine-color-ink); border-radius: var(--zine-radius-sm); background: var(--zine-color-surface); box-shadow: var(--zine-shadow-md); }
+.zine-card--hover { transition: transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap), box-shadow var(--zine-motion-duration-release) var(--zine-motion-easing-snap); }
+.zine-card--hover:hover { transform: translate(-2px, -2px); box-shadow: var(--zine-shadow-lg); }
+.zine-card__head { display: flex; align-items: center; justify-content: space-between; gap: var(--zine-space-3); }
+.zine-card__text { font-size: var(--zine-font-size-small); color: var(--zine-color-text-muted); }
+.zine-card__actions { display: flex; flex-wrap: wrap; gap: var(--zine-space-3); margin-top: var(--zine-space-2); }
+.zine-profile { display: flex; align-items: center; gap: var(--zine-space-4); min-width: 0; }
+.zine-profile .zine-heading { font-size: 26px; }
+.zine-profile__role { font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-small); font-weight: var(--zine-font-weight-bold); color: var(--zine-color-ink); }
+.zine-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border: var(--zine-border-regular) solid var(--zine-color-ink);
+  background: var(--zine-avatar, var(--zine-color-primary));
+  color: var(--zine-color-black);
+  font-family: var(--zine-font-family-display);
+  font-size: var(--zine-font-size-body);
+  box-shadow: var(--zine-shadow-sm);
+}
+.zine-avatar > svg { width: 100%; height: 100%; shape-rendering: crispEdges; }
+.zine-avatar--lg { width: 104px; height: 104px; box-shadow: var(--zine-shadow-md); }
+.zine-avatar--sm { width: 32px; height: 32px; font-size: var(--zine-font-size-caption); }
+.zine-avatar-stack { display: inline-flex; }
+.zine-avatar-stack > * + * { margin-left: -10px; }
+/* Pixel art inside an avatar: <path class="zine-pixel-ink" d="…"/> <path class="zine-pixel-face" d="…"/> */
+.zine-pixel-ink { fill: var(--zine-color-black); }
+.zine-pixel-face { fill: var(--zine-color-white); }
+
+/* =========================================================================
+   Progress — a ruled bar; the fill is lime with a printed hatch. --live makes the hatch march.
+   <div class="zine-progress" role="progressbar" aria-valuenow="70" … style="--zine-value:70"></div>
+   ========================================================================= */
+.zine-progress { position: relative; height: 24px; border: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-color-surface); transition: --zine-value var(--zine-motion-duration-slide) var(--zine-motion-easing-out); }
+.zine-progress::after { content: ""; position: absolute; inset: 0 auto 0 0; width: calc(var(--zine-value) * 1%); border-right: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-texture-stripes), var(--zine-color-primary); }
+.zine-progress--live::after { animation: zine-march 900ms linear infinite; }
+@keyframes zine-march { to { background-position: calc(9px * 1.41421) 0, 0 0; } }
+/* Bar with its number: <div class="zine-meter"><div class="zine-progress" …></div><span>70%</span></div> */
+.zine-meter { display: flex; align-items: center; gap: var(--zine-space-3); }
+.zine-meter > .zine-progress { flex: 1; }
+.zine-meter > span { min-width: 3.5ch; font-family: var(--zine-font-family-display); font-size: 20px; color: var(--zine-color-ink); text-align: right; }
+
+/* =========================================================================
+   Toast · alert
+   <div class="zine-toast" role="status"><svg class="zine-toast__icon">…</svg><div><p class="zine-toast__title">File saved!</p><p class="zine-toast__text">Changes are now live.</p></div><button class="zine-toast__close" aria-label="Dismiss">×</button></div>
+   ========================================================================= */
+.zine-toast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 2px 12px;
+  padding: 12px 12px 12px 14px;
+  border: var(--zine-border-regular) solid var(--zine-color-ink);
+  background: var(--zine-color-surface);
+  color: var(--zine-color-ink);
+  box-shadow: var(--zine-shadow-md);
+  animation: zine-toast var(--zine-motion-duration-stamp) var(--zine-motion-easing-snap);
+}
+.zine-toast--lime { background: var(--zine-color-primary); color: var(--zine-color-black); }
+.zine-toast__icon { width: 30px; height: 30px; }
+.zine-toast__title { font-family: var(--zine-font-family-display); font-size: 19px; line-height: 1.1; text-transform: uppercase; }
+.zine-toast__text { font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-caption); }
+.zine-toast__close { display: inline-grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; transition: transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap); }
+.zine-toast__close:hover { transform: rotate(90deg); }
+.zine-toast__close:focus-visible { outline: 2px dashed currentColor; outline-offset: 2px; }
+.zine-toast__close .zine-icon { width: 22px; height: 22px; stroke-width: 3; }
+@keyframes zine-toast { from { transform: translateX(24px) rotate(2deg); opacity: 0; } }
+
+.zine-alert { display: flex; align-items: flex-start; gap: var(--zine-space-3); padding: 12px 14px; border: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-color-surface); color: var(--zine-color-ink); font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-small); box-shadow: var(--zine-shadow-sm); }
+.zine-alert > .zine-icon { width: 20px; height: 20px; margin-top: 1px; }
+.zine-alert b { display: block; font-family: var(--zine-font-family-display); font-weight: 400; font-size: var(--zine-font-size-body); text-transform: uppercase; }
+.zine-alert--danger { background: var(--zine-color-danger); color: var(--zine-color-danger-ink); border-color: var(--zine-color-black); }
+.zine-alert--info { background: var(--zine-color-info); color: var(--zine-color-info-ink); border-color: var(--zine-color-black); }
+.zine-alert--lime { background: var(--zine-color-primary); color: var(--zine-color-black); border-color: var(--zine-color-black); }
+
+/* =========================================================================
+   Dialog — a hard-shadowed sheet over a halftone screen
+   <dialog class="zine-dialog" aria-labelledby="t"><button class="zine-dialog__close" data-zine-close aria-label="Close">×</button><h2 class="zine-dialog__title" id="t">Delete file?</h2><p class="zine-dialog__text">This action cannot be undone.</p>
+     <div class="zine-dialog__actions"><button class="zine-btn" data-zine-close>Cancel</button><button class="zine-btn zine-btn--danger" data-zine-close>Delete</button></div></dialog>
+   ========================================================================= */
+.zine-dialog {
+  position: relative;
+  width: min(100% - 32px, 400px);
+  max-width: none;
+  padding: var(--zine-space-5);
+  border: var(--zine-border-thick) solid var(--zine-color-ink);
+  border-radius: var(--zine-radius-sm);
+  background: var(--zine-color-surface);
+  color: var(--zine-color-ink);
+  box-shadow: var(--zine-shadow-lg);
+}
+.zine-dialog[open] { animation: zine-drop var(--zine-motion-duration-stamp) var(--zine-motion-easing-snap); }
+.zine-dialog::backdrop { background: var(--zine-texture-halftone), var(--zine-color-backdrop); }
+.zine-dialog__title { padding-right: 36px; font-family: var(--zine-font-family-display); font-size: 26px; font-weight: 400; line-height: 1; text-transform: uppercase; color: var(--zine-color-ink); }
+.zine-dialog__text { margin-top: var(--zine-space-2); font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-body); color: var(--zine-color-ink); }
+.zine-dialog__actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--zine-space-4); margin-top: var(--zine-space-5); }
+.zine-dialog__close { position: absolute; top: 10px; right: 10px; display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; background: transparent; color: var(--zine-color-ink); cursor: pointer; transition: transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap); }
+.zine-dialog__close:hover { transform: rotate(90deg); }
+.zine-dialog__close:focus-visible { outline: 2px dashed var(--zine-color-ink); outline-offset: 2px; }
+.zine-dialog__close .zine-icon { width: 24px; height: 24px; stroke-width: 3; }
+@keyframes zine-drop { from { opacity: 0; transform: translate(-8px, -14px) rotate(-1.5deg); } }
+
+/* =========================================================================
+   Tooltip — a black slug with a lime hard shadow
+   <span class="zine-tooltip" data-tip="Export as PDF"><button class="zine-btn">Export</button></span> · static: <span class="zine-tip">Export as PDF</span>
+   ========================================================================= */
+.zine-tooltip { position: relative; display: inline-flex; }
+.zine-tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  z-index: 20;
+  padding: 5px 9px;
+  background: var(--zine-color-ink);
+  color: var(--zine-color-paper);
+  font-family: var(--zine-font-family-mono);
+  font-size: var(--zine-font-size-caption);
+  font-weight: var(--zine-font-weight-bold);
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 3px 3px 0 var(--zine-color-lime);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 6px) rotate(-2deg);
+  transition: opacity var(--zine-motion-duration-hover), transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap);
+}
+.zine-tooltip:hover::after,
+.zine-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0) rotate(-2deg); }
+.zine-tip { display: inline-block; padding: 5px 9px; background: var(--zine-color-ink); color: var(--zine-color-paper); font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-caption); font-weight: var(--zine-font-weight-bold); text-transform: uppercase; box-shadow: 3px 3px 0 var(--zine-color-lime); transform: rotate(-2deg); }
+
+/* =========================================================================
+   Table — ruled rows under a hatched lime header; sortable headers flip an arrow
+   <div class="zine-table-wrap"><table class="zine-table"><thead><tr><th>#</th><th><button class="zine-sort" aria-sort…>File name</button></th></tr></thead>…</table></div>
+   ========================================================================= */
+.zine-table-wrap { width: 100%; overflow-x: auto; border: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-color-surface); box-shadow: var(--zine-shadow-md); }
+.zine-table { width: 100%; border-collapse: collapse; font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-small); color: var(--zine-color-ink); }
+.zine-table th {
+  padding: 8px 12px;
+  border-bottom: var(--zine-border-regular) solid var(--zine-color-ink);
+  border-left: var(--zine-border-thin) solid var(--zine-color-black);
+  background: var(--zine-texture-stripes), var(--zine-color-primary);
+  color: var(--zine-color-black);
+  font-weight: var(--zine-font-weight-bold);
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Header labels sit on a strip of lime tape, so the hatch never runs through the letters */
+.zine-table th > span,
+.zine-table th > .zine-sort { display: inline-flex; align-items: center; gap: 6px; padding: 2px 6px; background: var(--zine-color-lime); }
+.zine-table th:first-child,
+.zine-table td:first-child { border-left: 0; }
+.zine-table td { padding: 9px 12px; border-bottom: var(--zine-border-thin) solid var(--zine-color-ink); border-left: var(--zine-border-thin) solid var(--zine-color-ink); white-space: nowrap; }
+.zine-table tbody tr:last-child td { border-bottom: 0; }
+.zine-table tbody tr { transition: background-color var(--zine-motion-duration-hover); }
+.zine-table tbody tr:hover { background: var(--zine-color-hover); }
+.zine-table tbody tr[aria-selected="true"] { background: var(--zine-color-highlight); color: var(--zine-color-black); }
+.zine-table .is-num { text-align: right; }
+.zine-sort { border: 0; color: inherit; font: inherit; text-transform: inherit; cursor: pointer; }
+.zine-sort::after { content: ""; width: 0; height: 0; border: 4px solid transparent; border-top: 6px solid currentColor; border-bottom: 0; opacity: 0.35; transition: transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap), opacity var(--zine-motion-duration-hover); }
+.zine-sort:hover::after { opacity: 1; }
+th[aria-sort="ascending"] .zine-sort::after { opacity: 1; transform: rotate(180deg); }
+th[aria-sort="descending"] .zine-sort::after { opacity: 1; }
+.zine-sort:focus-visible { outline: 2px dashed var(--zine-color-black); outline-offset: 3px; }
+
+/* =========================================================================
+   Foundations as print samples: swatch, shadow block, issue box
+   <span class="zine-swatch" style="--zine-swatch:var(--zine-color-lime)"></span>
+   <div class="zine-issue">Issue 01</div>
+   ========================================================================= */
+.zine-swatch { display: block; width: 100%; aspect-ratio: 1; border: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-swatch, var(--zine-color-primary)); }
+.zine-block { display: grid; place-items: center; padding: var(--zine-space-4); border: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-color-surface); font-family: var(--zine-font-family-display); font-size: var(--zine-font-size-body); line-height: 1.1; text-align: center; text-transform: uppercase; }
+.zine-issue { display: inline-flex; align-items: center; padding: 6px 18px; border: var(--zine-border-thick) solid var(--zine-color-black); background: var(--zine-color-primary); color: var(--zine-color-black); font-family: var(--zine-font-family-display); font-size: clamp(22px, 3.4vw, 44px); line-height: 1.1; text-transform: uppercase; white-space: nowrap; box-shadow: var(--zine-shadow-lg); transform: rotate(-1.5deg); transition: transform var(--zine-motion-duration-release) var(--zine-motion-easing-snap); }
+.zine-issue:hover { transform: rotate(1deg) scale(1.03); }

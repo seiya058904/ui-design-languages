@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var m=localStorage.getItem("terrarium-theme");if(m&&m!=="light")document.documentElement.setAttribute("data-theme",m)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Terrarium / Earth — daily journal &amp; mindful habits</title>
+  <link rel="icon" href="../../site/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../../site/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../site/assets/apple-touch-icon.png">
+  <meta name="description" content="A daily journal and habit tracker built with Terrarium / Earth: write an entry, tend your habits and watch the ring grow, cheer on friends.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/terrarium.css">
+  <style>
+    /* Layout only — a real page built from the delivered CSS and JS, unchanged. */
+    .app { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: 100vh; }
+    .side { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 22px; padding: 26px 18px; }
+    .brand { display: flex; align-items: center; gap: 10px; padding: 0 10px; color: var(--terrarium-color-ink); text-decoration: none; font-family: var(--terrarium-font-family-serif); font-variation-settings: var(--terrarium-font-soft); font-size: 22px; font-weight: var(--terrarium-font-weight-semibold); }
+    .brand .terrarium-icon { width: 28px; height: 28px; color: var(--terrarium-color-secondary); }
+    .side__art { margin-top: auto; padding: 16px; border-radius: var(--terrarium-radius-lg); background: var(--terrarium-color-surface); box-shadow: var(--terrarium-shadow-level-1); text-align: center; }
+    .side__art svg { width: 84px; height: 84px; margin: 0 auto 6px; }
+    .main { min-width: 0; padding: 26px 30px 40px; }
+    .top { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; margin-bottom: 24px; }
+    .top h1 { font-family: var(--terrarium-font-family-serif); font-variation-settings: var(--terrarium-font-soft); font-size: 34px; font-weight: var(--terrarium-font-weight-semibold); line-height: 1.1; color: var(--terrarium-color-ink); }
+    .top p { margin-top: 4px; color: var(--terrarium-color-text-muted); }
+    .top__end { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+    .board { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+    .col { display: grid; gap: 22px; min-width: 0; }
+    .card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+    .moods { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+    .editor-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; }
+    .editor-foot .terrarium-caption { margin-right: auto; }
+    .habits-top { display: flex; align-items: center; gap: 20px; margin-bottom: 8px; }
+    .habits-top p { color: var(--terrarium-color-text); font-size: var(--terrarium-font-size-small); }
+    .habit { display: flex; align-items: center; gap: 12px; padding: 12px 4px; border-bottom: 1px solid var(--terrarium-color-line); }
+    .habit:last-child { border-bottom: 0; }
+    .habit .terrarium-check { flex: 1; font-size: var(--terrarium-font-size-body); }
+    .habit .terrarium-check:has(:checked) { color: var(--terrarium-color-text-muted); text-decoration: line-through; text-decoration-color: var(--terrarium-color-sand); }
+    .add { display: flex; gap: 10px; margin-top: 12px; }
+    .add .terrarium-input { height: var(--terrarium-size-control-sm); }
+    .cheer { margin-left: auto; }
+    .cheer[aria-pressed="true"] { color: var(--terrarium-color-primary-text); }
+    .cheer[aria-pressed="true"] .terrarium-icon { fill: currentColor; }
+    .community .terrarium-list__item { padding-right: 10px; }
+    .week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin: 10px 0 12px; text-align: center; font-size: var(--terrarium-font-size-label); color: var(--terrarium-color-text-muted); }
+    .week i { display: block; width: 30px; height: 30px; margin: 0 auto 6px; border-radius: 50%; background: var(--terrarium-color-track); }
+    .week .done i { background: var(--terrarium-color-secondary); box-shadow: 0 4px 10px -4px rgba(62, 92, 74, 0.6); }
+    .week .today i { background: var(--terrarium-color-surface-raised); box-shadow: inset 0 0 0 2.5px var(--terrarium-color-primary); }
+    .entries { display: grid; gap: 14px; }
+    .entry { display: grid; gap: 6px; }
+    .entry time { font-size: var(--terrarium-font-size-caption); color: var(--terrarium-color-text-muted); }
+    .toasts { position: fixed; right: 22px; bottom: 22px; z-index: 60; display: grid; gap: 10px; width: min(340px, calc(100% - 44px)); }
+    .grow-sprout { color: var(--terrarium-color-secondary); }
+    .grow-sprout.is-grown { animation: terrarium-sprout 900ms var(--terrarium-motion-easing); transform-origin: 50% 100%; }
+
+    @media (max-width: 1080px) { .board { grid-template-columns: minmax(0, 1fr); } }
+    @media (max-width: 800px) {
+      .app { grid-template-columns: minmax(0, 1fr); }
+      .side { position: static; height: auto; padding: 16px 14px 4px; gap: 14px; }
+      .side .terrarium-nav { flex-direction: row; overflow-x: auto; scrollbar-width: none; }
+      .side .terrarium-nav__item { flex: none; }
+      .side__art { display: none; }
+      .main { padding: 16px 14px 32px; }
+      .top h1 { font-size: 28px; }
+      .top__end { margin-left: 0; width: 100%; flex-wrap: wrap; }
+      .top__end .terrarium-segmented { flex: 1 1 auto; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12.5C12 8.4 9 6 5 6c0 4 3 6.5 7 6.5Z"/><path d="M12 10.5c0-3.6 2.6-5.8 6.5-5.8 0 3.6-2.6 5.8-6.5 5.8Z"/></symbol>
+  <symbol id="i-house" viewBox="0 0 24 24"><path d="M4 11.2 12 4.5l8 6.7"/><path d="M6 9.8v9.7h12V9.8"/><path d="M10 19.5v-5h4v5"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6.8C10 5.3 7.5 4.8 4 4.8v13c3.5 0 6 .5 8 2 2-1.5 4.5-2 8-2v-13c-3.5 0-6 .5-8 2Z"/><path d="M12 6.8v13"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="15" rx="3.5"/><path d="M4 10.5h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 19.5s-7.5-4.4-7.5-10A4.1 4.1 0 0 1 12 7.2a4.1 4.1 0 0 1 7.5 2.3c0 5.6-7.5 10-7.5 10Z"/></symbol>
+  <symbol id="i-lotus" viewBox="0 0 24 24"><path d="M12 19c-2.4-2-3.8-4.4-3.8-7.2 0-2.5 1.4-4.8 3.8-6.8 2.4 2 3.8 4.3 3.8 6.8 0 2.8-1.4 5.2-3.8 7.2Z"/><path d="M12 19c-3.6 0-7-1.8-9-5 2.6-.6 4.8-.1 6.6 1.2M12 19c3.6 0 7-1.8 9-5-2.6-.6-4.8-.1-6.6 1.2"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20v-7M10 20V6M15 20v-9M20 20v-5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c.8-3.6 3.5-5.6 7-5.6s6.2 2 7 5.6"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M6 18l1.6-1.6M16.4 7.6 18 6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M6 12.5 10.2 16.5 18 8"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7 7 17"/></symbol>
+  <symbol id="art-sprig" viewBox="0 0 100 100"><path d="M50 94C49 74 46 52 55 16" fill="none" stroke="#7A6448" stroke-width="2.2" stroke-linecap="round"/><path d="M49.5 76C37 74 29 66 26 54c13 1 21 8.5 23.5 22Z" fill="#3E5C4A"/><path d="M50.5 64c12-4 19-12 21-24-12.5 2-19.5 10-21 24Z" fill="#5F7D64"/><path d="M49 52c-11.5-4-17-12-17-23 11.5 2.5 16.5 11 17 23Z" fill="#4A6A55"/><path d="M52.5 40c8.5-4 12.5-11 12.5-20-8.5 2.5-12.5 9.5-12.5 20Z" fill="#6F8C6A"/><circle cx="58" cy="21" r="3.3" fill="#C85A32"/><circle cx="63.5" cy="26.5" r="2.8" fill="#D9784E"/><circle cx="66" cy="20" r="2.6" fill="#B9502B"/><circle cx="61" cy="14.5" r="2.4" fill="#D9784E"/><circle cx="69" cy="27" r="2" fill="#C85A32"/></symbol>
+  <symbol id="av-ava" viewBox="0 0 48 48"><path d="M13.5 23C12.5 11 18.5 7.5 24 7.5S35.5 11 34.5 23l1.5 13c-4 2.5-20 2.5-24 0Z" fill="#3B2A1E"/><path d="M6 48c2-10.5 9.5-14.5 18-14.5S40 37.5 42 48Z" fill="#3E5C4A"/><rect x="20.5" y="26" width="7" height="9" rx="3.2" fill="#C8916C"/><ellipse cx="24" cy="20.5" rx="8.2" ry="9.4" fill="#E3B38E"/><path d="M15.6 19c.6-6.4 4.4-9 8.4-9 4.6 0 7.8 2.6 8.4 9-3.4-3.6-11-4.4-16.8 0Z" fill="#3B2A1E"/><circle cx="21" cy="21.4" r="1" fill="#3B2A1E"/><circle cx="27" cy="21.4" r="1" fill="#3B2A1E"/><path d="M21.6 25.2c1.5 1.3 3.3 1.3 4.8 0" fill="none" stroke="#9A5A3C" stroke-width="1.1" stroke-linecap="round"/></symbol>
+  <symbol id="av-noah" viewBox="0 0 48 48"><path d="M6 48c2-10.5 9.5-14.5 18-14.5S40 37.5 42 48Z" fill="#C85A32"/><rect x="20.5" y="26" width="7" height="9" rx="3.2" fill="#A66E4A"/><ellipse cx="24" cy="20.5" rx="8.2" ry="9.4" fill="#C08560"/><g fill="#4A3424"><circle cx="18" cy="13" r="4.2"/><circle cx="24" cy="10.6" r="4.6"/><circle cx="30" cy="13" r="4.2"/><circle cx="16" cy="17.5" r="3"/><circle cx="32" cy="17.5" r="3"/></g><path d="M16.2 22.5c.4 6.6 3.9 8.8 7.8 8.8s7.4-2.2 7.8-8.8c-2.6 3-13 3-15.6 0Z" fill="#4A3424"/><circle cx="21" cy="21.2" r="1" fill="#2E2016"/><circle cx="27" cy="21.2" r="1" fill="#2E2016"/></symbol>
+  <symbol id="av-maya" viewBox="0 0 48 48"><circle cx="24" cy="7" r="4.6" fill="#2E2219"/><path d="M6 48c2-10.5 9.5-14.5 18-14.5S40 37.5 42 48Z" fill="#D49A3A"/><rect x="20.5" y="26" width="7" height="9" rx="3.2" fill="#B57B57"/><ellipse cx="24" cy="20.5" rx="8.2" ry="9.4" fill="#D6A07A"/><path d="M15.4 21c-.6-7.8 3.8-11 8.6-11s9.2 3.2 8.6 11c-1.4-4.6-4.6-6.6-8.6-6.6s-7.2 2-8.6 6.6Z" fill="#2E2219"/><circle cx="21" cy="21.6" r="1" fill="#2E2219"/><circle cx="27" cy="21.6" r="1" fill="#2E2219"/><path d="M21.6 25.4c1.5 1.3 3.3 1.3 4.8 0" fill="none" stroke="#9A5A3C" stroke-width="1.1" stroke-linecap="round"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="side">
+    <a class="brand" href="../index.html"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>Terrarium</a>
+    <nav class="terrarium-nav" aria-label="Main">
+      <a class="terrarium-nav__item" href="#" aria-current="page"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-house"/></svg>Today</a>
+      <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-book"/></svg>Journal</a>
+      <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>Habits<span class="terrarium-nav__count" data-left>1</span></a>
+      <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-chart"/></svg>Insights</a>
+      <a class="terrarium-nav__item" href="#"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-gear"/></svg>Settings</a>
+    </nav>
+    <div class="side__art"><svg aria-hidden="true"><use href="#art-sprig"/></svg><p class="terrarium-caption">Small steps, every day.</p></div>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div><h1 data-greeting>Good morning, Lena</h1><p data-date>Sunday, 23 November · mild, 14°</p></div>
+      <div class="top__end">
+        <div class="terrarium-segmented" role="tablist" aria-label="View" data-views>
+          <button class="terrarium-segmented__item" role="tab" aria-selected="true" aria-controls="v-today" id="tab-today">Today</button>
+          <button class="terrarium-segmented__item" role="tab" aria-selected="false" aria-controls="v-journal" id="tab-journal" tabindex="-1">Journal</button>
+          <button class="terrarium-segmented__item" role="tab" aria-selected="false" aria-controls="v-archive" id="tab-archive" tabindex="-1">Archive</button>
+        </div>
+        <button class="terrarium-btn terrarium-btn--icon terrarium-btn--ghost" type="button" data-theme-toggle aria-pressed="false" aria-label="Evening light"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-lotus"/></svg></button>
+        <span class="terrarium-avatar" style="--terrarium-avatar:#F5E3D8"><svg aria-hidden="true"><use href="#av-maya"/></svg></span>
+      </div>
+    </header>
+
+    <div id="v-today" role="tabpanel" aria-labelledby="tab-today">
+      <div class="board terrarium-grow">
+        <div class="col">
+          <section class="terrarium-card" aria-labelledby="h-entry">
+            <div class="card-head"><h2 class="terrarium-title" id="h-entry">Today's entry</h2><span class="terrarium-badge terrarium-badge--draft" data-state>Draft</span></div>
+            <label class="terrarium-field"><span class="terrarium-visually-hidden">Entry title</span><span class="terrarium-affix"><input class="terrarium-input" placeholder="Enter your journal title" value="Figs, finally" data-title><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg></span></label>
+            <div class="moods" role="group" aria-label="Mood">
+              <button class="terrarium-chip" type="button" aria-pressed="true">Calm</button>
+              <button class="terrarium-chip" type="button" aria-pressed="true">Grateful</button>
+              <button class="terrarium-chip" type="button" aria-pressed="false">Tired</button>
+              <button class="terrarium-chip" type="button" aria-pressed="false">Hopeful</button>
+              <button class="terrarium-chip" type="button" aria-pressed="false">Restless</button>
+            </div>
+            <label class="terrarium-field"><span class="terrarium-visually-hidden">Entry</span><textarea class="terrarium-input" rows="7" data-body>Slow walk to the market this morning. The light was soft and the fig tree by the bakery is finally fruiting — I stood there longer than I meant to. Today I want to notice one small good thing every hour.</textarea></label>
+            <div class="editor-foot"><span class="terrarium-caption" data-count>46 words</span><button class="terrarium-btn terrarium-btn--secondary" type="button" data-draft>Save Draft</button><button class="terrarium-btn terrarium-btn--primary" type="button" data-save>Save entry</button></div>
+          </section>
+          <section class="terrarium-card" aria-labelledby="h-week">
+            <div class="card-head"><h2 class="terrarium-title" id="h-week">This week</h2><span class="terrarium-badge"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>21-day streak</span></div>
+            <div class="week" aria-label="Days journaled this week: Monday to Saturday, today pending">
+              <span class="done"><i></i>Mon</span><span class="done"><i></i>Tue</span><span class="done"><i></i>Wed</span><span class="done"><i></i>Thu</span><span class="done"><i></i>Fri</span><span class="done"><i></i>Sat</span><span class="today" data-today><i></i>Sun</span>
+            </div>
+            <p class="terrarium-caption">Your calmest days were the ones you walked before 9. Keep that rhythm going.</p>
+          </section>
+        </div>
+        <div class="col">
+          <section class="terrarium-card" aria-labelledby="h-habits">
+            <div class="card-head"><h2 class="terrarium-title" id="h-habits">Mindful habits</h2><svg class="terrarium-icon grow-sprout" aria-hidden="true" data-sprout><use href="#i-sprout"/></svg></div>
+            <div class="habits-top">
+              <div class="terrarium-ring" style="--terrarium-value:75" role="img" aria-label="75% of today's habits" data-label="of today's habits" data-ring><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="terrarium-ring__track" cx="60" cy="60" r="50" pathLength="100"/><circle class="terrarium-ring__arc" cx="60" cy="60" r="50" pathLength="100"/></svg><span class="terrarium-ring__label" aria-hidden="true"><b></b>Progress</span></div>
+              <p data-habit-note>3 of 4 done. One more and today is fully tended.</p>
+            </div>
+            <div data-habits>
+              <div class="habit"><label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox" checked> Drink 8 glasses of water</label><span class="terrarium-caption">12 days</span></div>
+              <div class="habit"><label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox" checked> Morning walk</label><span class="terrarium-caption">6 days</span></div>
+              <div class="habit"><label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox" checked> Read 10 pages</label><span class="terrarium-caption">3 days</span></div>
+              <div class="habit"><label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox"> Five minutes of stillness</label><span class="terrarium-caption">new</span></div>
+            </div>
+            <form class="add" data-add><label class="terrarium-visually-hidden" for="new-habit">New habit</label><input class="terrarium-input" id="new-habit" placeholder="Plant a new habit…" required><button class="terrarium-btn terrarium-btn--sm" type="submit">Add</button></form>
+          </section>
+          <section class="terrarium-card community" aria-labelledby="h-friends">
+            <div class="card-head"><h2 class="terrarium-title" id="h-friends">Friends</h2><span class="terrarium-caption">Cheer them on</span></div>
+            <ul class="terrarium-list">
+              <li><div class="terrarium-list__item"><span class="terrarium-avatar" style="--terrarium-avatar:#E9DFD0"><svg aria-hidden="true"><use href="#av-ava"/></svg></span><span><b>Ava</b><span>Journaled today</span></span><button class="terrarium-btn terrarium-btn--sm terrarium-btn--ghost cheer" type="button" aria-pressed="false" data-cheer="11"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-heart"/></svg><span>11</span></button></div></li>
+              <li><div class="terrarium-list__item"><span class="terrarium-avatar" style="--terrarium-avatar:#DFE7DE"><svg aria-hidden="true"><use href="#av-noah"/></svg></span><span><b>Noah</b><span>On a 5-day streak</span></span><button class="terrarium-btn terrarium-btn--sm terrarium-btn--ghost cheer" type="button" aria-pressed="true" data-cheer="7"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-heart"/></svg><span>8</span></button></div></li>
+              <li><div class="terrarium-list__item"><span class="terrarium-avatar" style="--terrarium-avatar:#F5E3D8"><svg aria-hidden="true"><use href="#av-maya"/></svg></span><span><b>Maya</b><span>Added a new habit</span></span><button class="terrarium-btn terrarium-btn--sm terrarium-btn--ghost cheer" type="button" aria-pressed="false" data-cheer="4"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-heart"/></svg><span>4</span></button></div></li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div id="v-journal" role="tabpanel" aria-labelledby="tab-journal" hidden>
+      <section class="terrarium-card" aria-labelledby="h-past">
+        <div class="card-head"><h2 class="terrarium-title" id="h-past">Recent entries</h2><span class="terrarium-caption">12 this month</span></div>
+        <div class="entries" data-entries>
+          <article class="terrarium-feature"><span class="terrarium-feature__art" style="width:72px"><svg aria-hidden="true"><use href="#art-sprig"/></svg></span><div class="entry"><time>Saturday, 22 November</time><h3 class="terrarium-title">Rain on the greenhouse</h3><div class="terrarium-feature__badges"><span class="terrarium-badge terrarium-badge--active">Calm</span><span class="terrarium-badge">212 words</span></div></div></article>
+          <article class="terrarium-feature"><span class="terrarium-feature__art" style="width:72px"><svg aria-hidden="true"><use href="#art-sprig"/></svg></span><div class="entry"><time>Friday, 21 November</time><h3 class="terrarium-title">A long lunch with Ava</h3><div class="terrarium-feature__badges"><span class="terrarium-badge terrarium-badge--paused">Grateful</span><span class="terrarium-badge">148 words</span></div></div></article>
+        </div>
+      </section>
+    </div>
+
+    <div id="v-archive" role="tabpanel" aria-labelledby="tab-archive" hidden>
+      <section class="terrarium-card"><div class="terrarium-stack" style="align-items:center;text-align:center;padding:30px 0"><svg class="terrarium-icon" style="width:40px;height:40px;color:var(--terrarium-color-secondary)" aria-hidden="true"><use href="#i-calendar"/></svg><h2 class="terrarium-title">October is resting</h2><p class="terrarium-caption" style="max-width:40ch">Older months are pressed and kept here, like leaves in a book. Nothing to tend.</p></div></section>
+    </div>
+  </main>
+</div>
+
+<div class="toasts" aria-live="polite" data-terrarium-toasts></div>
+
+<dialog class="terrarium-dialog" id="save-dlg" aria-labelledby="save-t">
+  <svg class="terrarium-dialog__icon terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>
+  <h2 class="terrarium-dialog__title" id="save-t">Save changes?</h2>
+  <p class="terrarium-dialog__text">This will update your journal entry.</p>
+  <div class="terrarium-dialog__actions"><button class="terrarium-btn" type="button" data-terrarium-close="cancel" value="cancel">Cancel</button><button class="terrarium-btn terrarium-btn--primary" type="button" data-terrarium-close="save" value="save">Save</button></div>
+</dialog>
+
+<script src="../js/terrarium.js"></script>
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var dirty = false, pendingTab = null;
+
+  /* ---------- greeting ---------- */
+  var now = new Date(), h = now.getHours();
+  $("[data-greeting]").textContent = (h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening") + ", Lena";
+  $("[data-date]").textContent = now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }) + " · mild, 14°";
+
+  /* ---------- the week follows the calendar: earlier days kept, today open, later days waiting ---------- */
+  (function () {
+    var days = $(".week > span"), t = (now.getDay() + 6) % 7;
+    days.forEach(function (d, i) { d.className = i < t ? "done" : i === t ? "today" : ""; d.removeAttribute("data-today"); if (i === t) d.setAttribute("data-today", ""); });
+    $(".week").setAttribute("aria-label", "This week: " + t + " days journaled, today " + (t === 0 ? "is the first day" : "pending"));
+  })();
+
+  /* ---------- journal ---------- */
+  var body = $("[data-body]"), state = $("[data-state]");
+  function count() { var n = (body.value.trim().match(/\S+/g) || []).length; $("[data-count]").textContent = n + (n === 1 ? " word" : " words"); }
+  function setDirty(on) {
+    dirty = on;
+    state.textContent = on ? "Unsaved" : "Saved";
+    state.className = "terrarium-badge " + (on ? "terrarium-badge--draft" : "terrarium-badge--active");
+  }
+  function save(silent) {
+    setDirty(false);
+    var today = $("[data-today]"); today.className = "done";
+    if (!silent) TerrariumUI.toast("Entry saved", "Your words are kept safe.");
+  }
+  [body, $("[data-title]")].forEach(function (el) { el.addEventListener("input", function () { count(); setDirty(true); }); });
+  $(".moods").addEventListener("click", function (e) { if (e.target.closest(".terrarium-chip")) setDirty(true); });
+  $("[data-save]").addEventListener("click", function () { save(); });
+  $("[data-draft]").addEventListener("click", function () { setDirty(false); state.textContent = "Draft"; state.className = "terrarium-badge terrarium-badge--paused"; TerrariumUI.toast("Draft kept", "Come back to it whenever you like."); });
+  count();
+  state.textContent = "Draft";
+
+  /* ---------- leaving with unsaved words ---------- */
+  var views = $("[data-views]");
+  views.addEventListener("click", function (e) {
+    var tab = e.target.closest("[role=tab]");
+    if (!tab || tab.id === "tab-today" || !dirty) return;
+    pendingTab = tab;
+    TerrariumUI.selectTab($("#tab-today"));
+    $("#save-dlg").showModal();
+  });
+  $("#save-dlg").addEventListener("close", function () {
+    if (this.returnValue === "save") { save(); if (pendingTab) TerrariumUI.selectTab(pendingTab); }
+    pendingTab = null;
+  });
+
+  /* ---------- habits drive the ring ---------- */
+  var ring = $("[data-ring]"), sprout = $("[data-sprout]"), wasFull = false;
+  function tend(initial) {
+    var boxes = $$("[data-habits] .terrarium-checkbox"), done = boxes.filter(function (b) { return b.checked; }).length;
+    var pct = boxes.length ? done / boxes.length * 100 : 0;
+    TerrariumUI.setValue(ring, pct);
+    var left = boxes.length - done;
+    $("[data-left]").textContent = left || "";
+    $("[data-habit-note]").textContent = left === 0 ? "All " + boxes.length + " done. Today is fully tended." : done + " of " + boxes.length + " done. " + (left === 1 ? "One more and today is fully tended." : left + " more to go — gently.");
+    var full = left === 0 && boxes.length > 0;
+    if (full && !wasFull && !initial) {
+      sprout.classList.remove("is-grown"); void sprout.getBoundingClientRect(); sprout.classList.add("is-grown");
+      TerrariumUI.toast("All habits done", "Well tended. See you tomorrow.");
+    }
+    wasFull = full;
+  }
+  $("[data-habits]").addEventListener("change", function () { tend(false); });
+  $("[data-add]").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var input = $("#new-habit"), name = input.value.trim();
+    if (!name) return;
+    var row = document.createElement("div");
+    row.className = "habit";
+    row.innerHTML = '<label class="terrarium-check"><input class="terrarium-checkbox" type="checkbox"> <span></span></label><span class="terrarium-caption">new</span>';
+    row.querySelector("label span").textContent = name;
+    $("[data-habits]").appendChild(row);
+    input.value = "";
+    tend(false);
+    TerrariumUI.toast("Habit planted", "“" + name + "” starts today.");
+  });
+  tend(true);
+
+  /* ---------- cheers ---------- */
+  $$("[data-cheer]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var on = b.getAttribute("aria-pressed") !== "true", base = +b.getAttribute("data-cheer");
+      b.setAttribute("aria-pressed", String(on));
+      b.querySelector("span").textContent = base + (on ? 1 : 0);
+    });
+  });
+})();
+</script>
+<script src="../../site/smooth-scroll.js" defer></script>
+</body>
+</html>

@@ -9,6 +9,10 @@ This repository holds several complete, independent design languages. Each top-l
 | `atelier/` | Atelier | Precise, cool product UI: frosted panels, cobalt accent, bold uppercase section titles |
 | `tactile/` | Tactile | Warm sand neumorphism with base / raised / inset / pressed layers and a deep teal accent, light + dark |
 | `sketch/` | Sketch | Hand-drawn ink on cream paper, hatched fills, wireframe honesty |
+| `braun/` | Braun / Field | Precision instrument panel: anodized aluminium, POM keycaps with travel, International Orange, a rotary dial and LED meters, light + black |
+| `obsidian/` | Obsidian / Glass | Dark first: four frosted glass layers, 1px specular edges, one luminous accent (cyan / emerald / violet), liquid motion |
+| `zine/` | Zine / Brutal | Neo-brutalist print: newsprint, 2px black rules, zero-blur hard shadows, acid lime / vermilion / cobalt, light + inverted |
+| `terrarium/` | Terrarium / Earth | Warm botanical ceramics: oat linen, glazed cream cards, pebbles, terracotta + moss, soft serif, organic spring motion, light + evening |
 
 ## Before building UI with a language
 

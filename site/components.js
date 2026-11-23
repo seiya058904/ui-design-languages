@@ -5,7 +5,7 @@
   var W = window.UIWall;
   /* Which demos each language puts on the wall: packs.json → site.wall. */
   var KIND = { button: "actions", input: "inputs", slider: "inputs", selection: "choices", segmented: "choices", tabs: "choices", chips: "choices", appearance: "choices",
-    alert: "feedback", progress: "feedback", dialog: "feedback", tooltip: "feedback", card: "content", avatar: "content", table: "content", elevation: "content", material: "content", board: "content", navigation: "navigation" };
+    alert: "feedback", progress: "feedback", dialog: "feedback", tooltip: "feedback", card: "content", avatar: "content", table: "content", elevation: "content", material: "content", glass: "content", board: "content", menu: "choices", navigation: "navigation" };
   var KINDS = [["all", "All"], ["actions", "Actions"], ["inputs", "Inputs"], ["choices", "Choices"], ["feedback", "Feedback"], ["content", "Content"], ["navigation", "Navigation"]];
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
@@ -155,11 +155,12 @@
     backdrops.querySelectorAll(".cw-backdrop").forEach(function (b) { b.classList.toggle("is-on", b.getAttribute("data-pack") === state.style); });
     $(".cw").classList.toggle("is-unified", state.style !== "all");
     $(".cw").classList.toggle("is-light-only", !!W.byId[state.style] && !W.byId[state.style].dark); // e.g. paper-only Sketch
+    $(".cw").classList.toggle("is-dark-canvas", !!W.byId[state.style] && W.byId[state.style].tone === "dark"); // e.g. dark-first Obsidian
     cards.forEach(function (c) { c.el.classList.toggle("is-out", !visible(c)); c.el.setAttribute("aria-hidden", String(!visible(c))); c.el.inert = !visible(c); });
     layout();
     var n = cards.filter(visible).length;
     var p = W.byId[state.style];
-    note.textContent = p ? n + " " + p.name + " components, on " + p.name + "'s own canvas. Open any of them for its complete source." : n + " components from five languages, all live. Open any card for its complete source.";
+    note.textContent = p ? n + " " + p.name + " components, on " + p.name + "'s own canvas. Open any of them for its complete source." : n + " components from " + W.packs.length + " languages, all live. Open any card for its complete source.";
   }
   var raf = 0;
   function relayout() { if (raf) return; raf = requestAnimationFrame(function () { raf = 0; layout(); glide(); }); }

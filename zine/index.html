@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var m=localStorage.getItem("zine-theme");if(m&&m!=="light")document.documentElement.setAttribute("data-theme",m)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zine / Brutal — high-contrast tactile print interface kit</title>
+  <link rel="icon" href="../site/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../site/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../site/assets/apple-touch-icon.png">
+  <meta name="description" content="Zine / Brutal — a high-contrast print interface kit: newsprint, 2px black rules, zero-blur hard shadows, acid lime, vermilion and cobalt.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/zine.css">
+  <style>
+    /* Page layout only — every visual comes from Zine classes and tokens. */
+    body { padding: 26px 22px 40px; }
+    .sheet { width: min(100%, 1240px); margin: 0 auto; }
+    .mast { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px 28px; }
+    .mast__deck { margin-top: 10px; }
+    .mast__issue { display: flex; align-items: center; align-self: stretch; padding-left: 28px; border-left: var(--zine-border-thick) solid var(--zine-color-ink); }
+    .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; margin: 24px 0 22px; }
+    .bar nav { display: flex; flex-wrap: wrap; gap: 14px; }
+    .spreads { display: grid; grid-template-columns: minmax(0, 0.86fr) minmax(0, 1fr); gap: 18px; }
+    .spreads > :nth-child(3) { grid-column: 1; }
+    .row-2 { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); gap: 18px; }
+    .split { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; }
+    .zine-label { margin-bottom: 12px; }
+    .elev { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+    .elev .zine-block { min-height: 70px; margin-bottom: 10px; }
+    .elev p, .pal p, .rad p { font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-caption); line-height: 1.3; text-align: center; }
+    .pal { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+    .pal p { margin-top: 6px; text-transform: uppercase; }
+    .weights { display: grid; gap: 8px; }
+    .weights span { display: block; padding: 3px 0; border-style: solid; border-color: var(--zine-color-ink); background: var(--zine-color-surface); font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-caption); font-weight: var(--zine-font-weight-bold); text-align: center; }
+    .rad { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .rad p { padding: 8px 0; border: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-color-surface); font-weight: var(--zine-font-weight-bold); }
+    .btn-rows { display: grid; gap: 12px; }
+    .btn-rows > div { display: grid; grid-template-columns: minmax(0, 250px) minmax(0, 1fr); align-items: center; gap: 18px; }
+    .ctl3 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 0.85fr); gap: 18px; }
+    .ctl3 > div + div { padding-left: 18px; border-left: var(--zine-border-regular) solid var(--zine-color-ink); }
+    .stack-12 { display: grid; gap: 12px; }
+    .tabs-demo .zine-sheet { padding: 12px 16px; box-shadow: none; }
+    .data-top { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); gap: 18px; }
+    .profile { display: grid; align-content: start; gap: 12px; }
+    .profile > .zine-label { justify-self: start; margin-bottom: 0; }
+    .profile .zine-dialog__title { font-size: var(--zine-font-size-heading); }
+    .stickers { display: flex; flex-wrap: wrap; gap: 8px; }
+    .colophon { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-top: 26px; padding-top: 12px; border-top: var(--zine-border-thick) solid var(--zine-color-ink); font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-caption); font-weight: var(--zine-font-weight-bold); text-transform: uppercase; }
+
+    @media (max-width: 1100px) {
+      .spreads { grid-template-columns: minmax(0, 1fr); }
+      .spreads > :nth-child(3) { grid-column: auto; }
+    }
+    @media (max-width: 680px) {
+      body { padding: 18px 12px 30px; }
+      .mast { grid-template-columns: 1fr; }
+      .mast__issue { padding: 14px 0 0; border-left: 0; border-top: var(--zine-border-thick) solid var(--zine-color-ink); }
+      .elev { gap: 14px; }
+      .pal { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .row-2, .split, .data-top, .ctl3 { grid-template-columns: minmax(0, 1fr); }
+      .ctl3 > div + div { padding: 16px 0 0; border-left: 0; border-top: var(--zine-border-regular) solid var(--zine-color-ink); }
+      .btn-rows > div { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+      .btn-rows .zine-code { white-space: normal; overflow-wrap: anywhere; }
+      .rad { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7M6 9.5V20h12V9.5"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6h7l2 2.5h9V19H3Z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6Z"/><path d="M14 3v4h4"/></symbol>
+  <symbol id="i-team" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3"/><path d="M3.5 19.5c.6-3.3 2.6-5 5.5-5s4.9 1.7 5.5 5"/><circle cx="16.5" cy="9.5" r="2.3"/><path d="M15.5 14.6c2.6.2 4.2 1.8 4.8 4.9"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="3"/><path d="m10 16.5 4 4 8-9" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="square"/></symbol>
+</svg>
+
+<div class="sheet">
+  <header class="mast">
+    <div>
+      <h1 class="zine-display">Zine / Brutal</h1>
+      <p class="zine-deck mast__deck">High-contrast tactile print interface kit</p>
+    </div>
+    <div class="mast__issue"><span class="zine-issue">Issue 01</span></div>
+  </header>
+
+  <div class="bar">
+    <nav aria-label="Pages">
+      <a class="zine-btn zine-btn--sm" href="../index.html">All languages</a>
+      <a class="zine-btn zine-btn--sm" href="components.html">Components</a>
+      <a class="zine-btn zine-btn--sm zine-btn--primary" href="examples/studio.html">Open the studio</a>
+    </nav>
+    <div class="zine-segmented" role="tablist" aria-label="Edition">
+      <button class="zine-segmented__item" role="tab" aria-selected="true" data-theme-set="light"><span>Newsprint</span></button>
+      <button class="zine-segmented__item" role="tab" aria-selected="false" tabindex="-1" data-theme-set="dark"><span>Inverted</span></button>
+    </div>
+  </div>
+
+  <main class="spreads zine-press">
+    <!-- 01 -->
+    <section class="zine-panel" aria-labelledby="s1">
+      <header class="zine-panel__head"><h2 class="zine-title" id="s1">01. Foundations</h2></header>
+      <div class="zine-panel__body">
+        <div>
+          <span class="zine-label">Surface elevation <small>(hard shadow)</small></span>
+          <div class="elev">
+            <div><div class="zine-block" style="box-shadow:var(--zine-shadow-sm)">2px<br>shadow</div><p>2px 2px 0 #111111</p></div>
+            <div><div class="zine-block" style="box-shadow:var(--zine-shadow-md)">4px<br>shadow</div><p>4px 4px 0 #111111</p></div>
+            <div><div class="zine-block" style="box-shadow:var(--zine-shadow-lg)">6px<br>shadow</div><p>6px 6px 0 #111111</p></div>
+          </div>
+        </div>
+        <hr class="zine-rule">
+        <div>
+          <span class="zine-label">Color palette <small>(core)</small></span>
+          <div class="pal">
+            <div><span class="zine-swatch" style="--zine-swatch:var(--zine-color-newsprint)"></span><p>Newsprint<br>#F4F1EA</p></div>
+            <div><span class="zine-swatch" style="--zine-swatch:var(--zine-color-white)"></span><p>White<br>#FFFFFF</p></div>
+            <div><span class="zine-swatch" style="--zine-swatch:var(--zine-color-black)"></span><p>Black<br>#111111</p></div>
+            <div><span class="zine-swatch" style="--zine-swatch:var(--zine-color-lime)"></span><p>Acid lime<br>#C8FF00</p></div>
+            <div><span class="zine-swatch" style="--zine-swatch:var(--zine-color-vermilion)"></span><p>Vermilion<br>#FF3B1F</p></div>
+            <div><span class="zine-swatch" style="--zine-swatch:var(--zine-color-cobalt)"></span><p>Cobalt<br>#0057FF</p></div>
+          </div>
+        </div>
+        <hr class="zine-rule">
+        <div class="row-2">
+          <div>
+            <span class="zine-label">Border weights</span>
+            <div class="weights"><span style="border-width:var(--zine-border-thin)">1px border</span><span style="border-width:var(--zine-border-regular)">2px border</span><span style="border-width:var(--zine-border-thick)">3px border</span></div>
+          </div>
+          <div>
+            <span class="zine-label">Border radius <small>(shape)</small></span>
+            <div class="rad">
+              <p style="border-radius:var(--zine-radius-none)">0px</p><p style="border-radius:var(--zine-radius-xs)">1px</p><p style="border-radius:var(--zine-radius-sm)">2px</p><p style="border-radius:var(--zine-radius-md)">4px</p><p style="border-radius:var(--zine-radius-lg)">6px</p><p style="border-radius:var(--zine-radius-xl)">8px</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="zine-panel" aria-labelledby="s2">
+      <header class="zine-panel__head"><h2 class="zine-title" id="s2">02. Controls</h2></header>
+      <div class="zine-panel__body">
+        <span class="zine-label">Buttons</span>
+        <div class="btn-rows">
+          <div><button class="zine-btn zine-btn--primary zine-btn--block" type="button">Primary</button><code class="zine-code">&lt;button variant="primary" /&gt;</code></div>
+          <div><button class="zine-btn zine-btn--primary zine-btn--block is-pressed" type="button">Primary (pressed)</button><code class="zine-code">&lt;button state="pressed" /&gt;</code></div>
+          <div><button class="zine-btn zine-btn--block" type="button">Secondary</button><code class="zine-code">&lt;button variant="secondary" /&gt;</code></div>
+          <div><button class="zine-btn zine-btn--danger zine-btn--block" type="button">Danger</button><code class="zine-code">&lt;button variant="danger" /&gt;</code></div>
+        </div>
+        <hr class="zine-rule">
+        <div class="ctl3">
+          <div>
+            <span class="zine-label">Text input</span>
+            <div class="stack-12">
+              <input class="zine-input" placeholder="Enter text..." aria-label="Text input">
+              <input class="zine-input is-focus" placeholder="Enter text..." aria-label="Text input, focused">
+              <code class="zine-code">// focus: 3px lime + 2px black</code>
+            </div>
+          </div>
+          <div>
+            <span class="zine-label">Checkbox</span>
+            <div class="stack-12"><label class="zine-check"><input class="zine-checkbox" type="checkbox"> Unchecked</label><label class="zine-check"><input class="zine-checkbox" type="checkbox" checked> Checked</label></div>
+          </div>
+          <div>
+            <span class="zine-label">Toggle</span>
+            <div class="stack-12"><label class="zine-check"><input class="zine-switch" type="checkbox"> Off</label><label class="zine-check"><input class="zine-switch" type="checkbox" checked> On</label></div>
+          </div>
+        </div>
+        <hr class="zine-rule">
+        <span class="zine-label">Slider</span>
+        <div class="zine-range"><input class="zine-slider" type="range" min="0" max="100" value="65" style="--zine-value:65" aria-label="Ink coverage"><output data-suffix="%">65%</output></div>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section class="zine-panel" aria-labelledby="s3">
+      <header class="zine-panel__head"><h2 class="zine-title" id="s3">03. Navigation</h2></header>
+      <div class="zine-panel__body">
+        <span class="zine-label">Tabs <small>(folder style)</small></span>
+        <div class="tabs-demo">
+          <div class="zine-tabs" role="tablist" aria-label="Issue">
+            <button class="zine-tabs__item" role="tab" aria-selected="true" aria-controls="sg-t1" id="sg-h1">Overview</button>
+            <button class="zine-tabs__item" role="tab" aria-selected="false" aria-controls="sg-t2" id="sg-h2" tabindex="-1">Files</button>
+            <button class="zine-tabs__item" role="tab" aria-selected="false" aria-controls="sg-t3" id="sg-h3" tabindex="-1">Sharing</button>
+            <button class="zine-tabs__item" role="tab" aria-selected="false" aria-controls="sg-t4" id="sg-h4" tabindex="-1">Settings</button>
+          </div>
+          <div class="zine-sheet" role="tabpanel" id="sg-t1" aria-labelledby="sg-h1"><p class="zine-meta">Issue 01 · 24 pages · due Friday</p></div>
+          <div class="zine-sheet" role="tabpanel" id="sg-t2" aria-labelledby="sg-h2" hidden><p class="zine-meta">3 files · 24.4 MB</p></div>
+          <div class="zine-sheet" role="tabpanel" id="sg-t3" aria-labelledby="sg-h3" hidden><p class="zine-meta">Shared with 4 people</p></div>
+          <div class="zine-sheet" role="tabpanel" id="sg-t4" aria-labelledby="sg-h4" hidden><p class="zine-meta">Print run · 300 copies · riso</p></div>
+        </div>
+        <hr class="zine-rule">
+        <span class="zine-label">Breadcrumb</span>
+        <div><nav class="zine-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Home</a></li><li><a href="#">Projects</a></li><li><a href="#">Zine / Brutal</a></li><li aria-current="page">Issue 01</li></ol></nav></div>
+        <hr class="zine-rule">
+        <div class="split">
+          <div>
+            <span class="zine-label">Pagination</span>
+            <nav class="zine-pagination" aria-label="Pages"><a href="#" aria-label="Previous page"><svg class="zine-icon" aria-hidden="true"><use href="#i-left"/></svg></a><a href="#">1</a><a href="#" aria-current="page">2</a><a href="#">3</a><a href="#">5</a><a href="#" aria-label="Next page"><svg class="zine-icon" aria-hidden="true"><use href="#i-right"/></svg></a></nav>
+          </div>
+          <div>
+            <span class="zine-label">Sidebar menu</span>
+            <nav class="zine-menu" aria-label="Sections">
+              <a class="zine-menu__item" href="#"><svg class="zine-icon" aria-hidden="true"><use href="#i-home"/></svg>Dashboard</a>
+              <a class="zine-menu__item" href="#" aria-current="page"><svg class="zine-icon" aria-hidden="true"><use href="#i-folder"/></svg>Projects</a>
+              <a class="zine-menu__item" href="#"><svg class="zine-icon" aria-hidden="true"><use href="#i-file"/></svg>Files</a>
+              <a class="zine-menu__item" href="#"><svg class="zine-icon" aria-hidden="true"><use href="#i-team"/></svg>Team</a>
+              <a class="zine-menu__item" href="#"><svg class="zine-icon" aria-hidden="true"><use href="#i-gear"/></svg>Settings</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="zine-panel" aria-labelledby="s4">
+      <header class="zine-panel__head"><h2 class="zine-title" id="s4">04. Data &amp; Feedback</h2></header>
+      <div class="zine-panel__body">
+        <div class="data-top">
+          <div class="profile">
+            <span class="zine-label">Profile card</span>
+            <article class="zine-card">
+              <div class="zine-profile">
+                <span class="zine-avatar zine-avatar--lg" style="--zine-avatar:var(--zine-color-cobalt)"><svg viewBox="0 0 12 12" aria-hidden="true"><path class="zine-pixel-ink" d="M3 1h6v1H3zM2 2h8v1H2zM2 3h2v1H2zM8 3h2v1H8zM2 4h1v1H2zM9 4h1v1H9zM2 5h1v1H2zM4 5h1v1H4zM7 5h1v1H7zM9 5h1v1H9zM2 6h1v1H2zM9 6h1v1H9zM2 7h1v1H2zM5 7h2v1H5zM9 7h1v1H9zM3 8h1v1H3zM8 8h1v1H8zM4 9h1v1H4zM7 9h1v1H7zM2 10h8v1H2zM1 11h10v1H1z"/><path class="zine-pixel-face" d="M4 3h4v1H4zM3 4h6v1H3zM3 5h1v1H3zM5 5h2v1H5zM8 5h1v1H8zM3 6h6v1H3zM3 7h2v1H3zM7 7h2v1H7zM4 8h4v1H4zM5 9h2v1H5z"/></svg></span>
+                <div><h3 class="zine-heading">Alex Kim</h3><p class="zine-meta">@alexkim</p><p class="zine-profile__role">Product / Design</p></div>
+              </div>
+              <div class="stickers"><span class="zine-sticker">New</span><span class="zine-sticker zine-sticker--live">Live</span><span class="zine-sticker zine-sticker--beta">Beta</span></div>
+            </article>
+            <span class="zine-label">Progress <small>(70%)</small></span>
+            <div class="zine-meter"><div class="zine-progress" role="progressbar" aria-label="Issue progress" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--zine-value:70"></div><span>70%</span></div>
+          </div>
+          <div class="profile">
+            <span class="zine-label">Toast <small>(notification)</small></span>
+            <div class="zine-toast" role="status"><svg class="zine-toast__icon" aria-hidden="true"><use href="#i-check-circle"/></svg><div><p class="zine-toast__title">File saved!</p><p class="zine-toast__text">Changes are now live.</p></div><button class="zine-toast__close" type="button" aria-label="Dismiss"><svg class="zine-icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+            <span class="zine-label">Confirmation modal</span>
+            <div class="zine-dialog" role="group" aria-labelledby="sg-dlg" style="width:auto">
+              <button class="zine-dialog__close" type="button" aria-label="Close"><svg class="zine-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+              <h3 class="zine-dialog__title" id="sg-dlg">Delete file?</h3>
+              <p class="zine-dialog__text">This action cannot be undone.</p>
+              <div class="zine-dialog__actions"><button class="zine-btn zine-btn--sm" type="button">Cancel</button><button class="zine-btn zine-btn--sm zine-btn--danger" type="button">Delete</button></div>
+            </div>
+          </div>
+        </div>
+        <hr class="zine-rule">
+        <span class="zine-label">Table <small>(striped header)</small></span>
+        <div class="zine-table-wrap">
+          <table class="zine-table">
+            <thead><tr><th><button class="zine-sort" type="button">#</button></th><th><button class="zine-sort" type="button">File name</button></th><th><button class="zine-sort" type="button">Type</button></th><th class="is-num"><button class="zine-sort" type="button">Size</button></th><th><button class="zine-sort" type="button">Updated</button></th></tr></thead>
+            <tbody>
+              <tr><td>01</td><td>zine-cover.png</td><td>PNG</td><td class="is-num">1.2 MB</td><td>2025-01-24</td></tr>
+              <tr><td>02</td><td>design-system.pdf</td><td>PDF</td><td class="is-num">4.8 MB</td><td>2025-01-23</td></tr>
+              <tr><td>03</td><td>components.fig</td><td>FIG</td><td class="is-num">18.4 MB</td><td>2025-01-22</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="colophon"><span>Printed for the web · Issue 01</span><span>Zine / Brutal · No blur. No gradients. No apologies.</span></footer>
+</div>
+
+<script src="js/zine.js"></script>
+<script src="../site/code-view.js" data-selector=".spreads > .zine-panel" data-skip=".zine-panel__head" data-toggle-in=".zine-panel__head > h2"></script>
+<script src="../site/smooth-scroll.js" defer></script>
+</body>
+</html>

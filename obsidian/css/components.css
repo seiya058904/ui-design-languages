@@ -1,0 +1,832 @@
+/* Obsidian / Glass — components
+   Four layers of glass over a deep obsidian air: base (solid), frosted (12px), elevated (16px), inset
+   (inner depth). Every layer carries a 1px specular top edge; light gathers at the one accent.
+   Motion is liquid: 320ms on cubic-bezier(.22,1,.36,1); sliding indicators stretch like a drop
+   (the leading edge moves first) and gather; a press pulls the light in for 90ms.
+   Shared anatomy: btn · input/field/command · switch/checkbox/radio · slider · segmented · tabs ·
+   nav · breadcrumb · pagination · badge · card/stat · chart/spark · ring · progress · toast ·
+   alert · dialog · menu · tooltip · table · avatar · list · empty · glass · swatch · edge · logo */
+
+/* One number drives rings, sliders and bars. An integer, so CSS can count it up (counter-reset). */
+@property --obsidian-value {
+  syntax: "<integer>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* =========================================================================
+   Glass layers — <div class="obsidian-glass obsidian-glass--frosted"></div>
+   --base (solid #151922) · --frosted (60%, 12px) · --elevated (80%, 16px) · --inset (40%, inner depth)
+   ========================================================================= */
+.obsidian-glass { border: 1px solid var(--obsidian-color-border-low); border-radius: var(--obsidian-radius-md); box-shadow: var(--obsidian-shadow-control); }
+.obsidian-glass--base { background: var(--obsidian-color-surface); }
+.obsidian-glass--frosted { background: var(--obsidian-atmosphere-sheen), var(--obsidian-color-glass); -webkit-backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%); backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%); }
+.obsidian-glass--elevated { border-color: var(--obsidian-color-border-medium); background: var(--obsidian-atmosphere-sheen), var(--obsidian-color-glass-elevated); -webkit-backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(150%); backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(150%); box-shadow: var(--obsidian-shadow-elevated); }
+.obsidian-glass--inset { border-color: transparent; background: var(--obsidian-color-glass-inset); box-shadow: var(--obsidian-shadow-inset); }
+
+/* Rim light: on panels and cards the 1px edge catches the light where the pointer is
+   (js/obsidian.js sets --obsidian-mx / --obsidian-my; without it the rim simply stays dark). */
+.obsidian-panel::after,
+.obsidian-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  background: radial-gradient(240px circle at var(--obsidian-mx, 50%) var(--obsidian-my, -60%), var(--obsidian-color-border-high), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--obsidian-motion-duration) var(--obsidian-motion-easing);
+}
+.obsidian-panel:hover::after,
+.obsidian-card:hover::after { opacity: 1; }
+
+/* =========================================================================
+   Button
+   <button class="obsidian-btn obsidian-btn--primary">Primary</button>
+   Variants: --primary (lit) · default (secondary glass) · --tertiary (outline) · --ghost · --danger
+   Sizes: --sm · --lg · --icon · --block   States: :hover/.is-hover · :active/.is-active · :focus-visible · :disabled
+   ========================================================================= */
+.obsidian-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--obsidian-space-2);
+  height: var(--obsidian-size-control);
+  padding: 0 var(--obsidian-space-5);
+  border: 1px solid var(--obsidian-color-border-medium);
+  border-radius: var(--obsidian-radius-md);
+  background-color: var(--obsidian-color-control);
+  background-image: var(--obsidian-atmosphere-sheen);
+  color: var(--obsidian-color-ink);
+  font-size: var(--obsidian-font-size-body);
+  font-weight: var(--obsidian-font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--obsidian-shadow-control);
+  transition:
+    background-color var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing),
+    border-color var(--obsidian-motion-duration) var(--obsidian-motion-easing),
+    box-shadow var(--obsidian-motion-duration) var(--obsidian-motion-easing),
+    color var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing),
+    transform var(--obsidian-motion-duration) var(--obsidian-motion-easing);
+}
+.obsidian-btn:hover,
+.obsidian-btn.is-hover { background-color: var(--obsidian-color-control-hover); border-color: var(--obsidian-color-edge-hover); box-shadow: inset 0 1px 0 var(--obsidian-color-edge-hover), 0 1px 2px rgba(0, 0, 0, 0.35); }
+.obsidian-btn:active,
+.obsidian-btn.is-active { transform: scale(0.97); transition-duration: var(--obsidian-motion-duration-press); transition-timing-function: var(--obsidian-motion-easing-press); }
+.obsidian-btn:focus-visible { box-shadow: var(--obsidian-shadow-control), var(--obsidian-shadow-focus); }
+.obsidian-btn .obsidian-icon { width: 18px; height: 18px; }
+
+.obsidian-btn--primary {
+  border-color: transparent;
+  background-color: var(--obsidian-color-primary);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 60%);
+  color: var(--obsidian-color-primary-ink);
+  font-weight: var(--obsidian-font-weight-semibold);
+  box-shadow: var(--obsidian-shadow-glow);
+}
+.obsidian-btn--primary:hover,
+.obsidian-btn--primary.is-hover { border-color: transparent; background-color: var(--obsidian-color-primary); box-shadow: var(--obsidian-shadow-glow-hover); }
+.obsidian-btn--primary:active,
+.obsidian-btn--primary.is-active { background-color: var(--obsidian-color-primary-strong); box-shadow: var(--obsidian-shadow-glow-pressed); }
+.obsidian-btn--primary:focus-visible { box-shadow: var(--obsidian-shadow-glow), var(--obsidian-shadow-focus); }
+.obsidian-btn--tertiary { background-color: transparent; background-image: none; box-shadow: none; }
+.obsidian-btn--tertiary:hover,
+.obsidian-btn--tertiary.is-hover { background-color: var(--obsidian-color-hover); box-shadow: none; }
+.obsidian-btn--ghost { border-color: transparent; background-color: transparent; background-image: none; box-shadow: none; color: var(--obsidian-color-text); }
+.obsidian-btn--ghost:hover,
+.obsidian-btn--ghost.is-hover { border-color: transparent; background-color: var(--obsidian-color-hover); box-shadow: none; color: var(--obsidian-color-ink); }
+.obsidian-btn--danger { border-color: color-mix(in srgb, var(--obsidian-color-danger) 45%, transparent); background-color: var(--obsidian-color-danger-soft); color: var(--obsidian-color-danger-text); }
+.obsidian-btn--danger:hover,
+.obsidian-btn--danger.is-hover { border-color: var(--obsidian-color-danger); background-color: color-mix(in srgb, var(--obsidian-color-danger) 22%, transparent); box-shadow: 0 0 18px -6px var(--obsidian-color-danger); }
+
+.obsidian-btn--sm { height: var(--obsidian-size-control-sm); padding: 0 var(--obsidian-space-3); font-size: var(--obsidian-font-size-small); border-radius: var(--obsidian-radius-sm); }
+.obsidian-btn--lg { height: var(--obsidian-size-control-lg); padding: 0 var(--obsidian-space-6); font-size: var(--obsidian-font-size-title); }
+.obsidian-btn--icon { width: var(--obsidian-size-control); padding: 0; }
+.obsidian-btn--icon.obsidian-btn--sm { width: var(--obsidian-size-control-sm); }
+.obsidian-btn--block { display: flex; width: 100%; }
+.obsidian-btn--pill { border-radius: var(--obsidian-radius-pill); }
+.obsidian-btn:disabled,
+.obsidian-btn.is-disabled { border-color: var(--obsidian-color-border-low); background-color: var(--obsidian-color-disabled); background-image: none; color: var(--obsidian-color-disabled-ink); box-shadow: none; transform: none; cursor: not-allowed; pointer-events: none; }
+
+/* =========================================================================
+   Text field · command search
+   <label class="obsidian-field"><span class="obsidian-field__label">Workspace name</span><input class="obsidian-input"></label>
+   <label class="obsidian-command"><svg class="obsidian-icon">…</svg><input class="obsidian-input" placeholder="Search or type a command..."><kbd class="obsidian-kbd">⌘K</kbd></label>
+   ========================================================================= */
+.obsidian-field { display: grid; gap: var(--obsidian-space-2); min-width: 0; }
+.obsidian-field__label { font-size: var(--obsidian-font-size-small); font-weight: var(--obsidian-font-weight-medium); color: var(--obsidian-color-text); }
+.obsidian-input {
+  display: block;
+  width: 100%;
+  height: var(--obsidian-size-control);
+  padding: 0 14px;
+  border: 1px solid var(--obsidian-color-border-medium);
+  border-radius: var(--obsidian-radius-md);
+  background: var(--obsidian-color-field);
+  box-shadow: var(--obsidian-shadow-inset);
+  color: var(--obsidian-color-ink);
+  font-size: var(--obsidian-font-size-body);
+  caret-color: var(--obsidian-color-primary);
+  outline: none;
+  appearance: none;
+  transition: border-color var(--obsidian-motion-duration) var(--obsidian-motion-easing), box-shadow var(--obsidian-motion-duration) var(--obsidian-motion-easing), background-color var(--obsidian-motion-duration-fast);
+}
+.obsidian-input::placeholder { color: var(--obsidian-color-text-subtle); }
+.obsidian-input:hover,
+.obsidian-input.is-hover { border-color: var(--obsidian-color-edge-hover); }
+.obsidian-input:focus,
+.obsidian-input.is-focus { border-color: var(--obsidian-color-primary); box-shadow: var(--obsidian-shadow-inset), var(--obsidian-shadow-focus); }
+.obsidian-input[aria-invalid="true"] { border-color: var(--obsidian-color-danger); box-shadow: var(--obsidian-shadow-inset), 0 0 0 4px var(--obsidian-color-danger-soft); }
+.obsidian-input:disabled { border-color: var(--obsidian-color-border-low); background: var(--obsidian-color-disabled); color: var(--obsidian-color-disabled-ink); box-shadow: none; cursor: not-allowed; }
+textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidian-space-3) 14px; line-height: 1.5; resize: vertical; }
+.obsidian-hint { font-size: var(--obsidian-font-size-caption); color: var(--obsidian-color-text-muted); }
+.obsidian-hint--error { color: var(--obsidian-color-danger-text); }
+.obsidian-command { position: relative; display: block; min-width: 0; }
+.obsidian-command > .obsidian-icon { position: absolute; left: 14px; top: 50%; width: 18px; height: 18px; color: var(--obsidian-color-text-muted); transform: translateY(-50%); pointer-events: none; transition: color var(--obsidian-motion-duration-fast); }
+.obsidian-command > .obsidian-input { padding-left: 42px; padding-right: 58px; }
+.obsidian-command > .obsidian-kbd { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.obsidian-command:focus-within > .obsidian-icon { color: var(--obsidian-color-primary); }
+.obsidian-kbd { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border: 1px solid var(--obsidian-color-border-medium); border-radius: 6px; background: var(--obsidian-color-hover); box-shadow: inset 0 -1px 0 var(--obsidian-color-border-low); font-family: var(--obsidian-font-family-mono); font-size: var(--obsidian-font-size-label); color: var(--obsidian-color-text-muted); }
+
+/* =========================================================================
+   Switch · checkbox · radio
+   <input class="obsidian-switch" type="checkbox" checked aria-label="Sync">   (a lit track, a white knob that stretches as you press)
+   <label class="obsidian-check"><input class="obsidian-checkbox" type="checkbox" checked> Selected</label>
+   ========================================================================= */
+.obsidian-switch {
+  position: relative;
+  flex: none;
+  width: 48px;
+  height: 26px;
+  margin: 0;
+  border-radius: var(--obsidian-radius-pill);
+  background: var(--obsidian-color-track);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 0 0 1px var(--obsidian-color-border-low);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--obsidian-motion-duration) var(--obsidian-motion-easing), box-shadow var(--obsidian-motion-duration) var(--obsidian-motion-easing);
+}
+.obsidian-switch::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--obsidian-radius-pill);
+  background: radial-gradient(circle at 50% 30%, var(--obsidian-color-ink), var(--obsidian-color-knob));
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45), inset 0 -1px 1px rgba(0, 0, 0, 0.12);
+  transition: transform var(--obsidian-motion-duration) var(--obsidian-motion-easing), width var(--obsidian-motion-duration) var(--obsidian-motion-easing);
+}
+.obsidian-switch:active::before { width: 25px; }
+.obsidian-switch:checked { background: var(--obsidian-color-primary); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--obsidian-color-border-high), 0 0 16px -3px var(--obsidian-color-primary-glow); }
+.obsidian-switch:checked::before { transform: translateX(22px); }
+.obsidian-switch:checked:active::before { transform: translateX(17px); }
+.obsidian-switch:focus-visible { box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5), var(--obsidian-shadow-focus); }
+.obsidian-switch:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.obsidian-check { display: inline-flex; align-items: center; gap: 10px; font-size: var(--obsidian-font-size-body); color: var(--obsidian-color-text); cursor: pointer; user-select: none; }
+.obsidian-check:has(:disabled) { color: var(--obsidian-color-disabled-ink); cursor: not-allowed; }
+.obsidian-checkbox,
+.obsidian-radio {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 1px solid var(--obsidian-color-border-medium);
+  background-color: var(--obsidian-color-field);
+  background-repeat: no-repeat;
+  background-position: center;
+  box-shadow: var(--obsidian-shadow-inset);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing), border-color var(--obsidian-motion-duration) var(--obsidian-motion-easing), box-shadow var(--obsidian-motion-duration) var(--obsidian-motion-easing), background-size var(--obsidian-motion-duration) var(--obsidian-motion-easing), transform var(--obsidian-motion-duration) var(--obsidian-motion-easing);
+}
+.obsidian-checkbox { border-radius: 6px; background-size: 0; }
+.obsidian-checkbox:checked {
+  border-color: transparent;
+  background-color: var(--obsidian-color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2303131D' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5.5 12.5 10 17l8.5-9.5'/%3E%3C/svg%3E");
+  background-size: 14px;
+  box-shadow: 0 0 0 1px var(--obsidian-color-border-high), 0 0 14px -3px var(--obsidian-color-primary-glow);
+}
+.obsidian-radio { border-radius: 50%; background-size: 0 0; }
+.obsidian-radio:checked {
+  border-color: var(--obsidian-color-primary);
+  background-image: radial-gradient(circle, var(--obsidian-color-primary) 0 4px, transparent 4.5px);
+  background-size: 100% 100%;
+  box-shadow: 0 0 14px -3px var(--obsidian-color-primary-glow);
+}
+.obsidian-checkbox:hover,
+.obsidian-radio:hover { border-color: var(--obsidian-color-edge-hover); }
+.obsidian-checkbox:active,
+.obsidian-radio:active { transform: scale(0.9); transition-duration: var(--obsidian-motion-duration-press); }
+.obsidian-checkbox:focus-visible,
+.obsidian-radio:focus-visible { box-shadow: var(--obsidian-shadow-focus); }
+.obsidian-checkbox:disabled,
+.obsidian-radio:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* =========================================================================
+   Slider — a lit fill on a dark track, a white knob in a halo
+   <div class="obsidian-range"><input class="obsidian-slider" type="range" value="74" style="--obsidian-value:74" aria-label="Opacity"><output>74%</output></div>
+   ========================================================================= */
+.obsidian-range { display: flex; align-items: center; gap: var(--obsidian-space-4); width: 100%; }
+.obsidian-range > output { min-width: 4ch; font-size: var(--obsidian-font-size-body); font-weight: var(--obsidian-font-weight-medium); color: var(--obsidian-color-ink); text-align: right; font-variant-numeric: tabular-nums; }
+.obsidian-slider {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.obsidian-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: var(--obsidian-radius-pill);
+  background: linear-gradient(90deg, var(--obsidian-color-primary) 0 calc(var(--obsidian-value) * 1%), var(--obsidian-color-track) 0);
+  box-shadow: 0 0 14px -4px var(--obsidian-color-primary-glow), inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.obsidian-slider::-moz-range-track { height: 6px; border-radius: var(--obsidian-radius-pill); background: var(--obsidian-color-track); }
+.obsidian-slider::-moz-range-progress { height: 6px; border-radius: var(--obsidian-radius-pill); background: var(--obsidian-color-primary); box-shadow: 0 0 12px -2px var(--obsidian-color-primary-glow); }
+.obsidian-slider::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  margin-top: -6px;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 32%, var(--obsidian-color-ink), var(--obsidian-color-knob));
+  box-shadow: 0 0 0 4px var(--obsidian-color-primary-soft), 0 0 16px var(--obsidian-color-primary-glow), 0 2px 6px rgba(0, 0, 0, 0.5);
+  appearance: none;
+  -webkit-appearance: none;
+  transition: transform var(--obsidian-motion-duration) var(--obsidian-motion-easing), box-shadow var(--obsidian-motion-duration) var(--obsidian-motion-easing);
+}
+.obsidian-slider::-moz-range-thumb { width: 18px; height: 18px; border: 0; border-radius: 50%; background: var(--obsidian-color-knob); box-shadow: 0 0 0 4px var(--obsidian-color-primary-soft), 0 0 16px var(--obsidian-color-primary-glow); }
+.obsidian-slider:hover::-webkit-slider-thumb { box-shadow: 0 0 0 6px var(--obsidian-color-primary-soft), 0 0 20px var(--obsidian-color-primary-glow), 0 2px 6px rgba(0, 0, 0, 0.5); }
+.obsidian-slider:active::-webkit-slider-thumb { transform: scale(1.15); }
+.obsidian-slider:focus-visible::-webkit-slider-thumb { box-shadow: var(--obsidian-shadow-focus), 0 2px 6px rgba(0, 0, 0, 0.5); }
+.obsidian-slider:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* =========================================================================
+   Sliding indicators — tabs, segmented and nav share one liquid indicator (::before).
+   js/obsidian.js measures the current item and sets --obsidian-indicator-l / -r / -t / -b; the edge
+   that leads moves first (240ms) and the other follows (440ms), so the light stretches and gathers.
+   ========================================================================= */
+.obsidian-tabs::before,
+.obsidian-segmented::before,
+.obsidian-nav::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: var(--obsidian-indicator-l, 0);
+  right: var(--obsidian-indicator-r, 100%);
+  top: var(--obsidian-indicator-t, 0);
+  bottom: var(--obsidian-indicator-b, 100%);
+  opacity: var(--obsidian-indicator-o, 0);
+  pointer-events: none;
+}
+.obsidian-tabs.is-animated::before,
+.obsidian-segmented.is-animated::before,
+.obsidian-nav.is-animated::before {
+  transition-property: left, right, top, bottom, opacity;
+  transition-duration: var(--obsidian-motion-duration);
+  transition-timing-function: var(--obsidian-motion-easing);
+}
+[data-obsidian-dir="right"].is-animated::before { transition-duration: var(--obsidian-motion-duration-trail), var(--obsidian-motion-duration-lead), var(--obsidian-motion-duration), var(--obsidian-motion-duration), var(--obsidian-motion-duration-fast); }
+[data-obsidian-dir="left"].is-animated::before { transition-duration: var(--obsidian-motion-duration-lead), var(--obsidian-motion-duration-trail), var(--obsidian-motion-duration), var(--obsidian-motion-duration), var(--obsidian-motion-duration-fast); }
+[data-obsidian-dir="down"].is-animated::before { transition-duration: var(--obsidian-motion-duration), var(--obsidian-motion-duration), var(--obsidian-motion-duration-trail), var(--obsidian-motion-duration-lead), var(--obsidian-motion-duration-fast); }
+[data-obsidian-dir="up"].is-animated::before { transition-duration: var(--obsidian-motion-duration), var(--obsidian-motion-duration), var(--obsidian-motion-duration-lead), var(--obsidian-motion-duration-trail), var(--obsidian-motion-duration-fast); }
+
+/* ---------- Pill tabs: the current tab is lit ----------
+   <div class="obsidian-tabs" role="tablist"><button class="obsidian-tabs__item" role="tab" aria-selected="true">All</button> …</div> */
+.obsidian-tabs {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  gap: 2px;
+  max-width: 100%;
+  padding: 4px;
+  border: 1px solid var(--obsidian-color-border-low);
+  border-radius: var(--obsidian-radius-pill);
+  background: var(--obsidian-color-glass-inset);
+  box-shadow: var(--obsidian-shadow-inset);
+}
+.obsidian-tabs::before { border-radius: var(--obsidian-radius-pill); background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 60%), var(--obsidian-color-primary); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -3px var(--obsidian-color-primary-glow); }
+.obsidian-tabs__item {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  height: 32px;
+  padding: 0 var(--obsidian-space-4);
+  border: 0;
+  border-radius: var(--obsidian-radius-pill);
+  background: transparent;
+  color: var(--obsidian-color-text-muted);
+  font-size: var(--obsidian-font-size-small);
+  font-weight: var(--obsidian-font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing);
+}
+.obsidian-tabs__item:hover { color: var(--obsidian-color-ink); }
+.obsidian-tabs__item[aria-selected="true"],
+.obsidian-tabs__item.is-active { color: var(--obsidian-color-primary-ink); font-weight: var(--obsidian-font-weight-semibold); }
+.obsidian-tabs__item:focus-visible { box-shadow: var(--obsidian-shadow-focus); }
+.obsidian-tabs:not(.has-indicator) .obsidian-tabs__item[aria-selected="true"] { background: var(--obsidian-color-primary); box-shadow: 0 0 16px -3px var(--obsidian-color-primary-glow); }
+
+/* ---------- Segmented: an elevated glass thumb in an inset track ----------
+   <div class="obsidian-segmented" role="tablist"><button class="obsidian-segmented__item" role="tab" aria-selected="true">Week</button> …</div> */
+.obsidian-segmented {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  max-width: 100%;
+  padding: 3px;
+  border: 1px solid var(--obsidian-color-border-low);
+  border-radius: var(--obsidian-radius-md);
+  background: var(--obsidian-color-glass-inset);
+  box-shadow: var(--obsidian-shadow-inset);
+}
+.obsidian-segmented::before { border: 1px solid var(--obsidian-color-border-medium); border-radius: 9px; background: var(--obsidian-atmosphere-sheen), var(--obsidian-color-glass-elevated); box-shadow: inset 0 1px 0 var(--obsidian-color-edge-hover), 0 4px 12px -4px rgba(0, 0, 0, 0.6); }
+.obsidian-segmented__item {
+  position: relative;
+  z-index: 1;
+  flex: 1 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 var(--obsidian-space-4);
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--obsidian-color-text-muted);
+  font-size: var(--obsidian-font-size-small);
+  font-weight: var(--obsidian-font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing);
+}
+.obsidian-segmented__item:hover,
+.obsidian-segmented__item[aria-selected="true"],
+.obsidian-segmented__item.is-active { color: var(--obsidian-color-ink); }
+.obsidian-segmented__item:focus-visible { box-shadow: var(--obsidian-shadow-focus); }
+.obsidian-segmented__item .obsidian-icon { width: 16px; height: 16px; }
+.obsidian-segmented--block { display: flex; }
+.obsidian-segmented:not(.has-indicator) .obsidian-segmented__item[aria-selected="true"] { background: var(--obsidian-color-glass-elevated); box-shadow: inset 0 1px 0 var(--obsidian-color-edge-hover); }
+
+/* ---------- Sidebar nav: the current item is a lit glass lens ----------
+   <nav class="obsidian-nav" aria-label="Workspace"><a class="obsidian-nav__item" href="#" aria-current="page"><svg class="obsidian-icon">…</svg>Projects</a> …</nav> */
+.obsidian-nav { position: relative; isolation: isolate; display: flex; flex-direction: column; gap: 2px; }
+.obsidian-nav::before { border: 1px solid var(--obsidian-color-border-high); border-radius: var(--obsidian-radius-md); background: linear-gradient(90deg, color-mix(in srgb, var(--obsidian-color-primary) 22%, transparent), color-mix(in srgb, var(--obsidian-color-primary) 8%, transparent)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 18px -6px var(--obsidian-color-primary-glow); }
+.obsidian-nav__item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--obsidian-space-3);
+  min-height: 38px;
+  padding: 0 var(--obsidian-space-3);
+  border-radius: var(--obsidian-radius-md);
+  color: var(--obsidian-color-text);
+  font-size: var(--obsidian-font-size-body);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing), background-color var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing);
+}
+.obsidian-nav__item:hover { background: var(--obsidian-color-hover); color: var(--obsidian-color-ink); }
+.obsidian-nav__item[aria-current="page"],
+.obsidian-nav__item.is-active { color: var(--obsidian-color-ink); font-weight: var(--obsidian-font-weight-medium); }
+.obsidian-nav__item[aria-current="page"]:hover { background: transparent; }
+.obsidian-nav__item .obsidian-icon { width: 18px; height: 18px; color: var(--obsidian-color-text-muted); transition: color var(--obsidian-motion-duration-fast); }
+.obsidian-nav__item[aria-current="page"] .obsidian-icon { color: var(--obsidian-color-primary); }
+.obsidian-nav__item:focus-visible { box-shadow: var(--obsidian-shadow-focus); }
+.obsidian-nav__badge { margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: var(--obsidian-radius-pill); background: var(--obsidian-color-primary-soft); color: var(--obsidian-color-primary); font-size: var(--obsidian-font-size-label); font-weight: var(--obsidian-font-weight-semibold); line-height: 20px; text-align: center; }
+.obsidian-nav:not(.has-indicator) .obsidian-nav__item[aria-current="page"] { background: var(--obsidian-color-primary-soft); box-shadow: inset 0 0 0 1px var(--obsidian-color-border-high); }
+
+/* Workspace switcher at the top of a sidebar: <button class="obsidian-switcher"><span class="obsidian-logo obsidian-logo--sm"></span>Workspace<svg class="obsidian-icon">…</svg></button> */
+.obsidian-switcher {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 44px;
+  padding: 0 10px 0 8px;
+  border: 1px solid var(--obsidian-color-border-low);
+  border-radius: var(--obsidian-radius-md);
+  background: var(--obsidian-color-hover);
+  color: var(--obsidian-color-ink);
+  font-size: var(--obsidian-font-size-body);
+  font-weight: var(--obsidian-font-weight-semibold);
+  cursor: pointer;
+  transition: border-color var(--obsidian-motion-duration) var(--obsidian-motion-easing), background-color var(--obsidian-motion-duration-fast);
+}
+.obsidian-switcher:hover { border-color: var(--obsidian-color-border-medium); background: var(--obsidian-color-control); }
+.obsidian-switcher:focus-visible { box-shadow: var(--obsidian-shadow-focus); }
+.obsidian-switcher > .obsidian-icon { margin-left: auto; width: 16px; height: 16px; color: var(--obsidian-color-text-muted); }
+
+/* =========================================================================
+   Breadcrumb · pagination
+   <nav class="obsidian-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#" aria-label="Home">⌂</a></li><li><a href="#">Projects</a></li><li aria-current="page">Campaign v2</li></ol></nav>
+   <nav class="obsidian-pagination" aria-label="Pages"><a href="#" aria-label="Previous">‹</a><a href="#" aria-current="page">1</a>…</nav>
+   ========================================================================= */
+.obsidian-breadcrumb ol { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 0; margin: 0; padding: 0; list-style: none; font-size: var(--obsidian-font-size-body); }
+.obsidian-breadcrumb li { display: inline-flex; align-items: center; }
+.obsidian-breadcrumb li + li::before { content: ""; width: 6px; height: 6px; margin: 0 10px 0 6px; border-top: 1.5px solid var(--obsidian-color-text-subtle); border-right: 1.5px solid var(--obsidian-color-text-subtle); transform: rotate(45deg); }
+.obsidian-breadcrumb a { display: inline-flex; align-items: center; color: var(--obsidian-color-text-muted); text-decoration: none; border-radius: 6px; transition: color var(--obsidian-motion-duration-fast); }
+.obsidian-breadcrumb a:hover { color: var(--obsidian-color-ink); }
+.obsidian-breadcrumb a:focus-visible { box-shadow: var(--obsidian-shadow-focus); }
+.obsidian-breadcrumb [aria-current="page"] { color: var(--obsidian-color-ink); font-weight: var(--obsidian-font-weight-semibold); }
+.obsidian-breadcrumb .obsidian-icon { width: 17px; height: 17px; }
+
+.obsidian-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.obsidian-pagination > a,
+.obsidian-pagination > button {
+  display: inline-grid;
+  place-items: center;
+  min-width: var(--obsidian-size-control-sm);
+  height: var(--obsidian-size-control-sm);
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--obsidian-radius-sm);
+  background: transparent;
+  color: var(--obsidian-color-text);
+  font-size: var(--obsidian-font-size-small);
+  font-weight: var(--obsidian-font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--obsidian-motion-duration-fast), border-color var(--obsidian-motion-duration) var(--obsidian-motion-easing), box-shadow var(--obsidian-motion-duration) var(--obsidian-motion-easing), color var(--obsidian-motion-duration-fast);
+}
+.obsidian-pagination > .is-edge { border-color: var(--obsidian-color-border-medium); background: var(--obsidian-color-control); box-shadow: var(--obsidian-shadow-control); }
+.obsidian-pagination > a:hover,
+.obsidian-pagination > button:hover { background: var(--obsidian-color-control-hover); color: var(--obsidian-color-ink); }
+.obsidian-pagination > [aria-current="page"] { border-color: transparent; background: var(--obsidian-color-primary); color: var(--obsidian-color-primary-ink); font-weight: var(--obsidian-font-weight-semibold); box-shadow: var(--obsidian-shadow-glow); }
+.obsidian-pagination > [aria-current="page"]:hover { background: var(--obsidian-color-primary); color: var(--obsidian-color-primary-ink); }
+.obsidian-pagination > :focus-visible { box-shadow: var(--obsidian-shadow-focus); }
+.obsidian-pagination__gap { min-width: 20px; text-align: center; color: var(--obsidian-color-text-muted); }
+.obsidian-pagination .obsidian-icon { width: 16px; height: 16px; }
+
+/* =========================================================================
+   Badge — a status pill with a glowing dot
+   <span class="obsidian-badge obsidian-badge--success">Live</span>  (--success · --warning · --danger · --primary · neutral)
+   ========================================================================= */
+.obsidian-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 26px;
+  padding: 0 11px;
+  border: 1px solid var(--obsidian-color-border-medium);
+  border-radius: var(--obsidian-radius-pill);
+  background: var(--obsidian-color-hover);
+  color: var(--obsidian-color-text);
+  font-size: var(--obsidian-font-size-caption);
+  font-weight: var(--obsidian-font-weight-medium);
+  white-space: nowrap;
+}
+.obsidian-badge--success,
+.obsidian-badge--warning,
+.obsidian-badge--danger,
+.obsidian-badge--primary { --obsidian-badge-c: var(--obsidian-color-primary); border-color: color-mix(in srgb, var(--obsidian-badge-c) 42%, transparent); background: color-mix(in srgb, var(--obsidian-badge-c) 13%, transparent); }
+.obsidian-badge--success { --obsidian-badge-c: var(--obsidian-color-success); color: var(--obsidian-color-success-text); }
+.obsidian-badge--warning { --obsidian-badge-c: var(--obsidian-color-warning); color: var(--obsidian-color-warning-text); }
+.obsidian-badge--danger { --obsidian-badge-c: var(--obsidian-color-danger); color: var(--obsidian-color-danger-text); }
+.obsidian-badge--primary { color: var(--obsidian-color-primary); }
+.obsidian-badge--success::before,
+.obsidian-badge--warning::before,
+.obsidian-badge--danger::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--obsidian-badge-c); box-shadow: 0 0 8px var(--obsidian-badge-c); }
+
+/* =========================================================================
+   Card · stat · chart — glass cards that report numbers
+   <article class="obsidian-card"><div class="obsidian-stat"><span class="obsidian-stat__label">Active projects</span>
+     <span class="obsidian-stat__value">24 <span class="obsidian-delta">+14%</span></span></div></article>
+   ========================================================================= */
+.obsidian-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--obsidian-space-3);
+  min-width: 0;
+  padding: 18px 20px;
+  border: 1px solid var(--obsidian-color-border-low);
+  border-radius: var(--obsidian-radius-lg);
+  background: var(--obsidian-atmosphere-sheen), var(--obsidian-color-glass);
+  -webkit-backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%);
+  backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%);
+  box-shadow: var(--obsidian-shadow-panel);
+  transition: border-color var(--obsidian-motion-duration) var(--obsidian-motion-easing), box-shadow var(--obsidian-motion-duration) var(--obsidian-motion-easing), transform var(--obsidian-motion-duration) var(--obsidian-motion-easing);
+}
+.obsidian-card:hover { border-color: var(--obsidian-color-border-medium); box-shadow: inset 0 1px 0 var(--obsidian-color-edge-hover), 0 28px 56px -24px rgba(0, 0, 0, 0.75); }
+.obsidian-card__head { display: flex; align-items: center; gap: var(--obsidian-space-3); }
+.obsidian-card__head > :last-child:not(:first-child) { margin-left: auto; }
+.obsidian-card__title { font-size: var(--obsidian-font-size-title); font-weight: var(--obsidian-font-weight-semibold); color: var(--obsidian-color-ink); }
+.obsidian-card__eyebrow { display: block; font-size: var(--obsidian-font-size-caption); color: var(--obsidian-color-text-muted); }
+.obsidian-card__text { font-size: var(--obsidian-font-size-small); color: var(--obsidian-color-text-muted); }
+.obsidian-card__icon { display: inline-grid; place-items: center; flex: none; width: 38px; height: 38px; border: 1px solid var(--obsidian-color-border-medium); border-radius: var(--obsidian-radius-md); background: var(--obsidian-color-control); color: var(--obsidian-color-ink); box-shadow: inset 0 1px 0 var(--obsidian-color-edge); }
+.obsidian-card__icon .obsidian-icon { width: 18px; height: 18px; }
+
+.obsidian-stat { display: grid; gap: 6px; min-width: 0; }
+.obsidian-stat__label { display: flex; align-items: center; gap: var(--obsidian-space-2); font-size: var(--obsidian-font-size-small); color: var(--obsidian-color-text); }
+.obsidian-stat__label .obsidian-icon { width: 17px; height: 17px; color: var(--obsidian-color-text-muted); }
+.obsidian-stat__value { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: var(--obsidian-font-size-stat); font-weight: var(--obsidian-font-weight-semibold); letter-spacing: -0.02em; line-height: 1.1; color: var(--obsidian-color-ink); font-variant-numeric: tabular-nums; }
+.obsidian-stat__meta { font-size: var(--obsidian-font-size-caption); color: var(--obsidian-color-text-muted); }
+.obsidian-delta { display: inline-flex; align-items: center; gap: 3px; font-size: var(--obsidian-font-size-caption); font-weight: var(--obsidian-font-weight-semibold); letter-spacing: 0; color: var(--obsidian-color-success-text); white-space: nowrap; }
+.obsidian-delta::before { content: ""; width: 0; height: 0; border: 4px solid transparent; border-bottom: 6px solid currentColor; border-top: 0; }
+.obsidian-delta--down { color: var(--obsidian-color-danger-text); }
+.obsidian-delta--down::before { border-bottom: 0; border-top: 6px solid currentColor; }
+
+/* Charts: SVG with a lit line that draws itself in and an area that fades from the accent.
+   <svg class="obsidian-chart" viewBox="0 0 300 80" preserveAspectRatio="none"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop class="obsidian-chart__stop" offset="0"/><stop class="obsidian-chart__stop obsidian-chart__stop--end" offset="1"/></linearGradient></defs>
+     <path class="obsidian-chart__area" fill="url(#g)" d="…"/><path class="obsidian-chart__line" pathLength="1" d="…"/></svg> */
+.obsidian-chart { display: block; width: 100%; height: 72px; overflow: visible; }
+.obsidian-chart__stop { stop-color: var(--obsidian-color-primary); stop-opacity: 0.32; }
+.obsidian-chart__stop--end { stop-opacity: 0; }
+.obsidian-chart__area { animation: obsidian-fade var(--obsidian-motion-duration-draw) var(--obsidian-motion-easing) backwards; }
+.obsidian-chart__line { fill: none; stroke: var(--obsidian-color-primary); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; stroke-dasharray: 1; filter: drop-shadow(0 0 5px var(--obsidian-color-primary-glow)); animation: obsidian-draw var(--obsidian-motion-duration-draw) var(--obsidian-motion-easing-draw) backwards; }
+.obsidian-chart__grid { stroke: var(--obsidian-color-border-low); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.obsidian-chart__dot { fill: var(--obsidian-color-ink); stroke: var(--obsidian-color-primary); stroke-width: 2; vector-effect: non-scaling-stroke; }
+@keyframes obsidian-draw { from { stroke-dashoffset: 1; } }
+@keyframes obsidian-fade { from { opacity: 0; } }
+
+/* =========================================================================
+   Ring — progress as a lit arc; it fills and its number counts up on load
+   <div class="obsidian-ring" style="--obsidian-value:78" role="img" aria-label="78% complete"><svg viewBox="0 0 120 120" aria-hidden="true">
+     <circle class="obsidian-ring__track" cx="60" cy="60" r="50" pathLength="100"/><circle class="obsidian-ring__arc" cx="60" cy="60" r="50" pathLength="100"/></svg>
+     <span class="obsidian-ring__label" aria-hidden="true"><b></b>Complete</span></div>
+   ========================================================================= */
+.obsidian-ring {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 128px;
+  aspect-ratio: 1;
+  counter-reset: obsidian-pct var(--obsidian-value);
+  animation: obsidian-ring var(--obsidian-motion-duration-draw) var(--obsidian-motion-easing-draw) backwards;
+}
+.obsidian-ring > svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+.obsidian-ring__track,
+.obsidian-ring__arc { fill: none; stroke-width: 9; }
+.obsidian-ring__track { stroke: var(--obsidian-color-track); }
+.obsidian-ring__arc { stroke: var(--obsidian-color-primary); stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: calc(100 - var(--obsidian-value)); filter: drop-shadow(0 0 6px var(--obsidian-color-primary-glow)); }
+.obsidian-ring__label { position: relative; display: grid; justify-items: center; font-size: var(--obsidian-font-size-caption); color: var(--obsidian-color-text-muted); }
+.obsidian-ring__label b { font-size: 26px; font-weight: var(--obsidian-font-weight-semibold); letter-spacing: -0.02em; line-height: 1.1; color: var(--obsidian-color-ink); font-variant-numeric: tabular-nums; }
+.obsidian-ring__label b::before { content: counter(obsidian-pct) "%"; }
+.obsidian-ring--sm { width: 72px; }
+.obsidian-ring--sm .obsidian-ring__label b { font-size: 16px; }
+@keyframes obsidian-ring { from { --obsidian-value: 0; } }
+
+/* Linear progress: <div class="obsidian-progress" role="progressbar" aria-valuenow="62" … style="--obsidian-value:62"></div> */
+.obsidian-progress { position: relative; height: 6px; border-radius: var(--obsidian-radius-pill); background: var(--obsidian-color-track); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35); transition: --obsidian-value var(--obsidian-motion-duration) var(--obsidian-motion-easing); }
+.obsidian-progress::after { content: ""; position: absolute; inset: 0 auto 0 0; width: calc(var(--obsidian-value) * 1%); border-radius: inherit; background: var(--obsidian-color-primary); box-shadow: 0 0 12px -2px var(--obsidian-color-primary-glow); }
+
+/* =========================================================================
+   Toast · alert
+   <div class="obsidian-toast obsidian-toast--success" role="status"><span class="obsidian-toast__icon">✓</span><div><p class="obsidian-toast__title">Workspace saved</p><p class="obsidian-toast__text">Your changes have been applied.</p></div><button class="obsidian-toast__close" aria-label="Dismiss">×</button></div>
+   ========================================================================= */
+.obsidian-toast {
+  --obsidian-tone: var(--obsidian-color-primary);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2px var(--obsidian-space-3);
+  padding: 14px 12px 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--obsidian-tone) 40%, transparent);
+  border-radius: var(--obsidian-radius-lg);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--obsidian-tone) 16%, transparent), transparent 70%), var(--obsidian-color-glass-elevated);
+  -webkit-backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(150%);
+  backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(150%);
+  box-shadow: var(--obsidian-shadow-elevated), 0 0 28px -10px var(--obsidian-tone);
+  color: var(--obsidian-color-text);
+  animation: obsidian-toast var(--obsidian-motion-duration-enter) var(--obsidian-motion-easing) backwards;
+}
+.obsidian-toast--success { --obsidian-tone: var(--obsidian-color-success); }
+.obsidian-toast--danger { --obsidian-tone: var(--obsidian-color-danger); }
+.obsidian-toast__icon { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--obsidian-tone); color: var(--obsidian-color-canvas); box-shadow: 0 0 12px -2px var(--obsidian-tone); }
+.obsidian-toast__icon .obsidian-icon { width: 14px; height: 14px; stroke-width: 3; }
+.obsidian-toast__title { font-size: var(--obsidian-font-size-body); font-weight: var(--obsidian-font-weight-semibold); color: var(--obsidian-color-ink); }
+.obsidian-toast__text { font-size: var(--obsidian-font-size-caption); color: var(--obsidian-color-text-muted); }
+.obsidian-toast__close { display: inline-grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: var(--obsidian-radius-sm); background: transparent; color: var(--obsidian-color-text-muted); cursor: pointer; transition: background-color var(--obsidian-motion-duration-fast), color var(--obsidian-motion-duration-fast); }
+.obsidian-toast__close:hover { background: var(--obsidian-color-hover); color: var(--obsidian-color-ink); }
+.obsidian-toast__close:focus-visible { box-shadow: var(--obsidian-shadow-focus); }
+.obsidian-toast__close .obsidian-icon { width: 16px; height: 16px; }
+@keyframes obsidian-toast { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
+
+/* Alert: an inline glass banner. <div class="obsidian-alert obsidian-alert--warning" role="status"><svg class="obsidian-icon">…</svg><div><b>Usage at 80%</b> Upgrade before the limit.</div></div> */
+.obsidian-alert {
+  --obsidian-tone: var(--obsidian-color-primary);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--obsidian-space-3);
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--obsidian-tone) 35%, transparent);
+  border-radius: var(--obsidian-radius-md);
+  background: color-mix(in srgb, var(--obsidian-tone) 9%, transparent);
+  color: var(--obsidian-color-text);
+  font-size: var(--obsidian-font-size-small);
+}
+.obsidian-alert > .obsidian-icon { width: 18px; height: 18px; margin-top: 1px; color: var(--obsidian-tone); }
+.obsidian-alert b { display: block; color: var(--obsidian-color-ink); font-weight: var(--obsidian-font-weight-semibold); }
+.obsidian-alert--success { --obsidian-tone: var(--obsidian-color-success); }
+.obsidian-alert--warning { --obsidian-tone: var(--obsidian-color-warning); }
+.obsidian-alert--danger { --obsidian-tone: var(--obsidian-color-danger); }
+
+/* =========================================================================
+   Dialog — elevated glass that surfaces into focus
+   <dialog class="obsidian-dialog" aria-labelledby="t"><h2 class="obsidian-dialog__title" id="t">Archive workspace?</h2><p class="obsidian-dialog__text">…</p>
+     <div class="obsidian-dialog__actions"><button class="obsidian-btn" data-obsidian-close>Cancel</button><button class="obsidian-btn obsidian-btn--primary" data-obsidian-close>Archive</button></div></dialog>
+   ========================================================================= */
+.obsidian-dialog {
+  width: min(100% - 32px, 400px);
+  max-width: none;
+  padding: var(--obsidian-space-5);
+  border: 1px solid var(--obsidian-color-border-medium);
+  border-radius: var(--obsidian-radius-lg);
+  background: var(--obsidian-atmosphere-sheen), var(--obsidian-color-glass-elevated);
+  -webkit-backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(150%);
+  backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(150%);
+  box-shadow: var(--obsidian-shadow-elevated);
+  color: var(--obsidian-color-text);
+}
+.obsidian-dialog[open] { animation: obsidian-dialog var(--obsidian-motion-duration-enter) var(--obsidian-motion-easing); }
+.obsidian-dialog::backdrop { background: var(--obsidian-color-backdrop); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.obsidian-dialog__title { font-size: 17px; font-weight: var(--obsidian-font-weight-semibold); color: var(--obsidian-color-ink); }
+.obsidian-dialog__text { margin-top: 8px; font-size: var(--obsidian-font-size-small); color: var(--obsidian-color-text-muted); }
+.obsidian-dialog__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: var(--obsidian-space-5); }
+@keyframes obsidian-dialog { from { opacity: 0; transform: translateY(10px) scale(0.97); filter: blur(6px); } }
+
+/* =========================================================================
+   Menu — a button that opens elevated glass with options
+   <div class="obsidian-menu"><button class="obsidian-btn obsidian-btn--sm" aria-haspopup="listbox" aria-expanded="false">Last 30 days</button>
+     <div class="obsidian-menu__list" role="listbox"><button class="obsidian-menu__item" role="option" aria-selected="true">Last 30 days</button> …</div></div>
+   js/obsidian.js: opens on click / ↓, arrows move, Enter picks, Esc or a click outside closes; fires "obsidian:select".
+   ========================================================================= */
+.obsidian-menu { position: relative; display: inline-block; }
+.obsidian-menu__list {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  display: grid;
+  gap: 2px;
+  min-width: 180px;
+  padding: 6px;
+  border: 1px solid var(--obsidian-color-border-medium);
+  border-radius: var(--obsidian-radius-md);
+  background: var(--obsidian-atmosphere-sheen), var(--obsidian-color-glass-elevated);
+  -webkit-backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(150%);
+  backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(150%);
+  box-shadow: var(--obsidian-shadow-elevated);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px) scale(0.98);
+  transform-origin: top right;
+  transition: opacity var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing), transform var(--obsidian-motion-duration) var(--obsidian-motion-easing), visibility 0s linear var(--obsidian-motion-duration-fast);
+}
+.obsidian-menu--start .obsidian-menu__list { left: 0; right: auto; transform-origin: top left; }
+[aria-expanded="true"] + .obsidian-menu__list,
+.obsidian-menu.is-open .obsidian-menu__list { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+.obsidian-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--obsidian-radius-sm);
+  background: transparent;
+  color: var(--obsidian-color-text);
+  font-size: var(--obsidian-font-size-small);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--obsidian-motion-duration-fast), color var(--obsidian-motion-duration-fast);
+}
+.obsidian-menu__item:hover,
+.obsidian-menu__item:focus-visible { background: var(--obsidian-color-hover); color: var(--obsidian-color-ink); }
+.obsidian-menu__item[aria-selected="true"] { color: var(--obsidian-color-ink); }
+.obsidian-menu__item[aria-selected="true"]::after { content: ""; width: 6px; height: 10px; margin-left: auto; border-right: 2px solid var(--obsidian-color-primary); border-bottom: 2px solid var(--obsidian-color-primary); transform: rotate(45deg) translate(-2px, -2px); }
+.obsidian-menu__item .obsidian-icon { width: 16px; height: 16px; color: var(--obsidian-color-text-muted); }
+.obsidian-menu__sep { height: 1px; margin: 4px 2px; background: var(--obsidian-color-border-low); }
+.obsidian-menu__item--danger { color: var(--obsidian-color-danger-text); }
+.obsidian-menu__item--danger .obsidian-icon { color: currentColor; }
+
+/* =========================================================================
+   Tooltip — a small elevated glass label
+   <span class="obsidian-tooltip" data-tip="Copy link"><button class="obsidian-btn obsidian-btn--icon">…</button></span> · static: <span class="obsidian-tip">Copy link</span>
+   ========================================================================= */
+.obsidian-tooltip { position: relative; display: inline-flex; }
+.obsidian-tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  z-index: 20;
+  padding: 6px 10px;
+  border: 1px solid var(--obsidian-color-border-medium);
+  border-radius: var(--obsidian-radius-sm);
+  background: var(--obsidian-color-glass-elevated);
+  -webkit-backdrop-filter: blur(var(--obsidian-blur-elevated));
+  backdrop-filter: blur(var(--obsidian-blur-elevated));
+  box-shadow: var(--obsidian-shadow-elevated);
+  color: var(--obsidian-color-ink);
+  font-size: var(--obsidian-font-size-caption);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 4px) scale(0.97);
+  transition: opacity var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing), transform var(--obsidian-motion-duration) var(--obsidian-motion-easing);
+}
+.obsidian-tooltip:hover::after,
+.obsidian-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0); transition-delay: 150ms; }
+.obsidian-tip { display: inline-block; padding: 6px 10px; border: 1px solid var(--obsidian-color-border-medium); border-radius: var(--obsidian-radius-sm); background: var(--obsidian-color-glass-elevated); box-shadow: var(--obsidian-shadow-elevated); color: var(--obsidian-color-ink); font-size: var(--obsidian-font-size-caption); }
+
+/* =========================================================================
+   Table — glass rows, a wash under the pointer
+   <div class="obsidian-table-wrap"><table class="obsidian-table">…</table></div>
+   ========================================================================= */
+.obsidian-table-wrap { width: 100%; overflow-x: auto; }
+.obsidian-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--obsidian-font-size-small); color: var(--obsidian-color-text); }
+.obsidian-table th { padding: 0 14px 10px; border-bottom: 1px solid var(--obsidian-color-border-low); font-size: var(--obsidian-font-size-label); font-weight: var(--obsidian-font-weight-semibold); letter-spacing: var(--obsidian-font-tracking-caps); text-align: left; text-transform: uppercase; color: var(--obsidian-color-text-muted); white-space: nowrap; }
+.obsidian-table td { padding: 12px 14px; border-bottom: 1px solid var(--obsidian-color-border-low); white-space: nowrap; transition: background-color var(--obsidian-motion-duration-fast); }
+.obsidian-table tbody tr:hover td { background: var(--obsidian-color-hover); }
+.obsidian-table tbody tr:hover td:first-child { border-radius: 10px 0 0 10px; }
+.obsidian-table tbody tr:hover td:last-child { border-radius: 0 10px 10px 0; }
+.obsidian-table tr[aria-selected="true"] td { background: var(--obsidian-color-primary-soft); }
+.obsidian-table td b { font-weight: var(--obsidian-font-weight-medium); color: var(--obsidian-color-ink); }
+.obsidian-table .is-num { text-align: right; font-family: var(--obsidian-font-family-mono); font-variant-numeric: tabular-nums; }
+
+/* =========================================================================
+   Avatar · list
+   <span class="obsidian-avatar" style="--obsidian-avatar:#7C3AED">MA</span>   (--sm · --lg · .obsidian-avatar-stack)
+   <ul class="obsidian-list"><li class="obsidian-list__item"><span class="obsidian-list__icon">…</span><span class="obsidian-list__title">Generated marketing brief</span><span class="obsidian-list__meta">2 min ago</span></li></ul>
+   ========================================================================= */
+.obsidian-avatar {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.35), transparent 55%), var(--obsidian-avatar, linear-gradient(135deg, var(--obsidian-color-primary), var(--obsidian-color-surface)));
+  box-shadow: 0 0 0 1px var(--obsidian-color-border-medium), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  color: var(--obsidian-color-ink);
+  font-size: var(--obsidian-font-size-caption);
+  font-weight: var(--obsidian-font-weight-semibold);
+  letter-spacing: 0.02em;
+}
+.obsidian-avatar--sm { width: 28px; height: 28px; font-size: 10px; }
+.obsidian-avatar--lg { width: 48px; height: 48px; font-size: var(--obsidian-font-size-body); }
+.obsidian-avatar__status { position: absolute; right: -1px; bottom: -1px; width: 10px; height: 10px; border-radius: 50%; background: var(--obsidian-color-success); box-shadow: 0 0 0 2px var(--obsidian-color-canvas), 0 0 8px var(--obsidian-color-success); }
+.obsidian-avatar-stack { display: inline-flex; }
+.obsidian-avatar-stack > .obsidian-avatar { box-shadow: 0 0 0 2px var(--obsidian-color-canvas), inset 0 1px 0 rgba(255, 255, 255, 0.2); }
+.obsidian-avatar-stack > * + * { margin-left: -8px; }
+
+.obsidian-list { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.obsidian-list__item { display: flex; align-items: center; gap: var(--obsidian-space-3); min-height: 48px; padding: 6px 8px; border-radius: var(--obsidian-radius-md); transition: background-color var(--obsidian-motion-duration-fast); }
+.obsidian-list__item:hover { background: var(--obsidian-color-hover); }
+.obsidian-list__icon { display: inline-grid; place-items: center; flex: none; width: 32px; height: 32px; border: 1px solid var(--obsidian-color-border-low); border-radius: 9px; background: var(--obsidian-color-control); color: var(--obsidian-color-text); }
+.obsidian-list__icon .obsidian-icon { width: 16px; height: 16px; }
+.obsidian-list__icon--success { color: var(--obsidian-color-success-text); border-color: color-mix(in srgb, var(--obsidian-color-success) 35%, transparent); background: var(--obsidian-color-success-soft); }
+.obsidian-list__title { min-width: 0; font-size: var(--obsidian-font-size-small); color: var(--obsidian-color-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.obsidian-list__meta { margin-left: auto; padding-left: var(--obsidian-space-3); font-size: var(--obsidian-font-size-caption); color: var(--obsidian-color-text-muted); white-space: nowrap; }
+
+/* Empty state: <div class="obsidian-empty"><span class="obsidian-card__icon">…</span><h3>Nothing here yet</h3><p>…</p></div> */
+.obsidian-empty { display: grid; justify-items: center; gap: var(--obsidian-space-2); padding: var(--obsidian-space-10) var(--obsidian-space-6); text-align: center; }
+.obsidian-empty h3 { font-size: var(--obsidian-font-size-title); font-weight: var(--obsidian-font-weight-semibold); color: var(--obsidian-color-ink); }
+.obsidian-empty p { max-width: 36ch; font-size: var(--obsidian-font-size-small); color: var(--obsidian-color-text-muted); }
+
+/* =========================================================================
+   Foundations as objects: logo mark, swatches, edge luminosity samples
+   <span class="obsidian-logo"></span> · <span class="obsidian-swatch" style="--obsidian-swatch:var(--obsidian-color-primary)"></span>
+   <span class="obsidian-edge obsidian-edge--high"></span> (--high · --medium · --low)
+   ========================================================================= */
+.obsidian-logo { position: relative; display: inline-block; flex: none; width: 56px; height: 56px; }
+.obsidian-logo::before,
+.obsidian-logo::after { content: ""; position: absolute; width: 66%; height: 66%; border: 1px solid color-mix(in srgb, var(--obsidian-color-primary) 60%, transparent); border-radius: 26%; background: linear-gradient(145deg, color-mix(in srgb, var(--obsidian-color-primary) 36%, transparent), color-mix(in srgb, var(--obsidian-color-primary) 8%, transparent)); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 22px -6px var(--obsidian-color-primary-glow); }
+.obsidian-logo::before { left: 0; top: 0; }
+.obsidian-logo::after { right: 0; bottom: 0; }
+.obsidian-logo--sm { width: 26px; height: 26px; }
+.obsidian-swatch { display: block; width: 38px; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.4), transparent 52%), var(--obsidian-swatch, var(--obsidian-color-primary)); box-shadow: 0 0 0 1px var(--obsidian-color-border-medium), 0 0 18px -6px var(--obsidian-swatch, transparent); }
+.obsidian-edge { display: block; width: 100%; height: 20px; border: 1px solid var(--obsidian-color-border-low); border-radius: var(--obsidian-radius-pill); background: var(--obsidian-color-glass-inset); }
+.obsidian-edge--high { border-color: var(--obsidian-color-primary); box-shadow: 0 0 14px -3px var(--obsidian-color-primary-glow), inset 0 0 8px -2px var(--obsidian-color-primary-glow); }
+.obsidian-edge--medium { border-color: var(--obsidian-color-border-medium); box-shadow: inset 0 1px 0 var(--obsidian-color-edge); }

@@ -226,8 +226,8 @@
   var rows = document.querySelectorAll("[data-marquee]");
   if (rows.length && window.UIWall) {
     var ROWS = [
-      [["clay", "button", "variants"], ["lilac", "selection", "toggle"], ["atelier", "tabs", "pill-tabs"], ["tactile", "selection", "switch"], ["sketch", "tabs", "folder-tabs"], ["clay", "segmented", "segmented-control"], ["lilac", "chips", "chips"], ["atelier", "appearance", "accent-swatches"]],
-      [["lilac", "progress", "ring-and-steps"], ["sketch", "chips", "badges-and-status"], ["tactile", "button", "states"], ["atelier", "button", "variants"], ["clay", "selection", "toggle"], ["sketch", "button", "variants"], ["tactile", "segmented", "segmented-tabs"], ["lilac", "button", "variants"]]
+      [["clay", "button", "variants"], ["braun", "slider", "rotary-dial"], ["lilac", "selection", "toggle"], ["zine", "tabs", "folder-tabs"], ["atelier", "tabs", "pill-tabs"], ["obsidian", "card", "kpi-card"], ["tactile", "selection", "switch"], ["terrarium", "card", "feature-card"], ["sketch", "tabs", "folder-tabs"], ["clay", "segmented", "segmented-control"], ["zine", "chips", "stickers"], ["atelier", "appearance", "accent-swatches"]],
+      [["lilac", "progress", "ring-and-steps"], ["obsidian", "tabs", "pill-tabs"], ["sketch", "chips", "badges-and-status"], ["terrarium", "progress", "ring"], ["tactile", "button", "states"], ["braun", "progress", "led-meter"], ["atelier", "button", "variants"], ["zine", "button", "variants"], ["clay", "selection", "toggle"], ["obsidian", "selection", "switches"], ["tactile", "segmented", "segmented-tabs"], ["terrarium", "segmented", "segmented"], ["braun", "segmented", "keys"], ["lilac", "button", "variants"]]
     ];
     UIWall.ready().then(function () {
       rows.forEach(function (row) {

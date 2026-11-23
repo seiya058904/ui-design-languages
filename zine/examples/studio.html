@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script>try{var m=localStorage.getItem("zine-theme");if(m&&m!=="light")document.documentElement.setAttribute("data-theme",m)}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zine / Brutal — issue studio</title>
+  <link rel="icon" href="../../site/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="../../site/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../site/assets/apple-touch-icon.png">
+  <meta name="description" content="An independent publishing studio built with Zine / Brutal: a flatplan that drives progress, a sortable file table, sharing and print settings.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/zine.css">
+  <style>
+    /* Layout only — a real page built from the delivered CSS and JS, unchanged. */
+    body { padding: 18px; }
+    .app { width: min(100%, 1320px); margin: 0 auto; }
+    .top { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; padding-bottom: 16px; border-bottom: var(--zine-border-thick) solid var(--zine-color-ink); }
+    .brand { font-family: var(--zine-font-family-display); font-size: 34px; line-height: 0.9; text-transform: uppercase; color: var(--zine-color-ink); text-decoration: none; letter-spacing: -0.02em; }
+    .top .zine-issue { font-size: 20px; padding: 4px 12px; box-shadow: var(--zine-shadow-md); }
+    .top__deck { font-family: var(--zine-font-family-mono); font-weight: var(--zine-font-weight-bold); font-size: var(--zine-font-size-small); text-transform: uppercase; }
+    .top__end { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+    .layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 26px; margin-top: 22px; }
+    .side { display: grid; align-content: start; gap: 18px; }
+    .deadline { display: grid; gap: 8px; }
+    .deadline b { font-family: var(--zine-font-family-display); font-size: 40px; line-height: 0.9; }
+    .main { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 18px; }
+    .main__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+    .ov { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; }
+    .flat { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 10px; }
+    .flat .zine-chip { justify-content: center; height: 42px; padding: 0; font-size: var(--zine-font-size-small); }
+    .people { display: grid; gap: 12px; }
+    .person { display: flex; align-items: center; gap: 12px; }
+    .person b { display: block; font-family: var(--zine-font-family-display); font-weight: 400; text-transform: uppercase; }
+    .person span { font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-caption); }
+    .person .zine-sticker { margin-left: auto; }
+    .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .tools .zine-search { flex: 1 1 220px; }
+    .row-act { display: inline-flex; gap: 8px; }
+    .empty { padding: 26px; text-align: center; font-family: var(--zine-font-family-mono); font-weight: var(--zine-font-weight-bold); text-transform: uppercase; }
+    .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+    .line { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: var(--zine-border-thin) solid var(--zine-color-ink); }
+    .line:last-child { border-bottom: 0; }
+    .line b { display: block; font-family: var(--zine-font-family-mono); text-transform: uppercase; }
+    .line span { font-size: var(--zine-font-size-small); color: var(--zine-color-text-muted); }
+    .toasts { position: fixed; right: 18px; bottom: 18px; z-index: 50; display: grid; gap: 12px; width: min(340px, calc(100% - 36px)); }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: minmax(0, 1fr); }
+      .side { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+      .ov, .two { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 600px) {
+      body { padding: 12px; }
+      .brand { font-size: 26px; }
+      .top__end { margin-left: 0; width: 100%; justify-content: space-between; }
+      .side { grid-template-columns: minmax(0, 1fr); }
+      .flat { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+      .zine-table-wrap table { min-width: 560px; }
+    }
+  </style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7M6 9.5V20h12V9.5"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6h7l2 2.5h9V19H3Z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6Z"/><path d="M14 3v4h4"/></symbol>
+  <symbol id="i-team" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3"/><path d="M3.5 19.5c.6-3.3 2.6-5 5.5-5s4.9 1.7 5.5 5"/><circle cx="16.5" cy="9.5" r="2.3"/><path d="M15.5 14.6c2.6.2 4.2 1.8 4.8 4.9"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5.5 5.5"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7 9l5-5 5 5M4 15v5h16v-5"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+</svg>
+
+<div class="app">
+  <header class="top">
+    <a class="brand" href="../index.html">Zine studio</a>
+    <span class="zine-issue">Issue 01</span>
+    <span class="top__deck">Concrete &amp; Comfort — the spring issue</span>
+    <div class="top__end">
+      <div class="zine-segmented" role="tablist" aria-label="Edition">
+        <button class="zine-segmented__item" role="tab" aria-selected="true" data-theme-set="light"><span>Newsprint</span></button>
+        <button class="zine-segmented__item" role="tab" aria-selected="false" tabindex="-1" data-theme-set="dark"><span>Inverted</span></button>
+      </div>
+      <span class="zine-avatar" style="--zine-avatar:var(--zine-color-cobalt)" title="Alex Kim"><svg viewBox="0 0 12 12" aria-hidden="true"><path class="zine-pixel-ink" d="M3 1h6v1H3zM2 2h8v1H2zM2 3h2v1H2zM8 3h2v1H8zM2 4h1v1H2zM9 4h1v1H9zM2 5h1v1H2zM4 5h1v1H4zM7 5h1v1H7zM9 5h1v1H9zM2 6h1v1H2zM9 6h1v1H9zM2 7h1v1H2zM5 7h2v1H5zM9 7h1v1H9zM3 8h1v1H3zM8 8h1v1H8zM4 9h1v1H4zM7 9h1v1H7zM2 10h8v1H2zM1 11h10v1H1z"/><path class="zine-pixel-face" d="M4 3h4v1H4zM3 4h6v1H3zM3 5h1v1H3zM5 5h2v1H5zM8 5h1v1H8zM3 6h6v1H3zM3 7h2v1H3zM7 7h2v1H7zM4 8h4v1H4zM5 9h2v1H5z"/></svg></span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="side zine-press">
+      <nav class="zine-menu" aria-label="Studio">
+        <a class="zine-menu__item" href="#"><svg class="zine-icon" aria-hidden="true"><use href="#i-home"/></svg>Dashboard</a>
+        <a class="zine-menu__item" href="#" aria-current="page"><svg class="zine-icon" aria-hidden="true"><use href="#i-folder"/></svg>Projects<span class="zine-menu__count">4</span></a>
+        <a class="zine-menu__item" href="#" data-goto="z-files"><svg class="zine-icon" aria-hidden="true"><use href="#i-file"/></svg>Files</a>
+        <a class="zine-menu__item" href="#" data-goto="z-sharing"><svg class="zine-icon" aria-hidden="true"><use href="#i-team"/></svg>Team</a>
+        <a class="zine-menu__item" href="#" data-goto="z-settings"><svg class="zine-icon" aria-hidden="true"><use href="#i-gear"/></svg>Settings</a>
+      </nav>
+      <article class="zine-card deadline">
+        <span class="zine-label" style="justify-self:start">To the printer</span>
+        <b data-countdown>FRI 23:59</b>
+        <p class="zine-meta" data-countdown-sub>4 days left · riso, 300 copies</p>
+        <div class="zine-row" style="--gap:8px"><span class="zine-sticker zine-sticker--live">On track</span><span class="zine-sticker">24 pp</span></div>
+      </article>
+    </aside>
+
+    <main class="main">
+      <div class="main__head">
+        <nav class="zine-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="#">Home</a></li><li><a href="#">Projects</a></li><li><a href="#">Zine / Brutal</a></li><li aria-current="page">Issue 01</li></ol></nav>
+        <button class="zine-btn zine-btn--primary" type="button" data-send>Send to print</button>
+      </div>
+
+      <div>
+        <div class="zine-tabs" role="tablist" aria-label="Issue">
+          <button class="zine-tabs__item" role="tab" aria-selected="true" aria-controls="p-overview" id="z-overview">Overview</button>
+          <button class="zine-tabs__item" role="tab" aria-selected="false" aria-controls="p-files" id="z-files" tabindex="-1">Files</button>
+          <button class="zine-tabs__item" role="tab" aria-selected="false" aria-controls="p-sharing" id="z-sharing" tabindex="-1">Sharing</button>
+          <button class="zine-tabs__item" role="tab" aria-selected="false" aria-controls="p-settings" id="z-settings" tabindex="-1">Settings</button>
+        </div>
+
+        <section class="zine-sheet" role="tabpanel" id="p-overview" aria-labelledby="z-overview">
+          <div class="ov">
+            <div class="zine-stack" style="--gap:14px">
+              <div class="zine-row" style="justify-content:space-between"><span class="zine-label">Flatplan <small>(click a page when it is done)</small></span><span class="zine-meta" data-done>17 of 24 pages</span></div>
+              <div class="flat" data-flat></div>
+              <div class="zine-meter"><div class="zine-progress" role="progressbar" aria-label="Issue progress" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="--zine-value:70" data-progress></div><span data-pct>70%</span></div>
+            </div>
+            <div class="zine-stack" style="--gap:14px">
+              <span class="zine-label" style="align-self:flex-start">Contributors</span>
+              <div class="people">
+                <div class="person"><span class="zine-avatar" style="--zine-avatar:var(--zine-color-cobalt)"><svg viewBox="0 0 12 12" aria-hidden="true"><path class="zine-pixel-ink" d="M3 1h6v1H3zM2 2h8v1H2zM2 3h2v1H2zM8 3h2v1H8zM2 4h1v1H2zM9 4h1v1H9zM2 5h1v1H2zM4 5h1v1H4zM7 5h1v1H7zM9 5h1v1H9zM2 6h1v1H2zM9 6h1v1H9zM2 7h1v1H2zM5 7h2v1H5zM9 7h1v1H9zM3 8h1v1H3zM8 8h1v1H8zM4 9h1v1H4zM7 9h1v1H7zM2 10h8v1H2zM1 11h10v1H1z"/><path class="zine-pixel-face" d="M4 3h4v1H4zM3 4h6v1H3zM3 5h1v1H3zM5 5h2v1H5zM8 5h1v1H8zM3 6h6v1H3zM3 7h2v1H3zM7 7h2v1H7zM4 8h4v1H4zM5 9h2v1H5z"/></svg></span><div><b>Alex Kim</b><span>Design · layout, cover</span></div><span class="zine-sticker zine-sticker--live">Live</span></div>
+                <div class="person"><span class="zine-avatar" style="--zine-avatar:var(--zine-color-vermilion)">MR</span><div><b>Mia Rossi</b><span>Words · 6 essays</span></div><span class="zine-sticker">New</span></div>
+                <div class="person"><span class="zine-avatar" style="--zine-avatar:var(--zine-color-white)">SL</span><div><b>Sam Lee</b><span>Photo · 31 frames</span></div><span class="zine-sticker zine-sticker--beta">Beta</span></div>
+              </div>
+              <label class="zine-field"><span class="zine-field__label">Editor's note</span><textarea class="zine-input" rows="3">Cover goes lime on black. Page 14 needs the pull quote bigger.</textarea></label>
+            </div>
+          </div>
+        </section>
+
+        <section class="zine-sheet" role="tabpanel" id="p-files" aria-labelledby="z-files" hidden>
+          <div class="tools">
+            <label class="zine-search"><svg class="zine-icon" aria-hidden="true"><use href="#i-search"/></svg><input class="zine-input" type="search" placeholder="Search files..." aria-label="Search files" data-q></label>
+            <div class="zine-row" style="--gap:8px" data-zine-single data-types>
+              <button class="zine-chip" type="button" aria-pressed="true" data-type="ALL">All</button>
+              <button class="zine-chip" type="button" aria-pressed="false" data-type="PNG">PNG</button>
+              <button class="zine-chip" type="button" aria-pressed="false" data-type="PDF">PDF</button>
+              <button class="zine-chip" type="button" aria-pressed="false" data-type="FIG">FIG</button>
+            </div>
+            <button class="zine-btn zine-btn--sm zine-btn--primary" type="button" data-upload><svg class="zine-icon" aria-hidden="true"><use href="#i-upload"/></svg>Upload</button>
+          </div>
+          <div class="zine-table-wrap">
+            <table class="zine-table">
+              <thead><tr><th><span>#</span></th><th><button class="zine-sort" type="button">File name</button></th><th><button class="zine-sort" type="button">Type</button></th><th class="is-num"><button class="zine-sort" type="button">Size</button></th><th><button class="zine-sort" type="button">Updated</button></th><th><span>Actions</span></th></tr></thead>
+              <tbody data-files></tbody>
+            </table>
+            <p class="empty" data-empty hidden>No files match. Try another filter.</p>
+          </div>
+        </section>
+
+        <section class="zine-sheet" role="tabpanel" id="p-sharing" aria-labelledby="z-sharing" hidden>
+          <div class="two">
+            <div class="zine-stack" style="--gap:14px">
+              <span class="zine-label" style="align-self:flex-start">Invite</span>
+              <form class="zine-row" style="--gap:12px" data-invite><input class="zine-input" type="email" placeholder="name@studio.com" aria-label="Email address" style="flex:1 1 200px" required><button class="zine-btn zine-btn--primary" type="submit">Invite</button></form>
+              <div class="line"><div><b>Anyone with the link</b><span>Can view proofs, not files</span></div><input class="zine-switch" type="checkbox" checked aria-label="Anyone with the link can view"></div>
+              <div class="line"><div><b>Allow comments</b><span>On proofs and the flatplan</span></div><input class="zine-switch" type="checkbox" aria-label="Allow comments"></div>
+              <button class="zine-btn" type="button" data-copy style="justify-self:start"><svg class="zine-icon" aria-hidden="true"><use href="#i-link"/></svg>Copy link</button>
+            </div>
+            <div class="zine-stack" style="--gap:12px">
+              <span class="zine-label" style="align-self:flex-start">People <small>(4)</small></span>
+              <div class="people" data-people>
+                <div class="person"><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-cobalt);color:var(--zine-color-white)">AK</span><div><b>Alex Kim</b><span>Owner</span></div></div>
+                <div class="person"><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-vermilion)">MR</span><div><b>Mia Rossi</b><span>Can edit</span></div></div>
+                <div class="person"><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-white)">SL</span><div><b>Sam Lee</b><span>Can edit</span></div></div>
+                <div class="person"><span class="zine-avatar zine-avatar--sm">PR</span><div><b>Print Rebel</b><span>Can view · printer</span></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="zine-sheet" role="tabpanel" id="p-settings" aria-labelledby="z-settings" hidden>
+          <form class="two" data-settings>
+            <div class="zine-stack" style="--gap:16px">
+              <label class="zine-field"><span class="zine-field__label">Issue title</span><input class="zine-input" value="Concrete &amp; Comfort" required data-title></label>
+              <div class="zine-field"><span class="zine-field__label">Print run</span><div class="zine-range"><input class="zine-slider" type="range" min="100" max="1000" step="50" value="300" style="--zine-value:22.22" aria-label="Print run"><output data-suffix=" pcs">300 pcs</output></div></div>
+              <div class="zine-field"><span class="zine-field__label">Stock</span><div class="zine-row" style="--gap:22px"><label class="zine-check"><input class="zine-radio" type="radio" name="stock" checked> Newsprint</label><label class="zine-check"><input class="zine-radio" type="radio" name="stock"> Riso white</label></div></div>
+            </div>
+            <div class="zine-stack" style="--gap:4px">
+              <div class="line"><div><b>Two-color cover</b><span>Black + acid lime</span></div><input class="zine-switch" type="checkbox" checked aria-label="Two-color cover"></div>
+              <div class="line"><div><b>Saddle stitch</b><span>Staples, not glue</span></div><input class="zine-switch" type="checkbox" checked aria-label="Saddle stitch"></div>
+              <div class="line"><div><b>Bleed check</b><span>Warn when art misses 3mm</span></div><input class="zine-switch" type="checkbox" aria-label="Bleed check"></div>
+              <div class="zine-row" style="margin-top:14px"><button class="zine-btn zine-btn--primary" type="submit">Save changes</button><button class="zine-btn zine-btn--ghost" type="reset">Reset</button></div>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="toasts" aria-live="polite" data-zine-toasts></div>
+
+<dialog class="zine-dialog" id="del" aria-labelledby="del-t">
+  <button class="zine-dialog__close" type="button" aria-label="Close" data-zine-close><svg class="zine-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+  <h2 class="zine-dialog__title" id="del-t">Delete file?</h2>
+  <p class="zine-dialog__text"><b data-del-name>zine-cover.png</b> will be gone. This action cannot be undone.</p>
+  <div class="zine-dialog__actions"><button class="zine-btn" type="button" data-zine-close>Cancel</button><button class="zine-btn zine-btn--danger" type="button" data-zine-close="delete" value="delete">Delete</button></div>
+</dialog>
+
+<script src="../js/zine.js"></script>
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  /* ---------- flatplan → progress ---------- */
+  var DONE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 24];
+  var flat = $("[data-flat]");
+  for (var i = 1; i <= 24; i++) {
+    var b = document.createElement("button");
+    b.className = "zine-chip"; b.type = "button";
+    b.setAttribute("aria-pressed", String(DONE.indexOf(i) >= 0));
+    b.setAttribute("aria-label", "Page " + i);
+    b.textContent = String(i).padStart(2, "0");
+    flat.appendChild(b);
+  }
+  function progress() {
+    var done = $$("[aria-pressed='true']", flat).length, pct = Math.round(done / 24 * 100);
+    $("[data-done]").textContent = done + " of 24 pages";
+    $("[data-pct]").textContent = pct + "%";
+    var bar = $("[data-progress]");
+    bar.style.setProperty("--zine-value", pct);
+    bar.setAttribute("aria-valuenow", pct);
+    if (pct === 100) ZineUI.toast("Issue complete!", "All 24 pages are signed off.", { lime: true });
+  }
+  flat.addEventListener("click", function (e) { if (e.target.closest(".zine-chip")) setTimeout(progress); });
+
+  /* ---------- deadline ---------- */
+  (function () {
+    var now = new Date(), fri = new Date(now);
+    fri.setDate(now.getDate() + ((5 - now.getDay() + 7) % 7 || 7)); fri.setHours(23, 59, 0, 0);
+    var days = Math.ceil((fri - now) / 864e5);
+    $("[data-countdown-sub]").textContent = days + (days === 1 ? " day" : " days") + " left · riso, 300 copies";
+  })();
+
+  /* ---------- files ---------- */
+  var FILES = [
+    ["zine-cover.png", "PNG", "1.2 MB", "2025-01-24"],
+    ["design-system.pdf", "PDF", "4.8 MB", "2025-01-23"],
+    ["components.fig", "FIG", "18.4 MB", "2025-01-22"],
+    ["essay-04-concrete.pdf", "PDF", "0.6 MB", "2025-01-21"],
+    ["spread-14-15.png", "PNG", "6.1 MB", "2025-01-20"],
+    ["flatplan-v3.fig", "FIG", "2.9 MB", "2025-01-18"]
+  ];
+  var body = $("[data-files]"), pending = null, n = 0;
+  function row(f) {
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + String(++n).padStart(2, "0") + "</td><td></td><td>" + f[1] + '</td><td class="is-num">' + f[2] + "</td><td>" + f[3] + '</td><td><span class="row-act"><button class="zine-btn zine-btn--sm zine-btn--icon zine-btn--ghost" type="button" aria-label="Delete ' + f[0] + '" data-del><svg class="zine-icon" aria-hidden="true"><use href="#i-trash"/></svg></button></span></td>';
+    tr.children[1].textContent = f[0];
+    tr.setAttribute("data-type", f[1]);
+    return tr;
+  }
+  FILES.forEach(function (f) { body.appendChild(row(f)); });
+  function filter() {
+    var q = $("[data-q]").value.trim().toLowerCase(), t = $("[data-types] [aria-pressed='true']").getAttribute("data-type"), shown = 0;
+    $$("tr", body).forEach(function (tr) {
+      var ok = (t === "ALL" || tr.getAttribute("data-type") === t) && tr.children[1].textContent.toLowerCase().indexOf(q) >= 0;
+      tr.hidden = !ok; if (ok) shown++;
+    });
+    $("[data-empty]").hidden = shown > 0;
+  }
+  $("[data-q]").addEventListener("input", filter);
+  $("[data-types]").addEventListener("click", function () { setTimeout(filter); });
+  body.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-del]");
+    if (!b) return;
+    pending = b.closest("tr");
+    $("[data-del-name]").textContent = pending.children[1].textContent;
+    $("#del").showModal();
+  });
+  $("#del").addEventListener("close", function () {
+    if (this.returnValue === "delete" && pending) { var name = pending.children[1].textContent; pending.remove(); filter(); ZineUI.toast("File deleted", name + " is gone for good."); }
+    pending = null;
+  });
+  var uploads = ["pull-quote-p14.png", "back-cover.pdf", "masthead.fig"];
+  $("[data-upload]").addEventListener("click", function () {
+    var name = uploads.shift() || "scan-" + Date.now().toString(36).slice(-4) + ".png";
+    var type = name.split(".").pop().toUpperCase();
+    var d = new Date(), date = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    var tr = row([name, type, (Math.random() * 6 + 0.4).toFixed(1) + " MB", date]);
+    body.insertBefore(tr, body.firstChild);
+    filter();
+    ZineUI.toast("File saved!", name + " is uploaded and live.");
+  });
+
+  /* ---------- sharing & settings ---------- */
+  $("[data-invite]").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var input = this.querySelector("input"), email = input.value.trim();
+    var p = document.createElement("div");
+    p.className = "person";
+    p.innerHTML = '<span class="zine-avatar zine-avatar--sm"></span><div><b></b><span>Invited · can view</span></div>';
+    p.querySelector(".zine-avatar").textContent = email.slice(0, 2).toUpperCase();
+    p.querySelector("b").textContent = email.split("@")[0];
+    $("[data-people]").appendChild(p);
+    input.value = "";
+    ZineUI.toast("Invite sent!", email + " can view the proofs.");
+  });
+  $("[data-copy]").addEventListener("click", function () { ZineUI.toast("Link copied!", "Paste it anywhere — proofs only."); });
+  $("[data-settings]").addEventListener("submit", function (e) { e.preventDefault(); ZineUI.toast("File saved!", "Changes are now live."); });
+  $("[data-send]").addEventListener("click", function () { ZineUI.toast("Sent to print", "Issue 01 is queued for Friday.", { lime: true }); });
+  $$("[data-goto]").forEach(function (a) { a.addEventListener("click", function () { var t = document.getElementById(a.getAttribute("data-goto")); ZineUI.selectTab(t); t.focus(); }); });
+})();
+</script>
+<script src="../../site/smooth-scroll.js" defer></script>
+</body>
+</html>

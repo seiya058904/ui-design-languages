@@ -8,7 +8,7 @@
    UIWall.demo(pack, c, d)   → { component, demo } data or null
    UIWall.stage(pack, c, d)  → a live element (.wstage) for that demo
    UIWall.packs / .byId      → the registry from packs.json (after ready): name, dot, label font,
-                               stage styles, backdrop, script hooks, wall picks, fonts, dark support
+                               stage styles, backdrop, script hooks, wall picks, fonts, dark support, tone
    UIWall.scripts()          → loads each pack's own JS once (after ready) */
 (function () {
   /* The registry is packs.json: every pack with a "site" block shows up here (see siteFields there).
@@ -24,7 +24,7 @@
         fonts: (pk.fonts || []).map(function (f) { return f.url; }).filter(Boolean),
         js: !!(pk.entry && pk.entry.js), dark: theme.indexOf("dark") >= 0,
         dot: s.dot || "#999", font: s.label || "", root: s.root || "", canvas: s.canvas || "", page: s.page || "",
-        backdrop: s.backdrop || null, hooks: s.hooks || "", darkHint: s.darkHint || "", wall: s.wall || []
+        backdrop: s.backdrop || null, hooks: s.hooks || "", darkHint: s.darkHint || "", wall: s.wall || [], tone: s.tone || ""
       };
       PACKS.push(p);
       byId[p.id] = p;

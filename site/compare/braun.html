@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Braun — same markup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../braun/css/braun.css">
+  <style>
+    /* Identical layout for every pack — only the class prefix changes. */
+    body { margin: 0; min-height: 100vh; }
+    .wrap { padding: 22px; }
+    .spec { display: flex; flex-direction: column; gap: 16px; }
+    .line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .line--start { justify-content: flex-start; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <article class="braun-card spec">
+    <div class="line"><h3 class="braun-card__title">Weekly report</h3><span class="braun-badge"><span class="braun-led" aria-hidden="true"></span>Ready</span></div>
+    <p class="braun-card__text">Send the summary to your team every Monday at 9:00.</p>
+    <div class="braun-keys braun-keys--block" role="tablist" aria-label="Frequency">
+      <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1">Daily</button>
+      <button class="braun-keys__item" role="tab" aria-selected="true">Weekly</button>
+      <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1">Monthly</button>
+    </div>
+    <input class="braun-input" value="team@northwind.com" aria-label="Recipients">
+    <label class="line">Include charts<input type="checkbox" class="braun-switch braun-switch--sm" checked></label>
+    <div class="line line--start"><button class="braun-btn braun-btn--primary" type="button">Schedule</button><button class="braun-btn" type="button">Preview</button></div>
+  </article>
+</div>
+<script src="../../braun/js/braun.js"></script>
+</body>
+</html>

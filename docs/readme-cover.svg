@@ -1,144 +1,225 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="480" viewBox="0 0 1440 480" role="img" aria-labelledby="title desc">
-  <title id="title">UI Design Languages — Five Complete Style Packs with Real Pages, DESIGN.md and Code</title>
-  <desc id="desc">Original editorial vector cover presenting the five UI Design Languages — Clay, Lilac, Atelier, Tactile, and Sketch — as five distinct tactile interface specimen cards beside bold typography.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="560" viewBox="0 0 1440 560" role="img" aria-labelledby="title desc">
+  <title id="title">UI Design Languages — Nine Complete Style Packs with Real Pages, DESIGN.md and Code</title>
+  <desc id="desc">Original editorial vector cover: bold typography on the left; on the right a three-by-three mosaic of nine interface specimens, one per design language — Clay, Lilac, Atelier, Tactile, Sketch, Braun, Obsidian, Zine and Terrarium — each drawn in its own material, type and accent.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#0B0D13"/>
-      <stop offset="0.55" stop-color="#121622"/>
-      <stop offset="1" stop-color="#161C2C"/>
+      <stop offset="0.55" stop-color="#11141E"/>
+      <stop offset="1" stop-color="#151A28"/>
     </linearGradient>
-    <radialGradient id="aura1" cx="72%" cy="46%" r="48%">
-      <stop offset="0" stop-color="#6366F1" stop-opacity="0.22"/>
-      <stop offset="0.5" stop-color="#14B8A6" stop-opacity="0.10"/>
+    <radialGradient id="auraA" cx="68%" cy="40%" r="46%">
+      <stop offset="0" stop-color="#7C55FF" stop-opacity="0.20"/>
+      <stop offset="0.55" stop-color="#38BDF8" stop-opacity="0.07"/>
       <stop offset="1" stop-color="#0B0D13" stop-opacity="0"/>
     </radialGradient>
-    <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
-      <circle cx="2" cy="2" r="1" fill="#CBD5E1" fill-opacity="0.09"/>
-    </pattern>
-    <filter id="sh" x="-15%" y="-15%" width="140%" height="145%">
-      <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#000000" flood-opacity="0.5"/>
-    </filter>
+    <radialGradient id="auraB" cx="18%" cy="88%" r="40%">
+      <stop offset="0" stop-color="#C8FF00" stop-opacity="0.07"/>
+      <stop offset="0.5" stop-color="#FF4F00" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#0B0D13" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#CBD5E1" fill-opacity="0.08"/></pattern>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#6E6456" stroke-opacity="0.12"/></pattern>
+    <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><rect width="1.3" height="6" fill="#2B2A27" fill-opacity="0.45"/></pattern>
+    <pattern id="brushed" width="4" height="3" patternUnits="userSpaceOnUse"><rect width="4" height="1" fill="#FFFFFF" fill-opacity="0.18"/></pattern>
+    <pattern id="halftone" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="#111111" fill-opacity="0.16"/></pattern>
+    <pattern id="stripes" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><rect width="2.2" height="9" fill="#111111"/></pattern>
+    <linearGradient id="mint" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C6F0E0"/><stop offset="0.6" stop-color="#A8E6CF"/></linearGradient>
+    <linearGradient id="violet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7C55FF"/><stop offset="0.75" stop-color="#5B2DFF"/></linearGradient>
+    <linearGradient id="cobalt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4C8EF7"/><stop offset="1" stop-color="#2F7BF5"/></linearGradient>
+    <radialGradient id="knob" cx="50%" cy="26%" r="75%"><stop offset="0" stop-color="#FBFBF8"/><stop offset="0.55" stop-color="#DDDDD8"/><stop offset="1" stop-color="#BDBDB7"/></radialGradient>
+    <radialGradient id="glass" cx="18%" cy="0%" r="90%"><stop offset="0" stop-color="#38BDF8" stop-opacity="0.22"/><stop offset="1" stop-color="#0B0D12" stop-opacity="0"/></radialGradient>
+    <radialGradient id="pebble" cx="34%" cy="28%" r="80%"><stop offset="0" stop-color="#E7B467"/><stop offset="1" stop-color="#C98A2A"/></radialGradient>
+    <filter id="sh" x="-15%" y="-15%" width="140%" height="150%"><feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#000" flood-opacity="0.45"/></filter>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#544A3C" flood-opacity="0.28"/></filter>
+    <filter id="glowV" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+    <filter id="blur6" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+    <clipPath id="card"><rect width="236" height="136" rx="16"/></clipPath>
   </defs>
 
-  <rect width="1440" height="480" rx="20" fill="url(#bg)"/>
-  <rect width="1440" height="480" rx="20" fill="url(#aura1)"/>
-  <rect width="1440" height="480" rx="20" fill="url(#dots)"/>
-  <rect x="16" y="16" width="1408" height="448" rx="14" fill="none" stroke="#94A3B8" stroke-opacity="0.14"/>
+  <rect width="1440" height="560" rx="20" fill="url(#bg)"/>
+  <rect width="1440" height="560" rx="20" fill="url(#auraA)"/>
+  <rect width="1440" height="560" rx="20" fill="url(#auraB)"/>
+  <rect width="1440" height="560" rx="20" fill="url(#dots)"/>
 
-  <!-- Five pack brand dots -->
-  <g transform="translate(76, 76)">
-    <circle cx="6" cy="0" r="6" fill="#A8E6CF"/>
-    <circle cx="26" cy="0" r="6" fill="#8B5CF6"/>
-    <circle cx="46" cy="0" r="6" fill="#3B82F6"/>
-    <circle cx="66" cy="0" r="6" fill="#0F766E"/>
-    <circle cx="86" cy="0" r="6" fill="#94A3B8"/>
-    <text x="108" y="5" fill="#94A3B8" font-family="Segoe UI, sans-serif" font-size="13.5" font-weight="700" letter-spacing="3">FIVE COMPLETE DESIGN SYSTEMS</text>
+  <!-- ================= Left: title block ================= -->
+  <g font-family="Segoe UI, Helvetica Neue, Arial, sans-serif">
+    <g transform="translate(72 120)">
+      <g fill="#A8E6CF"><circle cx="5" cy="-5" r="3.2"/></g><circle cx="15" cy="-5" r="3.2" fill="#7C55FF"/><circle cx="25" cy="-5" r="3.2" fill="#2F7BF5"/>
+      <circle cx="5" cy="5" r="3.2" fill="#2C8C8F"/><circle cx="15" cy="5" r="3.2" fill="#A9C7EC"/><circle cx="25" cy="5" r="3.2" fill="#FF4F00"/>
+      <circle cx="5" cy="15" r="3.2" fill="#38BDF8"/><circle cx="15" cy="15" r="3.2" fill="#C8FF00"/><circle cx="25" cy="15" r="3.2" fill="#C85A32"/>
+      <text x="44" y="10" fill="#94A3B8" font-size="13.5" font-weight="700" letter-spacing="3">NINE COMPLETE DESIGN SYSTEMS</text>
+    </g>
+    <text x="70" y="232" fill="#F8FAFC" font-size="80" font-weight="800" letter-spacing="-2.5">UI Design</text>
+    <text x="70" y="314" fill="#CBD5E1" font-size="80" font-weight="800" letter-spacing="-2.5">Languages</text>
+    <text x="74" y="366" fill="#94A3B8" font-size="21" font-weight="500">See the style as real pages. Take the spec and the code.</text>
+    <g font-size="13" font-weight="700" letter-spacing="1.8">
+      <text x="74" y="420"><tspan fill="#A8E6CF">CLAY</tspan><tspan fill="#475569"> · </tspan><tspan fill="#B9A6FF">LILAC</tspan><tspan fill="#475569"> · </tspan><tspan fill="#93C5FD">ATELIER</tspan><tspan fill="#475569"> · </tspan><tspan fill="#5EC8C9">TACTILE</tspan><tspan fill="#475569"> · </tspan><tspan fill="#E2E8F0">SKETCH</tspan></text>
+      <text x="74" y="446"><tspan fill="#FF7A3D">BRAUN</tspan><tspan fill="#475569"> · </tspan><tspan fill="#38BDF8">OBSIDIAN</tspan><tspan fill="#475569"> · </tspan><tspan fill="#C8FF00">ZINE</tspan><tspan fill="#475569"> · </tspan><tspan fill="#E08A62">TERRARIUM</tspan></text>
+    </g>
+    <text x="74" y="492" fill="#64748B" font-size="12" letter-spacing="1.8">HTML/CSS TOKENS  ·  ZERO DEPENDENCIES  ·  250 LIVE DEMOS  ·  MIT</text>
   </g>
 
-  <!-- Left editorial headline -->
-  <g font-family="Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif">
-    <text x="72" y="182" fill="#F8FAFC" font-size="78" font-weight="800" letter-spacing="-2.5">UI Design</text>
-    <text x="72" y="262" fill="#CBD5E1" font-size="78" font-weight="800" letter-spacing="-2.5">Languages</text>
-    <text x="76" y="314" fill="#94A3B8" font-size="22" font-weight="500">See the style as real pages. Take the spec and the code.</text>
-    <path d="M76 350H636" stroke="#334155" stroke-width="1"/>
-    <text x="76" y="390" fill="#A8E6CF" font-size="13.5" font-weight="700" letter-spacing="2">CLAY</text>
-    <text x="140" y="390" fill="#475569" font-size="13.5">·</text>
-    <text x="158" y="390" fill="#C4B5FD" font-size="13.5" font-weight="700" letter-spacing="2">LILAC</text>
-    <text x="228" y="390" fill="#475569" font-size="13.5">·</text>
-    <text x="246" y="390" fill="#93C5FD" font-size="13.5" font-weight="700" letter-spacing="2">ATELIER</text>
-    <text x="338" y="390" fill="#475569" font-size="13.5">·</text>
-    <text x="356" y="390" fill="#5EEAD4" font-size="13.5" font-weight="700" letter-spacing="2">TACTILE</text>
-    <text x="444" y="390" fill="#475569" font-size="13.5">·</text>
-    <text x="462" y="390" fill="#E2E8F0" font-size="13.5" font-weight="700" letter-spacing="2">SKETCH</text>
-    <text x="76" y="428" fill="#64748B" font-size="12" letter-spacing="1.8">PLAIN HTML/CSS TOKENS  ·  ZERO DEPENDENCIES  ·  DESIGN.MD  ·  MIT</text>
-  </g>
+  <!-- ================= Right: nine specimens ================= -->
+  <g transform="translate(652 56)">
 
-  <!-- Right collage: 5 authentic mini specimen cards -->
-  <!-- Card 1: Clay (top-left) -->
-  <g transform="translate(724, 52)" filter="url(#sh)">
-    <rect width="206" height="172" rx="20" fill="#ECEAE3" stroke="#FFFFFF" stroke-width="2"/>
-    <rect x="16" y="16" width="54" height="22" rx="11" fill="#A8E6CF"/>
-    <text x="43" y="31" text-anchor="middle" fill="#1E3A2F" font-family="Segoe UI, sans-serif" font-size="11" font-weight="700">Clay</text>
-    <rect x="16" y="52" width="174" height="44" rx="14" fill="#F8F7F4"/>
-    <text x="30" y="79" fill="#1F2937" font-family="Segoe UI, sans-serif" font-size="18" font-weight="800">$18,420</text>
-    <rect x="16" y="108" width="102" height="46" rx="14" fill="#F8F7F4"/>
-    <rect x="30" y="130" width="14" height="14" rx="5" fill="#E5E7EB"/>
-    <rect x="52" y="122" width="14" height="22" rx="5" fill="#E5E7EB"/>
-    <rect x="74" y="116" width="14" height="28" rx="5" fill="#6EE7B7"/>
-    <rect x="128" y="108" width="62" height="46" rx="14" fill="#A8E6CF"/>
-    <text x="159" y="135" text-anchor="middle" fill="#134E4A" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700">+ New</text>
-  </g>
+    <!-- 1 · Clay: mint pill, toggle, carved field on a grid board -->
+    <g transform="translate(0 0)" filter="url(#sh)">
+      <g clip-path="url(#card)">
+        <rect width="236" height="136" fill="#F1EFEB"/><rect width="236" height="136" fill="url(#grid)"/>
+        <text x="18" y="26" fill="#67635D" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="0.5">Clay</text>
+        <g filter="url(#soft)"><rect x="18" y="40" width="122" height="36" rx="18" fill="url(#mint)"/></g>
+        <ellipse cx="79" cy="47" rx="44" ry="5" fill="#FFFFFF" fill-opacity="0.45"/>
+        <text x="79" y="63" text-anchor="middle" fill="#1E4A3A" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700">Send invoice</text>
+        <rect x="156" y="45" width="56" height="28" rx="14" fill="#A8E6CF"/>
+        <g filter="url(#soft)"><circle cx="198" cy="59" r="11" fill="#F8F7F4"/></g>
+        <rect x="18" y="90" width="200" height="28" rx="14" fill="#E2DED8"/>
+        <rect x="18" y="90" width="200" height="28" rx="14" fill="none" stroke="#B9B5AE" stroke-opacity="0.45"/>
+        <text x="34" y="108" fill="#9C988F" font-family="Segoe UI, Arial, sans-serif" font-size="11">Search invoices</text>
+      </g>
+    </g>
 
-  <!-- Card 2: Lilac (top-middle) -->
-  <g transform="translate(950, 52)" filter="url(#sh)">
-    <rect width="206" height="172" rx="18" fill="#F7F4EF" stroke="#E7E2DA" stroke-width="1.5"/>
-    <text x="18" y="34" fill="#231F20" font-family="Georgia, serif" font-size="18" font-weight="700">Lilac</text>
-    <circle cx="178" cy="28" r="10" fill="#6D28D9" fill-opacity="0.15"/>
-    <circle cx="178" cy="28" r="5" fill="#6D28D9"/>
-    <!-- Ring progress -->
-    <circle cx="62" cy="96" r="30" fill="none" stroke="#E5E0D8" stroke-width="7"/>
-    <circle cx="62" cy="96" r="30" fill="none" stroke="#6D28D9" stroke-width="7" stroke-dasharray="138 60" stroke-linecap="round"/>
-    <text x="62" y="101" text-anchor="middle" fill="#1F2937" font-family="Segoe UI, sans-serif" font-size="14" font-weight="700">72%</text>
-    <!-- Glowing pill button -->
-    <rect x="108" y="76" width="82" height="28" rx="14" fill="#6D28D9"/>
-    <text x="149" y="94" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="11" font-weight="600">Focus</text>
-    <rect x="108" y="114" width="82" height="8" rx="4" fill="#DDD6FE"/>
-    <rect x="108" y="114" width="54" height="8" rx="4" fill="#7C3AED"/>
-    <text x="18" y="152" fill="#6B7280" font-family="Segoe UI, sans-serif" font-size="10.5" letter-spacing="1.2">IVORY · SERIF · GLOW</text>
-  </g>
+    <!-- 2 · Lilac: serif title, glowing violet ring, violet pill -->
+    <g transform="translate(252 0)" filter="url(#sh)">
+      <g clip-path="url(#card)">
+        <rect width="236" height="136" fill="#FAF8F4"/>
+        <text x="18" y="26" fill="#A5A2AC" font-family="Segoe UI, Arial, sans-serif" font-size="9.5" letter-spacing="2.4">01   LILAC / FLOW</text>
+        <text x="18" y="62" fill="#1F1F28" font-family="Georgia, serif" font-size="22">Deep work</text>
+        <text x="18" y="80" fill="#6E6C78" font-family="Segoe UI, Arial, sans-serif" font-size="10.5">90 min · one task</text>
+        <g filter="url(#soft)"><rect x="18" y="94" width="86" height="28" rx="14" fill="url(#violet)"/></g>
+        <text x="61" y="112" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="11.5" font-weight="700">Start  →</text>
+        <circle cx="180" cy="74" r="32" fill="none" stroke="#E2DED7" stroke-width="8"/>
+        <circle cx="180" cy="74" r="32" fill="none" stroke="#7C55FF" stroke-width="8" stroke-linecap="round" stroke-dasharray="145 201" transform="rotate(-90 180 74)" filter="url(#glowV)" opacity="0.7"/>
+        <circle cx="180" cy="74" r="32" fill="none" stroke="#5B2DFF" stroke-width="8" stroke-linecap="round" stroke-dasharray="145 201" transform="rotate(-90 180 74)"/>
+        <text x="180" y="81" text-anchor="middle" fill="#1F1F28" font-family="Georgia, serif" font-size="19">72%</text>
+      </g>
+    </g>
 
-  <!-- Card 3: Atelier (top-right) -->
-  <g transform="translate(1176, 52)" filter="url(#sh)">
-    <rect width="194" height="172" rx="16" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.2"/>
-    <rect x="16" y="16" width="162" height="28" rx="8" fill="#FFFFFF"/>
-    <circle cx="30" cy="30" r="5" fill="#2563EB"/>
-    <text x="42" y="34" fill="#0F172A" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800" letter-spacing="1">ATELIER</text>
-    <rect x="16" y="56" width="76" height="62" rx="10" fill="#FFFFFF"/>
-    <rect x="26" y="68" width="44" height="14" rx="7" fill="#DBEAFE"/>
-    <rect x="26" y="90" width="54" height="7" rx="3.5" fill="#CBD5E1"/>
-    <rect x="102" y="56" width="76" height="62" rx="10" fill="#FFFFFF"/>
-    <rect x="112" y="68" width="44" height="14" rx="7" fill="#DCFCE7"/>
-    <rect x="112" y="90" width="54" height="7" rx="3.5" fill="#CBD5E1"/>
-    <rect x="16" y="130" width="162" height="26" rx="13" fill="#2563EB"/>
-    <text x="97" y="147" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="600">+ New task</text>
-  </g>
+    <!-- 3 · Atelier: frosted panel, numbered caps, pill tabs, command row -->
+    <g transform="translate(504 0)" filter="url(#sh)">
+      <g clip-path="url(#card)">
+        <rect width="236" height="136" fill="#E3E9F2"/>
+        <rect x="10" y="10" width="216" height="116" rx="12" fill="#FFFFFF" fill-opacity="0.78" stroke="#FFFFFF"/>
+        <text x="24" y="32" fill="#1B2232" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="800" letter-spacing="1.2">02. ATELIER</text>
+        <rect x="24" y="44" width="64" height="22" rx="11" fill="url(#cobalt)"/>
+        <text x="56" y="59" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700">Overview</text>
+        <rect x="94" y="44" width="48" height="22" rx="11" fill="none" stroke="#DCE2EB"/>
+        <text x="118" y="59" text-anchor="middle" fill="#283143" font-family="Segoe UI, Arial, sans-serif" font-size="10">Board</text>
+        <rect x="148" y="44" width="44" height="22" rx="11" fill="none" stroke="#DCE2EB"/>
+        <text x="170" y="59" text-anchor="middle" fill="#283143" font-family="Segoe UI, Arial, sans-serif" font-size="10">Files</text>
+        <rect x="24" y="78" width="188" height="32" rx="10" fill="#FFFFFF" stroke="#DCE2EB"/>
+        <circle cx="40" cy="94" r="5" fill="none" stroke="#5B6678" stroke-width="1.6"/><path d="M44 98l3 3" stroke="#5B6678" stroke-width="1.6" stroke-linecap="round"/>
+        <text x="54" y="98" fill="#5B6678" font-family="Segoe UI, Arial, sans-serif" font-size="10.5">Type a command…</text>
+        <rect x="180" y="86" width="24" height="16" rx="4" fill="#F1F4F8" stroke="#DCE2EB"/>
+        <text x="192" y="98" text-anchor="middle" fill="#5B6678" font-family="Segoe UI, Arial, sans-serif" font-size="9" font-weight="700">⌘K</text>
+      </g>
+    </g>
 
-  <!-- Card 4: Tactile (bottom-left) -->
-  <g transform="translate(784, 246)" filter="url(#sh)">
-    <rect width="276" height="178" rx="20" fill="#EFECE4" stroke="#F8F6F0" stroke-width="2"/>
-    <text x="22" y="34" fill="#1F2937" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700">Tactile</text>
-    <rect x="196" y="16" width="58" height="24" rx="12" fill="#0F766E"/>
-    <circle cx="242" cy="28" r="8" fill="#EFECE4"/>
-    <!-- Neumorphic dial -->
-    <circle cx="74" cy="108" r="42" fill="#EAE6DC" stroke="#FFFFFF" stroke-width="2"/>
-    <circle cx="74" cy="108" r="32" fill="none" stroke="#0F766E" stroke-width="6" stroke-dasharray="145 60" stroke-linecap="round"/>
-    <text x="74" y="113" text-anchor="middle" fill="#111827" font-family="Segoe UI, sans-serif" font-size="16" font-weight="800">21.5°</text>
-    <!-- Inset slider + pill -->
-    <rect x="136" y="74" width="118" height="12" rx="6" fill="#DDD8CC"/>
-    <rect x="136" y="74" width="76" height="12" rx="6" fill="#0F766E"/>
-    <circle cx="212" cy="80" r="8" fill="#F5F3EC" stroke="#D6D1C4" stroke-width="1.5"/>
-    <rect x="136" y="104" width="118" height="46" rx="12" fill="#F5F3EC" stroke="#E5E1D6"/>
-    <text x="195" y="125" text-anchor="middle" fill="#0F766E" font-family="Segoe UI, sans-serif" font-size="11" font-weight="700">WARM SAND</text>
-    <text x="195" y="141" text-anchor="middle" fill="#6B7280" font-family="Segoe UI, sans-serif" font-size="10.5">4 material layers</text>
-  </g>
+    <!-- 4 · Tactile: neumorphic thermostat in warm sand -->
+    <g transform="translate(0 152)" filter="url(#sh)">
+      <g clip-path="url(#card)">
+        <rect width="236" height="136" fill="#EEE6D9"/>
+        <circle cx="76" cy="68" r="46" fill="#FFFDF9" fill-opacity="0.9" filter="url(#blur6)" transform="translate(-6 -6)"/>
+        <circle cx="76" cy="68" r="46" fill="#A0845E" fill-opacity="0.55" filter="url(#blur6)" transform="translate(7 7)"/>
+        <circle cx="76" cy="68" r="46" fill="#EEE6D9"/>
+        <circle cx="76" cy="68" r="34" fill="none" stroke="#E2D6C4" stroke-width="10"/>
+        <circle cx="76" cy="68" r="34" fill="none" stroke="#0E5357" stroke-width="6" stroke-linecap="round" stroke-dasharray="118 214" transform="rotate(135 76 68)"/>
+        <text x="76" y="74" text-anchor="middle" fill="#1C2828" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="800">21.5°</text>
+        <text x="132" y="54" fill="#0E5357" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="800" letter-spacing="1">TACTILE</text>
+        <text x="132" y="72" fill="#6A665D" font-family="Segoe UI, Arial, sans-serif" font-size="10.5">base · raised</text>
+        <text x="132" y="87" fill="#6A665D" font-family="Segoe UI, Arial, sans-serif" font-size="10.5">inset · pressed</text>
+        <rect x="132" y="98" width="78" height="22" rx="8" fill="#0E5357"/>
+        <text x="171" y="113" text-anchor="middle" fill="#F2FAF9" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700">Heat · Eco</text>
+      </g>
+    </g>
 
-  <!-- Card 5: Sketch (bottom-right) -->
-  <g transform="translate(1086, 246)" filter="url(#sh)">
-    <rect width="276" height="178" rx="14" fill="#FCFBF7" stroke="#262626" stroke-width="2"/>
-    <text x="22" y="36" fill="#171717" font-family="Comic Sans MS, Segoe Print, cursive" font-size="19" font-weight="700">Sketch</text>
-    <line x1="20" y1="48" x2="256" y2="48" stroke="#262626" stroke-width="1.5"/>
-    <!-- Watercolor accent circles -->
-    <circle cx="42" cy="82" r="14" fill="#C4B5FD" stroke="#262626" stroke-width="1.5"/>
-    <circle cx="80" cy="82" r="14" fill="#A7F3D0" stroke="#262626" stroke-width="1.5"/>
-    <circle cx="118" cy="82" r="14" fill="#93C5FD" stroke="#262626" stroke-width="2"/>
-    <circle cx="156" cy="82" r="14" fill="#FDE68A" stroke="#262626" stroke-width="1.5"/>
-    <!-- Hand-drawn button & slider -->
-    <rect x="184" y="66" width="72" height="30" rx="8" fill="#BFDBFE" stroke="#262626" stroke-width="1.8"/>
-    <text x="220" y="85" text-anchor="middle" fill="#171717" font-family="Comic Sans MS, Segoe UI, sans-serif" font-size="11.5" font-weight="700">Apply</text>
-    <!-- Hatched progress bar -->
-    <rect x="22" y="116" width="234" height="14" rx="7" fill="#F5F3EB" stroke="#262626" stroke-width="1.5"/>
-    <rect x="22" y="116" width="154" height="14" rx="7" fill="#E5E7EB" stroke="#262626" stroke-width="1.5"/>
-    <path d="M32 116l-6 14M44 116l-6 14M56 116l-6 14M68 116l-6 14M80 116l-6 14M92 116l-6 14M104 116l-6 14M116 116l-6 14M128 116l-6 14M140 116l-6 14M152 116l-6 14M164 116l-6 14" stroke="#404040" stroke-width="1"/>
-    <text x="22" y="156" fill="#525252" font-family="Comic Sans MS, Segoe UI, sans-serif" font-size="11.5">Ink on cream paper · hatching · watercolor</text>
+    <!-- 5 · Sketch: ink on cream, hatched button, watercolor dots -->
+    <g transform="translate(252 152)" filter="url(#sh)">
+      <g clip-path="url(#card)">
+        <rect width="236" height="136" fill="#F6F1E6"/>
+        <path d="M18 18c40-2 158-3 200 1 2 30 1 66-1 100-46 2-152 3-198-1-3-32-3-68-1-100Z" fill="#FBF8F1" stroke="#2B2A27" stroke-width="1.6"/>
+        <text x="32" y="46" fill="#2B2A27" font-family="Segoe Print, Comic Sans MS, cursive" font-size="18" font-weight="700">Sketch</text>
+        <path d="M32 54c30 2 60 -1 92 1" stroke="#2B2A27" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        <rect x="35" y="73" width="76" height="28" rx="9" fill="#2B2A27"/>
+        <rect x="32" y="70" width="76" height="28" rx="9" fill="#C9DAF0" stroke="#2B2A27" stroke-width="2"/>
+        <rect x="32" y="70" width="76" height="28" rx="9" fill="url(#hatch)"/>
+        <text x="70" y="89" text-anchor="middle" fill="#2B2A27" font-family="Segoe Print, Comic Sans MS, cursive" font-size="12" font-weight="700">Apply</text>
+        <g stroke="#2B2A27" stroke-width="1.4">
+          <circle cx="134" cy="84" r="9" fill="#A9C7EC"/><circle cx="158" cy="84" r="9" fill="#B4DBAF"/><circle cx="182" cy="84" r="9" fill="#F2DC8A"/><circle cx="206" cy="84" r="9" fill="#F0AEAB"/>
+        </g>
+        <text x="32" y="118" fill="#5E5A52" font-family="Segoe Print, Comic Sans MS, cursive" font-size="10.5">[saved to this device]</text>
+      </g>
+    </g>
+
+    <!-- 6 · Braun: aluminium, turned dial with lit ticks, LED meter -->
+    <g transform="translate(504 152)" filter="url(#sh)">
+      <g clip-path="url(#card)">
+        <rect width="236" height="136" fill="#E5E5E0"/><rect width="236" height="136" fill="url(#brushed)"/>
+        <text x="18" y="26" fill="#2B2B29" font-family="Consolas, Menlo, monospace" font-size="10.5" font-weight="700" letter-spacing="1.2">BRAUN / FIELD</text>
+        <g transform="translate(66 80)">
+          <g stroke-width="2" stroke-linecap="round">
+            <path d="M-31 23l-4 3M-37 9l-5 1M-38 -6l-5 -1M-33 -20l-4 -3M-22 -31l-3 -4M-8 -37l-1 -5" stroke="#FF4F00"/>
+            <path d="M8 -37l1 -5M22 -31l3 -4M33 -20l4 -3M38 -6l5 -1M37 9l5 1M31 23l4 3" stroke="#8C8C86"/>
+          </g>
+          <circle r="27" fill="url(#knob)" stroke="#000" stroke-opacity="0.08"/>
+          <path d="M-12 -21l-5 -9" stroke="#FF4F00" stroke-width="3" stroke-linecap="round"/>
+        </g>
+        <g transform="translate(126 54)">
+          <rect x="0" width="8" height="18" rx="1.5" fill="#FF4F00"/><rect x="11" width="8" height="18" rx="1.5" fill="#FF4F00"/><rect x="22" width="8" height="18" rx="1.5" fill="#FF4F00"/><rect x="33" width="8" height="18" rx="1.5" fill="#FF4F00"/>
+          <rect x="44" width="8" height="18" rx="1.5" fill="#FF4F00"/><rect x="55" width="8" height="18" rx="1.5" fill="#FF4F00"/><rect x="66" width="8" height="18" rx="1.5" fill="#C2C2BC"/><rect x="77" width="8" height="18" rx="1.5" fill="#C2C2BC"/><rect x="88" width="8" height="18" rx="1.5" fill="#C2C2BC"/>
+        </g>
+        <text x="126" y="98" fill="#1B1B1B" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">12.4 V</text>
+        <circle cx="130" cy="114" r="3" fill="#18D259"/>
+        <text x="138" y="118" fill="#5E5E58" font-family="Consolas, Menlo, monospace" font-size="9.5">MODULE_01 OK</text>
+      </g>
+    </g>
+
+    <!-- 7 · Obsidian: dark glass, lit cyan ring, KPI -->
+    <g transform="translate(0 304)" filter="url(#sh)">
+      <g clip-path="url(#card)">
+        <rect width="236" height="136" fill="#0B0D12"/><rect width="236" height="136" fill="url(#glass)"/>
+        <rect x="10" y="10" width="216" height="116" rx="14" fill="#161B25" fill-opacity="0.75" stroke="#FFFFFF" stroke-opacity="0.09"/>
+        <path d="M24 11h188" stroke="#FFFFFF" stroke-opacity="0.18"/>
+        <text x="24" y="34" fill="#8B95A5" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="1.6">OBSIDIAN</text>
+        <text x="24" y="70" fill="#F1F5F9" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="600">1,243</text>
+        <text x="24" y="90" fill="#34D399" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700">▲ 12.6%</text>
+        <path d="M24 112c18-6 26 2 40-6s22-10 34-4 20-12 34-14" fill="none" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="178" cy="68" r="30" fill="none" stroke="#FFFFFF" stroke-opacity="0.09" stroke-width="7"/>
+        <circle cx="178" cy="68" r="30" fill="none" stroke="#38BDF8" stroke-width="7" stroke-linecap="round" stroke-dasharray="147 189" transform="rotate(-90 178 68)" filter="url(#glowV)" opacity="0.8"/>
+        <circle cx="178" cy="68" r="30" fill="none" stroke="#38BDF8" stroke-width="7" stroke-linecap="round" stroke-dasharray="147 189" transform="rotate(-90 178 68)"/>
+        <text x="178" y="74" text-anchor="middle" fill="#F1F5F9" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">78%</text>
+      </g>
+    </g>
+
+    <!-- 8 · Zine: newsprint, black rules, lime sticker, vermilion burst -->
+    <g transform="translate(252 304)" filter="url(#sh)">
+      <g clip-path="url(#card)">
+        <rect width="236" height="136" fill="#F4F1EA"/><rect width="236" height="136" fill="url(#halftone)"/>
+        <rect x="22" y="22" width="132" height="92" fill="#111111"/>
+        <rect x="18" y="18" width="132" height="92" fill="#FFFFFF" stroke="#111111" stroke-width="2.5"/>
+        <text x="30" y="58" fill="#111111" font-family="Arial Black, Impact, sans-serif" font-size="30" font-weight="900">ZINE!</text>
+        <rect x="30" y="68" width="108" height="14" fill="url(#stripes)"/><rect x="30" y="68" width="108" height="14" fill="#C8FF00" fill-opacity="0.85"/>
+        <text x="30" y="100" fill="#111111" font-family="Consolas, Menlo, monospace" font-size="10" font-weight="700" letter-spacing="1">ISSUE 07 · PRINT</text>
+        <g transform="translate(172 44) rotate(-10)"><rect x="-26" y="-14" width="56" height="28" fill="#C8FF00" stroke="#111111" stroke-width="2.5"/><text x="2" y="5" text-anchor="middle" fill="#111111" font-family="Arial Black, Impact, sans-serif" font-size="13" font-weight="900">NEW</text></g>
+        <g transform="translate(196 98) rotate(8)"><polygon points="0,-30 7,-12 26,-18 16,-2 30,10 12,12 14,30 0,18 -14,30 -12,12 -30,10 -16,-2 -26,-18 -7,-12" fill="#FF3B1F" stroke="#111111" stroke-width="2"/><text x="0" y="5" text-anchor="middle" fill="#111111" font-family="Arial Black, Impact, sans-serif" font-size="11" font-weight="900">HOT</text></g>
+      </g>
+    </g>
+
+    <!-- 9 · Terrarium: oat linen, glazed card, terracotta pot, moss ring -->
+    <g transform="translate(504 304)" filter="url(#sh)">
+      <g clip-path="url(#card)">
+        <rect width="236" height="136" fill="#E9DFD0"/>
+        <g filter="url(#soft)"><rect x="12" y="12" width="212" height="112" rx="22" fill="#FAF7F0"/></g>
+        <path d="M58 92c1-14-2-26 1-40" stroke="#3E5C4A" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M58 76c-9 0-17-5-20-13 9 0 16 5 20 13Z" fill="#3E5C4A"/><path d="M60 62c9 0 16-5 19-13-9 0-16 5-19 13Z" fill="#3E5C4A"/>
+        <circle cx="59" cy="46" r="6" fill="#C85A32"/><circle cx="59" cy="46" r="2.4" fill="#D49A3A"/>
+        <path d="M38 92h42l-2 6H40zM41 100h36l-5 18H46z" fill="#C85A32"/>
+        <text x="100" y="48" fill="#26221E" font-family="Georgia, serif" font-size="17">Daily Journal</text>
+        <text x="100" y="66" fill="#6E6457" font-family="Segoe UI, Arial, sans-serif" font-size="10">one more habit to tend</text>
+        <circle cx="122" cy="96" r="15" fill="none" stroke="#E8DFD1" stroke-width="6"/>
+        <circle cx="122" cy="96" r="15" fill="none" stroke="#3E5C4A" stroke-width="6" stroke-linecap="round" stroke-dasharray="71 95" transform="rotate(-90 122 96)"/>
+        <rect x="146" y="84" width="64" height="24" rx="12" fill="#B9502B"/>
+        <text x="178" y="100" text-anchor="middle" fill="#FFFBF5" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="700">Save entry</text>
+      </g>
+    </g>
   </g>
 </svg>

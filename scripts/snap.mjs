@@ -108,7 +108,8 @@ const sitePages = [{ group: "_site", path: "index.html" }, { group: "_site", pat
 const pages = thumbs ? [] : !only.length || only.includes("site") ? sitePages : [];
 for (const lang of langs) {
   pages.push({ group: lang, path: `${lang}/index.html` });
-  if (existsSync(join(root, lang, "components.html"))) pages.push({ group: lang, path: `${lang}/components.html` });
+  // catalogs are checked like any page, but the homepage has no thumbnails for them
+  if (!thumbs && existsSync(join(root, lang, "components.html"))) pages.push({ group: lang, path: `${lang}/components.html` });
   const ex = join(root, lang, "examples");
   if (existsSync(ex)) for (const f of (await readdir(ex)).sort()) if (f.endsWith(".html")) pages.push({ group: lang, path: `${lang}/examples/${f}` });
 }

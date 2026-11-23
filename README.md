@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://seiya058904.github.io/ui-design-languages/">
-    <img src="docs/readme-cover.svg" width="100%" alt="UI Design Languages — illustrated editorial cover displaying five distinct design languages: Clay, Lilac, Atelier, Tactile, and Sketch" />
+    <img src="docs/readme-cover.svg" width="100%" alt="UI Design Languages — illustrated editorial cover with nine interface specimens, one per design language: Clay, Lilac, Atelier, Tactile, Sketch, Braun, Obsidian, Zine and Terrarium" />
   </a>
 </p>
 
@@ -18,7 +18,8 @@
 <p align="center">
   <a href="https://seiya058904.github.io/ui-design-languages/"><img src="https://img.shields.io/badge/Live-Library-6366F1?style=flat-square&amp;labelColor=121622" alt="Live library" /></a>
   <img src="https://img.shields.io/badge/Style%20Packs-9%20Complete-14B8A6?style=flat-square&amp;labelColor=121622" alt="9 complete style packs" />
-  <img src="https://img.shields.io/badge/Components-69%20Live%20Demos-3B82F6?style=flat-square&amp;labelColor=121622" alt="69 live component demos" />
+  <img src="https://img.shields.io/badge/Component%20Wall-96%20Live-3B82F6?style=flat-square&amp;labelColor=121622" alt="96 live components on the wall" />
+  <img src="https://img.shields.io/badge/Demos-250-8B5CF6?style=flat-square&amp;labelColor=121622" alt="250 live demos" />
   <img src="https://img.shields.io/badge/Dependencies-Zero-F59E0B?style=flat-square&amp;labelColor=121622" alt="Zero dependencies" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-64748B?style=flat-square&amp;labelColor=121622" alt="MIT license" /></a>
 </p>
@@ -68,7 +69,7 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
       </a>
       <h3>🟢 Clay</h3>
       <p><sub>EXTRUDED CLAY · MATTE GRID BOARD · MINT ACCENT · LIGHT + DARK</sub></p>
-      <p>Soft, puffed physical surfaces resting on a quiet architectural grid board, paired with tactile pill buttons and a fresh mint highlight.</p>
+      <p>Soft, puffed physical surfaces resting on a quiet architectural grid board, paired with tactile pill buttons and a fresh mint highlight. Presses squash and spring back; glossy knobs, a slider, a hold-to-repeat stepper and control-centre widget tiles.</p>
       <p>
         <a href="clay/DESIGN.md"><strong>DESIGN.md</strong></a> ·
         <a href="https://seiya058904.github.io/ui-design-languages/clay/">Styleguide</a> ·
@@ -82,7 +83,7 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
       </a>
       <h3>🟣 Lilac</h3>
       <p><sub>IVORY TILES · GLOWING VIOLET · EDITORIAL SERIF · LIGHT + DARK</sub></p>
-      <p>Calm ivory study surfaces and literary serif headings punctuated by a single radiant violet accent (with an optional cobalt variant).</p>
+      <p>Calm ivory study surfaces and literary serif headings punctuated by a single radiant violet accent (with an optional cobalt variant). The glow blooms on hover and converges under the finger; a focus timer whose halo breathes, and a card stack you deal from.</p>
       <p>
         <a href="lilac/DESIGN.md"><strong>DESIGN.md</strong></a> ·
         <a href="https://seiya058904.github.io/ui-design-languages/lilac/">Styleguide</a> ·
@@ -97,7 +98,7 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
       </a>
       <h3>🔵 Atelier</h3>
       <p><sub>FROSTED PRODUCT UI · COBALT ACCENT · APPEARANCE SETTINGS</sub></p>
-      <p>Precise, cool-toned software craft: crisp hairline borders, frosted panels, bold uppercase metadata, and working live appearance controls.</p>
+      <p>Precise, cool-toned software craft: crisp hairline borders, frosted panels with a specular rim, bold uppercase metadata, and working live appearance controls that cross-fade. A command palette, filter capsules and a snap-open menu.</p>
       <p>
         <a href="atelier/DESIGN.md"><strong>DESIGN.md</strong></a> ·
         <a href="https://seiya058904.github.io/ui-design-languages/atelier/">Styleguide</a> ·
@@ -110,7 +111,7 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
       </a>
       <h3>🟤 Tactile</h3>
       <p><sub>WARM SAND NEUMORPHISM · 4 MATERIAL LAYERS · DEEP TEAL</sub></p>
-      <p>Sculpted light and shadow across four distinct surface states — base, raised, inset, and pressed — anchored by a deep mineral teal.</p>
+      <p>Sculpted light and shadow across four distinct surface states — base, raised, inset, and pressed — anchored by a deep mineral teal. A thermostat dial you can drag, groove tabs and chips that sink into the material.</p>
       <p>
         <a href="tactile/DESIGN.md"><strong>DESIGN.md</strong></a> ·
         <a href="https://seiya058904.github.io/ui-design-languages/tactile/">Styleguide</a> ·
@@ -125,7 +126,7 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
       </a>
       <h3>✏️ Sketch</h3>
       <p><sub>HAND-DRAWN INK · CREAM PAPER · HATCHING · WATERCOLOR TINTS</sub></p>
-      <p>Honest notebook wireframes brought to life: crisp ink strokes, diagonal hatched sliders and fills, and gentle watercolor accent swatches.</p>
+      <p>Honest notebook wireframes brought to life: crisp ink strokes, diagonal hatched sliders and fills, and gentle watercolor accent swatches. Ticks drawn like pen strokes, sticky notes, a doodle pad you can draw on, and a hand-drawn flow card.</p>
       <p>
         <a href="sketch/DESIGN.md"><strong>DESIGN.md</strong></a> ·
         <a href="https://seiya058904.github.io/ui-design-languages/sketch/">Styleguide</a> ·
@@ -138,7 +139,7 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
       </a>
       <h3>🟠 Braun / Field</h3>
       <p><sub>ANODIZED ALUMINIUM · POM KEYCAPS · INTERNATIONAL ORANGE · LIGHT + DARK</sub></p>
-      <p>A precision instrument panel: keycaps with real travel, a rotary dial you can turn, 24-segment LED meters and mechanical, never-overshooting motion.</p>
+      <p>A precision instrument panel: keycaps with a tactile bump, a rotary dial that clicks at each detent, LED meters with peak hold, a live oscilloscope readout and mechanical, never-overshooting motion.</p>
       <p>
         <a href="braun/DESIGN.md"><strong>DESIGN.md</strong></a> ·
         <a href="https://seiya058904.github.io/ui-design-languages/braun/">Styleguide</a> ·
@@ -153,7 +154,7 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
       </a>
       <h3>🔷 Obsidian / Glass</h3>
       <p><sub>DARK FIRST · FROSTED GLASS LAYERS · 3 LUMINOUS ACCENTS</sub></p>
-      <p>Four layers of frosted glass over a deep obsidian air, 1px specular edges that catch the pointer's light, liquid motion, and glacier, emerald or violet light.</p>
+      <p>Four layers of frosted glass over a deep obsidian air, 1px specular edges whose light glides after the pointer, liquid motion, and glacier, emerald or violet light. A magnifying dock and a now-playing card whose glow breathes.</p>
       <p>
         <a href="obsidian/DESIGN.md"><strong>DESIGN.md</strong></a> ·
         <a href="https://seiya058904.github.io/ui-design-languages/obsidian/">Styleguide</a> ·
@@ -166,7 +167,7 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
       </a>
       <h3>🟩 Zine / Brutal</h3>
       <p><sub>NEWSPRINT · 2PX RULES · HARD SHADOWS · ACID LIME · LIGHT + INVERTED</sub></p>
-      <p>Neo-brutalist print: buttons lift off the page and slam flat, checks are stamped on, folder tabs run into their sheets, tables wear a hatched lime header.</p>
+      <p>Neo-brutalist print: buttons lift off the page in printed frames and slam flat, checks are stamped on, folder tabs run into their sheets. A tear-off ticket and a sticker board you can rearrange.</p>
       <p>
         <a href="zine/DESIGN.md"><strong>DESIGN.md</strong></a> ·
         <a href="https://seiya058904.github.io/ui-design-languages/zine/">Styleguide</a> ·
@@ -181,7 +182,7 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
       </a>
       <h3>🪴 Terrarium / Earth</h3>
       <p><sub>OAT LINEN · GLAZED CERAMICS · TERRACOTTA + MOSS · LIGHT + EVENING</sub></p>
-      <p>Warm botanical ceramics: pebbles, a soft serif, illustrated portraits and organic spring motion — rings grow as habits are tended.</p>
+      <p>Warm botanical ceramics: pebbles, a soft serif, illustrated portraits and organic spring motion — tick a habit and the ring and a sprout grow together. A watering calendar and a ceramic mood dial.</p>
       <p>
         <a href="terrarium/DESIGN.md"><strong>DESIGN.md</strong></a> ·
         <a href="https://seiya058904.github.io/ui-design-languages/terrarium/">Styleguide</a> ·
@@ -190,11 +191,11 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
     </td>
     <td width="50%" valign="top">
       <a href="https://seiya058904.github.io/ui-design-languages/components.html">
-        <img src="docs/media/component-wall.jpg" width="100%" alt="Component Wall — 69 live components from all nine design languages with language, category, and light/dark filters" />
+        <img src="docs/media/component-wall.jpg" width="100%" alt="Component Wall — 96 live components from all nine design languages with search, language, category, and light/dark filters" />
       </a>
       <h3>🧩 The Component Wall</h3>
-      <p><sub>69 LIVE COMPONENTS · SINGLE-FILE EXPORT · AI PROMPT GENERATOR</sub></p>
-      <p>Browse every component across all nine languages on one wall, filter to gather a single system onto its native canvas, and open any card for its exact minimal HTML, CSS, JS, runnable file, and AI prompt.</p>
+      <p><sub>96 LIVE COMPONENTS · SEARCH · SINGLE-FILE EXPORT · AI PROMPT GENERATOR</sub></p>
+      <p>Browse every component across all nine languages on one wall, search it, filter to gather a single system onto its native canvas, and open any card for its exact minimal HTML, CSS, JS, runnable file, and AI prompt.</p>
       <p>
         <a href="https://seiya058904.github.io/ui-design-languages/components.html"><strong>Open Component Wall →</strong></a>
       </p>
@@ -260,7 +261,7 @@ Each top-level folder is completely self-contained. Copy one folder into your pr
 
 ### Option 2 · Copy a self-contained folder
 
-Copy any pack directory (`clay/`, `lilac/`, `atelier/`, `tactile/`, or `sketch/`) directly into your project. Every pack has zero npm dependencies, zero build steps, and prefixed classes/tokens so it won't collide with your app styles.
+Copy any pack directory (`clay/`, `lilac/`, `atelier/`, `tactile/`, `sketch/`, `braun/`, `obsidian/`, `zine/` or `terrarium/`) directly into your project. Every pack has zero npm dependencies, zero build steps, and prefixed classes/tokens so it won't collide with your app styles.
 
 ### Option 3 · Hand off to an AI assistant
 
@@ -282,7 +283,7 @@ node scripts/check.mjs [pack]           # full pre-commit gate: tokens, 1280/390
 
 ```text
 index.html                 Library homepage (live previews & comparison)
-components.html            Component Wall: all 9 languages, 69 live components + source drawer
+components.html            Component Wall: all 9 languages, 96 live components, search + source drawer
 packs.json                 Machine-readable registry of packs, tokens, fonts, variants & wall picks
 site/                      Website chrome only (wall.js, source.js, smooth-scroll.js — never part of a pack)
 <pack>/
@@ -309,7 +310,7 @@ docs/
 
 ## 📄 Licenses
 
-Code and documentation: **[MIT](LICENSE)**. Fonts are loaded from Google Fonts under the **SIL Open Font License** (`Inter`, `Cormorant Garamond`, `Manrope`, `Archivo`, `Plus Jakarta Sans`, `Itim`, `Patrick Hand`). Icons are drawn for this repository. Reference images that inspired the packs are not redistributed.
+Code and documentation: **[MIT](LICENSE)**. Fonts are loaded from Google Fonts under the **SIL Open Font License** (`Inter`, `Cormorant Garamond`, `Manrope`, `Archivo`, `Plus Jakarta Sans`, `Itim`, `Patrick Hand`, `Space Grotesk`, `IBM Plex Mono`, `JetBrains Mono`, `Archivo Black`, `Space Mono`, `Fraunces`, and `Geist` / `Geist Mono` for the library site). Icons are drawn for this repository. Reference images that inspired the packs are not redistributed.
 
 ---
 

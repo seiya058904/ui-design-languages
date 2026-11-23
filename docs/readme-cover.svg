@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="480" viewBox="0 0 1440 480" role="img" aria-labelledby="title desc">
+  <title id="title">UI Design Languages — Five Complete Style Packs with Real Pages, DESIGN.md and Code</title>
+  <desc id="desc">Original editorial vector cover presenting the five UI Design Languages — Clay, Lilac, Atelier, Tactile, and Sketch — as five distinct tactile interface specimen cards beside bold typography.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B0D13"/>
+      <stop offset="0.55" stop-color="#121622"/>
+      <stop offset="1" stop-color="#161C2C"/>
+    </linearGradient>
+    <radialGradient id="aura1" cx="72%" cy="46%" r="48%">
+      <stop offset="0" stop-color="#6366F1" stop-opacity="0.22"/>
+      <stop offset="0.5" stop-color="#14B8A6" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#0B0D13" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#CBD5E1" fill-opacity="0.09"/>
+    </pattern>
+    <filter id="sh" x="-15%" y="-15%" width="140%" height="145%">
+      <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <rect width="1440" height="480" rx="20" fill="url(#bg)"/>
+  <rect width="1440" height="480" rx="20" fill="url(#aura1)"/>
+  <rect width="1440" height="480" rx="20" fill="url(#dots)"/>
+  <rect x="16" y="16" width="1408" height="448" rx="14" fill="none" stroke="#94A3B8" stroke-opacity="0.14"/>
+
+  <!-- Five pack brand dots -->
+  <g transform="translate(76, 76)">
+    <circle cx="6" cy="0" r="6" fill="#A8E6CF"/>
+    <circle cx="26" cy="0" r="6" fill="#8B5CF6"/>
+    <circle cx="46" cy="0" r="6" fill="#3B82F6"/>
+    <circle cx="66" cy="0" r="6" fill="#0F766E"/>
+    <circle cx="86" cy="0" r="6" fill="#94A3B8"/>
+    <text x="108" y="5" fill="#94A3B8" font-family="Segoe UI, sans-serif" font-size="13.5" font-weight="700" letter-spacing="3">FIVE COMPLETE DESIGN SYSTEMS</text>
+  </g>
+
+  <!-- Left editorial headline -->
+  <g font-family="Segoe UI, -apple-system, BlinkMacSystemFont, sans-serif">
+    <text x="72" y="182" fill="#F8FAFC" font-size="78" font-weight="800" letter-spacing="-2.5">UI Design</text>
+    <text x="72" y="262" fill="#CBD5E1" font-size="78" font-weight="800" letter-spacing="-2.5">Languages</text>
+    <text x="76" y="314" fill="#94A3B8" font-size="22" font-weight="500">See the style as real pages. Take the spec and the code.</text>
+    <path d="M76 350H636" stroke="#334155" stroke-width="1"/>
+    <text x="76" y="390" fill="#A8E6CF" font-size="13.5" font-weight="700" letter-spacing="2">CLAY</text>
+    <text x="140" y="390" fill="#475569" font-size="13.5">·</text>
+    <text x="158" y="390" fill="#C4B5FD" font-size="13.5" font-weight="700" letter-spacing="2">LILAC</text>
+    <text x="228" y="390" fill="#475569" font-size="13.5">·</text>
+    <text x="246" y="390" fill="#93C5FD" font-size="13.5" font-weight="700" letter-spacing="2">ATELIER</text>
+    <text x="338" y="390" fill="#475569" font-size="13.5">·</text>
+    <text x="356" y="390" fill="#5EEAD4" font-size="13.5" font-weight="700" letter-spacing="2">TACTILE</text>
+    <text x="444" y="390" fill="#475569" font-size="13.5">·</text>
+    <text x="462" y="390" fill="#E2E8F0" font-size="13.5" font-weight="700" letter-spacing="2">SKETCH</text>
+    <text x="76" y="428" fill="#64748B" font-size="12" letter-spacing="1.8">PLAIN HTML/CSS TOKENS  ·  ZERO DEPENDENCIES  ·  DESIGN.MD  ·  MIT</text>
+  </g>
+
+  <!-- Right collage: 5 authentic mini specimen cards -->
+  <!-- Card 1: Clay (top-left) -->
+  <g transform="translate(724, 52)" filter="url(#sh)">
+    <rect width="206" height="172" rx="20" fill="#ECEAE3" stroke="#FFFFFF" stroke-width="2"/>
+    <rect x="16" y="16" width="54" height="22" rx="11" fill="#A8E6CF"/>
+    <text x="43" y="31" text-anchor="middle" fill="#1E3A2F" font-family="Segoe UI, sans-serif" font-size="11" font-weight="700">Clay</text>
+    <rect x="16" y="52" width="174" height="44" rx="14" fill="#F8F7F4"/>
+    <text x="30" y="79" fill="#1F2937" font-family="Segoe UI, sans-serif" font-size="18" font-weight="800">$18,420</text>
+    <rect x="16" y="108" width="102" height="46" rx="14" fill="#F8F7F4"/>
+    <rect x="30" y="130" width="14" height="14" rx="5" fill="#E5E7EB"/>
+    <rect x="52" y="122" width="14" height="22" rx="5" fill="#E5E7EB"/>
+    <rect x="74" y="116" width="14" height="28" rx="5" fill="#6EE7B7"/>
+    <rect x="128" y="108" width="62" height="46" rx="14" fill="#A8E6CF"/>
+    <text x="159" y="135" text-anchor="middle" fill="#134E4A" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700">+ New</text>
+  </g>
+
+  <!-- Card 2: Lilac (top-middle) -->
+  <g transform="translate(950, 52)" filter="url(#sh)">
+    <rect width="206" height="172" rx="18" fill="#F7F4EF" stroke="#E7E2DA" stroke-width="1.5"/>
+    <text x="18" y="34" fill="#231F20" font-family="Georgia, serif" font-size="18" font-weight="700">Lilac</text>
+    <circle cx="178" cy="28" r="10" fill="#6D28D9" fill-opacity="0.15"/>
+    <circle cx="178" cy="28" r="5" fill="#6D28D9"/>
+    <!-- Ring progress -->
+    <circle cx="62" cy="96" r="30" fill="none" stroke="#E5E0D8" stroke-width="7"/>
+    <circle cx="62" cy="96" r="30" fill="none" stroke="#6D28D9" stroke-width="7" stroke-dasharray="138 60" stroke-linecap="round"/>
+    <text x="62" y="101" text-anchor="middle" fill="#1F2937" font-family="Segoe UI, sans-serif" font-size="14" font-weight="700">72%</text>
+    <!-- Glowing pill button -->
+    <rect x="108" y="76" width="82" height="28" rx="14" fill="#6D28D9"/>
+    <text x="149" y="94" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="11" font-weight="600">Focus</text>
+    <rect x="108" y="114" width="82" height="8" rx="4" fill="#DDD6FE"/>
+    <rect x="108" y="114" width="54" height="8" rx="4" fill="#7C3AED"/>
+    <text x="18" y="152" fill="#6B7280" font-family="Segoe UI, sans-serif" font-size="10.5" letter-spacing="1.2">IVORY · SERIF · GLOW</text>
+  </g>
+
+  <!-- Card 3: Atelier (top-right) -->
+  <g transform="translate(1176, 52)" filter="url(#sh)">
+    <rect width="194" height="172" rx="16" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.2"/>
+    <rect x="16" y="16" width="162" height="28" rx="8" fill="#FFFFFF"/>
+    <circle cx="30" cy="30" r="5" fill="#2563EB"/>
+    <text x="42" y="34" fill="#0F172A" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="800" letter-spacing="1">ATELIER</text>
+    <rect x="16" y="56" width="76" height="62" rx="10" fill="#FFFFFF"/>
+    <rect x="26" y="68" width="44" height="14" rx="7" fill="#DBEAFE"/>
+    <rect x="26" y="90" width="54" height="7" rx="3.5" fill="#CBD5E1"/>
+    <rect x="102" y="56" width="76" height="62" rx="10" fill="#FFFFFF"/>
+    <rect x="112" y="68" width="44" height="14" rx="7" fill="#DCFCE7"/>
+    <rect x="112" y="90" width="54" height="7" rx="3.5" fill="#CBD5E1"/>
+    <rect x="16" y="130" width="162" height="26" rx="13" fill="#2563EB"/>
+    <text x="97" y="147" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, sans-serif" font-size="11.5" font-weight="600">+ New task</text>
+  </g>
+
+  <!-- Card 4: Tactile (bottom-left) -->
+  <g transform="translate(784, 246)" filter="url(#sh)">
+    <rect width="276" height="178" rx="20" fill="#EFECE4" stroke="#F8F6F0" stroke-width="2"/>
+    <text x="22" y="34" fill="#1F2937" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700">Tactile</text>
+    <rect x="196" y="16" width="58" height="24" rx="12" fill="#0F766E"/>
+    <circle cx="242" cy="28" r="8" fill="#EFECE4"/>
+    <!-- Neumorphic dial -->
+    <circle cx="74" cy="108" r="42" fill="#EAE6DC" stroke="#FFFFFF" stroke-width="2"/>
+    <circle cx="74" cy="108" r="32" fill="none" stroke="#0F766E" stroke-width="6" stroke-dasharray="145 60" stroke-linecap="round"/>
+    <text x="74" y="113" text-anchor="middle" fill="#111827" font-family="Segoe UI, sans-serif" font-size="16" font-weight="800">21.5°</text>
+    <!-- Inset slider + pill -->
+    <rect x="136" y="74" width="118" height="12" rx="6" fill="#DDD8CC"/>
+    <rect x="136" y="74" width="76" height="12" rx="6" fill="#0F766E"/>
+    <circle cx="212" cy="80" r="8" fill="#F5F3EC" stroke="#D6D1C4" stroke-width="1.5"/>
+    <rect x="136" y="104" width="118" height="46" rx="12" fill="#F5F3EC" stroke="#E5E1D6"/>
+    <text x="195" y="125" text-anchor="middle" fill="#0F766E" font-family="Segoe UI, sans-serif" font-size="11" font-weight="700">WARM SAND</text>
+    <text x="195" y="141" text-anchor="middle" fill="#6B7280" font-family="Segoe UI, sans-serif" font-size="10.5">4 material layers</text>
+  </g>
+
+  <!-- Card 5: Sketch (bottom-right) -->
+  <g transform="translate(1086, 246)" filter="url(#sh)">
+    <rect width="276" height="178" rx="14" fill="#FCFBF7" stroke="#262626" stroke-width="2"/>
+    <text x="22" y="36" fill="#171717" font-family="Comic Sans MS, Segoe Print, cursive" font-size="19" font-weight="700">Sketch</text>
+    <line x1="20" y1="48" x2="256" y2="48" stroke="#262626" stroke-width="1.5"/>
+    <!-- Watercolor accent circles -->
+    <circle cx="42" cy="82" r="14" fill="#C4B5FD" stroke="#262626" stroke-width="1.5"/>
+    <circle cx="80" cy="82" r="14" fill="#A7F3D0" stroke="#262626" stroke-width="1.5"/>
+    <circle cx="118" cy="82" r="14" fill="#93C5FD" stroke="#262626" stroke-width="2"/>
+    <circle cx="156" cy="82" r="14" fill="#FDE68A" stroke="#262626" stroke-width="1.5"/>
+    <!-- Hand-drawn button & slider -->
+    <rect x="184" y="66" width="72" height="30" rx="8" fill="#BFDBFE" stroke="#262626" stroke-width="1.8"/>
+    <text x="220" y="85" text-anchor="middle" fill="#171717" font-family="Comic Sans MS, Segoe UI, sans-serif" font-size="11.5" font-weight="700">Apply</text>
+    <!-- Hatched progress bar -->
+    <rect x="22" y="116" width="234" height="14" rx="7" fill="#F5F3EB" stroke="#262626" stroke-width="1.5"/>
+    <rect x="22" y="116" width="154" height="14" rx="7" fill="#E5E7EB" stroke="#262626" stroke-width="1.5"/>
+    <path d="M32 116l-6 14M44 116l-6 14M56 116l-6 14M68 116l-6 14M80 116l-6 14M92 116l-6 14M104 116l-6 14M116 116l-6 14M128 116l-6 14M140 116l-6 14M152 116l-6 14M164 116l-6 14" stroke="#404040" stroke-width="1"/>
+    <text x="22" y="156" fill="#525252" font-family="Comic Sans MS, Segoe UI, sans-serif" font-size="11.5">Ink on cream paper · hatching · watercolor</text>
+  </g>
+</svg>

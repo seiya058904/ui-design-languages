@@ -11,14 +11,22 @@
        <input type="range" data-appearance="radius" min="8" max="24" step="4">
        <input type="checkbox" data-appearance="motion">            (checked = reduced)
        <input type="checkbox" data-appearance="contrast">          (checked = high)
-     Other open pages and iframes of the same site update live through the storage event.
+     Other open pages and iframes of the same site update live through the storage event. Discrete
+     changes cross-fade through the View Transitions API where available (not with reduced motion).
+   - command palette (.atelier-command): typing filters the results (text + data-keywords), ↑/↓ and the
+     pointer move one gliding highlight, ↵ or a click runs the item and fires "atelier:command"
+   - filter bar (.atelier-filterbar): operators cycle through data-ops, × folds a capsule away, Clear
+     removes them all; F (outside text fields) focuses [data-atelier-filter-add]
+   - menus (.atelier-menu): the trigger's aria-expanded opens the panel; ↓/↑ to open and move, Home/End,
+     Esc and outside clicks close; menuitemcheckbox toggles aria-checked; fires "atelier:menu"
    Hooks: window.AtelierUI.setAppearance({ accent: "green" }), .getAppearance(), .refresh(el), .initIndicators(root) */
 (function () {
   var P = "atelier";
   var GROUPS = [
     { list: "." + P + "-pills", item: "." + P + "-pills__item", active: '[aria-selected="true"], .is-active' },
     { list: "." + P + "-segmented", item: "." + P + "-segmented__item", active: '[aria-selected="true"], .is-active' },
-    { list: "." + P + "-nav", item: "." + P + "-nav__item", active: '[aria-current="page"], [aria-current="true"], .is-active' }
+    { list: "." + P + "-nav", item: "." + P + "-nav__item", active: '[aria-current="page"], [aria-current="true"], .is-active' },
+    { list: "." + P + "-command__list", item: "." + P + "-command__item", active: '[aria-selected="true"]' }
   ];
   var LIST = GROUPS.map(function (g) { return g.list; }).join(", ");
   var TAB_LIST = GROUPS[0].list + ", " + GROUPS[1].list;
@@ -150,10 +158,19 @@
     });
   }
   function setAppearance(patch) {
-    for (var k in patch) if (k in DEFAULTS) state[k] = patch[k];
-    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (err) { /* not remembered */ }
-    apply();
-    document.dispatchEvent(new CustomEvent(P + ":appearance", { detail: Object.assign({}, state) }));
+    var discrete = false;
+    for (var k in patch) if (k in DEFAULTS && k !== "radius" && String(patch[k]) !== String(state[k])) discrete = true;
+    function run() {
+      for (var key in patch) if (key in DEFAULTS) state[key] = patch[key];
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (err) { /* not remembered */ }
+      apply();
+      document.dispatchEvent(new CustomEvent(P + ":appearance", { detail: Object.assign({}, state) }));
+    }
+    // A theme or accent change cross-fades the whole page once (snapshot → new state, 220ms) instead of
+    // every element repainting its own transition. Radius drags stay direct.
+    var calm = state.motion === "reduced" || patch.motion === "reduced" || (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    if (discrete && !calm && document.startViewTransition && document.visibilityState === "visible") document.startViewTransition(run);
+    else run();
   }
   window.addEventListener("storage", function (e) {
     if (e.key !== KEY) return;
@@ -161,9 +178,104 @@
     apply();
   });
 
+  /* ---------- Command palette ---------- */
+  var CMD_ITEM = "." + P + "-command__item";
+  function commandItems(cmd) {
+    return Array.prototype.filter.call(cmd.querySelectorAll(CMD_ITEM), function (el) { return !el.hidden && el.getAttribute("aria-disabled") !== "true"; });
+  }
+  function selectCommand(cmd, item, scroll) {
+    Array.prototype.forEach.call(cmd.querySelectorAll(CMD_ITEM), function (el) { el.setAttribute("aria-selected", el === item ? "true" : "false"); });
+    var input = cmd.querySelector("." + P + "-command__search input");
+    if (input) { if (item && item.id) input.setAttribute("aria-activedescendant", item.id); else input.removeAttribute("aria-activedescendant"); }
+    if (item && scroll && item.scrollIntoView) item.scrollIntoView({ block: "nearest" });
+  }
+  function filterCommand(cmd) {
+    var input = cmd.querySelector("." + P + "-command__search input");
+    var q = (input && input.value || "").trim().toLowerCase(), words = q.split(/\s+/).filter(Boolean), any = false;
+    Array.prototype.forEach.call(cmd.querySelectorAll(CMD_ITEM), function (el) {
+      var hay = (el.textContent + " " + (el.getAttribute("data-keywords") || "")).toLowerCase();
+      var show = words.every(function (w) { return hay.indexOf(w) >= 0; });
+      el.hidden = !show;
+      if (show) any = true;
+    });
+    Array.prototype.forEach.call(cmd.querySelectorAll("." + P + "-command__group"), function (g) {
+      var n = g.nextElementSibling, vis = false;
+      while (n && !n.matches("." + P + "-command__group")) { if (n.matches(CMD_ITEM) && !n.hidden) { vis = true; break; } n = n.nextElementSibling; }
+      g.hidden = !vis;
+    });
+    var empty = cmd.querySelector("." + P + "-command__empty");
+    if (empty) {
+      empty.hidden = any;
+      var echo = empty.querySelector("[data-query]");
+      if (echo) echo.textContent = input ? input.value : "";
+    }
+    var cur = cmd.querySelector(CMD_ITEM + '[aria-selected="true"]');
+    if (!cur || cur.hidden) selectCommand(cmd, commandItems(cmd)[0] || null, true);
+    var list = cmd.querySelector("." + P + "-command__list");
+    if (list) refresh(list);
+  }
+  function runCommand(cmd, item) {
+    if (!item || item.getAttribute("aria-disabled") === "true") return;
+    item.classList.remove("is-run");
+    void item.offsetWidth;
+    item.classList.add("is-run");
+    var label = item.cloneNode(true);
+    Array.prototype.forEach.call(label.querySelectorAll("." + P + "-command__keys, ." + P + "-command__hint"), function (n) { n.remove(); });
+    cmd.dispatchEvent(new CustomEvent(P + ":command", { bubbles: true, detail: { item: item, value: item.getAttribute("data-value") || label.textContent.trim() } }));
+  }
+  document.addEventListener("pointerover", function (e) {
+    var item = e.target.closest && e.target.closest(CMD_ITEM);
+    if (!item || item.getAttribute("aria-selected") === "true" || item.getAttribute("aria-disabled") === "true") return;
+    var cmd = item.closest("." + P + "-command");
+    if (cmd) selectCommand(cmd, item, false);
+  });
+
+  /* ---------- Filter bar ---------- */
+  function syncFilterbar(bar) {
+    var left = bar.querySelectorAll("." + P + "-filter:not(.is-leaving)").length;
+    var empty = bar.querySelector("." + P + "-filterbar__empty"), clear = bar.querySelector("." + P + "-filterbar__clear");
+    if (empty) empty.hidden = left > 0;
+    if (clear) clear.hidden = left === 0;
+  }
+  function removeFilter(filter) {
+    var bar = filter.closest("." + P + "-filterbar");
+    if (!bar || filter.classList.contains("is-leaving")) return;
+    var focusNext = filter.contains(document.activeElement);
+    filter.classList.add("is-leaving");
+    syncFilterbar(bar);
+    setTimeout(function () {
+      var next = filter.nextElementSibling;
+      filter.remove();
+      if (focusNext) {
+        var target = (next && next.matches("." + P + "-filter") && next.querySelector("." + P + "-filter__remove")) || bar.querySelector("[data-" + P + "-filter-add]");
+        if (target) target.focus();
+      }
+    }, 140);
+  }
+
+  /* ---------- Menus ---------- */
+  function menuTrigger(menu) { return menu.querySelector('[aria-haspopup="menu"]'); }
+  function menuItems(menu) {
+    return Array.prototype.filter.call(menu.querySelectorAll("." + P + "-menu__item"), function (i) { return !i.disabled && i.getAttribute("aria-disabled") !== "true"; });
+  }
+  function setMenu(menu, open, focus) {
+    var trig = menuTrigger(menu);
+    if (!trig) return;
+    trig.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open && focus) { var list = menuItems(menu); var it = focus === "last" ? list[list.length - 1] : list[0]; if (it) it.focus(); }
+    if (!open && focus) trig.focus();
+  }
+  function closeMenus(except) {
+    document.querySelectorAll("." + P + "-menu").forEach(function (m) {
+      var trig = menuTrigger(m);
+      if (m !== except && trig && trig.getAttribute("aria-expanded") === "true" && !m.classList.contains(P + "-menu--static")) setMenu(m, false);
+    });
+  }
+
   document.addEventListener("input", function (e) {
     var t = e.target;
     if (!t.matches) return;
+    if (t.matches("." + P + "-command__search input")) { var cmd = t.closest("." + P + "-command"); if (cmd) filterCommand(cmd); }
     if (t.matches("." + P + "-slider")) syncSlider(t);
     var key = t.getAttribute("data-appearance");
     if (key === "density") setAppearance({ density: DENSITY[+t.value] || "balanced" });
@@ -177,6 +289,38 @@
   document.addEventListener("click", function (e) {
     var tab = e.target.closest(TAB_ITEM);
     if (tab && !tab.disabled) selectTab(tab);
+
+    var cmdItem = e.target.closest(CMD_ITEM);
+    if (cmdItem) { var cmd = cmdItem.closest("." + P + "-command"); if (cmd) { selectCommand(cmd, cmdItem, false); runCommand(cmd, cmdItem); } }
+
+    var op = e.target.closest("." + P + "-filter__op[data-ops]");
+    if (op) {
+      var ops = op.getAttribute("data-ops").split("|"), at = ops.indexOf(op.textContent.trim());
+      op.textContent = ops[(at + 1) % ops.length];
+      op.classList.remove("is-flip");
+      void op.offsetWidth;
+      op.classList.add("is-flip");
+    }
+    var rm = e.target.closest("." + P + "-filter__remove");
+    if (rm) removeFilter(rm.closest("." + P + "-filter"));
+    var clr = e.target.closest("." + P + "-filterbar__clear");
+    if (clr) { var bar = clr.closest("." + P + "-filterbar"); if (bar) bar.querySelectorAll("." + P + "-filter").forEach(removeFilter); }
+
+    var menu = e.target.closest("." + P + "-menu");
+    var trig = e.target.closest('[aria-haspopup="menu"]');
+    if (menu && trig && menuTrigger(menu) === trig) {
+      var open = trig.getAttribute("aria-expanded") !== "true";
+      closeMenus(menu);
+      setMenu(menu, open, open && e.detail === 0 ? "first" : null);
+    } else if (menu && e.target.closest("." + P + "-menu__item")) {
+      var mi = e.target.closest("." + P + "-menu__item");
+      if (!mi.disabled && mi.getAttribute("aria-disabled") !== "true") {
+        if (mi.getAttribute("role") === "menuitemcheckbox") mi.setAttribute("aria-checked", mi.getAttribute("aria-checked") === "true" ? "false" : "true");
+        else if (!menu.classList.contains(P + "-menu--static")) setMenu(menu, false, true);
+        menu.dispatchEvent(new CustomEvent(P + ":menu", { bubbles: true, detail: { item: mi, value: mi.getAttribute("data-value") || mi.textContent.trim() } }));
+      }
+    }
+    if (!menu) closeMenus(null);
 
     var navItem = e.target.closest(NAV_ITEM);
     if (navItem && e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) {
@@ -193,7 +337,39 @@
     if (closer) { var d = closer.closest("dialog"); if (d) d.close(); }
   });
   document.addEventListener("keydown", function (e) {
-    var tab = e.target.closest && e.target.closest(TAB_ITEM);
+    var t = e.target;
+    /* Command palette input */
+    if (t.matches && t.matches("." + P + "-command__search input")) {
+      var cmd = t.closest("." + P + "-command"), list = commandItems(cmd), cur = cmd.querySelector(CMD_ITEM + '[aria-selected="true"]'), i = list.indexOf(cur);
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        if (list.length) selectCommand(cmd, list[(i + (e.key === "ArrowDown" ? 1 : -1) + list.length) % list.length], true);
+        e.preventDefault();
+      } else if (e.key === "Enter") { if (cur && !cur.hidden) runCommand(cmd, cur); e.preventDefault(); }
+      else if (e.key === "Escape" && t.value) { t.value = ""; filterCommand(cmd); e.preventDefault(); e.stopPropagation(); }
+      return;
+    }
+    /* Menus */
+    var menu = t.closest && t.closest("." + P + "-menu");
+    if (menu) {
+      var trig = menuTrigger(menu), items = menuItems(menu), idx = items.indexOf(document.activeElement), isOpen = trig && trig.getAttribute("aria-expanded") === "true";
+      if (t === trig && (e.key === "ArrowDown" || e.key === "ArrowUp")) { closeMenus(menu); setMenu(menu, true, e.key === "ArrowUp" ? "last" : "first"); e.preventDefault(); return; }
+      if (idx >= 0) {
+        var move = { ArrowDown: idx + 1, ArrowUp: idx - 1, Home: 0, End: items.length - 1 }[e.key];
+        if (move !== undefined) { items[(move + items.length) % items.length].focus(); e.preventDefault(); return; }
+        if (e.key === "Tab" && !menu.classList.contains(P + "-menu--static")) setMenu(menu, false);
+      }
+      if (e.key === "Escape" && isOpen) { setMenu(menu, false, true); e.preventDefault(); e.stopPropagation(); return; }
+    }
+    /* F focuses the add button of a filter bar in view (outside text fields, no modifiers) */
+    if ((e.key === "f" || e.key === "F") && !e.metaKey && !e.ctrlKey && !e.altKey && !(t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) {
+      // Only a filter bar that is on screen answers, and focusing it never scrolls the page.
+      var add = Array.prototype.filter.call(document.querySelectorAll("[data-" + P + "-filter-add]"), function (b) {
+        var r = b.getBoundingClientRect();
+        return b.offsetParent && r.bottom > 0 && r.top < window.innerHeight;
+      })[0];
+      if (add) { add.focus({ preventScroll: true }); e.preventDefault(); return; }
+    }
+    var tab = t.closest && t.closest(TAB_ITEM);
     if (!tab) return;
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
     if (!(e.key in keys)) return;
@@ -208,6 +384,7 @@
 
   function boot() {
     apply();
+    document.querySelectorAll("." + P + "-filterbar").forEach(syncFilterbar);
     document.querySelectorAll("." + P + "-slider").forEach(syncSlider);
     initIndicators(document);
     var queued = false;
@@ -222,6 +399,7 @@
 
   window.AtelierUI = {
     initIndicators: initIndicators, refresh: refresh, selectTab: selectTab, selectNavItem: selectNavItem, syncSlider: syncSlider,
-    setAppearance: setAppearance, getAppearance: function () { return Object.assign({}, state); }
+    setAppearance: setAppearance, getAppearance: function () { return Object.assign({}, state); },
+    filterCommand: filterCommand, openMenu: function (m) { setMenu(m, true, "first"); }, closeMenu: function (m) { setMenu(m, false); }
   };
 })();

@@ -37,6 +37,15 @@
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4.5" rx="1.2"/><path d="M5 8.5V18a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.5M10 12.5h4"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-chev-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"/><path d="m13.5 6.5 4 4"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+  <symbol id="i-status" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z" fill="currentColor"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></symbol>
   <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
   <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
   <symbol id="i-clip" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h4"/></symbol>
@@ -59,7 +68,7 @@
   <h1>Atelier components</h1>
   <p>Precise, cool product UI: frosted panels, one accent, bold uppercase section titles, appearance settings that really work. Every block below is live markup you can copy: open it in the <a href="../components.html#/atelier">components browser</a> for the code.</p>
 </div>
-<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Toggle, checkbox & radio</a><a href="#segmented">Segmented control</a><a href="#tabs">Tabs</a><a href="#chips">Chips & badges</a><a href="#slider">Slider</a><a href="#progress">Progress</a><a href="#alert">Alerts & toasts</a><a href="#card">Card</a><a href="#avatar">Avatar & list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#board">Task board</a><a href="#appearance">Accent picker</a></nav>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Toggle, checkbox & radio</a><a href="#segmented">Segmented control</a><a href="#tabs">Tabs</a><a href="#chips">Chips & badges</a><a href="#filter">Filter bar</a><a href="#slider">Slider</a><a href="#progress">Progress</a><a href="#alert">Alerts & toasts</a><a href="#card">Card</a><a href="#avatar">Avatar & list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#menu">Menu</a><a href="#command">Command palette</a><a href="#board">Task board</a><a href="#appearance">Accent picker</a></nav>
 <main>
   <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
     <h2 id="h-button">Button</h2>
@@ -185,6 +194,39 @@
     </div>
   </section>
 
+  <section class="cat-section" id="filter" data-component="filter" aria-labelledby="h-filter">
+    <h2 id="h-filter">Filter bar</h2>
+    <p>Capsules you can read as a sentence: field · operator · value. Click the operator to flip it, × folds a capsule away; press F to add one.</p>
+    <div class="demo" data-demo="filter-capsules">
+      <h3>Filter capsules</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-filterbar" role="group" aria-label="Filters" style="width:min(100%,680px)">
+          <div class="atelier-filter">
+            <span class="atelier-filter__field"><svg class="atelier-icon" aria-hidden="true"><use href="#i-status"/></svg>Status</span>
+            <button class="atelier-filter__op" type="button" data-ops="is|is not">is</button>
+            <span class="atelier-filter__value">In progress</span>
+            <button class="atelier-filter__remove" type="button" aria-label="Remove Status filter"><svg class="atelier-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+          <div class="atelier-filter">
+            <span class="atelier-filter__field"><svg class="atelier-icon" aria-hidden="true"><use href="#i-user"/></svg>Assignee</span>
+            <button class="atelier-filter__op" type="button" data-ops="is|is not|is any of">is any of</button>
+            <span class="atelier-filter__value"><span class="atelier-avatar" style="--avatar-bg:#F6C9A8;--avatar-ink:#6B3A16">AC</span>Ada, Mo</span>
+            <button class="atelier-filter__remove" type="button" aria-label="Remove Assignee filter"><svg class="atelier-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+          <div class="atelier-filter">
+            <span class="atelier-filter__field"><svg class="atelier-icon" aria-hidden="true"><use href="#i-flag"/></svg>Priority</span>
+            <button class="atelier-filter__op" type="button" data-ops="is|is not">is not</button>
+            <span class="atelier-filter__value">Low</span>
+            <button class="atelier-filter__remove" type="button" aria-label="Remove Priority filter"><svg class="atelier-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+          <span class="atelier-filterbar__empty" hidden>No filters — showing every task.</span>
+          <button class="atelier-btn atelier-btn--ghost atelier-btn--sm" type="button" data-atelier-filter-add><svg class="atelier-icon" aria-hidden="true"><use href="#i-plus"/></svg>Filter <kbd class="atelier-kbd">F</kbd></button>
+          <button class="atelier-filterbar__clear" type="button">Clear all</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="cat-section" id="slider" data-component="slider" aria-labelledby="h-slider">
     <h2 id="h-slider">Slider</h2>
     <p>Pick a value on a range.</p>
@@ -261,8 +303,10 @@
     <div class="demo" data-demo="avatars">
       <h3>Avatars</h3>
       <div class="demo__stage atelier-panel">
-        <span class="atelier-avatars"><span class="atelier-avatar" style="--avatar-bg:#F6C9A8;--avatar-ink:#6B3A16">AC</span><span class="atelier-avatar" style="--avatar-bg:#BFD7F7;--avatar-ink:#1C4A86">MJ</span><span class="atelier-avatar" style="--avatar-bg:#C9EBDD;--avatar-ink:#16614A">SK</span></span>
-        <span class="atelier-avatar" style="--avatar-bg:#E4DAFB;--avatar-ink:#4B2A9E">LP</span>
+        <span class="atelier-avatars"><span class="atelier-avatar" style="--avatar-bg:#F6C9A8;--avatar-ink:#6B3A16">AC</span><span class="atelier-avatar" style="--avatar-bg:#BFD7F7;--avatar-ink:#1C4A86">MJ</span><span class="atelier-avatar" style="--avatar-bg:#C9EBDD;--avatar-ink:#16614A">SK</span><span class="atelier-avatar atelier-avatar--more">+3</span></span>
+        <span class="atelier-presence" data-status="online"><span class="atelier-avatar" style="--avatar-size:36px;--avatar-bg:#E4DAFB;--avatar-ink:#4B2A9E">LP</span></span>
+        <span class="atelier-presence" data-status="away"><span class="atelier-avatar" style="--avatar-size:36px;--avatar-bg:#FBE3B8;--avatar-ink:#7A4B0A">RN</span></span>
+        <span class="atelier-presence" data-status="busy"><span class="atelier-avatar" style="--avatar-size:36px;--avatar-bg:#F9D3D0;--avatar-ink:#8E2A23">DV</span></span>
       </div>
     </div>
   </section>
@@ -342,6 +386,55 @@
       <div class="demo__stage atelier-panel">
         <span class="atelier-tooltip" data-tip="Copy invite link"><button class="atelier-btn atelier-btn--secondary" type="button">Share</button></span>
         <span class="atelier-tooltip" data-tip="New task"><button class="atelier-btn atelier-btn--primary atelier-btn--icon" type="button" aria-label="New task"><svg class="atelier-icon" aria-hidden="true"><use href="#i-plus"/></svg></button></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="menu" data-component="menu" aria-labelledby="h-menu">
+    <h2 id="h-menu">Menu</h2>
+    <p>A dropdown that snaps open from its trigger and leaves faster than it came. ↓ opens it, ↑/↓ move, Esc closes.</p>
+    <div class="demo" data-demo="dropdown">
+      <h3>Dropdown</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-menu atelier-menu--static">
+          <button class="atelier-btn atelier-btn--tertiary" type="button" aria-haspopup="menu" aria-expanded="true" aria-controls="a-menu">Project options<svg class="atelier-icon" aria-hidden="true"><use href="#i-chev-down"/></svg></button>
+          <div class="atelier-menu__panel" id="a-menu" role="menu" aria-label="Project options">
+            <button class="atelier-menu__item" role="menuitem" type="button"><svg class="atelier-icon" aria-hidden="true"><use href="#i-edit"/></svg>Rename<kbd class="atelier-kbd">R</kbd></button>
+            <button class="atelier-menu__item" role="menuitem" type="button"><svg class="atelier-icon" aria-hidden="true"><use href="#i-copy"/></svg>Duplicate<kbd class="atelier-kbd">⌘D</kbd></button>
+            <button class="atelier-menu__item" role="menuitemcheckbox" aria-checked="true" type="button"><svg class="atelier-icon" aria-hidden="true"><use href="#i-archive"/></svg>Show archived</button>
+            <div class="atelier-menu__sep" role="separator"></div>
+            <button class="atelier-menu__item atelier-menu__item--danger" role="menuitem" type="button"><svg class="atelier-icon" aria-hidden="true"><use href="#i-trash"/></svg>Delete project<kbd class="atelier-kbd">⌘⌫</kbd></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="command" data-component="command" aria-labelledby="h-command">
+    <h2 id="h-command">Command palette</h2>
+    <p>Type to filter, ↑/↓ to move, ↵ to run. One highlight glides between results and follows the pointer.</p>
+    <div class="demo" data-demo="command-palette">
+      <h3>Command palette</h3>
+      <div class="demo__stage atelier-panel">
+        <div class="atelier-command" role="dialog" aria-label="Command palette">
+          <label class="atelier-command__search">
+            <svg class="atelier-icon" aria-hidden="true"><use href="#i-search"/></svg>
+            <input type="text" placeholder="Type a command or search…" role="combobox" aria-expanded="true" aria-controls="a-cmd-list" aria-activedescendant="a-cmd-1" aria-autocomplete="list" aria-label="Command">
+            <kbd class="atelier-kbd">Esc</kbd>
+          </label>
+          <div class="atelier-command__list" id="a-cmd-list" role="listbox" aria-label="Commands">
+            <div class="atelier-command__group" role="presentation">Suggestions</div>
+            <div class="atelier-command__item" id="a-cmd-1" role="option" aria-selected="true" data-keywords="create add issue"><svg class="atelier-icon" aria-hidden="true"><use href="#i-plus"/></svg>New task<span class="atelier-command__keys"><kbd class="atelier-kbd">C</kbd></span></div>
+            <div class="atelier-command__item" id="a-cmd-2" role="option" aria-selected="false" data-keywords="assign owner"><svg class="atelier-icon" aria-hidden="true"><use href="#i-user"/></svg>Assign to…<span class="atelier-command__keys"><kbd class="atelier-kbd">A</kbd></span></div>
+            <div class="atelier-command__item" id="a-cmd-3" role="option" aria-selected="false" data-keywords="dark light appearance mode"><svg class="atelier-icon" aria-hidden="true"><use href="#i-moon"/></svg>Toggle theme<span class="atelier-command__keys"><kbd class="atelier-kbd">⌘</kbd><kbd class="atelier-kbd">⇧</kbd><kbd class="atelier-kbd">L</kbd></span></div>
+            <div class="atelier-command__group" role="presentation">Go to</div>
+            <div class="atelier-command__item" id="a-cmd-4" role="option" aria-selected="false" data-keywords="home overview"><svg class="atelier-icon" aria-hidden="true"><use href="#i-home"/></svg>Dashboard<span class="atelier-command__hint">Page</span><span class="atelier-command__keys"><kbd class="atelier-kbd">G</kbd><kbd class="atelier-kbd">D</kbd></span></div>
+            <div class="atelier-command__item" id="a-cmd-5" role="option" aria-selected="false" data-keywords="files projects"><svg class="atelier-icon" aria-hidden="true"><use href="#i-folder"/></svg>Brand refresh<span class="atelier-command__hint">Project</span></div>
+            <div class="atelier-command__item" id="a-cmd-6" role="option" aria-selected="false" data-keywords="preferences options"><svg class="atelier-icon" aria-hidden="true"><use href="#i-settings"/></svg>Settings<span class="atelier-command__keys"><kbd class="atelier-kbd">⌘</kbd><kbd class="atelier-kbd">,</kbd></span></div>
+            <p class="atelier-command__empty" hidden>No results for “<span data-query></span>”</p>
+          </div>
+          <div class="atelier-command__foot"><span><kbd class="atelier-kbd">↑</kbd><kbd class="atelier-kbd">↓</kbd> to move</span><span><kbd class="atelier-kbd">↵</kbd> to run</span><span>Type to filter</span></div>
+        </div>
       </div>
     </div>
   </section>

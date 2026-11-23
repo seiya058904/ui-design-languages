@@ -292,7 +292,7 @@
         "backdrop": {
           "style": "background:radial-gradient(900px 500px at 10% -10%, color-mix(in srgb, var(--atelier-color-primary) 10%, transparent), transparent 60%), var(--atelier-color-canvas)"
         },
-        "hooks": ".atelier-pills, .atelier-segmented, .atelier-nav, input[type=range], [data-atelier-open], [data-atelier-close], [data-appearance]",
+        "hooks": ".atelier-pills, .atelier-segmented, .atelier-nav, input[type=range], [data-atelier-open], [data-atelier-close], [data-appearance], .atelier-command, .atelier-filterbar, .atelier-menu",
         "darkHint": "AtelierUI.setAppearance({ theme: \"dark\" }) (the script keeps <html data-theme> in sync and remembers it)",
         "wall": [
           [
@@ -322,6 +322,18 @@
           [
             "appearance",
             "accent-swatches"
+          ],
+          [
+            "command",
+            "command-palette"
+          ],
+          [
+            "filter",
+            "filter-capsules"
+          ],
+          [
+            "menu",
+            "dropdown"
           ]
         ]
       }

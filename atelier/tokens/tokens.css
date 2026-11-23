@@ -39,6 +39,7 @@
   --atelier-color-disabled-ink: #A1ABBA;
   --atelier-color-checker: #E3E8EF; /* Overlay surface checkerboard */
   --atelier-color-backdrop: rgba(18, 26, 42, 0.36);
+  --atelier-color-specular: rgba(255, 255, 255, 0.95); /* Light catching the top rim of frosted panels and overlays (fades down the sides) */
 
   --atelier-font-family-sans: "Archivo", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
 
@@ -93,6 +94,7 @@
   --atelier-shadow-pressed: 0 1px 1px transparent, 0 1px 3px transparent, inset 0 1px 2px rgba(28, 35, 51, 0.1); /* Same list shape as subtle (outer, outer) so a press fades the lift into the well */
   --atelier-shadow-primary: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 1px 2px color-mix(in srgb, var(--atelier-color-primary-strong) 40%, transparent), 0 6px 16px -6px color-mix(in srgb, var(--atelier-color-primary) 65%, transparent);
   --atelier-shadow-focus: 0 0 0 3px var(--atelier-color-focus);
+  --atelier-shadow-overlay: 0 0 0 1px rgba(28, 35, 51, 0.05), 0 8px 20px -6px rgba(28, 35, 51, 0.16), 0 28px 60px -18px rgba(28, 35, 51, 0.34); /* Menus, the command palette and popovers: a crisp contact edge and a deep, soft drop */
 
   --atelier-motion-duration: 160ms;
   --atelier-motion-duration-slide: 340ms;
@@ -105,6 +107,9 @@
   --atelier-motion-easing-pop: cubic-bezier(0.2, 0.8, 0.2, 1); /* Check marks and radio dots appearing */
   --atelier-motion-duration-enter: 380ms; /* Page-load entrance (a quick, precise fade-up) */
   --atelier-motion-stagger: 40ms; /* Delay between siblings in an entrance */
+  --atelier-motion-duration-snap: 180ms; /* Overlays arriving (menus, palette, tooltips): short and exact */
+  --atelier-motion-easing-snap: cubic-bezier(0.16, 1, 0.3, 1); /* Fast out, damped in: arrives at speed and stops dead, no overshoot */
+  --atelier-motion-duration-exit: 110ms; /* Overlays leaving: quicker than they came */
 }
 
 /* Dark theme — GENERATED from atelier/tokens/tokens.dark.json.
@@ -132,6 +137,7 @@
   --atelier-color-disabled-ink: #5F6B7E;
   --atelier-color-checker: #222A38;
   --atelier-color-backdrop: rgba(0, 0, 0, 0.55);
+  --atelier-color-specular: rgba(255, 255, 255, 0.14);
 
   --atelier-shadow-subtle: 0 1px 1px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
   --atelier-shadow-panel: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 1px 2px rgba(0, 0, 0, 0.3), 0 14px 34px -14px rgba(0, 0, 0, 0.6);
@@ -139,6 +145,7 @@
   --atelier-shadow-modal: 0 10px 24px rgba(0, 0, 0, 0.35), 0 34px 68px -20px rgba(0, 0, 0, 0.7);
   --atelier-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.35);
   --atelier-shadow-pressed: 0 1px 1px transparent, 0 1px 3px transparent, inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  --atelier-shadow-overlay: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 10px 24px -6px rgba(0, 0, 0, 0.5), 0 30px 64px -18px rgba(0, 0, 0, 0.7);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -165,6 +172,7 @@
     --atelier-color-disabled-ink: #5F6B7E;
     --atelier-color-checker: #222A38;
     --atelier-color-backdrop: rgba(0, 0, 0, 0.55);
+    --atelier-color-specular: rgba(255, 255, 255, 0.14);
 
     --atelier-shadow-subtle: 0 1px 1px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
     --atelier-shadow-panel: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 1px 2px rgba(0, 0, 0, 0.3), 0 14px 34px -14px rgba(0, 0, 0, 0.6);
@@ -172,6 +180,7 @@
     --atelier-shadow-modal: 0 10px 24px rgba(0, 0, 0, 0.35), 0 34px 68px -20px rgba(0, 0, 0, 0.7);
     --atelier-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.35);
     --atelier-shadow-pressed: 0 1px 1px transparent, 0 1px 3px transparent, inset 0 1px 2px rgba(0, 0, 0, 0.4);
+    --atelier-shadow-overlay: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 10px 24px -6px rgba(0, 0, 0, 0.5), 0 30px 64px -18px rgba(0, 0, 0, 0.7);
   }
 }
 
@@ -241,4 +250,6 @@
   --atelier-motion-duration-release: 0ms;
   --atelier-motion-duration-enter: 0ms;
   --atelier-motion-stagger: 0ms;
+  --atelier-motion-duration-snap: 0ms;
+  --atelier-motion-duration-exit: 0ms;
 }

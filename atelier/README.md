@@ -40,7 +40,10 @@ Appearance controls are plain markup — `data-appearance="theme|accent|density|
 | Selection | `.atelier-check` (`--between`) with `.atelier-checkbox`, `.atelier-radio`, `.atelier-toggle` |
 | Slider | `.atelier-slider`, `.atelier-slider-row`, `.atelier-slider-stops` |
 | Navigation | `.atelier-pills` (filled sliding pill), `.atelier-segmented` (soft sliding pill), `.atelier-breadcrumb`, `.atelier-pagination`, `.atelier-nav` (+ `__count`) |
-| Data | `.atelier-card` (`--interactive`, `__title`, `__meta`), `.atelier-badge` (`--primary` `--soft` `--teal` `--amber` `--danger` `--violet`), `.atelier-avatar(s)`, `.atelier-progress`, `.atelier-table` |
+| Data | `.atelier-card` (`--interactive`, `__title`, `__meta`), `.atelier-badge` (`--primary` `--soft` `--teal` `--amber` `--danger` `--violet`), `.atelier-avatar(s)` (`--more`; `.atelier-presence[data-status]` for online / away / busy / offline), `.atelier-progress`, `.atelier-table` |
+| Command | `.atelier-command` (`__search`, `__list` with `__group` / `__item` / `__keys` / `__hint` / `__empty`, `__foot`), `.atelier-kbd` |
+| Filters | `.atelier-filterbar` > `.atelier-filter` (`__field`, `__op[data-ops]`, `__value`, `__remove`), `__clear`, `__empty`, `[data-atelier-filter-add]` |
+| Menu | `.atelier-menu` (`--static`, `--end`) > trigger `[aria-haspopup="menu"]` + `.atelier-menu__panel` (`__item`, `--danger`, `[aria-checked]`, `__label`, `__sep`) |
 | Board | `.atelier-board` (`--columns`), `.atelier-column` (+ `__head`, `__count`), `.atelier-task` (+ `__foot`), `.atelier-done` |
 | Feedback | `.atelier-toast` (`--success` `--warning` `--danger` `--inverse`), `.atelier-confirm`, `.atelier-empty`, `.atelier-dialog`, `.atelier-tooltip[data-tip]` |
 | Appearance | `.atelier-swatch` (`--pick` for accent pickers) |

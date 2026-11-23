@@ -31,15 +31,17 @@
   cursor: pointer;
   user-select: none;
   box-shadow: var(--atelier-shadow-subtle);
+  /* Crisp: 70ms in, 180ms out, no overshoot — the press lands like a key, not a sponge. */
   transition:
     background-color var(--atelier-motion-duration) var(--atelier-motion-easing),
     border-color var(--atelier-motion-duration) var(--atelier-motion-easing),
     box-shadow var(--atelier-motion-duration) var(--atelier-motion-easing),
+    filter var(--atelier-motion-duration) var(--atelier-motion-easing),
     transform var(--atelier-motion-duration-release) var(--atelier-motion-easing-release);
 }
 .atelier-btn:hover { border-color: var(--atelier-color-border-strong); }
 .atelier-btn:active,
-.atelier-btn.is-active { transform: translateY(1px); box-shadow: var(--atelier-shadow-pressed); transition-duration: var(--atelier-motion-duration-press); transition-timing-function: var(--atelier-motion-easing-press); }
+.atelier-btn.is-active { transform: translateY(1px) scale(0.985); box-shadow: var(--atelier-shadow-pressed); transition-duration: var(--atelier-motion-duration-press); transition-timing-function: var(--atelier-motion-easing-press); }
 .atelier-btn:focus-visible { box-shadow: var(--atelier-shadow-subtle), var(--atelier-shadow-focus); }
 
 .atelier-btn--primary {
@@ -476,12 +478,37 @@ select.atelier-input {
   color: var(--avatar-ink, var(--atelier-color-on-soft));
   font-size: calc(var(--avatar-size, 28px) * 0.38);
   font-weight: var(--atelier-font-weight-bold);
-  box-shadow: 0 0 0 2px var(--atelier-color-surface);
+  /* Ring in the surface colour, plus a hairline inside it so pale avatars stay crisp on white. */
+  box-shadow: 0 0 0 2px var(--atelier-color-surface), inset 0 0 0 1px color-mix(in srgb, var(--atelier-color-ink) 8%, transparent);
   overflow: hidden;
 }
 .atelier-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.atelier-avatar--more { background: var(--atelier-color-surface-sunken); color: var(--atelier-color-text-muted); font-weight: var(--atelier-font-weight-semibold); letter-spacing: -0.02em; }
 .atelier-avatars { display: inline-flex; }
-.atelier-avatars .atelier-avatar + .atelier-avatar { margin-left: -5px; }
+.atelier-avatars .atelier-avatar + .atelier-avatar,
+.atelier-avatars .atelier-presence + .atelier-presence { margin-left: -5px; }
+/* Hovering a group fans it out a little, on the compositor. */
+.atelier-avatars > * { transition: translate var(--atelier-motion-duration-snap) var(--atelier-motion-easing-snap); }
+.atelier-avatars:hover > :nth-child(2) { translate: 3px 0; }
+.atelier-avatars:hover > :nth-child(3) { translate: 6px 0; }
+.atelier-avatars:hover > :nth-child(4) { translate: 9px 0; }
+.atelier-avatars:hover > :nth-child(n+5) { translate: 12px 0; }
+/* Presence: <span class="atelier-presence" data-status="online|away|busy|offline"><span class="atelier-avatar">…</span></span> */
+.atelier-presence { position: relative; display: inline-flex; flex: none; }
+.atelier-presence::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--atelier-color-text-subtle);
+  box-shadow: 0 0 0 2px var(--atelier-color-surface);
+}
+.atelier-presence[data-status="online"]::after { background: var(--atelier-color-teal); }
+.atelier-presence[data-status="away"]::after { background: var(--atelier-color-amber); }
+.atelier-presence[data-status="busy"]::after { background: var(--atelier-color-danger); }
 
 /* =========================================================================
    Toast, alert, confirm, empty state
@@ -615,11 +642,13 @@ select.atelier-input {
   box-shadow: var(--atelier-shadow-modal);
 }
 .atelier-dialog::backdrop { background: var(--atelier-color-backdrop); backdrop-filter: blur(3px); }
-.atelier-dialog[open] { animation: atelier-pop var(--atelier-motion-duration-slide) var(--atelier-motion-easing-spring); }
+.atelier-dialog[open] { animation: atelier-pop var(--atelier-motion-duration-snap) var(--atelier-motion-easing-snap); }
+.atelier-dialog[open]::backdrop { animation: atelier-fade var(--atelier-motion-duration-snap) var(--atelier-motion-easing); }
 .atelier-dialog__title { font-size: 18px; font-weight: var(--atelier-font-weight-bold); color: var(--atelier-color-ink); }
 .atelier-dialog__body { margin-top: 6px; color: var(--atelier-color-text-muted); }
 .atelier-dialog__actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-@keyframes atelier-pop { from { opacity: 0; transform: translateY(6px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes atelier-pop { from { opacity: 0; transform: translateY(4px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes atelier-fade { from { opacity: 0; } }
 
 .atelier-tooltip { position: relative; display: inline-flex; }
 .atelier-tooltip::after {
@@ -627,7 +656,8 @@ select.atelier-input {
   position: absolute;
   left: 50%;
   bottom: calc(100% + 8px);
-  transform: translate(-50%, 3px);
+  transform: translate(-50%, 3px) scale(0.96);
+  transform-origin: 50% 100%;
   padding: 6px 10px;
   border-radius: var(--atelier-radius-sm);
   background: var(--atelier-color-inverse);
@@ -636,7 +666,373 @@ select.atelier-input {
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--atelier-motion-duration), transform var(--atelier-motion-duration);
+  transition: opacity var(--atelier-motion-duration-exit) var(--atelier-motion-easing), transform var(--atelier-motion-duration-snap) var(--atelier-motion-easing-snap);
 }
 .atelier-tooltip:hover::after,
-.atelier-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0); }
+.atelier-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0) scale(1); transition-duration: var(--atelier-motion-duration-snap); }
+
+/* =========================================================================
+   Keyboard key — <kbd class="atelier-kbd">⌘</kbd><kbd class="atelier-kbd">K</kbd>
+   A small keycap: hairline edge, a 1px bottom lip, tabular glyphs.
+   ========================================================================= */
+.atelier-kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 1px solid var(--atelier-color-border);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: var(--atelier-color-surface);
+  color: var(--atelier-color-text-muted);
+  font: var(--atelier-font-weight-semibold) 11px/1 var(--atelier-font-family-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* =========================================================================
+   Command palette — type to filter, ↑/↓ to move, ↵ to run. One highlight glides between results.
+   <div class="atelier-command" role="dialog" aria-label="Command palette">
+     <label class="atelier-command__search">
+       <svg class="atelier-icon">search</svg>
+       <input type="text" placeholder="Type a command or search…" role="combobox" aria-expanded="true"
+              aria-controls="cmd-list" aria-activedescendant="cmd-1" aria-autocomplete="list" aria-label="Command">
+       <kbd class="atelier-kbd">Esc</kbd>
+     </label>
+     <div class="atelier-command__list" id="cmd-list" role="listbox" aria-label="Commands">
+       <div class="atelier-command__group" role="presentation">Suggestions</div>
+       <div class="atelier-command__item" id="cmd-1" role="option" aria-selected="true"><svg class="atelier-icon">…</svg>New task<span class="atelier-command__keys"><kbd class="atelier-kbd">C</kbd></span></div>
+       …
+       <p class="atelier-command__empty" hidden>No results</p>
+     </div>
+     <div class="atelier-command__foot">…key hints…</div>
+   </div>
+   js/atelier.js filters (by text and data-keywords), moves aria-selected / aria-activedescendant and
+   fires "atelier:command" ({ detail: { item } }) on ↵ or click.
+   ========================================================================= */
+.atelier-command {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 560px);
+  overflow: hidden;
+  border: 1px solid var(--atelier-color-border);
+  border-radius: var(--atelier-radius-xl);
+  background: var(--atelier-color-surface);
+  box-shadow: var(--atelier-shadow-overlay);
+}
+/* Same specular rim as the frosted panels */
+.atelier-command::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(180deg, var(--atelier-color-specular), transparent 40%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.atelier-command__search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  padding: 0 14px 0 18px;
+  border-bottom: 1px solid var(--atelier-color-border);
+  color: var(--atelier-color-text-muted);
+}
+.atelier-command__search .atelier-icon { width: 18px; height: 18px; }
+.atelier-command__search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--atelier-color-ink);
+  font-size: 16px;
+  outline: none;
+}
+.atelier-command__search input::placeholder { color: var(--atelier-color-text-subtle); }
+.atelier-command__search:focus-within { color: var(--atelier-color-primary); }
+
+.atelier-command__list {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 344px;
+  padding: 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.atelier-command__group {
+  padding: 10px 12px 6px;
+  font-size: var(--atelier-font-size-kicker);
+  font-weight: var(--atelier-font-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--atelier-color-text-subtle);
+}
+.atelier-command__item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 42px;
+  padding: 0 10px 0 12px;
+  border-radius: var(--atelier-radius-md);
+  color: var(--atelier-color-text);
+  font-size: var(--atelier-font-size-body);
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--atelier-motion-duration-exit) var(--atelier-motion-easing);
+}
+.atelier-command__item > .atelier-icon { width: 18px; height: 18px; color: var(--atelier-color-text-muted); transition: color var(--atelier-motion-duration-exit) var(--atelier-motion-easing); }
+.atelier-command__item[hidden] { display: none; }
+.atelier-command__item[aria-selected="true"] { background: var(--atelier-color-primary-soft); color: var(--atelier-color-on-soft); }
+.atelier-command__item[aria-selected="true"] > .atelier-icon { color: var(--atelier-color-primary); }
+.atelier-command__item[aria-disabled="true"] { color: var(--atelier-color-disabled-ink); cursor: not-allowed; }
+.atelier-command__keys { display: inline-flex; gap: 4px; margin-left: auto; }
+.atelier-command__hint { margin-left: auto; font-size: var(--atelier-font-size-caption); color: var(--atelier-color-text-subtle); }
+.atelier-command__hint + .atelier-command__keys { margin-left: 10px; }
+/* With js/atelier.js one highlight glides between results (the per-row fill is the no-JS fallback). */
+.atelier-command__list.has-indicator::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  width: var(--atelier-indicator-w, 0px);
+  height: var(--atelier-indicator-h, 0px);
+  transform: translate(var(--atelier-indicator-x, 0px), var(--atelier-indicator-y, 0px));
+  opacity: var(--atelier-indicator-o, 1);
+  border-radius: var(--atelier-radius-md);
+  background: var(--atelier-color-primary-soft);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--atelier-color-primary) 22%, transparent);
+}
+.atelier-command__list.has-indicator.is-animated::before {
+  transition:
+    transform var(--atelier-motion-duration-snap) var(--atelier-motion-easing-snap),
+    height var(--atelier-motion-duration-snap) var(--atelier-motion-easing-snap),
+    opacity var(--atelier-motion-duration-exit) var(--atelier-motion-easing);
+}
+.atelier-command__list.has-indicator .atelier-command__item[aria-selected="true"] { background: transparent; }
+/* Running a command: the row flashes once. */
+.atelier-command__item.is-run { animation: atelier-run 360ms var(--atelier-motion-easing-snap); }
+@keyframes atelier-run { 0% { transform: scale(0.985); } 100% { transform: none; } }
+.atelier-command__empty {
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  padding: 28px 16px 30px;
+  font-size: var(--atelier-font-size-small);
+  color: var(--atelier-color-text-muted);
+  text-align: center;
+}
+.atelier-command__empty[hidden] { display: none; }
+.atelier-command__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--atelier-color-border);
+  background: var(--atelier-color-surface-sunken);
+  font-size: var(--atelier-font-size-caption);
+  color: var(--atelier-color-text-muted);
+}
+.atelier-command__foot span { display: inline-flex; align-items: center; gap: 4px; }
+.atelier-command__foot span:last-child { margin-left: auto; }
+
+/* =========================================================================
+   Filter bar — Linear-style capsules: field · operator · value · ×, plus an add button with a shortcut.
+   <div class="atelier-filterbar" role="group" aria-label="Filters">
+     <div class="atelier-filter">
+       <span class="atelier-filter__field"><svg class="atelier-icon">…</svg>Status</span>
+       <button class="atelier-filter__op" type="button" data-ops="is|is not">is</button>
+       <span class="atelier-filter__value">In progress</span>
+       <button class="atelier-filter__remove" type="button" aria-label="Remove Status filter">×</button>
+     </div>
+     <button class="atelier-btn atelier-btn--ghost atelier-btn--sm" type="button">+ Filter <kbd class="atelier-kbd">F</kbd></button>
+     <button class="atelier-filterbar__clear" type="button">Clear</button>
+   </div>
+   js/atelier.js: the operator cycles through data-ops, × folds the capsule away, Clear removes all.
+   ========================================================================= */
+.atelier-filterbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; width: 100%; }
+.atelier-filter {
+  display: inline-flex;
+  align-items: stretch;
+  height: 30px;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--atelier-color-border);
+  border-radius: var(--atelier-radius-pill);
+  background: var(--atelier-color-surface);
+  box-shadow: var(--atelier-shadow-subtle);
+  font-size: var(--atelier-font-size-caption);
+  transition:
+    opacity var(--atelier-motion-duration-exit) var(--atelier-motion-easing),
+    transform var(--atelier-motion-duration-snap) var(--atelier-motion-easing-snap),
+    border-color var(--atelier-motion-duration) var(--atelier-motion-easing);
+}
+.atelier-filter:hover { border-color: var(--atelier-color-border-strong); }
+.atelier-filter > * + * { border-left: 1px solid var(--atelier-color-border); }
+.atelier-filter__field,
+.atelier-filter__value,
+.atelier-filter__op { display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; white-space: nowrap; }
+.atelier-filter__field { color: var(--atelier-color-text-muted); }
+.atelier-filter__field .atelier-icon { width: 14px; height: 14px; }
+.atelier-filter__value { color: var(--atelier-color-ink); font-weight: var(--atelier-font-weight-semibold); min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.atelier-filter__value .atelier-avatar { --avatar-size: 18px; box-shadow: none; }
+.atelier-filter__op,
+.atelier-filter__remove {
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  background: transparent;
+  color: var(--atelier-color-text-muted);
+  font: inherit;
+  cursor: pointer;
+  transition: background-color var(--atelier-motion-duration-exit) var(--atelier-motion-easing), color var(--atelier-motion-duration-exit) var(--atelier-motion-easing);
+}
+.atelier-filter__op:hover,
+.atelier-filter__remove:hover { background: var(--atelier-color-surface-sunken); color: var(--atelier-color-ink); }
+.atelier-filter__op:active,
+.atelier-filter__remove:active { background: color-mix(in srgb, var(--atelier-color-primary) 10%, var(--atelier-color-surface)); }
+.atelier-filter__op:focus-visible,
+.atelier-filter__remove:focus-visible { outline: 0; box-shadow: inset 0 0 0 2px var(--atelier-color-focus); }
+.atelier-filter__remove { display: grid; place-items: center; width: 28px; padding: 0; }
+.atelier-filter__remove .atelier-icon { width: 13px; height: 13px; stroke-width: 2.2; }
+/* The operator word swaps with a quick vertical flick. */
+.atelier-filter__op.is-flip { animation: atelier-flip var(--atelier-motion-duration-snap) var(--atelier-motion-easing-snap); }
+@keyframes atelier-flip { from { opacity: 0.2; transform: translateY(5px); } }
+/* × folds the capsule away before it leaves the DOM. */
+.atelier-filter.is-leaving { opacity: 0; transform: scale(0.9); pointer-events: none; }
+.atelier-filterbar__clear {
+  margin-left: auto;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: var(--atelier-radius-sm);
+  background: transparent;
+  color: var(--atelier-color-text-muted);
+  font: inherit;
+  font-size: var(--atelier-font-size-caption);
+  cursor: pointer;
+}
+.atelier-filterbar__clear:hover { color: var(--atelier-color-ink); text-decoration: underline; text-underline-offset: 3px; }
+.atelier-filterbar__clear:focus-visible { outline: 0; box-shadow: var(--atelier-shadow-focus); }
+.atelier-filterbar__empty { font-size: var(--atelier-font-size-caption); color: var(--atelier-color-text-subtle); }
+.atelier-filterbar__empty[hidden] { display: none; }
+
+/* =========================================================================
+   Dropdown menu — snaps open from its trigger (scale .97 → 1, 180ms, no overshoot), leaves in 110ms.
+   <div class="atelier-menu">
+     <button class="atelier-btn atelier-btn--tertiary" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="m1">Options</button>
+     <div class="atelier-menu__panel" id="m1" role="menu" aria-label="Project options">
+       <button class="atelier-menu__item" role="menuitem" type="button"><svg class="atelier-icon">…</svg>Rename<kbd class="atelier-kbd">R</kbd></button>
+       <button class="atelier-menu__item" role="menuitemcheckbox" aria-checked="true" type="button">Show archived</button>
+       <div class="atelier-menu__sep" role="separator"></div>
+       <button class="atelier-menu__item atelier-menu__item--danger" role="menuitem" type="button">Delete</button>
+     </div>
+   </div>
+   Open: the trigger's aria-expanded="true" (js/atelier.js: click, ↓, ↑/↓ between items, Esc, click outside).
+   --static keeps the panel in the flow (documentation, sheets) instead of floating over the page.
+   ========================================================================= */
+.atelier-menu { position: relative; display: inline-flex; flex-direction: column; align-items: flex-start; }
+.atelier-menu__panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 224px;
+  padding: 5px;
+  border: 1px solid var(--atelier-color-border);
+  border-radius: var(--atelier-radius-lg);
+  background: var(--atelier-color-surface);
+  box-shadow: var(--atelier-shadow-overlay);
+  transform-origin: 16px 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-3px) scale(0.97);
+  transition:
+    opacity var(--atelier-motion-duration-exit) var(--atelier-motion-easing),
+    transform var(--atelier-motion-duration-exit) var(--atelier-motion-easing),
+    visibility 0s linear var(--atelier-motion-duration-exit);
+}
+[aria-expanded="true"] + .atelier-menu__panel {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity var(--atelier-motion-duration-snap) var(--atelier-motion-easing-snap),
+    transform var(--atelier-motion-duration-snap) var(--atelier-motion-easing-snap),
+    visibility 0s;
+}
+.atelier-menu--static .atelier-menu__panel { position: static; margin-top: 8px; }
+.atelier-menu--end .atelier-menu__panel { left: auto; right: 0; transform-origin: calc(100% - 16px) 0; }
+.atelier-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 34px;
+  padding: 0 8px 0 10px;
+  border: 0;
+  border-radius: var(--atelier-radius-sm);
+  background: transparent;
+  color: var(--atelier-color-text);
+  font: inherit;
+  font-size: var(--atelier-font-size-small);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--atelier-motion-duration-exit) var(--atelier-motion-easing), color var(--atelier-motion-duration-exit) var(--atelier-motion-easing);
+}
+.atelier-menu__item > .atelier-icon { width: 16px; height: 16px; color: var(--atelier-color-text-muted); }
+.atelier-menu__item .atelier-kbd { margin-left: auto; }
+.atelier-menu__item:hover,
+.atelier-menu__item:focus-visible { outline: 0; background: var(--atelier-color-primary-soft); color: var(--atelier-color-on-soft); }
+.atelier-menu__item:hover > .atelier-icon,
+.atelier-menu__item:focus-visible > .atelier-icon { color: var(--atelier-color-primary); }
+.atelier-menu__item:active { background: color-mix(in srgb, var(--atelier-color-primary) 18%, var(--atelier-color-surface)); }
+/* Checkable items draw their tick on the right */
+.atelier-menu__item[aria-checked]::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  flex: none;
+  border-radius: 4px;
+  background: var(--atelier-color-primary);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17 19 7'/%3E%3C/svg%3E") center / 14px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17 19 7'/%3E%3C/svg%3E") center / 14px no-repeat;
+  transform: scale(0.4);
+  opacity: 0;
+  transition: transform var(--atelier-motion-duration-snap) var(--atelier-motion-easing-snap), opacity var(--atelier-motion-duration-exit) var(--atelier-motion-easing);
+}
+.atelier-menu__item[aria-checked="true"]::after { transform: none; opacity: 1; }
+.atelier-menu__item--danger { color: var(--atelier-color-danger-ink); }
+.atelier-menu__item--danger > .atelier-icon { color: var(--atelier-color-danger); }
+.atelier-menu__item--danger:hover,
+.atelier-menu__item--danger:focus-visible { background: var(--atelier-color-danger-soft); color: var(--atelier-color-danger-ink); }
+.atelier-menu__item--danger:hover > .atelier-icon,
+.atelier-menu__item--danger:focus-visible > .atelier-icon { color: var(--atelier-color-danger); }
+.atelier-menu__item:disabled,
+.atelier-menu__item[aria-disabled="true"] { color: var(--atelier-color-disabled-ink); background: transparent; cursor: not-allowed; }
+.atelier-menu__label { padding: 8px 10px 4px; font-size: var(--atelier-font-size-kicker); font-weight: var(--atelier-font-weight-bold); letter-spacing: 0.08em; text-transform: uppercase; color: var(--atelier-color-text-subtle); }
+.atelier-menu__sep { height: 1px; margin: 4px 6px; background: var(--atelier-color-border); }
+
+/* Appearance changes (theme, accent, density, contrast) cross-fade the page in 220ms through the View
+   Transitions API when js/atelier.js can use it — no global colour transitions, nothing to repaint per frame. */
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 220ms; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }

@@ -26,7 +26,7 @@ Source: **ATELIER / PRODUCT UI SYSTEM** board. The "appearance settings" idea al
 | Data & feedback | Project card with logo, "In progress", meta, avatar stack; success toast; confirm card; badges New / Approved / At risk; dark toast "Invite sent"; progress 68% with knob; empty state | Soft badges derived with `color-mix()` |
 | Live preview | Dark header bar, workspace with sidebar, search, "New task", kanban To do / In progress / Done | Real `examples/workspace.html`, embedded as a scaled live iframe |
 | Appearance settings | Theme Light / Dark, five accent dots, density Cozy / Balanced / Compact, radius 8–24 slider, Reduce motion, High contrast | All implemented as token variants and stored in `localStorage` |
-| Not in the reference | — | Dark-theme values, table, dialog, tooltip, search field, live sync between pages |
+| Not in the reference | — | Dark-theme values, table, dialog, tooltip, search field, command palette, filter bar, dropdown menu, avatar presence, live sync between pages |
 
 ## 3. Foundations
 
@@ -42,12 +42,14 @@ Source: **ATELIER / PRODUCT UI SYSTEM** board. The "appearance settings" idea al
 **Typography** — Archivo. Display 40 / 800 / 112% caps · section 24 / 800 caps · title 28 / 700 · heading 17 / 700 · body 15 · small 14 · caption 13 · kicker 12 caps +0.18em (scaled up to the printed board's proportions).
 **Spacing & density** — 4px base; panel padding 24 (compact 16, cozy 32); row height 40 (32 / 48); controls 32 / 40 / 48 (28 / 34 / 40 · 36 / 46 / 54).
 **Shape** — `--atelier-radius-base` 16 (8–24); sm/md/lg/xl derived; buttons, tabs, badges, switches are pills.
+**Edges** — Frosted panels and the command palette carry a specular rim: a 1px gradient ring (`--atelier-color-specular` at the top, fading out by mid-height) laid over the border with a mask, so it stays one device pixel sharp at any radius.
+
 **Depth** — Subtle, panel, floating, modal shadows (cool `rgba(28,35,51,…)`); focus `0 0 0 3px` accent at 30%.
-**Motion** — Precise: no overshoot anywhere. Press 70ms, release 180ms; `shadow-pressed` fades the lift into a well; check marks scale in, radios close their ring. 160ms color; 340ms glide; `data-motion="reduced"` sets every duration to 0. Page load: `.atelier-enter` is a quick, precise fade-up (380ms, 40ms stagger), off with `data-motion="reduced"`.
+**Motion** — Precise: no overshoot anywhere. Press 70ms (`translateY(1px) scale(.985)`), release 180ms; `shadow-pressed` fades the lift into a well; check marks scale in, radios close their ring. Overlays (menus, the command palette, tooltips, dialogs) arrive on `easing-snap` `cubic-bezier(.16,1,.3,1)` in 180ms — fast out, damped, stopping dead — and leave in 110ms (`duration-exit`). Theme, accent, density and contrast changes cross-fade the page once through the View Transitions API (220ms) instead of repainting every element. 160ms color; 340ms glide; `data-motion="reduced"` sets every duration to 0. Page load: `.atelier-enter` is a quick, precise fade-up (380ms, 40ms stagger), off with `data-motion="reduced"`.
 
 ## 4. Components
 
-Display, tagline, section title, kicker, panel, rule, button (primary / secondary / tertiary / destructive / ghost), input / select / textarea, search, checkbox, radio, switch, slider (+ stops), pill tabs, segmented, breadcrumb, pagination, sidebar nav, card, badge, avatar stack, progress, kanban board / column / task, toast (success / warning / danger / inverse), confirm, empty state, swatch picker, table, dialog, tooltip. Markup: `index.html` (Code button on every panel) and `css/components.css`.
+Display, tagline, section title, kicker, panel, rule, button (primary / secondary / tertiary / destructive / ghost), input / select / textarea, search, checkbox, radio, switch, slider (+ stops), pill tabs, segmented, breadcrumb, pagination, sidebar nav, card, badge, avatar stack, progress, kanban board / column / task, toast (success / warning / danger / inverse), confirm, empty state, swatch picker, table, dialog, tooltip, keyboard key, command palette (filter, ↑/↓, ↵, gliding highlight), filter bar (field · operator · value capsules), dropdown menu (checkable items, shortcuts), avatar presence and overflow. Markup: `index.html` (Code button on every panel) and `css/components.css`.
 
 ## 5. Accessibility
 

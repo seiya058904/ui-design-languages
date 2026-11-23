@@ -35,13 +35,15 @@ Never hard-code a tint: if you need a soft version of a color, use `color-mix(in
 | Selection | Pill tabs fill with the accent; segmented / theme switch uses a soft accent fill with an accent border; sidebar uses `--atelier-color-primary-soft` | Underlines for primary navigation |
 | Status | Soft tinted badges (`--teal`, `--amber`, `--danger`, `--violet`, `--soft`) and one filled `--primary` for "New" | Saturated status fills everywhere |
 | Data | Cards are white with 1px border and subtle shadow; kanban columns are sunken | Shadows heavier than `floating` outside overlays |
-| Motion | 160ms for color; indicators glide 340ms on `cubic-bezier(.32,.72,0,1)` | Bounces, decorative animation |
+| Motion | 160ms for color; presses 70ms in / 180ms out; overlays (menus, palette, tooltips, dialogs) snap in on `--atelier-motion-easing-snap` (180ms) and leave in `--atelier-motion-duration-exit` (110ms); indicators glide 340ms on `cubic-bezier(.32,.72,0,1)`; appearance changes cross-fade once via View Transitions | Bounces, decorative animation, global colour transitions on every element |
 
 ## 4. Recipes
 
 - **Primary button**: `linear-gradient(180deg, primary-light, primary)`, shadow `inset 0 1px 0 rgba(255,255,255,.22), 0 1px 2px primary-strong@40%, 0 6px 16px -6px primary@65%`.
 - **Panel shadow**: `inset 0 1px 0 rgba(255,255,255,.8), 0 1px 2px rgba(28,35,51,.04), 0 12px 32px -14px rgba(28,35,51,.16)`.
 - **Focus**: `0 0 0 3px color-mix(in srgb, accent 30%, transparent)`.
+- **Specular rim**: `::before { inset: -1px; padding: 1px; border-radius: inherit; background: linear-gradient(180deg, var(--atelier-color-specular), transparent 46%); mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; }`.
+- **Overlay**: `--atelier-shadow-overlay`, panel `transform: translateY(-3px) scale(.97)` → none on `--atelier-motion-easing-snap`; `setAppearance()` applies on the next frame when it cross-fades — listen for `atelier:appearance`.
 - **Overlay surface**: `repeating-conic-gradient(checker 0 25%, surface 0 50%) 0 0 / 12px 12px`.
 
 ## 5. Copy

@@ -77,6 +77,21 @@ a { color: inherit; }
   backdrop-filter: blur(16px) saturate(140%);
   box-shadow: var(--atelier-shadow-panel);
 }
+/* Specular rim: light catches the top edge of the glass and fades down its sides — a 1px gradient ring
+   laid over the border and cut out with a mask, so it stays one device pixel sharp at any radius. */
+.atelier-panel::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(180deg, var(--atelier-color-specular), transparent 46%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
 .atelier-panel > .atelier-section-title:first-child { margin-bottom: var(--atelier-space-5); }
 .atelier-group-label { display: block; font-size: var(--atelier-font-size-heading); font-weight: var(--atelier-font-weight-semibold); color: var(--atelier-color-ink); margin-bottom: var(--atelier-space-3); }
 

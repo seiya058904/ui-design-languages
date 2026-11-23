@@ -207,7 +207,7 @@
 
   /* ---------- the week follows the calendar: earlier days kept, today open, later days waiting ---------- */
   (function () {
-    var days = $(".week > span"), t = (now.getDay() + 6) % 7;
+    var days = $$(".week > span"), t = (now.getDay() + 6) % 7;
     days.forEach(function (d, i) { d.className = i < t ? "done" : i === t ? "today" : ""; d.removeAttribute("data-today"); if (i === t) d.setAttribute("data-today", ""); });
     $(".week").setAttribute("aria-label", "This week: " + t + " days journaled, today " + (t === 0 ? "is the first day" : "pending"));
   })();

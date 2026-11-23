@@ -226,8 +226,8 @@
   var rows = document.querySelectorAll("[data-marquee]");
   if (rows.length && window.UIWall) {
     var ROWS = [
-      [["clay", "button", "variants"], ["braun", "slider", "rotary-dial"], ["lilac", "selection", "toggle"], ["zine", "tabs", "folder-tabs"], ["atelier", "tabs", "pill-tabs"], ["obsidian", "card", "kpi-card"], ["tactile", "selection", "switch"], ["terrarium", "card", "feature-card"], ["sketch", "tabs", "folder-tabs"], ["clay", "segmented", "segmented-control"], ["zine", "chips", "stickers"], ["atelier", "appearance", "accent-swatches"]],
-      [["lilac", "progress", "ring-and-steps"], ["obsidian", "tabs", "pill-tabs"], ["sketch", "chips", "badges-and-status"], ["terrarium", "progress", "ring"], ["tactile", "button", "states"], ["braun", "progress", "led-meter"], ["atelier", "button", "variants"], ["zine", "button", "variants"], ["clay", "selection", "toggle"], ["obsidian", "selection", "switches"], ["tactile", "segmented", "segmented-tabs"], ["terrarium", "segmented", "segmented"], ["braun", "segmented", "keys"], ["lilac", "button", "variants"]]
+      [["clay", "widget", "control-tiles"], ["braun", "slider", "rotary-dial"], ["lilac", "timer", "focus-timer"], ["zine", "ticket", "tear-off-ticket"], ["atelier", "command", "command-palette"], ["obsidian", "dock", "floating-dock"], ["tactile", "dial", "thermostat"], ["terrarium", "garden", "habit-garden"], ["sketch", "notes", "sticky-notes"], ["clay", "button", "variants"], ["zine", "tabs", "folder-tabs"], ["obsidian", "card", "kpi-card"], ["atelier", "tabs", "pill-tabs"]],
+      [["braun", "scope", "scope"], ["lilac", "progress", "ring-and-steps"], ["obsidian", "media", "now-playing"], ["sketch", "flow", "flow-card"], ["terrarium", "mood", "mood-dial"], ["tactile", "chips", "filter-chips"], ["atelier", "filter", "filter-capsules"], ["zine", "board", "sticker-board"], ["clay", "slider", "slider"], ["lilac", "deck", "card-stack"], ["braun", "progress", "led-meter"], ["terrarium", "progress", "ring"], ["tactile", "selection", "switch"], ["sketch", "tabs", "folder-tabs"]]
     ];
     UIWall.ready().then(function () {
       rows.forEach(function (row) {

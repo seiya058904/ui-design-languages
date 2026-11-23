@@ -4,13 +4,17 @@
 (function () {
   var W = window.UIWall;
   /* Which demos each language puts on the wall: packs.json → site.wall. */
-  var KIND = { button: "actions", input: "inputs", slider: "inputs", selection: "choices", segmented: "choices", tabs: "choices", chips: "choices", appearance: "choices",
-    alert: "feedback", progress: "feedback", dialog: "feedback", tooltip: "feedback", card: "content", avatar: "content", table: "content", elevation: "content", material: "content", glass: "content", board: "content", menu: "choices", navigation: "navigation" };
+  var KIND = { button: "actions", input: "inputs", slider: "inputs", stepper: "inputs", dial: "inputs", calendar: "inputs",
+    selection: "choices", segmented: "choices", tabs: "choices", chips: "choices", appearance: "choices", menu: "choices", filter: "choices", widget: "choices", mood: "choices",
+    alert: "feedback", progress: "feedback", dialog: "feedback", tooltip: "feedback", timer: "feedback", scope: "feedback", garden: "feedback",
+    card: "content", avatar: "content", table: "content", elevation: "content", material: "content", glass: "content", board: "content", accordion: "content",
+    deck: "content", notes: "content", media: "content", ticket: "content",
+    navigation: "navigation", command: "navigation", dock: "navigation", flow: "navigation" };
   var KINDS = [["all", "All"], ["actions", "Actions"], ["inputs", "Inputs"], ["choices", "Choices"], ["feedback", "Feedback"], ["content", "Content"], ["navigation", "Navigation"]];
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
-  var grid = $("[data-grid]"), stylesEl = $("[data-styles]"), catsEl = $("[data-cats]"), backdrops = $("[data-backdrops]"), note = $("[data-note]");
-  var state = { style: "all", kind: "all", theme: "light" };
+  var grid = $("[data-grid]"), stylesEl = $("[data-styles]"), catsEl = $("[data-cats]"), backdrops = $("[data-backdrops]"), note = $("[data-note]"), search = $("[data-search]");
+  var state = { style: "all", kind: "all", theme: "light", query: "" };
   var cards = [];
 
   /* ---------- build ---------- */
@@ -63,7 +67,9 @@
         dot.style.transform = "translate3d(" + (at.clientX - r.left).toFixed(0) + "px," + (at.clientY - r.top).toFixed(0) + "px,0)";
       });
     });
-    return { el: card, pack: packId, comp: compId, demo: demoId };
+    // what the search box matches: language, component, demo and kind
+    var words = [p.name, p.id, hit.component.title, compId, hit.demo.label, KIND[compId] || "content"].join(" ").toLowerCase();
+    return { el: card, pack: packId, comp: compId, demo: demoId, words: words };
   }
 
   function buildFilters() {
@@ -114,7 +120,7 @@
     stylesEl.querySelectorAll("[data-style]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-style") === state.style)); });
     catsEl.querySelectorAll("[data-kind]").forEach(function (b) {
       var k = b.getAttribute("data-kind");
-      var n = cards.filter(function (c) { return (state.style === "all" || c.pack === state.style) && (k === "all" || c.el.getAttribute("data-kind") === k); }).length;
+      var n = cards.filter(function (c) { return (state.style === "all" || c.pack === state.style) && (k === "all" || c.el.getAttribute("data-kind") === k) && matches(c); }).length;
       b.setAttribute("aria-pressed", String(k === state.kind));
       b.disabled = n === 0 && k !== "all";
     });
@@ -130,7 +136,11 @@
   }
 
   /* ---------- masonry ---------- */
-  function visible(c) { return (state.style === "all" || c.pack === state.style) && (state.kind === "all" || c.el.getAttribute("data-kind") === state.kind); }
+  function matches(c) {
+    if (!state.query) return true;
+    return state.query.split(/s+/).every(function (w) { return c.words.indexOf(w) >= 0; });
+  }
+  function visible(c) { return (state.style === "all" || c.pack === state.style) && (state.kind === "all" || c.el.getAttribute("data-kind") === state.kind) && matches(c); }
   function layout() {
     var width = grid.clientWidth;
     var cols = width >= 1060 ? 3 : width >= 660 ? 2 : 1, gap = width >= 660 ? 20 : 16;
@@ -160,7 +170,9 @@
     layout();
     var n = cards.filter(visible).length;
     var p = W.byId[state.style];
-    note.textContent = p ? n + " " + p.name + " components, on " + p.name + "'s own canvas. Open any of them for its complete source." : n + " components from " + W.packs.length + " languages, all live. Open any card for its complete source.";
+    if (state.query && !n) note.textContent = "Nothing matches “" + state.query + "”" + (p ? " in " + p.name : "") + ". Try a component (slider, menu, dial) or a language name.";
+    else if (state.query) note.textContent = n + (n === 1 ? " component matches" : " components match") + " “" + state.query + "”" + (p ? " in " + p.name : "") + ".";
+    else note.textContent = p ? n + " " + p.name + " components, on " + p.name + "'s own canvas. Open any of them for its complete source." : n + " components from " + W.packs.length + " languages, all live. Open any card for its complete source.";
   }
   var raf = 0;
   function relayout() { if (raf) return; raf = requestAnimationFrame(function () { raf = 0; layout(); glide(); }); }
@@ -349,6 +361,31 @@
         openDrawer(parts[0], parts[1], pick ? pick[1] : null, true);
       }
     }
+  }
+
+  /* ---------- search: type to narrow the wall; "/" focuses it, Esc clears ---------- */
+  if (search) {
+    var queued = 0;
+    search.addEventListener("input", function () {
+      if (queued) return;
+      queued = requestAnimationFrame(function () {
+        queued = 0;
+        state.query = search.value.trim().toLowerCase();
+        syncFilters();
+        apply(true);
+      });
+    });
+    search.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && search.value) { search.value = ""; state.query = ""; syncFilters(); apply(true); e.stopPropagation(); }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      var t = e.target;
+      if (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || !drawer.hidden) return;
+      e.preventDefault();
+      search.focus();
+      search.select();
+    });
   }
 
   /* ---------- sticky bar gets a frosted background once it sticks ---------- */

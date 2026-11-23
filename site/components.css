@@ -23,6 +23,16 @@
 .cw-filter button i { width: 8px; height: 8px; border-radius: 50%; }
 .cw-filter button b { font-weight: 500; }
 .cw-filter button small { font: 500 11px/1 "Geist Mono", ui-monospace, monospace; color: var(--faint); }
+/* Search: narrows the wall as you type ("/" focuses it, Esc clears) */
+.cw-search { position: relative; display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 8px 0 12px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, 0.03); color: var(--muted); transition: border-color .2s, background-color .2s, box-shadow .3s var(--ease); }
+.cw-search:focus-within { border-color: var(--line-strong); background: rgba(255, 255, 255, 0.06); box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.04); color: var(--ink); }
+.cw-search svg { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.cw-search input { width: 150px; min-width: 0; height: 100%; padding: 0; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; outline: none; transition: width .4s var(--ease); }
+.cw-search input:focus { width: 190px; }
+.cw-search input::placeholder { color: var(--faint); }
+.cw-search input::-webkit-search-cancel-button { display: none; }
+.cw-search kbd { display: inline-grid; place-items: center; min-width: 20px; height: 20px; border: 1px solid var(--line-strong); border-radius: 6px; font: 500 11px/1 "Geist Mono", ui-monospace, monospace; color: var(--faint); transition: opacity .2s; }
+.cw-search:focus-within kbd { opacity: 0; }
 .cw-cats { display: inline-flex; flex-wrap: wrap; gap: 6px; }
 .cw-cats button { height: 30px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--muted); font-size: 13px; white-space: nowrap; cursor: pointer; transition: color .2s, border-color .2s, background-color .2s; }
 .cw-cats button:hover { color: var(--ink); border-color: var(--line-strong); }
@@ -138,6 +148,9 @@ html.has-drawer { overflow: hidden; }
   .cw-bar__in { flex-direction: column; flex-wrap: nowrap; align-items: stretch; } /* wrap + column would size the line to its widest child */
   .cw-bar__end { justify-content: space-between; flex-wrap: nowrap; }
   .cw-cats { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+  .cw-bar__end { flex-wrap: wrap; }
+  .cw-search { flex: 1 1 100%; }
+  .cw-search input, .cw-search input:focus { width: 100%; }
   .cw-cats::-webkit-scrollbar { display: none; }
   .cw.is-unified { padding: 18px 14px 56px; }
   .cw-backdrop { border-radius: 24px; }

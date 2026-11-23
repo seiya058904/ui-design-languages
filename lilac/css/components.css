@@ -28,17 +28,18 @@
   cursor: pointer;
   user-select: none;
   box-shadow: var(--lilac-shadow-raised);
-  /* Pieces float back with a soft overshoot; the violet glow blooms a little slower than the lift. */
+  /* Pieces float back with a soft overshoot. The violet glow blooms outward slowly on hover (bloom,
+     damped) and converges fast under the finger (press timing on :active). */
   transition:
     transform var(--lilac-motion-duration-release) var(--lilac-motion-easing-release),
-    box-shadow var(--lilac-motion-duration-release) var(--lilac-motion-easing),
+    box-shadow var(--lilac-motion-duration-bloom) var(--lilac-motion-easing-float),
     background-color var(--lilac-motion-duration) var(--lilac-motion-easing);
 }
 .lilac-btn .lilac-icon { transition: transform var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring); }
 .lilac-btn:hover,
 .lilac-btn.is-hover { transform: translateY(-1px); box-shadow: var(--lilac-shadow-raised-hover); }
 .lilac-btn:hover .lilac-icon:last-child:not(:first-child) { transform: translateX(3px); }
-.lilac-btn:active { transform: translateY(0) scale(0.98); box-shadow: var(--lilac-shadow-pressed); transition-duration: var(--lilac-motion-duration-press); transition-timing-function: var(--lilac-motion-easing-press); }
+.lilac-btn:active { transform: translateY(0) scale(0.97); box-shadow: var(--lilac-shadow-pressed); transition-duration: var(--lilac-motion-duration-press); transition-timing-function: var(--lilac-motion-easing-press); }
 .lilac-btn:focus-visible { box-shadow: var(--lilac-shadow-raised), var(--lilac-shadow-focus); }
 
 .lilac-btn--primary {
@@ -48,7 +49,7 @@
 }
 .lilac-btn--primary:hover,
 .lilac-btn--primary.is-hover { box-shadow: var(--lilac-shadow-accent-hover); }
-.lilac-btn--primary:active { background: var(--lilac-color-primary-hover); box-shadow: inset 0 2px 6px rgba(20, 0, 80, 0.3); }
+.lilac-btn--primary:active { background: var(--lilac-color-primary-hover); box-shadow: var(--lilac-shadow-accent-pressed); }
 .lilac-btn--primary:focus-visible { box-shadow: var(--lilac-shadow-accent), var(--lilac-shadow-focus); }
 
 .lilac-btn--soft { background: var(--lilac-color-primary-wash); color: var(--lilac-color-on-wash); box-shadow: none; }
@@ -179,16 +180,21 @@ select.lilac-input {
   white-space: nowrap;
   cursor: pointer;
   box-shadow: var(--lilac-shadow-raised);
-  transition: background-color var(--lilac-motion-duration), color var(--lilac-motion-duration), box-shadow var(--lilac-motion-duration);
+  transition:
+    transform var(--lilac-motion-duration-release) var(--lilac-motion-easing-release),
+    background-color var(--lilac-motion-duration),
+    color var(--lilac-motion-duration),
+    box-shadow var(--lilac-motion-duration-bloom) var(--lilac-motion-easing-float);
 }
 .lilac-chip .lilac-icon { width: 16px; height: 16px; }
+.lilac-chip:active { transform: scale(0.96); transition-duration: var(--lilac-motion-duration-press); transition-timing-function: var(--lilac-motion-easing-press); }
 .lilac-chip:hover { box-shadow: var(--lilac-shadow-raised-hover); }
 .lilac-chip:focus-visible { box-shadow: var(--lilac-shadow-raised), var(--lilac-shadow-focus); }
 .lilac-chip[aria-pressed="true"],
 .lilac-chip.is-selected {
   background: var(--lilac-color-primary-wash);
   color: var(--lilac-color-on-wash);
-  box-shadow: inset 0 0 0 1px var(--lilac-color-glow-soft);
+  box-shadow: inset 0 0 0 1px var(--lilac-color-glow-soft), 0 8px 18px -12px var(--lilac-color-glow);
 }
 .lilac-chip:disabled { background: var(--lilac-color-disabled); color: var(--lilac-color-disabled-ink); box-shadow: none; cursor: not-allowed; }
 
@@ -367,7 +373,7 @@ select.lilac-input {
   cursor: pointer;
   transition:
     background-color var(--lilac-motion-duration),
-    box-shadow var(--lilac-motion-duration),
+    box-shadow var(--lilac-motion-duration-bloom) var(--lilac-motion-easing-float),
     background-size var(--lilac-motion-duration-release) var(--lilac-motion-easing-pop);
 }
 
@@ -525,7 +531,7 @@ select.lilac-input {
 .lilac-ring__label span { margin-top: 6px; font-size: var(--lilac-font-size-small); color: var(--lilac-color-text-muted); }
 
 .lilac-steps { display: flex; flex-direction: column; gap: 20px; margin: 0; padding: 0; list-style: none; }
-.lilac-steps li { display: flex; align-items: center; gap: 16px; font-size: 16px; color: var(--lilac-color-text); }
+.lilac-steps li { position: relative; display: flex; align-items: center; gap: 16px; font-size: 16px; color: var(--lilac-color-text); }
 .lilac-steps li::before {
   content: "";
   flex: none;
@@ -542,6 +548,24 @@ select.lilac-input {
   box-shadow: 0 4px 10px -3px var(--lilac-color-glow);
 }
 .lilac-steps li.is-current::before { border-color: var(--lilac-color-primary); box-shadow: 0 0 0 4px var(--lilac-color-glow-soft); }
+/* The live step breathes: a soft halo swells and fades around its marker (scale + filter only, on the compositor). */
+.lilac-steps li.is-current::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  margin-top: -14px;
+  border-radius: 50%;
+  box-shadow: var(--lilac-shadow-halo);
+  pointer-events: none;
+  animation: lilac-breathe var(--lilac-motion-duration-breathe) var(--lilac-motion-easing-breathe) infinite;
+}
+@keyframes lilac-breathe {
+  0%, 100% { scale: 1; filter: opacity(0.85); }
+  50%      { scale: 1.32; filter: opacity(0.15); }
+}
 
 /* =========================================================================
    Toast & alert
@@ -622,8 +646,11 @@ select.lilac-input {
   background: var(--lilac-color-surface);
   box-shadow: var(--lilac-shadow-raised);
 }
-.lilac-card--interactive { cursor: pointer; transition: transform var(--lilac-motion-duration-release) var(--lilac-motion-easing-release), box-shadow var(--lilac-motion-duration-release) var(--lilac-motion-easing); }
-.lilac-card--interactive:hover { transform: translateY(-2px); box-shadow: var(--lilac-shadow-raised-hover); }
+/* Interactive cards float: a fast start and a long, damped settle (no bounce); pressing sets them down. */
+.lilac-card--interactive { cursor: pointer; transition: transform var(--lilac-motion-duration-float) var(--lilac-motion-easing-float), box-shadow var(--lilac-motion-duration-float) var(--lilac-motion-easing-float); }
+.lilac-card--interactive:hover { transform: translateY(-4px); box-shadow: var(--lilac-shadow-float-hover); }
+.lilac-card--interactive:active { transform: translateY(-1px) scale(0.99); box-shadow: var(--lilac-shadow-raised); transition-duration: var(--lilac-motion-duration-press); transition-timing-function: var(--lilac-motion-easing-press); }
+.lilac-card--interactive:focus-visible { box-shadow: var(--lilac-shadow-raised), var(--lilac-shadow-focus); }
 .lilac-card__title { font-size: 17px; font-weight: var(--lilac-font-weight-semibold); }
 .lilac-card__text  { font-size: var(--lilac-font-size-small); color: var(--lilac-color-text-muted); }
 
@@ -766,10 +793,13 @@ select.lilac-input {
 }
 .lilac-dialog::backdrop { background: var(--lilac-color-backdrop); backdrop-filter: blur(4px); }
 .lilac-dialog[open] { animation: lilac-rise var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring); }
+.lilac-dialog[open]::backdrop { animation: lilac-fade var(--lilac-motion-duration-slide) var(--lilac-motion-easing); }
+.lilac-dialog[open] .lilac-dialog__title { animation: lilac-title-in var(--lilac-motion-duration-float) var(--lilac-motion-easing-float) 60ms backwards; }
 .lilac-dialog__title { font-family: var(--lilac-font-family-serif); font-size: 30px; font-weight: var(--lilac-font-weight-medium); line-height: 1.1; color: var(--lilac-color-ink); }
 .lilac-dialog__body { margin-top: 10px; color: var(--lilac-color-text-muted); }
 .lilac-dialog__actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
 @keyframes lilac-rise { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes lilac-fade { from { opacity: 0; } }
 
 .lilac-tooltip { position: relative; display: inline-flex; }
 .lilac-tooltip::after {
@@ -777,7 +807,8 @@ select.lilac-input {
   position: absolute;
   left: 50%;
   bottom: calc(100% + 10px);
-  transform: translate(-50%, 4px);
+  transform: translate(-50%, 6px) scale(0.9);
+  transform-origin: 50% 100%;
   padding: 7px 14px;
   border-radius: var(--lilac-radius-pill);
   background: var(--lilac-color-ink);
@@ -786,7 +817,212 @@ select.lilac-input {
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--lilac-motion-duration), transform var(--lilac-motion-duration);
+  transition: opacity var(--lilac-motion-duration), transform var(--lilac-motion-duration-release) var(--lilac-motion-easing-release);
 }
 .lilac-tooltip:hover::after,
-.lilac-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0); }
+.lilac-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0) scale(1); }
+
+/* =========================================================================
+   Focus timer — a ring that empties as the minutes pass, serif numerals and one glowing control.
+   <div class="lilac-timer" data-duration="1500" style="--value:100">
+     <div class="lilac-timer__dial">
+       <svg viewBox="0 0 120 120" aria-hidden="true">
+         <circle class="lilac-timer__halo" cx="60" cy="60" r="52"/>
+         <circle class="lilac-timer__track" cx="60" cy="60" r="52" pathLength="100"/>
+         <circle class="lilac-timer__bar" cx="60" cy="60" r="52" pathLength="100"/>
+       </svg>
+       <div class="lilac-timer__readout"><span class="lilac-timer__time" role="timer">25:00</span><span class="lilac-timer__label">Deep work</span></div>
+     </div>
+     <div class="lilac-timer__controls">
+       <button class="lilac-btn lilac-btn--icon lilac-btn--sm" type="button" data-lilac-timer="reset" aria-label="Reset timer">…</button>
+       <button class="lilac-btn lilac-btn--primary lilac-timer__run" type="button" data-lilac-timer="run" aria-pressed="false" aria-label="Run timer">…start icon… …pause icon…</button>
+       <button class="lilac-btn lilac-btn--sm" type="button" data-lilac-timer="add" data-seconds="300">+5 min</button>
+     </div>
+   </div>
+   js/lilac.js runs it: run starts / pauses (aria-pressed), --value (0–100) empties the ring, and the
+   halo breathes while it runs. Without JS it is a static dial.
+   ========================================================================= */
+.lilac-timer { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+.lilac-timer__dial { position: relative; width: var(--timer-size, 220px); aspect-ratio: 1; flex: none; }
+.lilac-timer__dial svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+.lilac-timer circle { fill: none; }
+.lilac-timer__halo {
+  stroke: var(--lilac-color-glow-soft);
+  stroke-width: 22;
+  opacity: 0.35;
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  transition: opacity var(--lilac-motion-duration-bloom) var(--lilac-motion-easing-float);
+}
+.lilac-timer__track { stroke: var(--lilac-color-track); stroke-width: 7; }
+.lilac-timer__bar {
+  stroke: var(--lilac-color-primary);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-dasharray: var(--value, 100) 100;
+  filter: drop-shadow(0 0 6px var(--lilac-color-glow));
+  transition: stroke-dasharray 300ms linear, filter var(--lilac-motion-duration-bloom) var(--lilac-motion-easing-float);
+}
+/* Running: the halo breathes and the arc glows a little brighter. */
+.lilac-timer.is-running .lilac-timer__halo { animation: lilac-timer-breathe var(--lilac-motion-duration-breathe) var(--lilac-motion-easing-breathe) infinite; }
+.lilac-timer.is-running .lilac-timer__bar { filter: drop-shadow(0 0 9px var(--lilac-color-glow)) drop-shadow(0 0 2px var(--lilac-color-glow)); }
+@keyframes lilac-timer-breathe {
+  0%, 100% { opacity: 0.2; transform: scale(0.94); }
+  50%      { opacity: 0.75; transform: scale(1.05); }
+}
+/* Finished: one slow bloom. */
+.lilac-timer.is-done .lilac-timer__halo { animation: lilac-timer-done 1600ms var(--lilac-motion-easing-float); }
+@keyframes lilac-timer-done { 0% { opacity: 0.9; transform: scale(0.9); } 100% { opacity: 0.35; transform: scale(1); } }
+
+.lilac-timer__readout { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; text-align: center; }
+.lilac-timer__time {
+  font-family: var(--lilac-font-family-serif);
+  font-size: calc(var(--timer-size, 220px) * 0.25);
+  font-weight: var(--lilac-font-weight-medium);
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  color: var(--lilac-color-ink);
+}
+.lilac-timer__label {
+  font-size: 11px;
+  font-weight: var(--lilac-font-weight-medium);
+  letter-spacing: var(--lilac-font-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--lilac-color-text-muted);
+}
+.lilac-timer__controls { display: flex; align-items: center; gap: 14px; }
+.lilac-timer__run { width: var(--lilac-size-control-lg); height: var(--lilac-size-control-lg); padding: 0; }
+.lilac-timer__run .lilac-icon { width: 24px; height: 24px; }
+.lilac-timer__run .lilac-timer__pause,
+.lilac-timer__run[aria-pressed="true"] .lilac-timer__start { display: none; }
+.lilac-timer__run[aria-pressed="true"] .lilac-timer__pause { display: block; }
+
+/* =========================================================================
+   Card stack — a small deck of ivory cards; the next one floats up to the top.
+   <div class="lilac-deck">
+     <div class="lilac-deck__pile">
+       <article class="lilac-deck__card" style="--i:0">…</article>
+       <article class="lilac-deck__card" style="--i:1" aria-hidden="true">…</article>
+       <article class="lilac-deck__card" style="--i:2" aria-hidden="true">…</article>
+     </div>
+     <div class="lilac-deck__bar">
+       <button class="lilac-btn lilac-btn--icon lilac-btn--sm" type="button" data-lilac-deck="prev" aria-label="Previous card">…</button>
+       <span class="lilac-deck__count" aria-live="polite"><b>01</b> / 03</span>
+       <button class="lilac-btn lilac-btn--icon lilac-btn--sm" type="button" data-lilac-deck="next" aria-label="Next card">…</button>
+     </div>
+   </div>
+   --i is each card's depth (0 = on top). js/lilac.js deals the top card off to the side and lets it
+   float down under the deck (damped, no bounce); without JS the deck is a static pile.
+   ========================================================================= */
+.lilac-deck { display: flex; flex-direction: column; align-items: center; gap: 22px; width: 100%; }
+.lilac-deck__pile { position: relative; display: grid; width: min(100%, var(--deck-width, 340px)); padding-bottom: 28px; }
+.lilac-deck__card {
+  grid-area: 1 / 1;
+  z-index: calc(10 - var(--i, 0));
+  min-width: 0;
+  padding: 24px 24px 22px;
+  border-radius: var(--lilac-radius-lg);
+  background: var(--lilac-color-surface);
+  box-shadow: var(--lilac-shadow-raised);
+  transform: translateY(calc(var(--i, 0) * 13px)) scale(calc(1 - var(--i, 0) * 0.05));
+  transform-origin: 50% 100%;
+  transition:
+    transform var(--lilac-motion-duration-float) var(--lilac-motion-easing-float),
+    box-shadow var(--lilac-motion-duration-float) var(--lilac-motion-easing-float);
+}
+/* Cards under the top one show only their edge. */
+.lilac-deck__card > * { opacity: clamp(0, calc(1 - var(--i, 0)), 1); transition: opacity var(--lilac-motion-duration) var(--lilac-motion-easing); }
+/* Dealt off the top (next) or drawn out from the bottom (previous) before it settles in its new place. */
+.lilac-deck__card[data-fling] {
+  transition-duration: 320ms;
+  transition-timing-function: cubic-bezier(0.3, 0.7, 0.4, 1);
+  box-shadow: var(--lilac-shadow-float-hover);
+}
+.lilac-deck__card[data-fling="out"] { transform: translate(62%, -7%) rotate(7deg); }
+.lilac-deck__card[data-fling="in"]  { transform: translate(-62%, -7%) rotate(-7deg); }
+
+.lilac-deck__eyebrow { display: flex; align-items: baseline; gap: 1.4em; font-size: 12px; font-weight: var(--lilac-font-weight-medium); letter-spacing: var(--lilac-font-tracking-eyebrow); text-transform: uppercase; color: var(--lilac-color-text-muted); }
+.lilac-deck__eyebrow b { font-family: var(--lilac-font-family-serif); font-size: 15px; font-variant-numeric: lining-nums; font-weight: var(--lilac-font-weight-medium); letter-spacing: 0.05em; color: var(--lilac-color-text-subtle); }
+.lilac-deck__title { margin-top: 18px; font-family: var(--lilac-font-family-serif); font-size: 30px; font-weight: var(--lilac-font-weight-medium); line-height: 1.08; color: var(--lilac-color-ink); }
+.lilac-deck__text { margin-top: 8px; font-size: 14px; line-height: 1.5; color: var(--lilac-color-text-muted); }
+.lilac-deck__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; }
+
+.lilac-deck__bar { display: flex; align-items: center; gap: 16px; }
+.lilac-deck__count { min-width: 72px; text-align: center; font-family: var(--lilac-font-family-serif); font-size: 17px; font-variant-numeric: lining-nums tabular-nums; letter-spacing: 0.06em; color: var(--lilac-color-text-subtle); }
+.lilac-deck__count b { font-weight: var(--lilac-font-weight-medium); color: var(--lilac-color-ink); }
+
+/* =========================================================================
+   Accordion — calm questions on one ivory panel; the open row takes the lilac wash and its
+   plus turns into a glowing violet cross. Native <details> (name="…" for one open at a time).
+   <div class="lilac-accordion">
+     <details class="lilac-accordion__item" name="faq" open>
+       <summary class="lilac-accordion__head">What is a focus block?<span class="lilac-accordion__icon" aria-hidden="true"><svg class="lilac-icon">plus</svg></span></summary>
+       <div class="lilac-accordion__body">…</div>
+     </details>
+   </div>
+   ========================================================================= */
+.lilac-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 6px;
+  border-radius: var(--lilac-radius-lg);
+  background: var(--lilac-color-surface);
+  box-shadow: var(--lilac-shadow-raised);
+  interpolate-size: allow-keywords;
+}
+.lilac-accordion__item { border-radius: var(--lilac-radius-md); transition: background-color var(--lilac-motion-duration-float) var(--lilac-motion-easing-float); }
+.lilac-accordion__item[open] { background: var(--lilac-color-primary-wash); }
+.lilac-accordion__item::details-content {
+  height: 0;
+  overflow: clip;
+  transition:
+    height var(--lilac-motion-duration-float) var(--lilac-motion-easing-float),
+    content-visibility var(--lilac-motion-duration-float) allow-discrete;
+}
+.lilac-accordion__item[open]::details-content { height: auto; }
+.lilac-accordion__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 58px;
+  padding: 8px 12px 8px 18px;
+  border-radius: var(--lilac-radius-md);
+  font-size: 15px;
+  font-weight: var(--lilac-font-weight-semibold);
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--lilac-motion-duration) var(--lilac-motion-easing), box-shadow var(--lilac-motion-duration) var(--lilac-motion-easing);
+}
+.lilac-accordion__head::-webkit-details-marker { display: none; }
+.lilac-accordion__head:hover { color: var(--lilac-color-on-wash); }
+.lilac-accordion__head:focus-visible { box-shadow: var(--lilac-shadow-focus); }
+.lilac-accordion__item[open] .lilac-accordion__head { color: var(--lilac-color-on-wash); }
+.lilac-accordion__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--lilac-color-primary-wash);
+  color: var(--lilac-color-on-wash);
+  transition:
+    transform var(--lilac-motion-duration-release) var(--lilac-motion-easing-release),
+    background-color var(--lilac-motion-duration) var(--lilac-motion-easing),
+    color var(--lilac-motion-duration) var(--lilac-motion-easing),
+    box-shadow var(--lilac-motion-duration-bloom) var(--lilac-motion-easing-float);
+}
+.lilac-accordion__icon .lilac-icon { width: 16px; height: 16px; stroke-width: 2.2; }
+.lilac-accordion__head:active .lilac-accordion__icon { transform: scale(0.9); transition-duration: var(--lilac-motion-duration-press); transition-timing-function: var(--lilac-motion-easing-press); }
+.lilac-accordion__item[open] .lilac-accordion__icon {
+  transform: rotate(45deg);
+  background: linear-gradient(180deg, var(--lilac-color-primary-light), var(--lilac-color-primary));
+  color: var(--lilac-color-primary-ink);
+  box-shadow: 0 6px 14px -6px var(--lilac-color-glow);
+}
+.lilac-accordion__body { padding: 0 60px 18px 18px; font-size: 14px; line-height: 1.6; color: var(--lilac-color-text-muted); }

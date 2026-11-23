@@ -3,6 +3,10 @@
    - tablists: click + ←/→/Home/End move aria-selected; navs: plain clicks move aria-current="page"
    - sliders: keeps --fill and a linked <output for="id"> in sync
    - toggle chips (.lilac-chip[aria-pressed]) and dialogs ([data-lilac-open="#id"], [data-lilac-close])
+   - focus timers (.lilac-timer): [data-lilac-timer="run|reset|add"] start / pause (aria-pressed), reset,
+     add data-seconds; --value (0–100) empties the ring; fires "lilac:timerdone" at zero
+   - card decks (.lilac-deck): [data-lilac-deck="next|prev"] deal the top card off and let it float
+     under the pile (or draw the bottom one back up); ←/→ inside the deck do the same
    - accent: [data-accent-set="violet|cobalt"] switches <html data-accent>, remembered in localStorage
    - theme: [data-theme-set="light|dark|auto"] or a [data-theme-toggle] button / checkbox switches
      <html data-theme>, remembered in localStorage "lilac-theme"; fires "lilac:themechange"
@@ -115,6 +119,89 @@
     }
   }
 
+  /* ---------- Focus timer ---------- */
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+  function clock(sec) { sec = Math.max(0, Math.ceil(sec)); return pad2(Math.floor(sec / 60)) + ":" + pad2(sec % 60); }
+  function timerOf(t) {
+    if (!t.__lilacTimer) {
+      var total = parseFloat(t.getAttribute("data-duration")) || 1500;
+      var left = parseFloat(t.getAttribute("data-remaining"));
+      t.__lilacTimer = { base: total, total: total, left: isNaN(left) ? total : left, id: 0, last: 0 };
+    }
+    return t.__lilacTimer;
+  }
+  function renderTimer(t) {
+    var st = timerOf(t);
+    t.style.setProperty("--value", String(Math.round((st.left / st.total) * 1000) / 10));
+    var out = t.querySelector("." + P + "-timer__time");
+    if (out) out.textContent = clock(st.left);
+  }
+  function runTimer(t, on) {
+    var st = timerOf(t), btn = t.querySelector('[data-' + P + '-timer="run"]');
+    clearInterval(st.id);
+    st.id = 0;
+    t.classList.toggle("is-running", on);
+    if (btn) btn.setAttribute("aria-pressed", on ? "true" : "false");
+    if (!on) return;
+    if (st.left <= 0) st.left = st.total;
+    t.classList.remove("is-done");
+    st.last = Date.now();
+    st.id = setInterval(function () {
+      var now = Date.now();
+      st.left -= (now - st.last) / 1000;
+      st.last = now;
+      if (st.left <= 0) {
+        st.left = 0;
+        renderTimer(t);
+        runTimer(t, false);
+        t.classList.add("is-done");
+        t.dispatchEvent(new CustomEvent(P + ":timerdone", { bubbles: true }));
+        return;
+      }
+      renderTimer(t);
+    }, 250);
+  }
+  function timerAction(btn) {
+    var t = btn.closest("." + P + "-timer");
+    if (!t) return;
+    var st = timerOf(t), act = btn.getAttribute("data-" + P + "-timer");
+    if (act === "run") runTimer(t, !st.id);
+    else if (act === "reset") { runTimer(t, false); st.total = st.left = st.base; t.classList.remove("is-done"); renderTimer(t); }
+    else if (act === "add") {
+      st.left += parseFloat(btn.getAttribute("data-seconds")) || 300;
+      st.total = Math.max(st.total, st.left);
+      renderTimer(t);
+    }
+  }
+
+  /* ---------- Card deck ---------- */
+  function stackCards(stack) { return Array.prototype.slice.call(stack.querySelectorAll("." + P + "-deck__card")); }
+  function depthOf(c) { return parseFloat(c.style.getPropertyValue("--i")) || 0; }
+  function setDepths(stack, order) {
+    var all = stackCards(stack);
+    order.forEach(function (c, i) {
+      c.style.setProperty("--i", String(i));
+      if (i === 0) { c.removeAttribute("aria-hidden"); c.inert = false; }
+      else { c.setAttribute("aria-hidden", "true"); c.inert = true; }
+    });
+    var count = stack.querySelector("." + P + "-deck__count b");
+    if (count) count.textContent = pad2(all.indexOf(order[0]) + 1);
+  }
+  function dealStack(stack, dir) {
+    if (stack.__lilacBusy) return;
+    var order = stackCards(stack).sort(function (a, b) { return depthOf(a) - depthOf(b); });
+    if (order.length < 2) return;
+    var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var mover = dir > 0 ? order[0] : order[order.length - 1];
+    stack.__lilacBusy = true;
+    mover.setAttribute("data-fling", dir > 0 ? "out" : "in");
+    setTimeout(function () {
+      setDepths(stack, dir > 0 ? order.slice(1).concat([mover]) : [mover].concat(order.slice(0, -1)));
+      mover.removeAttribute("data-fling");
+      setTimeout(function () { stack.__lilacBusy = false; }, still ? 0 : 120);
+    }, still ? 0 : 300);
+  }
+
   /* ---------- Accent ---------- */
   var ACCENT_KEY = P + "-accent";
   function syncAccentControls() {
@@ -185,6 +272,11 @@
     var chip = e.target.closest("." + P + "-chip[aria-pressed]");
     if (chip && !chip.disabled) chip.setAttribute("aria-pressed", chip.getAttribute("aria-pressed") === "true" ? "false" : "true");
 
+    var timerBtn = e.target.closest("[data-" + P + "-timer]");
+    if (timerBtn) timerAction(timerBtn);
+    var deckBtn = e.target.closest("[data-" + P + "-deck]");
+    if (deckBtn) { var dk = deckBtn.closest("." + P + "-deck"); if (dk) dealStack(dk, deckBtn.getAttribute("data-" + P + "-deck") === "prev" ? -1 : 1); }
+
     var opener = e.target.closest("[data-" + P + "-open]");
     if (opener) {
       var dlg = document.querySelector(opener.getAttribute("data-" + P + "-open"));
@@ -195,6 +287,12 @@
   });
 
   document.addEventListener("keydown", function (e) {
+    var stk = e.target.closest && !e.target.closest(TAB_ITEM) && e.target.closest("." + P + "-deck");
+    if (stk && (e.key === "ArrowRight" || e.key === "ArrowLeft") && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) {
+      dealStack(stk, e.key === "ArrowLeft" ? -1 : 1);
+      e.preventDefault();
+      return;
+    }
     var tab = e.target.closest && e.target.closest(TAB_ITEM);
     if (!tab) return;
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
@@ -224,5 +322,7 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
-  window.LilacUI = { initIndicators: initIndicators, refresh: refresh, selectTab: selectTab, selectNavItem: selectNavItem, setAccent: setAccent, setTheme: setTheme, syncSlider: syncSlider };
+  window.LilacUI = { initIndicators: initIndicators, refresh: refresh, selectTab: selectTab, selectNavItem: selectNavItem, setAccent: setAccent, setTheme: setTheme, syncSlider: syncSlider,
+    runTimer: function (el, on) { runTimer(el, on !== false); }, resetTimer: function (el) { var b = el.querySelector('[data-' + P + '-timer="reset"]'); if (b) timerAction(b); },
+    dealDeck: function (el, dir) { dealStack(el, dir === "prev" || dir < 0 ? -1 : 1); } };
 })();

@@ -169,7 +169,7 @@
         "root": "font-family:var(--lilac-font-family-sans);color:var(--lilac-color-text);font-size:var(--lilac-font-size-body);line-height:1.5",
         "canvas": "",
         "page": "background:var(--lilac-color-canvas)",
-        "hooks": ".lilac-segmented, .lilac-tabs, .lilac-nav, .lilac-bottom-nav, input[type=range], .lilac-chip[aria-pressed], [data-lilac-open], [data-lilac-close], [data-accent-set], [data-theme-set], [data-theme-toggle]",
+        "hooks": ".lilac-segmented, .lilac-tabs, .lilac-nav, .lilac-bottom-nav, input[type=range], .lilac-chip[aria-pressed], [data-lilac-open], [data-lilac-close], [data-accent-set], [data-theme-set], [data-theme-toggle], .lilac-timer, .lilac-deck",
         "wall": [
           [
             "progress",
@@ -198,6 +198,18 @@
           [
             "navigation",
             "bottom-navigation"
+          ],
+          [
+            "timer",
+            "focus-timer"
+          ],
+          [
+            "deck",
+            "card-stack"
+          ],
+          [
+            "accordion",
+            "accordion"
           ]
         ]
       }

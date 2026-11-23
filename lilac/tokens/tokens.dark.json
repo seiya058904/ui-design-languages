@@ -42,6 +42,7 @@
     "accent-hover": { "$value": "inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 3px 10px rgba(123, 92, 255, 0.4), 0 20px 40px -10px rgba(123, 92, 255, 0.7)" },
     "knob":         { "$value": "0 1px 1px rgba(0, 0, 0, 0.3), 0 3px 8px rgba(0, 0, 0, 0.45)" },
     "focus":        { "$value": "0 0 0 3px rgba(123, 92, 255, 0.42)" },
-    "float":        { "$value": "inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 10px rgba(0, 0, 0, 0.35), 0 30px 60px -20px rgba(0, 0, 0, 0.75)" }
+    "float":        { "$value": "inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 10px rgba(0, 0, 0, 0.35), 0 30px 60px -20px rgba(0, 0, 0, 0.75)" },
+    "float-hover":  { "$value": "inset 0 1px 0 rgba(255, 255, 255, 0.09), 0 4px 8px rgba(0, 0, 0, 0.35), 0 26px 48px -18px rgba(0, 0, 0, 0.78)" }
   }
 }

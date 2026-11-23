@@ -38,6 +38,12 @@
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+  <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5.5v13M15 5.5v13"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.6-6.8a.8.8 0 0 0 0-1.4L9.2 4.5A.8.8 0 0 0 8 5.2Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
   <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/></symbol>
   <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="19" cy="12" r="1.3" fill="currentColor"/></symbol>
@@ -60,7 +66,7 @@
   <h1>Lilac components</h1>
   <p>Ivory study tiles, one accent that glows, editorial serif headlines. Every block below is live markup you can copy: open it in the <a href="../components.html#/lilac">components browser</a> for the code.</p>
 </div>
-<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Toggle, checkbox & radio</a><a href="#segmented">Segmented control</a><a href="#tabs">Tabs</a><a href="#chips">Chips & badges</a><a href="#slider">Slider</a><a href="#progress">Progress</a><a href="#alert">Alerts & toasts</a><a href="#card">Card</a><a href="#avatar">Avatar & list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a></nav>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Toggle, checkbox & radio</a><a href="#segmented">Segmented control</a><a href="#tabs">Tabs</a><a href="#chips">Chips & badges</a><a href="#slider">Slider</a><a href="#progress">Progress</a><a href="#timer">Focus timer</a><a href="#alert">Alerts & toasts</a><a href="#card">Card</a><a href="#deck">Card stack</a><a href="#accordion">Accordion</a><a href="#avatar">Avatar & list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a></nav>
 <main>
   <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
     <h2 id="h-button">Button</h2>
@@ -239,6 +245,31 @@
     </div>
   </section>
 
+  <section class="cat-section" id="timer" data-component="timer" aria-labelledby="h-timer">
+    <h2 id="h-timer">Focus timer</h2>
+    <p>An immersive countdown: the ring empties as the minutes pass and its halo breathes while it runs.</p>
+    <div class="demo" data-demo="focus-timer">
+      <h3>Focus timer</h3>
+      <div class="demo__stage lilac-tile">
+        <div class="lilac-timer" data-duration="1500" style="--value:100">
+          <div class="lilac-timer__dial">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="lilac-timer__halo" cx="60" cy="60" r="52"/>
+              <circle class="lilac-timer__track" cx="60" cy="60" r="52" pathLength="100"/>
+              <circle class="lilac-timer__bar" cx="60" cy="60" r="52" pathLength="100"/>
+            </svg>
+            <div class="lilac-timer__readout"><span class="lilac-timer__time" role="timer">25:00</span><span class="lilac-timer__label">Deep work</span></div>
+          </div>
+          <div class="lilac-timer__controls">
+            <button class="lilac-btn lilac-btn--icon lilac-btn--sm" type="button" data-lilac-timer="reset" aria-label="Reset timer"><svg class="lilac-icon" aria-hidden="true"><use href="#i-reset"/></svg></button>
+            <button class="lilac-btn lilac-btn--primary lilac-timer__run" type="button" data-lilac-timer="run" aria-pressed="false" aria-label="Run timer"><svg class="lilac-icon lilac-timer__start" aria-hidden="true"><use href="#i-play"/></svg><svg class="lilac-icon lilac-timer__pause" aria-hidden="true"><use href="#i-pause"/></svg></button>
+            <button class="lilac-btn lilac-btn--sm" type="button" data-lilac-timer="add" data-seconds="300">+5 min</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="cat-section" id="alert" data-component="alert" aria-labelledby="h-alert">
     <h2 id="h-alert">Alerts & toasts</h2>
     <p>Status messages, inline or floating.</p>
@@ -289,6 +320,67 @@
           </div>
           <button class="lilac-btn lilac-btn--ghost lilac-btn--icon lilac-btn--sm lilac-profile__menu" type="button" aria-label="More options"><svg class="lilac-icon" aria-hidden="true"><use href="#i-dots"/></svg></button>
         </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="deck" data-component="deck" aria-labelledby="h-deck">
+    <h2 id="h-deck">Card stack</h2>
+    <p>A small deck of ivory cards. Deal the top one off and it floats down under the pile; the next rises to meet you.</p>
+    <div class="demo" data-demo="card-stack">
+      <h3>Card stack</h3>
+      <div class="demo__stage lilac-tile">
+        <div class="lilac-deck">
+          <div class="lilac-deck__pile">
+            <article class="lilac-deck__card" style="--i:0">
+              <p class="lilac-deck__eyebrow"><b>01</b>Morning ritual</p>
+              <h3 class="lilac-deck__title">Three pages, by hand</h3>
+              <p class="lilac-deck__text">Write before you read anything. Nothing you write here has to be good.</p>
+              <div class="lilac-deck__meta"><span class="lilac-badge">20 min</span><span class="lilac-badge lilac-badge--neutral">Before 9:00</span></div>
+            </article>
+            <article class="lilac-deck__card" style="--i:1" aria-hidden="true" inert>
+              <p class="lilac-deck__eyebrow"><b>02</b>Deep work</p>
+              <h3 class="lilac-deck__title">One block, one task</h3>
+              <p class="lilac-deck__text">Close every tab you don't need for the next ninety minutes.</p>
+              <div class="lilac-deck__meta"><span class="lilac-badge">90 min</span><span class="lilac-badge lilac-badge--neutral">Phone away</span></div>
+            </article>
+            <article class="lilac-deck__card" style="--i:2" aria-hidden="true" inert>
+              <p class="lilac-deck__eyebrow"><b>03</b>Evening</p>
+              <h3 class="lilac-deck__title">Leave a note for tomorrow</h3>
+              <p class="lilac-deck__text">Where you stopped, and the very first thing to do next.</p>
+              <div class="lilac-deck__meta"><span class="lilac-badge">5 min</span><span class="lilac-badge lilac-badge--neutral">After 18:00</span></div>
+            </article>
+          </div>
+          <div class="lilac-deck__bar">
+            <button class="lilac-btn lilac-btn--icon lilac-btn--sm" type="button" data-lilac-deck="prev" aria-label="Previous card"><svg class="lilac-icon" aria-hidden="true"><use href="#i-chev-left"/></svg></button>
+            <span class="lilac-deck__count" aria-live="polite"><b>01</b> / 03</span>
+            <button class="lilac-btn lilac-btn--icon lilac-btn--sm" type="button" data-lilac-deck="next" aria-label="Next card"><svg class="lilac-icon" aria-hidden="true"><use href="#i-chev-right"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="accordion" data-component="accordion" aria-labelledby="h-accordion">
+    <h2 id="h-accordion">Accordion</h2>
+    <p>Calm questions on one ivory panel. The open row takes the lilac wash and its plus turns into a glowing cross.</p>
+    <div class="demo" data-demo="accordion">
+      <h3>Accordion</h3>
+      <div class="demo__stage lilac-tile">
+        <div class="lilac-accordion" style="width:min(100%,520px)">
+          <details class="lilac-accordion__item" name="l-faq" open>
+            <summary class="lilac-accordion__head">What is a focus block?<span class="lilac-accordion__icon" aria-hidden="true"><svg class="lilac-icon"><use href="#i-plus"/></svg></span></summary>
+            <div class="lilac-accordion__body">A stretch of time for one task only. Notifications wait, the timer runs, and the space stays quiet until it ends.</div>
+          </details>
+          <details class="lilac-accordion__item" name="l-faq">
+            <summary class="lilac-accordion__head">Can I share a space?<span class="lilac-accordion__icon" aria-hidden="true"><svg class="lilac-icon"><use href="#i-plus"/></svg></span></summary>
+            <div class="lilac-accordion__body">Yes. Invite up to five people; everyone sees the same plan, and only you see your notes.</div>
+          </details>
+          <details class="lilac-accordion__item" name="l-faq">
+            <summary class="lilac-accordion__head">What happens to archived spaces?<span class="lilac-accordion__icon" aria-hidden="true"><svg class="lilac-icon"><use href="#i-plus"/></svg></span></summary>
+            <div class="lilac-accordion__body">They leave your sidebar but keep everything. Restore one at any time from Settings.</div>
+          </details>
+        </div>
       </div>
     </div>
   </section>

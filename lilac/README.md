@@ -40,12 +40,15 @@ Dark theme: `<html data-theme="dark">` (or `"auto"` to follow the OS), or `[data
 | Tabs | `.lilac-segmented` (hairline dividers, sliding lilac wash) · `.lilac-tabs` (sliding underline) |
 | Selection | `.lilac-check` (+ `__title`, `__hint`) with `.lilac-toggle`, `.lilac-checkbox`, `.lilac-radio` |
 | Slider | `input[type=range].lilac-slider` + optional `<output for>` inside `.lilac-slider-row` |
-| Progress | `.lilac-progress` (bar) · `.lilac-ring` (SVG ring, `--value`, `--ring-size`) · `.lilac-steps` (`li.is-done`, `li.is-current`) |
+| Progress | `.lilac-progress` (bar) · `.lilac-ring` (SVG ring, `--value`, `--ring-size`) · `.lilac-steps` (`li.is-done`, `li.is-current` breathes) |
+| Focus timer | `.lilac-timer` (`data-duration` in seconds, `--value`, `--timer-size`) with `[data-lilac-timer="run|reset|add"]` controls — the ring empties, the halo breathes while it runs |
+| Card stack | `.lilac-deck` > `__pile` > `__card` (`--i` depth) + `__bar` with `[data-lilac-deck="prev|next"]` and `__count` — the top card is dealt off and floats under the pile |
+| Accordion | `.lilac-accordion` > `details.lilac-accordion__item` (`__head`, `__icon`, `__body`); same `name` = one open at a time |
 | Feedback | `.lilac-toast` (+ `__icon`, `__title`, `__text`, `__close`) · `.lilac-alert` + `--success` `--warning` `--error` |
 | Cards | `.lilac-card` (`--interactive`) · `.lilac-profile` · `.lilac-avatar` (`--xl`, `--avatar-size`, `--avatar-bg`) |
 | Navigation | `.lilac-nav` sidebar · `.lilac-bottom-nav` mobile bar — both with a gliding wash |
 | Data, overlays | `.lilac-table`, `.lilac-dialog`, `.lilac-tooltip[data-tip]` |
-| Entrance | `.lilac-enter` (children enter one after another on page load) |
+| Entrance | `.lilac-enter` (children enter one after another on page load; serif headlines inside drift in a beat later) |
 
 Usage snippets are at the top of each block in [`css/components.css`](css/components.css); every component appears in [`index.html`](index.html).
 

@@ -21,7 +21,7 @@ Lilac is an ivory component study: calm tiles, one saturated accent that glows, 
 | Labels | Tile labels are spaced small caps with the tile's number (`01  COLOR PALETTE`) — the number is the tile's place in the study, so only use it on study tiles | Numbered labels on content that isn't a sequence |
 | Shape | Pills for buttons, fields, toggles and tabs; 24px tiles; 16px inner cards; 32px dialogs; circles for swatches, avatars and step markers | Sharp corners, mixed radii at the same level |
 | Controls | Unchecked checkboxes and radios are raised ivory with a 1.5px edge; checked ones fill with the accent and glow | Flat grey boxes |
-| Motion | 200ms for hover; indicators, knobs and rings glide 380ms on `cubic-bezier(.32,.72,0,1)`; the arrow in a primary button nudges 3px on hover | Bouncy springs, entrance animations on scroll |
+| Motion | 200ms for hover; the glow blooms outward slowly (560ms, `--lilac-motion-easing-float`) and converges fast under the finger (`--lilac-shadow-accent-pressed`); cards float on the same damped curve; indicators, knobs and rings glide 380ms on `cubic-bezier(.32,.72,0,1)`; only live things (current step, running timer) breathe; the arrow in a primary button nudges 3px on hover | Bouncy springs, entrance animations on scroll, a glow that switches off on press, breathing on static content |
 
 ## 3. Recipes
 
@@ -30,6 +30,8 @@ Lilac is an ivory component study: calm tiles, one saturated accent that glows, 
 - **Accent piece**: gradient `#7C55FF → #5B2DFF` (70%), white text, shadow `inset 0 1px 0 rgba(255,255,255,.28), 0 2px 6px rgba(91,45,255,.25), 0 12px 26px -8px rgba(91,45,255,.55)`.
 - **Track**: `#E2DED7` with `inset 0 1px 3px rgba(60,50,40,.12)`.
 - **Focus**: append `0 0 0 3px rgba(91,45,255,.22)`.
+- **Converged glow** (primary :active): `inset 0 2px 6px rgba(20,0,80,.3), 0 1px 3px glow, 0 5px 14px -6px glow` — the glow pulls in, it never disappears.
+- **Breathing halo**: a pseudo-element or SVG circle with `--lilac-shadow-halo`, animated on `scale` + `filter: opacity()` over `--lilac-motion-duration-breathe`; never on static content.
 - **Ring**: SVG circles with `pathLength="100"`, 8px round stroke, `stroke-dasharray: var(--value) 100`, `drop-shadow(0 0 6px` accent glow `)`.
 
 ## 4. Copy

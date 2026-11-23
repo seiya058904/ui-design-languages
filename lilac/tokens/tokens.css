@@ -86,6 +86,9 @@
   --lilac-shadow-knob: 0 1px 1px rgba(30, 20, 60, 0.1), 0 3px 8px rgba(30, 20, 60, 0.2); /* Toggle and slider knobs */
   --lilac-shadow-focus: 0 0 0 3px rgba(91, 45, 255, 0.22); /* Focus halo (append) */
   --lilac-shadow-float: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 10px rgba(60, 50, 40, 0.06), 0 30px 60px -20px rgba(60, 50, 40, 0.3); /* Dialogs, toasts */
+  --lilac-shadow-accent-pressed: inset 0 2px 6px rgba(20, 0, 80, 0.3), 0 1px 3px var(--lilac-color-glow), 0 5px 14px -6px var(--lilac-color-glow); /* Primary under the finger: the glow converges to a tight halo instead of vanishing */
+  --lilac-shadow-float-hover: inset 0 1px 0 rgba(255, 255, 255, 1), 0 4px 8px rgba(60, 50, 40, 0.05), 0 24px 44px -18px rgba(60, 50, 40, 0.3); /* Interactive cards floating up on hover */
+  --lilac-shadow-halo: 0 0 0 4px var(--lilac-color-glow-soft), 0 0 18px 4px var(--lilac-color-glow-soft); /* Breathing halo around something live (current step, running timer) */
 
   --lilac-motion-duration: 200ms;
   --lilac-motion-duration-slide: 380ms;
@@ -98,6 +101,11 @@
   --lilac-motion-easing-pop: cubic-bezier(0.22, 1.35, 0.36, 1); /* Check marks and radio dots appearing */
   --lilac-motion-duration-enter: 1000ms; /* Page-load entrance (tiles drift up out of a soft blur) */
   --lilac-motion-stagger: 90ms; /* Delay between siblings in an entrance */
+  --lilac-motion-duration-bloom: 560ms; /* The violet glow blooming outward on hover (slower than the lift) */
+  --lilac-motion-duration-float: 640ms; /* Cards and stacked pieces floating to a new height */
+  --lilac-motion-easing-float: cubic-bezier(0.16, 1, 0.3, 1); /* Heavily damped: fast start, long soft settle, no overshoot */
+  --lilac-motion-duration-breathe: 4200ms; /* One slow breath of a live halo */
+  --lilac-motion-easing-breathe: cubic-bezier(0.45, 0, 0.55, 1); /* Sine-like in-out for breathing */
 }
 
 /* Dark theme — GENERATED from lilac/tokens/tokens.dark.json.
@@ -145,6 +153,7 @@
   --lilac-shadow-knob: 0 1px 1px rgba(0, 0, 0, 0.3), 0 3px 8px rgba(0, 0, 0, 0.45);
   --lilac-shadow-focus: 0 0 0 3px rgba(123, 92, 255, 0.42);
   --lilac-shadow-float: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 10px rgba(0, 0, 0, 0.35), 0 30px 60px -20px rgba(0, 0, 0, 0.75);
+  --lilac-shadow-float-hover: inset 0 1px 0 rgba(255, 255, 255, 0.09), 0 4px 8px rgba(0, 0, 0, 0.35), 0 26px 48px -18px rgba(0, 0, 0, 0.78);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -191,6 +200,7 @@
     --lilac-shadow-knob: 0 1px 1px rgba(0, 0, 0, 0.3), 0 3px 8px rgba(0, 0, 0, 0.45);
     --lilac-shadow-focus: 0 0 0 3px rgba(123, 92, 255, 0.42);
     --lilac-shadow-float: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 10px rgba(0, 0, 0, 0.35), 0 30px 60px -20px rgba(0, 0, 0, 0.75);
+    --lilac-shadow-float-hover: inset 0 1px 0 rgba(255, 255, 255, 0.09), 0 4px 8px rgba(0, 0, 0, 0.35), 0 26px 48px -18px rgba(0, 0, 0, 0.78);
   }
 }
 

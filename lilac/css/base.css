@@ -123,7 +123,17 @@ a { color: inherit; }
 .lilac-enter > :nth-child(10) { --lilac-enter-i: 9; }
 .lilac-enter > :nth-child(n+11) { --lilac-enter-i: 10; }
 @keyframes lilac-enter { from { opacity: 0; transform: translateY(14px); filter: blur(6px); } }
-@media (prefers-reduced-motion: reduce) { .lilac-enter > * { animation: none !important; } }
+/* Serif headlines inside an entrance drift in a beat later than their tile and settle from a hair wider,
+   like type finding its measure (transform, opacity and blur only). Dialog titles use it too. */
+.lilac-enter .lilac-display,
+.lilac-enter .lilac-heading,
+.lilac-enter .lilac-title,
+.lilac-enter .lilac-wordmark {
+  transform-origin: 0 100%;
+  animation: lilac-title-in calc(var(--lilac-motion-duration-enter) * 1.3) var(--lilac-motion-easing-float) calc(var(--lilac-enter-i, 0) * var(--lilac-motion-stagger) + 120ms) backwards;
+}
+@keyframes lilac-title-in { from { opacity: 0; transform: translateY(0.22em) scaleX(1.035); filter: blur(5px); } }
+@media (prefers-reduced-motion: reduce) { .lilac-enter > *, .lilac-enter .lilac-display, .lilac-enter .lilac-heading, .lilac-enter .lilac-title, .lilac-enter .lilac-wordmark { animation: none !important; } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

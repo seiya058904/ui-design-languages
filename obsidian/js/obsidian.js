@@ -6,7 +6,11 @@
    - sliders: keep --obsidian-value on input.obsidian-slider and its <output> in sync
    - menus: .obsidian-menu opens on click / ↓, arrows move, Enter picks, Esc or a click outside closes;
      picking an option fires "obsidian:select" (detail: { value, label }) on the menu
-   - rim light: panels and cards catch the light where the pointer is (--obsidian-mx / --obsidian-my)
+   - rim light: panels and cards catch the light where the pointer is (--obsidian-mx / --obsidian-my,
+     registered properties that glide after the pointer)
+   - dock (.obsidian-dock): clicking an item moves aria-current and the lit drop glides under it
+   - media (.obsidian-media): the play key (aria-pressed) runs the scrubber and the time; the artwork's
+     light breathes while it plays; dragging the scrubber seeks
    - dialogs: [data-obsidian-open="#id"] / [data-obsidian-close]; toasts and alerts: [data-obsidian-dismiss]
    - command search: ⌘K / Ctrl+K focuses the first .obsidian-command field
    - accent: [data-accent-set="cyan|emerald|violet"] switches <html data-accent>, remembered in
@@ -17,7 +21,8 @@
   var LISTS = [
     { list: "." + P + "-tabs", item: "." + P + "-tabs__item", tab: true },
     { list: "." + P + "-segmented", item: "." + P + "-segmented__item", tab: true },
-    { list: "." + P + "-nav", item: "." + P + "-nav__item", tab: false }
+    { list: "." + P + "-nav", item: "." + P + "-nav__item", tab: false },
+    { list: "." + P + "-dock", item: "." + P + "-dock__item", tab: false }
   ];
   var LIST_SEL = LISTS.map(function (g) { return g.list; }).join(", ");
   var TAB_ITEM = "." + P + "-tabs__item, ." + P + "-segmented__item";
@@ -117,6 +122,37 @@
     outs.forEach(function (o) { o.textContent = input.value + (o.getAttribute("data-suffix") || ""); });
   }
 
+  /* ---------- dock ---------- */
+  function selectDockItem(item) {
+    var dock = item.closest("." + P + "-dock");
+    if (!dock) return;
+    itemsOf(dock).forEach(function (el) { if (el === item) el.setAttribute("aria-current", "true"); else el.removeAttribute("aria-current"); });
+    refresh(dock);
+  }
+
+  /* ---------- media ---------- */
+  function mmss(sec) { sec = Math.max(0, Math.round(sec)); return Math.floor(sec / 60) + ":" + (sec % 60 < 10 ? "0" : "") + (sec % 60); }
+  function syncMedia(card) {
+    var seek = card.querySelector("." + P + "-media__seek"), times = card.querySelectorAll("." + P + "-media__time span");
+    if (!seek) return;
+    syncSlider(seek);
+    if (times[0]) times[0].textContent = mmss(parseFloat(seek.value));
+    if (times[1]) times[1].textContent = mmss(parseFloat(seek.max || 100));
+  }
+  function playMedia(card, on) {
+    var key = card.querySelector("." + P + "-media__play"), seek = card.querySelector("." + P + "-media__seek");
+    clearInterval(card.__obsidianPlay);
+    card.classList.toggle("is-playing", on);
+    if (key) { key.setAttribute("aria-pressed", on ? "true" : "false"); key.setAttribute("aria-label", on ? "Pause" : "Play"); }
+    if (!on || !seek) return;
+    card.__obsidianPlay = setInterval(function () {
+      var max = parseFloat(seek.max || 100), v = parseFloat(seek.value) + 1;
+      if (v > max) { v = max; playMedia(card, false); }
+      seek.value = String(v);
+      syncMedia(card);
+    }, 1000);
+  }
+
   /* ---------- menus ---------- */
   function menuParts(menu) {
     return { button: menu.querySelector("[aria-haspopup]"), list: menu.querySelector("." + P + "-menu__list"), items: Array.prototype.slice.call(menu.querySelectorAll("." + P + "-menu__item")) };
@@ -188,11 +224,24 @@
   }, { passive: true });
 
   /* ---------- events ---------- */
-  document.addEventListener("input", function (e) { if (e.target.matches && e.target.matches("." + P + "-slider")) syncSlider(e.target); });
+  document.addEventListener("input", function (e) {
+    if (!e.target.matches) return;
+    if (e.target.matches("." + P + "-media__seek")) { var mc = e.target.closest("." + P + "-media"); if (mc) syncMedia(mc); }
+    else if (e.target.matches("." + P + "-slider")) syncSlider(e.target);
+  });
   document.addEventListener("click", function (e) {
     var t = e.target;
     var tab = t.closest(TAB_ITEM);
     if (tab && !tab.disabled) selectTab(tab);
+    var dockItem = t.closest("." + P + "-dock__item");
+    if (dockItem && !dockItem.disabled) selectDockItem(dockItem);
+    var play = t.closest("." + P + "-media__play");
+    if (play) { var card = play.closest("." + P + "-media"); if (card) playMedia(card, play.getAttribute("aria-pressed") !== "true"); }
+    var skip = t.closest("[data-" + P + "-skip]");
+    if (skip) {
+      var mcard = skip.closest("." + P + "-media"), sk = mcard && mcard.querySelector("." + P + "-media__seek");
+      if (sk) { sk.value = String(Math.max(0, Math.min(parseFloat(sk.max || 100), parseFloat(sk.value) + parseFloat(skip.getAttribute("data-" + P + "-skip"))))); syncMedia(mcard); }
+    }
     var navItem = t.closest("." + P + "-nav__item");
     if (navItem && e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) {
       selectNavItem(navItem);

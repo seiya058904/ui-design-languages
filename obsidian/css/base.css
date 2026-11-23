@@ -45,10 +45,12 @@ a { color: inherit; }
   padding: var(--obsidian-space-6);
   border: 1px solid var(--obsidian-color-border-low);
   border-radius: var(--obsidian-radius-xl);
-  background: var(--obsidian-atmosphere-sheen), var(--obsidian-color-glass);
+  background: var(--obsidian-atmosphere-sheen), var(--obsidian-atmosphere-refraction), var(--obsidian-color-glass);
   -webkit-backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%);
   backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%);
   box-shadow: var(--obsidian-shadow-panel);
+  /* the rim light (components.css) glides after the pointer instead of jumping to it */
+  transition: --obsidian-mx var(--obsidian-motion-duration-follow) var(--obsidian-motion-easing), --obsidian-my var(--obsidian-motion-duration-follow) var(--obsidian-motion-easing);
 }
 .obsidian-divider { height: 0; margin: var(--obsidian-space-5) 0; border: 0; border-top: 1px solid var(--obsidian-color-border-low); }
 

@@ -29,7 +29,7 @@ Primary reference: `UI参考图/obsidian-glass.jpg` (kept local, never committed
 | Navigation | Workspace switcher + sidebar (Overview, Projects active, Tasks, AI Copilot, Team, Settings); pill tabs All / Active / Archived / Shared; breadcrumb ⌂ › Projects › Marketing › Campaign v2; compact pagination ‹ 1 2 3 … 12 › | The active nav item and tab are a single indicator that flows (liquid), not per-item fills |
 | Data & feedback | "AI Workspace" project card, 12,540 ▲ +12.6%, "Total sessions (30d)", sparkline; "78% Complete" ring; green "Workspace saved" toast; Live / Pending / Error badges; "Archive workspace?" dialog with Cancel / Archive | Rings and lines draw themselves in; the ring's number counts up in pure CSS |
 | Preview | "AI Workspace Dashboard": sidebar, Overview header, search, bell, MA avatar, KPIs (24, 1,286, 8, 4,930), Activity chart (0–12K, Jan 1–29, "Last 30 days"), Recent Activity | Rebuilt as `examples/dashboard.html` and embedded live at the foot of the styleguide |
-| Not in the reference | — | Emerald and violet accents, hover / pressed / disabled states, segmented control, menu, tooltip, table, avatars, empty states, command palette, rim light |
+| Not in the reference | — | Emerald and violet accents, hover / pressed / disabled states, segmented control, menu, tooltip, table, avatars, empty states, command palette, rim light, refraction layer, floating dock, media card |
 
 ## 3. Foundations
 
@@ -50,7 +50,7 @@ Glows (`-primary-glow`), washes (`-primary-soft`) and the high border are `color
 **Shape** — controls 12px, cards 16px, panels 20px, dialogs 16–24px; pills for tabs, badges and switches.
 **Depth** — Panels: `inset 0 1px 0 edge, 0 24px 48px -24px rgba(0,0,0,.7)`. Elevated: a brighter edge and a deeper shadow. Inset: an inner shadow and no border. Lit pieces: `0 0 0 1px border-high, 0 0 16px -2px glow`.
 
-**Motion** — Liquid: 320 ms on `cubic-bezier(.22,1,.36,1)`. Sliding indicators (tabs, segmented, nav) move their leading edge in 240 ms and the trailing edge in 440 ms, so the light stretches toward its target and gathers. Hover raises an edge's luminosity and widens a glow; a press pulls the light in for 90 ms (`scale(.97)`, tighter bloom). Charts draw their line (1.4 s) while the area fades in; rings fill and count up from zero (`@property --obsidian-value` as an integer feeds a CSS counter). Panels surface on load out of a 4px blur. All of it stops under `prefers-reduced-motion`.
+**Motion** — Liquid: 320 ms on `cubic-bezier(.22,1,.36,1)`. Sliding indicators (tabs, segmented, nav, the dock's drop) move their leading edge in 240 ms and the trailing edge in 440 ms on `easing-trail` `cubic-bezier(.3,1.22,.4,1)`, so the light stretches toward its target, then gathers a hair past the stop like a drop. The rim light glides after the pointer: `--obsidian-mx` / `--obsidian-my` are registered properties with a 220 ms transition (`duration-follow`) — smooth interpolation instead of a jump per frame. Glows stay tight (negative spread, ≤ 18px blur) so light never smears the neighbours; the media card's spill is clipped inside the card. Hover raises an edge's luminosity and widens a glow; a press pulls the light in for 90 ms (`scale(.97)`, tighter bloom). Charts draw their line (1.4 s) while the area fades in; rings fill and count up from zero (`@property --obsidian-value` as an integer feeds a CSS counter). Panels surface on load out of a 4px blur. All of it stops under `prefers-reduced-motion`.
 
 ## 4. Components
 

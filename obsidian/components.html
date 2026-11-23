@@ -52,6 +52,13 @@
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6Z"/></symbol>
   <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3.5h8l4 4V20a.5.5 0 0 1-.5.5h-11A.5.5 0 0 1 6 20Z"/><path d="M13.5 3.5V8H18M9 12.5h6M9 16h6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a.8.8 0 0 0 1.2.7l10.4-6.5a.8.8 0 0 0 0-1.4L9.2 4.8A.8.8 0 0 0 8 5.5Z" fill="currentColor"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="7" y="5" width="3.5" height="14" rx="1" fill="currentColor"/><rect x="13.5" y="5" width="3.5" height="14" rx="1" fill="currentColor"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M7 6v12M18 6.5v11a.6.6 0 0 1-.9.5L9 12.5a.6.6 0 0 1 0-1L17.1 6a.6.6 0 0 1 .9.5Z"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M17 6v12M6 6.5v11a.6.6 0 0 0 .9.5L15 12.5a.6.6 0 0 0 0-1L6.9 6a.6.6 0 0 0-.9.5Z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20 12a7.5 7.5 0 0 1-11 6.6L4 20l1.4-4.6A7.5 7.5 0 1 1 20 12Z"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.2 7.4l2.1 1.2M17.7 15.4l2.1 1.2M4.2 16.6l2.1-1.2M17.7 8.6l2.1-1.2"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 2.5 20h19Z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
@@ -65,7 +72,7 @@
   <h1 class="obsidian-display">Components</h1>
   <p>Four layers of frosted glass over a deep obsidian air, edged with 1px of specular light, lit by one accent. Every block below is live markup — hover the cards to catch the rim light, slide between tabs. Open it in the <a href="../components.html#obsidian">components browser</a> for the code.</p>
 </div>
-<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Switch &amp; checkbox</a><a href="#segmented">Segmented</a><a href="#tabs">Tabs</a><a href="#chips">Badges</a><a href="#slider">Slider</a><a href="#progress">Ring &amp; progress</a><a href="#alert">Toasts &amp; alerts</a><a href="#card">Cards</a><a href="#avatar">Avatars &amp; list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#menu">Menu</a><a href="#glass">Glass</a></nav>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Switch &amp; checkbox</a><a href="#segmented">Segmented</a><a href="#tabs">Tabs</a><a href="#chips">Badges</a><a href="#slider">Slider</a><a href="#progress">Ring &amp; progress</a><a href="#alert">Toasts &amp; alerts</a><a href="#card">Cards</a><a href="#avatar">Avatars &amp; list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#menu">Menu</a><a href="#dock">Dock</a><a href="#media">Media card</a><a href="#glass">Glass</a></nav>
 <main>
   <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
     <h2 id="h-button">Button</h2>
@@ -393,6 +400,50 @@
             <button class="obsidian-menu__item" role="option" aria-selected="false" type="button">Last 90 days</button>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="dock" data-component="dock" aria-labelledby="h-dock">
+    <h2 id="h-dock">Dock</h2>
+    <p>A floating glass bar. Items swell under the pointer and their neighbours follow; a lit drop glides under the current one.</p>
+    <div class="demo" data-demo="floating-dock">
+      <h3>Floating dock</h3>
+      <div class="demo__stage">
+        <nav class="obsidian-dock" aria-label="Workspace">
+          <button class="obsidian-dock__item" type="button" aria-label="Home" aria-current="true"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-home"/></svg></button>
+          <button class="obsidian-dock__item" type="button" aria-label="Search"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-search"/></svg></button>
+          <button class="obsidian-dock__item" type="button" aria-label="Assistant"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-spark"/></svg></button>
+          <button class="obsidian-dock__item" type="button" aria-label="Messages"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-chat"/></svg></button>
+          <button class="obsidian-dock__item" type="button" aria-label="Insights"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-chart"/></svg></button>
+          <span class="obsidian-dock__sep" aria-hidden="true"></span>
+          <button class="obsidian-dock__item" type="button" aria-label="Settings"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-gear"/></svg></button>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="media" data-component="media" aria-labelledby="h-media">
+    <h2 id="h-media">Media card</h2>
+    <p>Now playing: the artwork's light spills into the glass and breathes while it plays; the glow stays inside the card.</p>
+    <div class="demo" data-demo="now-playing">
+      <h3>Now playing</h3>
+      <div class="demo__stage">
+        <article class="obsidian-media" style="width:min(100%,460px)">
+          <div class="obsidian-media__art" aria-hidden="true"><span class="obsidian-media__orb"></span></div>
+          <div class="obsidian-media__body">
+            <p class="obsidian-media__kicker">Now playing</p>
+            <h3 class="obsidian-media__title">Night Drive</h3>
+            <p class="obsidian-media__artist">Glass Harbor · Lumen</p>
+            <input class="obsidian-slider obsidian-media__seek" type="range" min="0" max="222" value="84" style="--obsidian-value:38" aria-label="Seek">
+            <div class="obsidian-media__time"><span>1:24</span><span>3:42</span></div>
+            <div class="obsidian-media__controls">
+              <button class="obsidian-btn obsidian-btn--ghost obsidian-btn--icon obsidian-btn--sm" type="button" data-obsidian-skip="-15" aria-label="Back 15 seconds"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-prev"/></svg></button>
+              <button class="obsidian-btn obsidian-btn--primary obsidian-btn--icon obsidian-media__play" type="button" aria-pressed="false" aria-label="Play"><svg class="obsidian-icon obsidian-media__start" aria-hidden="true"><use href="#i-play"/></svg><svg class="obsidian-icon obsidian-media__pause" aria-hidden="true"><use href="#i-pause"/></svg></button>
+              <button class="obsidian-btn obsidian-btn--ghost obsidian-btn--icon obsidian-btn--sm" type="button" data-obsidian-skip="15" aria-label="Forward 15 seconds"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-next"/></svg></button>
+            </div>
+          </div>
+        </article>
       </div>
     </div>
   </section>

@@ -684,7 +684,7 @@
         "canvas": "background:var(--obsidian-color-canvas)",
         "page": "background:var(--obsidian-atmosphere-page),var(--obsidian-color-canvas)",
         "tone": "dark",
-        "hooks": ".obsidian-tabs, .obsidian-segmented, .obsidian-nav, .obsidian-slider, .obsidian-menu, .obsidian-pagination, .obsidian-card, .obsidian-panel, [data-obsidian-open], [data-obsidian-close], [data-obsidian-dismiss], [data-accent-set]",
+        "hooks": ".obsidian-tabs, .obsidian-segmented, .obsidian-nav, .obsidian-slider, .obsidian-menu, .obsidian-pagination, .obsidian-card, .obsidian-panel, [data-obsidian-open], [data-obsidian-close], [data-obsidian-dismiss], [data-accent-set], .obsidian-dock, .obsidian-media",
         "wall": [
           [
             "card",
@@ -717,6 +717,14 @@
           [
             "chips",
             "status-badges"
+          ],
+          [
+            "dock",
+            "floating-dock"
+          ],
+          [
+            "media",
+            "now-playing"
           ]
         ]
       }

@@ -20,7 +20,7 @@ Obsidian / Glass is dark first: frosted glass layers over a deep obsidian canvas
 | Text on accent | `--obsidian-color-primary-ink` (dark) | White on cyan / emerald / violet |
 | Type | Inter; caps titles with the number in the accent; 11px caps group labels; tabular figures for numbers | Light weights for body on glass; mixed families |
 | Focus | `--obsidian-shadow-focus` on every interactive element | Removing focus to keep the glass clean |
-| Motion | 320 ms `cubic-bezier(.22,1,.36,1)`; indicators lead and trail; 90 ms presses; draw-in for charts | Linear slides, bounces, `transition: all` |
+| Motion | 320 ms `cubic-bezier(.22,1,.36,1)`; indicators lead and trail (the trailing edge gathers on `--obsidian-motion-easing-trail`); the rim light glides after the pointer (registered `--obsidian-mx/-my`, 220 ms); 90 ms presses; draw-in for charts | Linear slides, bounces, `transition: all`, a rim light that jumps, glows wider than 18px or glow that leaves its card |
 
 ## 3. Recipes
 

@@ -7,6 +7,18 @@
    nav · breadcrumb · pagination · badge · card/stat · chart/spark · ring · progress · toast ·
    alert · dialog · menu · tooltip · table · avatar · list · empty · glass · swatch · edge · logo */
 
+/* The pointer position the rim light is centred on. Registered, so it can glide (see .obsidian-panel / -card). */
+@property --obsidian-mx {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 50%;
+}
+@property --obsidian-my {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: -60%;
+}
+
 /* One number drives rings, sliders and bars. An integer, so CSS can count it up (counter-reset). */
 @property --obsidian-value {
   syntax: "<integer>";
@@ -20,12 +32,14 @@
    ========================================================================= */
 .obsidian-glass { border: 1px solid var(--obsidian-color-border-low); border-radius: var(--obsidian-radius-md); box-shadow: var(--obsidian-shadow-control); }
 .obsidian-glass--base { background: var(--obsidian-color-surface); }
-.obsidian-glass--frosted { background: var(--obsidian-atmosphere-sheen), var(--obsidian-color-glass); -webkit-backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%); backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%); }
-.obsidian-glass--elevated { border-color: var(--obsidian-color-border-medium); background: var(--obsidian-atmosphere-sheen), var(--obsidian-color-glass-elevated); -webkit-backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(150%); backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(150%); box-shadow: var(--obsidian-shadow-elevated); }
+.obsidian-glass--frosted { background: var(--obsidian-atmosphere-sheen), var(--obsidian-atmosphere-refraction), var(--obsidian-color-glass); -webkit-backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%); backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%); }
+.obsidian-glass--elevated { border-color: var(--obsidian-color-border-medium); background: var(--obsidian-atmosphere-sheen), var(--obsidian-atmosphere-refraction), var(--obsidian-color-glass-elevated); -webkit-backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(150%); backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(150%); box-shadow: var(--obsidian-shadow-elevated); }
 .obsidian-glass--inset { border-color: transparent; background: var(--obsidian-color-glass-inset); box-shadow: var(--obsidian-shadow-inset); }
 
 /* Rim light: on panels and cards the 1px edge catches the light where the pointer is
-   (js/obsidian.js sets --obsidian-mx / --obsidian-my; without it the rim simply stays dark). */
+   (js/obsidian.js sets --obsidian-mx / --obsidian-my; without it the rim simply stays dark). The two are
+   registered properties with a short transition, so the highlight glides after the pointer — smooth
+   interpolation instead of a jump per frame. */
 .obsidian-panel::after,
 .obsidian-card::after {
   content: "";
@@ -290,7 +304,8 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
    ========================================================================= */
 .obsidian-tabs::before,
 .obsidian-segmented::before,
-.obsidian-nav::before {
+.obsidian-nav::before,
+.obsidian-dock::before {
   content: "";
   position: absolute;
   z-index: 0;
@@ -308,10 +323,12 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
   transition-duration: var(--obsidian-motion-duration);
   transition-timing-function: var(--obsidian-motion-easing);
 }
-[data-obsidian-dir="right"].is-animated::before { transition-duration: var(--obsidian-motion-duration-trail), var(--obsidian-motion-duration-lead), var(--obsidian-motion-duration), var(--obsidian-motion-duration), var(--obsidian-motion-duration-fast); }
-[data-obsidian-dir="left"].is-animated::before { transition-duration: var(--obsidian-motion-duration-lead), var(--obsidian-motion-duration-trail), var(--obsidian-motion-duration), var(--obsidian-motion-duration), var(--obsidian-motion-duration-fast); }
-[data-obsidian-dir="down"].is-animated::before { transition-duration: var(--obsidian-motion-duration), var(--obsidian-motion-duration), var(--obsidian-motion-duration-trail), var(--obsidian-motion-duration-lead), var(--obsidian-motion-duration-fast); }
-[data-obsidian-dir="up"].is-animated::before { transition-duration: var(--obsidian-motion-duration), var(--obsidian-motion-duration), var(--obsidian-motion-duration-lead), var(--obsidian-motion-duration-trail), var(--obsidian-motion-duration-fast); }
+/* The leading edge moves first on the liquid curve; the trailing edge follows later on --easing-trail, which
+   carries it a hair past the stop before it settles — the drop stretches, then gathers. */
+:is(.obsidian-tabs, .obsidian-segmented, .obsidian-nav)[data-obsidian-dir="right"].is-animated::before { transition-duration: var(--obsidian-motion-duration-trail), var(--obsidian-motion-duration-lead), var(--obsidian-motion-duration), var(--obsidian-motion-duration), var(--obsidian-motion-duration-fast); transition-timing-function: var(--obsidian-motion-easing-trail), var(--obsidian-motion-easing), var(--obsidian-motion-easing), var(--obsidian-motion-easing), var(--obsidian-motion-easing); }
+:is(.obsidian-tabs, .obsidian-segmented, .obsidian-nav)[data-obsidian-dir="left"].is-animated::before { transition-duration: var(--obsidian-motion-duration-lead), var(--obsidian-motion-duration-trail), var(--obsidian-motion-duration), var(--obsidian-motion-duration), var(--obsidian-motion-duration-fast); transition-timing-function: var(--obsidian-motion-easing), var(--obsidian-motion-easing-trail), var(--obsidian-motion-easing), var(--obsidian-motion-easing), var(--obsidian-motion-easing); }
+:is(.obsidian-tabs, .obsidian-segmented, .obsidian-nav)[data-obsidian-dir="down"].is-animated::before { transition-duration: var(--obsidian-motion-duration), var(--obsidian-motion-duration), var(--obsidian-motion-duration-trail), var(--obsidian-motion-duration-lead), var(--obsidian-motion-duration-fast); transition-timing-function: var(--obsidian-motion-easing), var(--obsidian-motion-easing), var(--obsidian-motion-easing-trail), var(--obsidian-motion-easing), var(--obsidian-motion-easing); }
+:is(.obsidian-tabs, .obsidian-segmented, .obsidian-nav)[data-obsidian-dir="up"].is-animated::before { transition-duration: var(--obsidian-motion-duration), var(--obsidian-motion-duration), var(--obsidian-motion-duration-lead), var(--obsidian-motion-duration-trail), var(--obsidian-motion-duration-fast); transition-timing-function: var(--obsidian-motion-easing), var(--obsidian-motion-easing), var(--obsidian-motion-easing), var(--obsidian-motion-easing-trail), var(--obsidian-motion-easing); }
 
 /* ---------- Pill tabs: the current tab is lit ----------
    <div class="obsidian-tabs" role="tablist"><button class="obsidian-tabs__item" role="tab" aria-selected="true">All</button> …</div> */
@@ -527,13 +544,19 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
   padding: 18px 20px;
   border: 1px solid var(--obsidian-color-border-low);
   border-radius: var(--obsidian-radius-lg);
-  background: var(--obsidian-atmosphere-sheen), var(--obsidian-color-glass);
+  background: var(--obsidian-atmosphere-sheen), var(--obsidian-atmosphere-refraction), var(--obsidian-color-glass);
   -webkit-backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%);
   backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%);
   box-shadow: var(--obsidian-shadow-panel);
-  transition: border-color var(--obsidian-motion-duration) var(--obsidian-motion-easing), box-shadow var(--obsidian-motion-duration) var(--obsidian-motion-easing), transform var(--obsidian-motion-duration) var(--obsidian-motion-easing);
+  transition:
+    border-color var(--obsidian-motion-duration) var(--obsidian-motion-easing),
+    box-shadow var(--obsidian-motion-duration) var(--obsidian-motion-easing),
+    transform var(--obsidian-motion-duration) var(--obsidian-motion-easing),
+    --obsidian-mx var(--obsidian-motion-duration-follow) var(--obsidian-motion-easing),
+    --obsidian-my var(--obsidian-motion-duration-follow) var(--obsidian-motion-easing);
 }
-.obsidian-card:hover { border-color: var(--obsidian-color-border-medium); box-shadow: inset 0 1px 0 var(--obsidian-color-edge-hover), 0 28px 56px -24px rgba(0, 0, 0, 0.75); }
+/* same three-shadow shape as --obsidian-shadow-panel, so the hover interpolates */
+.obsidian-card:hover { border-color: var(--obsidian-color-border-medium); box-shadow: inset 0 1px 0 var(--obsidian-color-edge-hover), inset 0 -1px 0 rgba(255, 255, 255, 0.04), 0 28px 56px -24px rgba(0, 0, 0, 0.75); }
 .obsidian-card__head { display: flex; align-items: center; gap: var(--obsidian-space-3); }
 .obsidian-card__head > :last-child:not(:first-child) { margin-left: auto; }
 .obsidian-card__title { font-size: var(--obsidian-font-size-title); font-weight: var(--obsidian-font-weight-semibold); color: var(--obsidian-color-ink); }
@@ -830,3 +853,192 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
 .obsidian-edge { display: block; width: 100%; height: 20px; border: 1px solid var(--obsidian-color-border-low); border-radius: var(--obsidian-radius-pill); background: var(--obsidian-color-glass-inset); }
 .obsidian-edge--high { border-color: var(--obsidian-color-primary); box-shadow: 0 0 14px -3px var(--obsidian-color-primary-glow), inset 0 0 8px -2px var(--obsidian-color-primary-glow); }
 .obsidian-edge--medium { border-color: var(--obsidian-color-border-medium); box-shadow: inset 0 1px 0 var(--obsidian-color-edge); }
+
+/* =========================================================================
+   Dock — a floating elevated glass bar. Items swell under the pointer and their neighbours follow
+   (scale only, from the bottom edge); a lit drop glides under the current item (the liquid indicator).
+   <nav class="obsidian-dock" aria-label="Apps">
+     <button class="obsidian-dock__item" type="button" aria-label="Home" aria-current="true"><svg class="obsidian-icon">…</svg></button>
+     <button class="obsidian-dock__item" type="button" aria-label="Search"><svg class="obsidian-icon">…</svg></button>
+     <span class="obsidian-dock__sep" aria-hidden="true"></span>
+     …
+   </nav>
+   js/obsidian.js moves aria-current on click and glides the drop; the label shows on hover / focus.
+   ========================================================================= */
+.obsidian-dock {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 8px 10px 12px;
+  border: 1px solid var(--obsidian-color-border-medium);
+  border-radius: var(--obsidian-radius-2xl);
+  background: var(--obsidian-atmosphere-sheen), var(--obsidian-atmosphere-refraction), var(--obsidian-color-glass-elevated);
+  -webkit-backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(160%);
+  backdrop-filter: blur(var(--obsidian-blur-elevated)) saturate(160%);
+  box-shadow: var(--obsidian-shadow-elevated);
+}
+/* The drop under the current item: a 4px light that glides (left / right from the indicator) */
+.obsidian-dock::before {
+  top: auto;
+  bottom: 4px;
+  height: 4px;
+  left: calc(var(--obsidian-indicator-l, 0px) + (100% - var(--obsidian-indicator-l, 0px) - var(--obsidian-indicator-r, 100%)) / 2 - 2px);
+  right: calc(var(--obsidian-indicator-r, 100%) + (100% - var(--obsidian-indicator-l, 0px) - var(--obsidian-indicator-r, 100%)) / 2 - 2px);
+  border-radius: var(--obsidian-radius-pill);
+  background: var(--obsidian-color-primary);
+  box-shadow: 0 0 8px var(--obsidian-color-primary-glow);
+}
+.obsidian-dock.is-animated::before { transition: left var(--obsidian-motion-duration) var(--obsidian-motion-easing), right var(--obsidian-motion-duration) var(--obsidian-motion-easing-trail), opacity var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing); }
+.obsidian-dock__item {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--obsidian-color-border-low);
+  border-radius: var(--obsidian-radius-md);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02)), var(--obsidian-color-control);
+  color: var(--obsidian-color-text);
+  box-shadow: var(--obsidian-shadow-control);
+  cursor: pointer;
+  transform-origin: 50% 100%;
+  transition:
+    scale var(--obsidian-motion-duration) var(--obsidian-motion-easing),
+    translate var(--obsidian-motion-duration) var(--obsidian-motion-easing),
+    color var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing),
+    border-color var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing),
+    box-shadow var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing);
+}
+.obsidian-dock__item .obsidian-icon { width: 20px; height: 20px; }
+/* Magnification: the hovered item swells most, its neighbours a little */
+.obsidian-dock__item:hover { scale: 1.3; translate: 0 -4px; color: var(--obsidian-color-ink); border-color: var(--obsidian-color-border-medium); }
+.obsidian-dock__item:hover + .obsidian-dock__item,
+.obsidian-dock__item:has(+ .obsidian-dock__item:hover) { scale: 1.12; translate: 0 -1px; }
+.obsidian-dock__item:active { scale: 1.18; translate: 0 -2px; transition-duration: var(--obsidian-motion-duration-press); transition-timing-function: var(--obsidian-motion-easing-press); }
+.obsidian-dock__item:focus-visible { outline: none; box-shadow: var(--obsidian-shadow-control), var(--obsidian-shadow-focus); }
+.obsidian-dock__item[aria-current="true"],
+.obsidian-dock__item[aria-current="page"] { color: var(--obsidian-color-primary); border-color: var(--obsidian-color-border-high); }
+.obsidian-dock__item:disabled { color: var(--obsidian-color-disabled-ink); background: var(--obsidian-color-disabled); box-shadow: none; cursor: not-allowed; scale: 1; translate: none; }
+/* The label floats above the item it names */
+.obsidian-dock__item::after {
+  content: attr(aria-label);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  padding: 3px 8px;
+  border: 1px solid var(--obsidian-color-border-medium);
+  border-radius: var(--obsidian-radius-sm);
+  background: var(--obsidian-color-glass-elevated);
+  color: var(--obsidian-color-ink);
+  font-size: 11px;
+  font-weight: var(--obsidian-font-weight-medium);
+  white-space: nowrap;
+  scale: 0.77; /* counter-scales the 1.3× hover swell, so the label reads at its own size */
+  translate: -50% 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing), translate var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing);
+}
+.obsidian-dock__item:hover::after,
+.obsidian-dock__item:focus-visible::after { opacity: 1; translate: -50% 0; }
+.obsidian-dock__item:focus-visible:not(:hover)::after { scale: 1; }
+.obsidian-dock__sep { align-self: center; width: 1px; height: 28px; margin: 0 4px 2px; background: var(--obsidian-color-border-medium); }
+
+/* =========================================================================
+   Media card — now playing: artwork that glows into the glass, a lit scrubber and transport keys.
+   <article class="obsidian-media">
+     <div class="obsidian-media__art" aria-hidden="true"><span class="obsidian-media__orb"></span></div>
+     <div class="obsidian-media__body">
+       <p class="obsidian-media__kicker">Now playing</p>
+       <h3 class="obsidian-media__title">Night Drive</h3>
+       <p class="obsidian-media__artist">Glass Harbor · Lumen</p>
+       <input class="obsidian-slider obsidian-media__seek" type="range" min="0" max="222" value="84" style="--obsidian-value:38" aria-label="Seek">
+       <div class="obsidian-media__time"><span>1:24</span><span>3:42</span></div>
+       <div class="obsidian-media__controls">… <button class="obsidian-btn obsidian-btn--primary obsidian-btn--icon obsidian-media__play" type="button" aria-pressed="false" aria-label="Play">…</button> …</div>
+     </div>
+   </article>
+   js/obsidian.js plays it: the scrubber advances, the time follows, and the light behind the artwork
+   breathes; the glow stays inside the card (overflow clip), so it never smears the page.
+   ========================================================================= */
+.obsidian-media {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  width: 100%;
+  padding: 18px;
+  overflow: clip;
+  border: 1px solid var(--obsidian-color-border-low);
+  border-radius: var(--obsidian-radius-xl);
+  background: var(--obsidian-atmosphere-sheen), var(--obsidian-atmosphere-refraction), var(--obsidian-color-glass);
+  -webkit-backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%);
+  backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%);
+  box-shadow: var(--obsidian-shadow-panel);
+}
+/* The artwork's light, spilling into the glass behind it (kept inside the card) */
+.obsidian-media::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -40px;
+  top: -40px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--obsidian-color-primary) 28%, transparent), transparent);
+  pointer-events: none;
+}
+.obsidian-media__art {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--obsidian-color-border-medium);
+  border-radius: var(--obsidian-radius-lg);
+  background:
+    radial-gradient(120% 90% at 20% 15%, color-mix(in srgb, var(--obsidian-color-primary) 70%, transparent), transparent 55%),
+    radial-gradient(90% 80% at 85% 90%, color-mix(in srgb, var(--obsidian-color-success) 45%, transparent), transparent 60%),
+    conic-gradient(from 200deg at 60% 55%, var(--obsidian-color-surface), color-mix(in srgb, var(--obsidian-color-primary-strong) 50%, var(--obsidian-color-surface)), var(--obsidian-color-surface));
+  box-shadow: inset 0 1px 0 var(--obsidian-color-edge-hover), 0 14px 30px -14px color-mix(in srgb, var(--obsidian-color-primary) 55%, transparent);
+}
+.obsidian-media__art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 42%);
+  pointer-events: none;
+}
+.obsidian-media__orb {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46%;
+  aspect-ratio: 1;
+  margin: -23% 0 0 -23%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.9), color-mix(in srgb, var(--obsidian-color-primary) 85%, white) 18%, var(--obsidian-color-primary-strong) 55%, transparent 72%);
+  filter: drop-shadow(0 0 12px var(--obsidian-color-primary-glow));
+}
+.obsidian-media.is-playing .obsidian-media__orb { animation: obsidian-pulse 1.6s var(--obsidian-motion-easing) infinite; }
+.obsidian-media.is-playing::before { animation: obsidian-breathe 3.2s var(--obsidian-motion-easing) infinite alternate; }
+@keyframes obsidian-pulse { 0%, 100% { scale: 1; } 18% { scale: 1.08; } 40% { scale: 0.98; } }
+@keyframes obsidian-breathe { from { scale: 0.92; } to { scale: 1.12; } }
+.obsidian-media__body { display: grid; gap: 4px; min-width: 0; }
+.obsidian-media__kicker { font-size: 11px; font-weight: var(--obsidian-font-weight-semibold); letter-spacing: var(--obsidian-font-tracking-caps); text-transform: uppercase; color: var(--obsidian-color-primary); }
+.obsidian-media__title { font-size: 20px; font-weight: var(--obsidian-font-weight-semibold); letter-spacing: -0.01em; color: var(--obsidian-color-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.obsidian-media__artist { font-size: var(--obsidian-font-size-small); color: var(--obsidian-color-text-muted); }
+.obsidian-media__seek { margin-top: 10px; }
+.obsidian-media__time { display: flex; justify-content: space-between; font-family: var(--obsidian-font-family-mono); font-size: 11px; color: var(--obsidian-color-text-subtle); font-variant-numeric: tabular-nums; }
+.obsidian-media__controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 6px; }
+.obsidian-media__play .obsidian-media__pause,
+.obsidian-media__play[aria-pressed="true"] .obsidian-media__start { display: none; }
+.obsidian-media__play[aria-pressed="true"] .obsidian-media__pause { display: block; }
+@media (max-width: 480px) {
+  .obsidian-media { grid-template-columns: minmax(0, 1fr); }
+  .obsidian-media__art { width: min(100%, 220px); justify-self: center; }
+}

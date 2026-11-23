@@ -37,6 +37,8 @@ Accent: `<html data-accent="emerald">` or `"violet"` (glacier cyan is the defaul
 | Navigation | `.obsidian-nav` (`__item[aria-current]`, `__badge`), `.obsidian-switcher`, `.obsidian-breadcrumb`, `.obsidian-pagination` (`.is-edge`, `__gap`) |
 | Data | `.obsidian-card` (`__head` `__title` `__eyebrow` `__text` `__icon`), `.obsidian-stat` (`__label` `__value` `__meta`), `.obsidian-delta` (`--down`), `.obsidian-chart` (`__line` `__area` `__stop` `__grid`), `.obsidian-ring` (`--sm`), `.obsidian-progress`, `.obsidian-badge` (`--success` `--warning` `--danger` `--primary`), `.obsidian-table`, `.obsidian-avatar` (+ `__status`, `.obsidian-avatar-stack`), `.obsidian-list` |
 | Feedback | `.obsidian-toast` (`--success` `--danger`), `.obsidian-alert` (`--success` `--warning` `--danger`), `.obsidian-dialog`, `.obsidian-tooltip[data-tip]`, `.obsidian-tip`, `.obsidian-empty` |
+| Dock | `.obsidian-dock` > `.obsidian-dock__item[aria-current]` (label from `aria-label`), `.obsidian-dock__sep` — magnification and a gliding drop |
+| Media | `.obsidian-media` (`__art` + `__orb`, `__body`, `__kicker`, `__title`, `__artist`, `__seek`, `__time`, `__controls`, `__play[aria-pressed]`, `[data-obsidian-skip]`) |
 
 ## Tokens
 

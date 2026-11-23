@@ -59,6 +59,7 @@
   --clay-color-level-5: #8C877F; /* Elevation strata, back */
   --clay-color-level-ink-deep: #F4F2EE; /* Label color on strata levels 4–5 */
   --clay-color-backdrop: rgba(60, 54, 46, 0.28); /* Dialog backdrop */
+  --clay-color-gloss: rgba(255, 255, 255, 0.55); /* Soft specular highlight on puffed clay (buttons, knobs, tiles); flattens on press */
 
   --clay-image-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232C2C2A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); /* Select chevron (themeable) */
 
@@ -126,6 +127,8 @@
   --clay-shadow-elevation-3: inset 0 2px 1px rgba(255, 255, 255, 0.85), inset 0 -2px 4px rgba(84, 74, 60, 0.08), 0 3px 4px rgba(84, 74, 60, 0.08), 0 14px 30px -10px rgba(84, 74, 60, 0.32);
   --clay-shadow-elevation-4: inset 0 2px 1px rgba(255, 255, 255, 0.85), inset 0 -2px 4px rgba(84, 74, 60, 0.08), 0 5px 7px rgba(84, 74, 60, 0.08), 0 22px 44px -14px rgba(84, 74, 60, 0.36);
   --clay-shadow-elevation-5: inset 0 2px 1px rgba(255, 255, 255, 0.85), inset 0 -2px 4px rgba(84, 74, 60, 0.08), 0 8px 11px rgba(84, 74, 60, 0.08), 0 34px 64px -18px rgba(84, 74, 60, 0.42);
+  --clay-shadow-knob: inset 0 2px 1px rgba(255, 255, 255, 0.95), inset 0 -3px 4px rgba(84, 74, 60, 0.16), 0 1px 2px rgba(84, 74, 60, 0.18), 0 6px 12px -3px rgba(84, 74, 60, 0.34); /* Slider and stepper knobs: a fat ball of clay */
+  --clay-shadow-knob-pressed: inset 0 1px 1px rgba(255, 255, 255, 0.8), inset 0 -1px 2px rgba(84, 74, 60, 0.16), 0 1px 1px rgba(84, 74, 60, 0.22), 0 2px 4px -2px rgba(84, 74, 60, 0.3); /* Knob squashed under the finger: the drop shrinks to a contact shadow */
 
   --clay-motion-duration-fast: 120ms;
   --clay-motion-duration: 180ms;
@@ -140,6 +143,9 @@
   --clay-motion-easing-pop: cubic-bezier(0.34, 1.8, 0.5, 1); /* Check marks and radio dots appearing */
   --clay-motion-duration-enter: 760ms; /* Page-load entrance (pieces rise and squish into place) */
   --clay-motion-stagger: 70ms; /* Delay between siblings in an entrance */
+  --clay-motion-duration-knob: 440ms; /* Toggle and slider knobs travelling to a new position */
+  --clay-motion-easing-knob: cubic-bezier(0.34, 1.5, 0.64, 1); /* Knobs overshoot a hair past the stop and settle back (gentler than release) */
+  --clay-motion-easing-squash: cubic-bezier(0.2, 0.9, 0.3, 1.25); /* Content pops after a value change (stepper digits, widget icons) */
 }
 
 /* Dark theme — GENERATED from clay/tokens/tokens.dark.json.
@@ -203,6 +209,7 @@
   --clay-color-level-5: #1B1A18;
   --clay-color-level-ink-deep: #A8A39A;
   --clay-color-backdrop: rgba(0, 0, 0, 0.55);
+  --clay-color-gloss: rgba(255, 255, 255, 0.09);
 
   --clay-image-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ECE8E1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 
@@ -222,6 +229,8 @@
   --clay-shadow-elevation-3: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 8px rgba(0, 0, 0, 0.3), 0 16px 32px -12px rgba(0, 0, 0, 0.6);
   --clay-shadow-elevation-4: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 6px 12px rgba(0, 0, 0, 0.32), 0 24px 44px -14px rgba(0, 0, 0, 0.65);
   --clay-shadow-elevation-5: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 18px rgba(0, 0, 0, 0.35), 0 36px 64px -18px rgba(0, 0, 0, 0.75);
+  --clay-shadow-knob: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -2px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.45), 0 6px 12px -3px rgba(0, 0, 0, 0.65);
+  --clay-shadow-knob-pressed: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 2px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.6);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -284,6 +293,7 @@
     --clay-color-level-5: #1B1A18;
     --clay-color-level-ink-deep: #A8A39A;
     --clay-color-backdrop: rgba(0, 0, 0, 0.55);
+    --clay-color-gloss: rgba(255, 255, 255, 0.09);
 
     --clay-image-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ECE8E1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 
@@ -303,5 +313,7 @@
     --clay-shadow-elevation-3: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 8px rgba(0, 0, 0, 0.3), 0 16px 32px -12px rgba(0, 0, 0, 0.6);
     --clay-shadow-elevation-4: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 6px 12px rgba(0, 0, 0, 0.32), 0 24px 44px -14px rgba(0, 0, 0, 0.65);
     --clay-shadow-elevation-5: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 18px rgba(0, 0, 0, 0.35), 0 36px 64px -18px rgba(0, 0, 0, 0.75);
+    --clay-shadow-knob: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -2px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.45), 0 6px 12px -3px rgba(0, 0, 0, 0.65);
+    --clay-shadow-knob-pressed: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 2px rgba(0, 0, 0, 0.3), 0 1px 1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.6);
   }
 }

@@ -30,7 +30,8 @@
 }
 
 /* ---------- Toggle ---------- */
-/* Knob glides on the iOS curve; pressing stretches it toward the travel direction. */
+/* Pressing stretches the glossy knob toward its travel and squashes its shadow; it then travels on
+   the knob curve, overshooting a hair past the stop before settling. */
 .clay-toggle {
   position: relative;
   width: 52px;
@@ -49,13 +50,14 @@
   width: 24px;
   height: 24px;
   border-radius: var(--clay-radius-pill);
-  background: var(--clay-color-surface);
+  background: radial-gradient(120% 90% at 34% 18%, var(--clay-color-gloss), transparent 62%), var(--clay-color-surface);
   box-shadow: var(--clay-shadow-raised-sm);
   transition:
-    transform var(--clay-motion-duration-slide) var(--clay-motion-easing-spring),
-    width var(--clay-motion-duration-slow) var(--clay-motion-easing-spring);
+    transform var(--clay-motion-duration-knob) var(--clay-motion-easing-knob),
+    width var(--clay-motion-duration-slow) var(--clay-motion-easing-spring),
+    box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
 }
-.clay-toggle:active::before { width: 30px; }
+.clay-toggle:active::before { width: 30px; box-shadow: var(--clay-shadow-knob-pressed); }
 .clay-toggle:checked { background-color: var(--clay-color-primary); }
 .clay-toggle:checked::before { transform: translateX(22px); }
 .clay-toggle:checked:active::before { transform: translateX(16px); }

@@ -29,7 +29,7 @@ Source: one "Product UI Styleguide" board (mint clay on a matte grid). What the 
 | Tabs | Grey segmented track with mint active pill; underline rail with mint bar | Sliding indicator (iOS-style glide) |
 | Alerts | Full-width pills: mint success, yellow warning, coral error, each with an icon | Info variant, multi-line `--block` variant |
 | Card | Title, text, grey "Image" button, grey media tile, two slabs peeking below | Stacked slabs drawn with extra box-shadow layers |
-| Not in the reference | — | Dark theme, toggles, checkbox, radio, badges, avatars, progress, nav, table, dialog, tooltip, form rows, two example pages |
+| Not in the reference | — | Dark theme, toggles, checkbox, radio, slider, stepper, accordion, widget tiles, badges, avatars, progress, nav, table, dialog, tooltip, form rows, two example pages |
 
 ## 3. Foundations
 
@@ -52,11 +52,11 @@ Source: one "Product UI Styleguide" board (mint clay on a matte grid). What the 
 
 **Depth** — Raised: `inset 0 1.5px 0 rgba(255,255,255,.85), inset 0 -2px 3px rgba(84,74,60,.12), 0 1px 1px rgba(84,74,60,.08), 0 4px 10px -2px rgba(84,74,60,.22)`. Carved: `inset 0 2px 4px rgba(84,74,60,.18), inset 0 -1.5px 0 rgba(255,255,255,.75)`. Glow: `0 0 0 2px rgba(124,242,198,.95), 0 0 16px 2px rgba(124,242,198,.55)`. Elevation 1–5 tokens.
 
-**Motion** — Squish. Press 110ms (`easing-press`): buttons sink 1px and scale to 0.97, chips to 0.95. Release and hover 460ms on `easing-release` `cubic-bezier(.34,1.56,.64,1)`, so the clay springs back past rest and settles. Check marks and radio dots pop in on `easing-pop`. 180ms color, 280ms knobs and dialogs, 380ms sliding indicators on `cubic-bezier(.32,.72,0,1)`. Reduced motion respected. Page load: `.clay-enter` on a container makes its children rise and squish into place one after another (760ms, 70ms stagger), once.
+**Motion** — Squish. Press 110ms (`easing-press`): buttons sink 1px and squash to `scale(1.02, .93)` (wider, shorter) while their shadow turns inward and their gloss flattens; chips squash to `scale(1.03, .9)`, slider and stepper knobs to `scale(1.14, .86)` / `scale(1.08, .86)`. Release and hover 460ms on `easing-release` `cubic-bezier(.34,1.56,.64,1)`, so the clay springs back past rest and settles. Check marks and radio dots pop in on `easing-pop`; toggle and slider knobs travel 440ms on `easing-knob` `cubic-bezier(.34,1.5,.64,1)` and overshoot a hair; stepper digits pop on `easing-squash`; dialogs land squashed and settle (760ms, `easing-release`). 180ms color, 280ms knobs and dialogs, 380ms sliding indicators on `cubic-bezier(.32,.72,0,1)`. Reduced motion respected. Page load: `.clay-enter` on a container makes its children rise and squish into place one after another (760ms, 70ms stagger), once.
 
 ## 4. Components
 
-Board, typography, button (primary / default / neutral / ghost, sm / lg / icon), ringed field and plain input, chip, badge, segmented and underline tabs (sliding), alert (+ block), card (stacked / sunken / interactive), swatch, elevation strata, avatar, progress, toggle, checkbox, radio, nav (sliding), top bar, table, dialog, tooltip, theme switch. Every interactive component has hover, active, focus-visible and disabled states. Exact markup: `index.html` (each specimen has a Code button) and `docs/components.md`.
+Board, typography, button (primary / default / neutral / ghost, sm / lg / icon), ringed field and plain input, chip, badge, segmented and underline tabs (sliding), alert (+ block), card (stacked / sunken / interactive), swatch, elevation strata, avatar, progress, toggle, checkbox, radio, slider (clay ball in a carved groove), stepper (hold to repeat), accordion (native `<details>`), widget tiles (control-centre toggles), nav (sliding), top bar, table, dialog, tooltip, theme switch. Every interactive component has hover, active, focus-visible and disabled states. Exact markup: `index.html` (each specimen has a Code button) and `docs/components.md`.
 
 ## 5. Accessibility
 

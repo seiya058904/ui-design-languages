@@ -6,6 +6,8 @@
 .clay-btn {
   --btn-bg: var(--clay-color-surface);
   --btn-ink: var(--clay-color-text);
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -31,16 +33,42 @@
     background-color var(--clay-motion-duration) var(--clay-motion-easing);
 }
 
+/* Gloss: a soft specular band across the top of the puffed clay. It flattens and dims under the
+   finger and springs back with the piece (z-index -1 inside the isolated button: over the fill,
+   under the label). */
+.clay-btn::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 1px 9% 42%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--clay-color-gloss), transparent);
+  transform-origin: 50% 0;
+  pointer-events: none;
+  transition:
+    opacity var(--clay-motion-duration) var(--clay-motion-easing),
+    transform var(--clay-motion-duration-release) var(--clay-motion-easing-release);
+}
+
 .clay-btn:hover,
 .clay-btn.is-hover {
   transform: translateY(-2px);
   box-shadow: var(--clay-shadow-raised-hover);
 }
 
+/* Press: the clay squashes (a little wider, clearly shorter) and its shadow turns inward; on release
+   it springs back past rest and settles. */
 .clay-btn:active,
 .clay-btn.is-active {
-  transform: translateY(1px) scale(0.97);
+  transform: translateY(1px) scale(1.02, 0.93);
   box-shadow: var(--clay-shadow-pressed);
+  transition-duration: var(--clay-motion-duration-press);
+  transition-timing-function: var(--clay-motion-easing-press);
+}
+.clay-btn:active::before,
+.clay-btn.is-active::before {
+  opacity: 0.3;
+  transform: scaleY(0.55);
   transition-duration: var(--clay-motion-duration-press);
   transition-timing-function: var(--clay-motion-easing-press);
 }
@@ -70,6 +98,7 @@
   --btn-bg: transparent;
   box-shadow: none;
 }
+.clay-btn--ghost::before { display: none; }
 .clay-btn--ghost:hover,
 .clay-btn--ghost.is-hover { background: var(--clay-color-wash); box-shadow: none; transform: none; }
 .clay-btn--ghost:active { box-shadow: var(--clay-shadow-inset-sm); }
@@ -90,3 +119,6 @@
   cursor: not-allowed;
   pointer-events: none;
 }
+.clay-btn:disabled::before,
+.clay-btn.is-disabled::before,
+.clay-btn[aria-disabled="true"]::before { opacity: 0; }

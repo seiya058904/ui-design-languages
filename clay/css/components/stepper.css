@@ -1,0 +1,89 @@
+/* Clay UI — Stepper (a number between two clay buttons)
+   <div class="clay-stepper" role="group" aria-label="Guests">
+     <button class="clay-stepper__btn" type="button" data-step="-1" aria-label="Fewer guests"><svg class="clay-icon"><use href="#i-minus"/></svg></button>
+     <input class="clay-stepper__value" type="number" value="2" min="1" max="12" aria-label="Guests">
+     <button class="clay-stepper__btn" type="button" data-step="1" aria-label="More guests"><svg class="clay-icon"><use href="#i-plus"/></svg></button>
+   </div>
+   A grey clay ring holds a carved well with the value and two glossy round keys. With js/clay.js the keys
+   step the input (hold to repeat), the digits pop on every change and a key at the end of the range
+   gets aria-disabled="true" (it stays focusable). Arrow keys in the field work natively.
+   States: :hover · :active (squash) · :focus-visible · [aria-disabled="true"] / :disabled */
+
+.clay-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: var(--clay-radius-pill);
+  background: linear-gradient(180deg, var(--clay-color-neutral-light) 0%, var(--clay-color-neutral-deep) 100%);
+  box-shadow: var(--clay-shadow-raised);
+}
+
+.clay-stepper__btn {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(120% 90% at 34% 18%, var(--clay-color-gloss), transparent 62%), var(--clay-color-surface);
+  box-shadow: var(--clay-shadow-knob);
+  color: var(--clay-color-text);
+  cursor: pointer;
+  transition:
+    transform var(--clay-motion-duration-release) var(--clay-motion-easing-release),
+    box-shadow var(--clay-motion-duration) var(--clay-motion-easing),
+    color var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-stepper__btn .clay-icon { width: 18px; height: 18px; stroke-width: 2.6; }
+.clay-stepper__btn:hover { transform: translateY(-1px); }
+.clay-stepper__btn:active {
+  transform: translateY(1px) scale(1.08, 0.86);
+  box-shadow: var(--clay-shadow-knob-pressed);
+  transition-duration: var(--clay-motion-duration-press);
+  transition-timing-function: var(--clay-motion-easing-press);
+}
+.clay-stepper__btn:focus-visible { outline: none; box-shadow: var(--clay-shadow-knob), var(--clay-shadow-glow); }
+.clay-stepper__btn[aria-disabled="true"],
+.clay-stepper__btn:disabled {
+  background: var(--clay-color-disabled);
+  box-shadow: var(--clay-shadow-flat);
+  color: var(--clay-color-disabled-ink);
+  transform: none;
+  cursor: not-allowed;
+}
+
+.clay-stepper__value {
+  width: 68px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--clay-radius-pill);
+  background: var(--clay-color-surface-sunken);
+  box-shadow: var(--clay-shadow-inset);
+  color: var(--clay-color-text);
+  font-size: 18px;
+  font-weight: var(--clay-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  outline: none;
+  appearance: textfield;
+  -moz-appearance: textfield;
+  transition: box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-stepper__value::-webkit-inner-spin-button,
+.clay-stepper__value::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.clay-stepper__value:focus-visible { box-shadow: var(--clay-shadow-inset), var(--clay-shadow-glow); }
+.clay-stepper__value:disabled { background: var(--clay-color-disabled); color: var(--clay-color-disabled-ink); box-shadow: var(--clay-shadow-inset-sm); }
+/* js/clay.js adds .is-bump on every change: the digits squash and pop back. */
+.clay-stepper__value.is-bump { animation: clay-bump var(--clay-motion-duration-release) var(--clay-motion-easing-squash); }
+@keyframes clay-bump {
+  0%   { transform: scale(1.1, 0.82); }
+  100% { transform: none; }
+}
+
+.clay-stepper--sm { padding: 4px; }
+.clay-stepper--sm .clay-stepper__btn { width: 32px; height: 32px; }
+.clay-stepper--sm .clay-stepper__value { width: 52px; height: 32px; font-size: 15px; }

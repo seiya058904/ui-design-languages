@@ -59,7 +59,7 @@
         "backdrop": {
           "class": "clay-board clay-ruler"
         },
-        "hooks": ".clay-segmented, .clay-tabs, .clay-nav, .clay-chip[aria-pressed], [data-clay-open], [data-clay-close], [data-theme-set], [data-theme-toggle]",
+        "hooks": ".clay-segmented, .clay-tabs, .clay-nav, .clay-chip[aria-pressed], [data-clay-open], [data-clay-close], [data-theme-set], [data-theme-toggle], .clay-slider, .clay-stepper, .clay-widget[aria-pressed]",
         "wall": [
           [
             "button",
@@ -92,6 +92,22 @@
           [
             "navigation",
             "sidebar"
+          ],
+          [
+            "widget",
+            "control-tiles"
+          ],
+          [
+            "slider",
+            "slider"
+          ],
+          [
+            "accordion",
+            "accordion"
+          ],
+          [
+            "stepper",
+            "stepper"
           ]
         ]
       }

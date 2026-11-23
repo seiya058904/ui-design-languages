@@ -53,8 +53,8 @@ With `js/clay.js`, any `[data-theme-set="light|dark|auto"]` control (for example
 | `tokens/tokens.css` | CSS custom properties generated from both JSON files |
 | `css/clay.css` | Entry point: tokens + base + all components |
 | `css/base.css` | Reset, typography, board, grid, ruler, layout helpers, `.clay-enter` page-load entrance |
-| `css/components/` | Button, input, chip & badge, tabs, alert, card, surfaces (swatch, elevation, avatar, progress), controls (toggle, checkbox, radio), navigation (nav, top bar, table, dialog, tooltip) |
-| `js/clay.js` | Optional behaviour for tabs, chips and dialogs |
+| `css/components/` | Button, input, chip & badge, tabs, alert, card, surfaces (swatch, elevation, avatar, progress), controls (toggle, checkbox, radio), slider, stepper, accordion, widget tiles, navigation (nav, top bar, table, dialog, tooltip) |
+| `js/clay.js` | Optional behaviour: sliding indicators, tabs, chips and widget tiles, slider fill, stepper (hold to repeat), dialogs, theme |
 | `assets/icons.html` | Inline SVG icon sprite |
 | `index.html` | Styleguide sheet (recreates the reference) + extended components |
 | `examples/` | `dashboard.html` (invoicing app) and `landing.html` (marketing site) |

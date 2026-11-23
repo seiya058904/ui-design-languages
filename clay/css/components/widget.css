@@ -1,0 +1,124 @@
+/* Clay UI — Widget tiles (control-centre style: puffy clay tiles you press to switch)
+   <div class="clay-widgets">
+     <button class="clay-widget" type="button" aria-pressed="true">
+       <span class="clay-widget__icon"><svg class="clay-icon"><use href="#i-wifi"/></svg></span>
+       <span class="clay-widget__label">Wi-Fi</span>
+       <span class="clay-widget__meta">Studio 5G</span>
+     </button>
+     <div class="clay-widget clay-widget--wide">…a label and a .clay-slider…</div>
+   </div>
+   On: aria-pressed="true" (js/clay.js flips it on click, like chips) turns the tile into mint clay.
+   Pressing squashes the tile and sinks its icon; release springs both back.
+   --wide spans the row and holds other controls (a slider); it is not pressable itself. */
+
+.clay-widgets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
+.clay-widget {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+  min-height: 124px;
+  padding: 14px 16px 16px;
+  border: 0;
+  border-radius: var(--clay-radius-xl);
+  background: var(--clay-color-surface);
+  box-shadow: var(--clay-shadow-elevation-2);
+  color: var(--clay-color-text);
+  font: inherit;
+  text-align: left;
+  transition:
+    transform var(--clay-motion-duration-release) var(--clay-motion-easing-release),
+    box-shadow var(--clay-motion-duration-slow) var(--clay-motion-easing),
+    color var(--clay-motion-duration) var(--clay-motion-easing);
+}
+/* Gloss across the top of the tile, like the buttons */
+.clay-widget::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 2px 6% 52%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--clay-color-gloss), transparent);
+  opacity: 0.8;
+  pointer-events: none;
+}
+/* Mint fill fades in under the gloss when the tile is on */
+.clay-widget::after {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, var(--clay-color-primary-light) 0%, var(--clay-color-primary) 60%);
+  opacity: 0;
+  transition: opacity var(--clay-motion-duration-slow) var(--clay-motion-easing);
+}
+
+.clay-widget__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: auto;
+  border-radius: var(--clay-radius-squircle);
+  background: linear-gradient(180deg, var(--clay-color-neutral-light), var(--clay-color-neutral-deep));
+  box-shadow: var(--clay-shadow-raised-sm);
+  color: var(--clay-color-text);
+  transition:
+    transform var(--clay-motion-duration-release) var(--clay-motion-easing-squash),
+    background-color var(--clay-motion-duration) var(--clay-motion-easing),
+    color var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-widget__icon .clay-icon { width: 21px; height: 21px; }
+.clay-widget__label { padding-top: 14px; font-size: 15px; font-weight: var(--clay-font-weight-semibold); line-height: 1.25; }
+.clay-widget__meta { font-size: var(--clay-font-size-caption); color: var(--clay-color-text-muted); line-height: 1.3; transition: color var(--clay-motion-duration) var(--clay-motion-easing); }
+
+/* Pressable tiles */
+.clay-widget[aria-pressed] { cursor: pointer; user-select: none; }
+.clay-widget[aria-pressed]:hover { transform: translateY(-2px); box-shadow: var(--clay-shadow-elevation-3); }
+.clay-widget[aria-pressed]:active {
+  transform: translateY(1px) scale(0.975, 0.95);
+  box-shadow: var(--clay-shadow-pressed);
+  transition-duration: var(--clay-motion-duration-press);
+  transition-timing-function: var(--clay-motion-easing-press);
+}
+.clay-widget[aria-pressed]:active .clay-widget__icon { transform: scale(0.88); transition-duration: var(--clay-motion-duration-press); transition-timing-function: var(--clay-motion-easing-press); }
+.clay-widget[aria-pressed]:focus-visible { outline: none; box-shadow: var(--clay-shadow-elevation-2), var(--clay-shadow-glow); }
+
+.clay-widget[aria-pressed="true"] { color: var(--clay-color-primary-ink); }
+.clay-widget[aria-pressed="true"]::after { opacity: 1; }
+.clay-widget[aria-pressed="true"] .clay-widget__icon {
+  background: radial-gradient(120% 90% at 34% 18%, var(--clay-color-gloss), transparent 62%), var(--clay-color-surface);
+  color: var(--clay-color-primary-deep);
+}
+.clay-widget[aria-pressed="true"] .clay-widget__meta { color: var(--clay-color-primary-ink); }
+
+.clay-widget:disabled {
+  background: var(--clay-color-disabled);
+  box-shadow: var(--clay-shadow-flat);
+  color: var(--clay-color-disabled-ink);
+  transform: none;
+  cursor: not-allowed;
+}
+.clay-widget:disabled::before { opacity: 0; }
+.clay-widget:disabled .clay-widget__icon { background: var(--clay-color-disabled); box-shadow: var(--clay-shadow-flat); color: var(--clay-color-disabled-ink); }
+.clay-widget:disabled .clay-widget__meta { color: var(--clay-color-disabled-ink); }
+
+/* Wide tile: label row on top, any control below */
+.clay-widget--wide {
+  grid-column: 1 / -1;
+  gap: var(--clay-space-3);
+  min-height: 0;
+  padding: 16px 18px 18px;
+}
+.clay-widget__row { display: flex; align-items: center; justify-content: space-between; gap: var(--clay-space-3); width: 100%; }
+.clay-widget--wide .clay-widget__label { padding-top: 0; }

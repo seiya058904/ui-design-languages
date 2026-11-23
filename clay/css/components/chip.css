@@ -25,7 +25,7 @@
 .clay-chip .clay-icon { width: 16px; height: 16px; stroke-width: 2.4; }
 
 .clay-chip:hover { transform: translateY(-1px); }
-.clay-chip:active { transform: scale(0.95); box-shadow: var(--clay-shadow-pressed); transition-duration: var(--clay-motion-duration-press); transition-timing-function: var(--clay-motion-easing-press); }
+.clay-chip:active { transform: scale(1.03, 0.9); box-shadow: var(--clay-shadow-pressed); transition-duration: var(--clay-motion-duration-press); transition-timing-function: var(--clay-motion-easing-press); }
 .clay-chip:focus-visible { box-shadow: var(--clay-shadow-raised-sm), var(--clay-shadow-glow); }
 
 .clay-chip[aria-pressed="true"],

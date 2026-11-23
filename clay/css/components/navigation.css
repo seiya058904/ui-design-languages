@@ -117,14 +117,16 @@
   box-shadow: var(--clay-shadow-elevation-5);
 }
 .clay-dialog::backdrop { background: var(--clay-color-backdrop); backdrop-filter: blur(3px); }
-.clay-dialog[open] { animation: clay-pop var(--clay-motion-duration-slow) var(--clay-motion-easing); }
+.clay-dialog[open] { animation: clay-pop var(--clay-motion-duration-enter) var(--clay-motion-easing-release); }
 .clay-dialog__title { font-size: var(--clay-font-size-subtitle); font-weight: var(--clay-font-weight-semibold); letter-spacing: -0.01em; }
 .clay-dialog__body  { margin-top: var(--clay-space-2); color: var(--clay-color-text-muted); }
 .clay-dialog__actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: var(--clay-space-3); margin-top: var(--clay-space-6); }
 
+/* The dialog lands like a dropped piece of clay: it arrives squashed, stretches a touch and settles. */
 @keyframes clay-pop {
-  from { opacity: 0; transform: translateY(8px) scale(0.98); }
-  to   { opacity: 1; transform: none; }
+  0%   { opacity: 0; transform: translateY(14px) scale(0.94, 0.9); }
+  40%  { opacity: 1; }
+  100% { opacity: 1; transform: none; }
 }
 
 /* ---------- Tooltip: <span class="clay-tooltip" data-tip="Copied">…</span> ---------- */
@@ -134,7 +136,7 @@
   position: absolute;
   left: 50%;
   bottom: calc(100% + 10px);
-  transform: translate(-50%, 4px);
+  transform: translate(-50%, 6px) scale(0.86);
   padding: 6px 12px;
   border-radius: var(--clay-radius-pill);
   background: var(--clay-color-text);
@@ -145,7 +147,8 @@
   opacity: 0;
   pointer-events: none;
   box-shadow: 0 6px 16px -6px var(--clay-color-shadow-strong);
-  transition: opacity var(--clay-motion-duration), transform var(--clay-motion-duration);
+  transform-origin: 50% 100%;
+  transition: opacity var(--clay-motion-duration) var(--clay-motion-easing), transform var(--clay-motion-duration-release) var(--clay-motion-easing-pop);
 }
 .clay-tooltip:hover::after,
-.clay-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0); }
+.clay-tooltip:focus-within::after { opacity: 1; transform: translate(-50%, 0) scale(1); }

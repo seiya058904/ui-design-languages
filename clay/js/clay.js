@@ -4,7 +4,10 @@
      (iOS-style) in segmented controls, underline tabs and the sidebar nav
    - tablists (.clay-segmented / .clay-tabs): click + arrow keys move aria-selected
    - nav (.clay-nav): click moves aria-current="page"
-   - toggle chips (.clay-chip[aria-pressed]): click flips aria-pressed
+   - toggle chips and widget tiles (.clay-chip[aria-pressed], .clay-widget[aria-pressed]): click flips aria-pressed
+   - sliders (.clay-slider): keep --clay-value (0–100) and any <output for="id"> in sync
+   - steppers (.clay-stepper): the keys step the number input (press and hold to repeat), the digits
+     pop on each change, and a key at the end of the range gets aria-disabled="true"
    - dialogs: [data-clay-open="#id"] opens a <dialog>, [data-clay-close] closes it
    - theme: [data-theme-set="light|dark|auto"] picks a theme, [data-theme-toggle] flips
      light/dark; the choice is remembered (localStorage "clay-theme") and fires a
@@ -14,7 +17,8 @@
    Frameworks (React, Vue, Svelte…): just render aria-selected="true" / aria-current="page"
    (or .is-active) on the active item. Groups added later are picked up automatically and
    attribute changes from your own code move the indicator. Manual hooks:
-   window.ClayUI.initIndicators(root), window.ClayUI.refresh(group), window.ClayUI.selectTab(tab). */
+   window.ClayUI.initIndicators(root), window.ClayUI.refresh(group), window.ClayUI.selectTab(tab),
+   window.ClayUI.syncSlider(input), window.ClayUI.syncStepper(group). */
 (function () {
   /* Every group that gets a sliding indicator */
   var GROUPS = [
@@ -154,6 +158,71 @@
     });
   }
 
+  /* ---------- Sliders ---------- */
+  function syncSlider(input) {
+    var min = parseFloat(input.min || 0), max = parseFloat(input.max || 100), v = parseFloat(input.value);
+    var pct = max > min ? ((v - min) / (max - min)) * 100 : 0;
+    input.style.setProperty("--clay-value", String(Math.round(pct * 100) / 100));
+    if (input.id) {
+      document.querySelectorAll('output[for~="' + input.id + '"]').forEach(function (o) {
+        o.textContent = input.value + (o.getAttribute("data-suffix") || "");
+      });
+    }
+  }
+
+  /* ---------- Steppers ---------- */
+  function stepperInput(group) { return group && group.querySelector(".clay-stepper__value"); }
+  function syncStepper(group) {
+    var input = stepperInput(group);
+    if (!input) return;
+    var v = parseFloat(input.value);
+    var min = input.min !== "" ? parseFloat(input.min) : -Infinity, max = input.max !== "" ? parseFloat(input.max) : Infinity;
+    group.querySelectorAll(".clay-stepper__btn[data-step]").forEach(function (b) {
+      var down = parseFloat(b.getAttribute("data-step")) < 0;
+      var off = input.disabled || (down ? v <= min : v >= max);
+      if (off) b.setAttribute("aria-disabled", "true"); else b.removeAttribute("aria-disabled");
+    });
+  }
+  function stepBy(btn) {
+    var group = btn.closest(".clay-stepper"), input = stepperInput(group);
+    if (!input || input.disabled || btn.disabled || btn.getAttribute("aria-disabled") === "true") return false;
+    var step = parseFloat(input.step) || 1, dir = parseFloat(btn.getAttribute("data-step")) || 0;
+    var v = (parseFloat(input.value) || 0) + dir * step;
+    if (input.min !== "") v = Math.max(parseFloat(input.min), v);
+    if (input.max !== "") v = Math.min(parseFloat(input.max), v);
+    v = Math.round(v * 1e6) / 1e6;
+    if (String(v) === input.value) return false;
+    input.value = String(v);
+    input.classList.remove("is-bump");
+    void input.offsetWidth; // restart the pop
+    input.classList.add("is-bump");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+    syncStepper(group);
+    return true;
+  }
+  /* Press and hold a key to keep stepping (after a short pause, then faster). The click that ends a
+     hold doesn't step again; keyboard clicks (detail 0) always step once. */
+  var hold = null;
+  function stopTimer() { if (hold && hold.t) { clearTimeout(hold.t); hold.t = 0; } }
+  document.addEventListener("pointerdown", function (e) {
+    var btn = e.target.closest && e.target.closest(".clay-stepper__btn[data-step]");
+    stopTimer();
+    hold = null;
+    if (!btn || e.button !== 0) return;
+    var h = hold = { btn: btn, fired: false, t: 0 };
+    (function repeat(delay) {
+      h.t = setTimeout(function () {
+        h.fired = true;
+        if (stepBy(btn)) repeat(Math.max(60, delay * 0.8)); else h.t = 0;
+      }, delay);
+    })(420);
+  });
+  document.addEventListener("pointerup", stopTimer);
+  document.addEventListener("pointercancel", stopTimer);
+  document.addEventListener("pointerleave", function (e) { if (hold && e.target === hold.btn) stopTimer(); }, true);
+  window.addEventListener("blur", stopTimer);
+
   function selectNavItem(link) {
     var list = link.closest(".clay-nav");
     if (!list) return;
@@ -181,9 +250,17 @@
     var themeToggle = e.target.closest("[data-theme-toggle]");
     if (themeToggle) setTheme(isDark() ? "light" : "dark");
 
-    var chip = e.target.closest(".clay-chip[aria-pressed]");
+    var chip = e.target.closest(".clay-chip[aria-pressed], .clay-widget[aria-pressed]");
     if (chip && !chip.disabled) {
       chip.setAttribute("aria-pressed", chip.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    }
+
+    var stepKey = e.target.closest(".clay-stepper__btn[data-step]");
+    if (stepKey) {
+      var held = e.detail > 0 && hold && hold.btn === stepKey && hold.fired;
+      stopTimer();
+      hold = null;
+      if (!held) stepBy(stepKey);
     }
 
     var opener = e.target.closest("[data-clay-open]");
@@ -197,6 +274,17 @@
       var d = closer.closest("dialog");
       if (d) d.close();
     }
+  });
+
+  document.addEventListener("input", function (e) {
+    var el = e.target;
+    if (!el.matches) return;
+    if (el.matches(".clay-slider")) syncSlider(el);
+    else if (el.matches(".clay-stepper__value")) syncStepper(el.closest(".clay-stepper"));
+  });
+  document.addEventListener("change", function (e) {
+    var el = e.target;
+    if (el.matches && el.matches(".clay-stepper__value")) syncStepper(el.closest(".clay-stepper"));
   });
 
   document.addEventListener("keydown", function (e) {
@@ -216,6 +304,8 @@
   function boot() {
     syncThemeControls();
     initIndicators(document);
+    document.querySelectorAll(".clay-slider").forEach(syncSlider);
+    document.querySelectorAll(".clay-stepper").forEach(syncStepper);
     // Pick up groups rendered later (SPAs, dialogs, templates). Batched to one pass per frame.
     var queued = false;
     new MutationObserver(function () {
@@ -235,6 +325,8 @@
     selectNavItem: selectNavItem,
     setTheme: setTheme,
     isDark: isDark,
+    syncSlider: syncSlider,
+    syncStepper: syncStepper,
     // Aliases kept for the earlier tabs-only API
     initTabs: initIndicators,
     refreshTabs: refresh

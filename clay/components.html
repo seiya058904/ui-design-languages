@@ -40,6 +40,16 @@
   <symbol id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h3"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.6 16a5 5 0 0 1 6.8 0"/><path d="M12 19.5h.01"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></symbol>
+  <symbol id="i-focus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/></symbol>
+  <symbol id="i-cast" viewBox="0 0 24 24"><path d="M3 8V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/><path d="M3 12a8 8 0 0 1 8 8M3 16a4 4 0 0 1 4 4M3 20h.01"/></symbol>
+  <symbol id="i-volume-low" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4Z"/><path d="M15.5 9.5a3.5 3.5 0 0 1 0 5"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path d="M3 9.5h3.5L11 5.5v13l-4.5-4H3Z"/><path d="M14.5 9.5a3.5 3.5 0 0 1 0 5M17.5 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
   <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
   <symbol id="i-error" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.5h.01"/></symbol>
   <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
@@ -59,7 +69,7 @@
   <h1>Clay components</h1>
   <p>Soft extruded clay on a matte grid board. Raised for things you press, carved for things you fill, mint for what is selected. Every block below is live markup you can copy: open it in the <a href="../components.html#/clay">components browser</a> for the code.</p>
 </div>
-<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Toggle, checkbox & radio</a><a href="#segmented">Segmented control</a><a href="#tabs">Tabs</a><a href="#chips">Chips & badges</a><a href="#progress">Progress</a><a href="#alert">Alerts & toasts</a><a href="#card">Card</a><a href="#avatar">Avatar & list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#elevation">Elevation</a></nav>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Toggle, checkbox & radio</a><a href="#segmented">Segmented control</a><a href="#tabs">Tabs</a><a href="#chips">Chips & badges</a><a href="#slider">Slider</a><a href="#stepper">Stepper</a><a href="#progress">Progress</a><a href="#alert">Alerts & toasts</a><a href="#card">Card</a><a href="#accordion">Accordion</a><a href="#avatar">Avatar & list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#widget">Widget tiles</a><a href="#elevation">Elevation</a></nav>
 <main>
   <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
     <h2 id="h-button">Button</h2>
@@ -221,6 +231,63 @@
     </div>
   </section>
 
+  <section class="cat-section" id="slider" data-component="slider" aria-labelledby="h-slider">
+    <h2 id="h-slider">Slider</h2>
+    <p>A ball of clay rolling in a carved groove: it puffs up on hover and squashes under your finger.</p>
+    <div class="demo" data-demo="slider">
+      <h3>Slider</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-slider-row" style="width:min(100%,420px)">
+          <svg class="clay-icon" aria-hidden="true"><use href="#i-volume-low"/></svg>
+          <input class="clay-slider" id="c-vol" type="range" min="0" max="100" value="64" style="--clay-value:64" aria-label="Volume">
+          <svg class="clay-icon" aria-hidden="true"><use href="#i-volume"/></svg>
+          <output class="clay-slider-value" for="c-vol" data-suffix="%">64%</output>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="sizes-and-disabled">
+      <h3>Small and disabled</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-stack" style="--gap:22px;width:min(100%,380px)">
+          <label class="clay-form-row"><span class="clay-label">Late fee</span>
+            <span class="clay-slider-row"><input class="clay-slider clay-slider--sm" id="c-fee" type="range" min="0" max="10" step="0.5" value="2.5" style="--clay-value:25" aria-label="Late fee"><output class="clay-slider-value" for="c-fee" data-suffix="%">2.5%</output></span>
+          </label>
+          <label class="clay-form-row"><span class="clay-label">Grace period (locked)</span>
+            <span class="clay-slider-row"><input class="clay-slider clay-slider--sm" id="c-grace" type="range" min="0" max="30" value="14" style="--clay-value:46.67" aria-label="Grace period" disabled><output class="clay-slider-value" for="c-grace" data-suffix=" d">14 d</output></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="stepper" data-component="stepper" aria-labelledby="h-stepper">
+    <h2 id="h-stepper">Stepper</h2>
+    <p>A number between two clay keys. Press and hold to keep counting; the digits pop on every step.</p>
+    <div class="demo" data-demo="stepper">
+      <h3>Stepper</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-row" style="--gap:28px;align-items:flex-end;justify-content:center">
+        <div class="clay-stack" style="--gap:8px;align-items:center">
+          <span class="clay-label" id="c-seats-l">Seats</span>
+          <div class="clay-stepper" role="group" aria-labelledby="c-seats-l">
+            <button class="clay-stepper__btn" type="button" data-step="-1" aria-label="Fewer seats"><svg class="clay-icon" aria-hidden="true"><use href="#i-minus"/></svg></button>
+            <input class="clay-stepper__value" type="number" value="4" min="1" max="12" aria-labelledby="c-seats-l">
+            <button class="clay-stepper__btn" type="button" data-step="1" aria-label="More seats"><svg class="clay-icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+          </div>
+        </div>
+        <div class="clay-stack" style="--gap:8px;align-items:center">
+          <span class="clay-label" id="c-copies-l">Copies (at minimum)</span>
+          <div class="clay-stepper clay-stepper--sm" role="group" aria-labelledby="c-copies-l">
+            <button class="clay-stepper__btn" type="button" data-step="-1" aria-label="Fewer copies" aria-disabled="true"><svg class="clay-icon" aria-hidden="true"><use href="#i-minus"/></svg></button>
+            <input class="clay-stepper__value" type="number" value="1" min="1" max="99" aria-labelledby="c-copies-l">
+            <button class="clay-stepper__btn" type="button" data-step="1" aria-label="More copies"><svg class="clay-icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="cat-section" id="progress" data-component="progress" aria-labelledby="h-progress">
     <h2 id="h-progress">Progress</h2>
     <p>How far along something is.</p>
@@ -291,6 +358,30 @@
         <article class="clay-card clay-card--sunken" style="width:min(100%,260px)">
           <div class="clay-card__content"><h3 class="clay-card__title">Drop a file</h3><p class="clay-card__text">PDF or PNG, up to 10 MB.</p></div>
         </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="accordion" data-component="accordion" aria-labelledby="h-accordion">
+    <h2 id="h-accordion">Accordion</h2>
+    <p>Questions that open in place. An open item rises a level and its knob turns mint.</p>
+    <div class="demo" data-demo="accordion">
+      <h3>Accordion</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-accordion" style="width:min(100%,520px)">
+          <details class="clay-accordion__item" name="c-faq" open>
+            <summary class="clay-accordion__head">When is an invoice overdue?<span class="clay-accordion__knob" aria-hidden="true"><svg class="clay-icon"><use href="#i-chevron"/></svg></span></summary>
+            <div class="clay-accordion__body">The day after its due date. We send the client a friendly nudge three days before, and again on the day.</div>
+          </details>
+          <details class="clay-accordion__item" name="c-faq">
+            <summary class="clay-accordion__head">Can clients pay by bank transfer?<span class="clay-accordion__knob" aria-hidden="true"><svg class="clay-icon"><use href="#i-chevron"/></svg></span></summary>
+            <div class="clay-accordion__body">Yes. Every invoice shows your bank details next to the card button, and transfers are matched automatically.</div>
+          </details>
+          <details class="clay-accordion__item" name="c-faq">
+            <summary class="clay-accordion__head">How do refunds work?<span class="clay-accordion__knob" aria-hidden="true"><svg class="clay-icon"><use href="#i-chevron"/></svg></span></summary>
+            <div class="clay-accordion__body">Refunds go back to the original card within five working days. The invoice is marked “Refunded”.</div>
+          </details>
+        </div>
       </div>
     </div>
   </section>
@@ -377,6 +468,45 @@
       <div class="demo__stage clay-board">
         <span class="clay-tooltip" data-tip="Copied to clipboard"><button class="clay-btn" type="button">Copy link</button></span>
         <span class="clay-tooltip" data-tip="Search invoices"><button class="clay-btn clay-btn--neutral clay-btn--icon" type="button" aria-label="Search"><svg class="clay-icon" aria-hidden="true"><use href="#i-search"/></svg></button></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="widget" data-component="widget" aria-labelledby="h-widget">
+    <h2 id="h-widget">Widget tiles</h2>
+    <p>Control-centre tiles made of clay. Press one: it squashes, sinks its icon and comes back up in mint.</p>
+    <div class="demo" data-demo="control-tiles">
+      <h3>Control tiles</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-widgets" style="width:min(100%,380px)">
+          <button class="clay-widget" type="button" aria-pressed="true">
+            <span class="clay-widget__icon"><svg class="clay-icon" aria-hidden="true"><use href="#i-wifi"/></svg></span>
+            <span class="clay-widget__label">Wi-Fi</span>
+            <span class="clay-widget__meta">Studio 5G</span>
+          </button>
+          <button class="clay-widget" type="button" aria-pressed="false">
+            <span class="clay-widget__icon"><svg class="clay-icon" aria-hidden="true"><use href="#i-moon"/></svg></span>
+            <span class="clay-widget__label">Focus</span>
+            <span class="clay-widget__meta">Off until 5 pm</span>
+          </button>
+          <button class="clay-widget" type="button" aria-pressed="false">
+            <span class="clay-widget__icon"><svg class="clay-icon" aria-hidden="true"><use href="#i-cast"/></svg></span>
+            <span class="clay-widget__label">Mirror</span>
+            <span class="clay-widget__meta">Meeting room</span>
+          </button>
+          <button class="clay-widget" type="button" aria-pressed="false" disabled>
+            <span class="clay-widget__icon"><svg class="clay-icon" aria-hidden="true"><use href="#i-focus"/></svg></span>
+            <span class="clay-widget__label">Hotspot</span>
+            <span class="clay-widget__meta">Unavailable</span>
+          </button>
+          <div class="clay-widget clay-widget--wide">
+            <div class="clay-widget__row"><span class="clay-widget__label">Brightness</span><span class="clay-widget__meta">Auto</span></div>
+            <div class="clay-slider-row">
+              <svg class="clay-icon" aria-hidden="true"><use href="#i-sun"/></svg>
+              <input class="clay-slider clay-slider--sm" id="c-bright" type="range" min="0" max="100" value="72" style="--clay-value:72" aria-label="Brightness">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>

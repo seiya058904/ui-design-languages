@@ -120,7 +120,49 @@ Variants `--column` `--stacked` `--sunken` `--interactive` · `.clay-card__media
 <label class="clay-check"><input type="checkbox" class="clay-checkbox"> Include tax</label>
 <label class="clay-check"><input type="radio" name="cycle" class="clay-radio"> Monthly</label>
 ```
-The toggle knob glides on `--clay-motion-easing-spring`; pressing and holding stretches it toward the direction it will travel, like iOS. Pure CSS, no JS needed.
+Pressing stretches the glossy toggle knob toward its travel and squashes its shadow; it then travels on `--clay-motion-easing-knob`, overshooting a hair past the stop. Pure CSS, no JS needed.
+
+## Slider — `slider.css`
+```html
+<div class="clay-slider-row">
+  <input class="clay-slider" id="vol" type="range" min="0" max="100" value="64" style="--clay-value:64" aria-label="Volume">
+  <output class="clay-slider-value" for="vol" data-suffix="%">64%</output>
+</div>
+```
+A glossy clay ball in a carved groove. `--clay-value` (0–100) draws the mint fill so it always ends under the knob's centre; `js/clay.js` keeps it and the `<output for>` in sync. Hover puffs the knob up, pressing squashes it (`scale(1.14, .86)`) and adds the glow. `--sm` for a 22px knob; `:disabled` goes flat and grey.
+
+## Stepper — `stepper.css`
+```html
+<div class="clay-stepper" role="group" aria-label="Seats">
+  <button class="clay-stepper__btn" type="button" data-step="-1" aria-label="Fewer seats"><svg class="clay-icon"><use href="#i-minus"/></svg></button>
+  <input class="clay-stepper__value" type="number" value="4" min="1" max="12" aria-label="Seats">
+  <button class="clay-stepper__btn" type="button" data-step="1" aria-label="More seats"><svg class="clay-icon"><use href="#i-plus"/></svg></button>
+</div>
+```
+With `js/clay.js` the keys step the input by its `step` (press and hold to repeat, faster and faster), the digits pop (`.is-bump`), and a key at either end of the range gets `aria-disabled="true"` so it stays focusable. `--sm` for 32px keys.
+
+## Accordion — `accordion.css`
+```html
+<div class="clay-accordion">
+  <details class="clay-accordion__item" name="faq" open>
+    <summary class="clay-accordion__head">How do refunds work?<span class="clay-accordion__knob" aria-hidden="true"><svg class="clay-icon"><use href="#i-chevron"/></svg></span></summary>
+    <div class="clay-accordion__body">…</div>
+  </details>
+</div>
+```
+Native `<details>`: keyboard and screen readers work without JS; the same `name` makes it one-open-at-a-time. An open item rises to elevation 2 and its knob turns mint; the body opens on the indicator curve where the browser can animate to `height: auto`.
+
+## Widget tiles — `widget.css`
+```html
+<div class="clay-widgets">
+  <button class="clay-widget" type="button" aria-pressed="true">
+    <span class="clay-widget__icon"><svg class="clay-icon"><use href="#i-wifi"/></svg></span>
+    <span class="clay-widget__label">Wi-Fi</span><span class="clay-widget__meta">Studio 5G</span>
+  </button>
+  <div class="clay-widget clay-widget--wide">…label row + .clay-slider…</div>
+</div>
+```
+Control-centre tiles: pressing squashes the tile and sinks its icon; `aria-pressed="true"` fills it with mint clay (`js/clay.js` flips it on click). `--wide` spans the row and holds other controls.
 
 ## Navigation, table, dialog, tooltip — `navigation.css`
 ```html

@@ -1,0 +1,116 @@
+/* Clay UI — Accordion (native <details>: keyboard and screen readers work without JS)
+   <div class="clay-accordion">
+     <details class="clay-accordion__item" open>
+       <summary class="clay-accordion__head">
+         How do refunds work?
+         <span class="clay-accordion__knob" aria-hidden="true"><svg class="clay-icon"><use href="#i-chevron"/></svg></span>
+       </summary>
+       <div class="clay-accordion__body">Refunds go back to the original card within 5 working days.</div>
+     </details>
+     …
+   </div>
+   Each item is a raised clay slab; an open one rises a level and its knob turns mint. The body opens
+   with the sliding-indicator curve where the browser can animate to height:auto (others just open).
+   Add name="faq" to every <details> for one-open-at-a-time. */
+
+.clay-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--clay-space-3);
+  width: 100%;
+  interpolate-size: allow-keywords;
+}
+
+.clay-accordion__item {
+  border-radius: var(--clay-radius-lg);
+  background: var(--clay-color-surface);
+  box-shadow: var(--clay-shadow-elevation-1);
+  transition:
+    box-shadow var(--clay-motion-duration-slow) var(--clay-motion-easing),
+    transform var(--clay-motion-duration-release) var(--clay-motion-easing-release);
+}
+.clay-accordion__item[open] { box-shadow: var(--clay-shadow-elevation-2); }
+
+.clay-accordion__item::details-content {
+  height: 0;
+  overflow: clip;
+  transition:
+    height var(--clay-motion-duration-slide) var(--clay-motion-easing-spring),
+    content-visibility var(--clay-motion-duration-slide) allow-discrete;
+}
+.clay-accordion__item[open]::details-content { height: auto; }
+
+.clay-accordion__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--clay-space-4);
+  min-height: 60px;
+  padding: 10px 12px 10px 22px;
+  border-radius: var(--clay-radius-lg);
+  font-size: var(--clay-font-size-body);
+  font-weight: var(--clay-font-weight-semibold);
+  letter-spacing: -0.005em;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--clay-motion-duration) var(--clay-motion-easing), box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-accordion__head::-webkit-details-marker { display: none; }
+.clay-accordion__head:hover { background: var(--clay-color-wash); }
+.clay-accordion__head:focus-visible { outline: none; box-shadow: var(--clay-shadow-glow); }
+
+/* Knob: a small ball of clay holding the chevron. Press squashes it; opening turns it mint and
+   rolls the chevron over with a gentle overshoot. */
+.clay-accordion__knob {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(120% 90% at 34% 18%, var(--clay-color-gloss), transparent 62%), var(--clay-color-surface);
+  box-shadow: var(--clay-shadow-raised-sm);
+  color: var(--clay-color-text-muted);
+  transition:
+    transform var(--clay-motion-duration-release) var(--clay-motion-easing-release),
+    background-color var(--clay-motion-duration) var(--clay-motion-easing),
+    box-shadow var(--clay-motion-duration) var(--clay-motion-easing),
+    color var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-accordion__knob .clay-icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.4;
+  transition: transform var(--clay-motion-duration-knob) var(--clay-motion-easing-knob);
+}
+.clay-accordion__head:active .clay-accordion__knob {
+  transform: scale(1.08, 0.86);
+  box-shadow: var(--clay-shadow-pressed);
+  transition-duration: var(--clay-motion-duration-press);
+  transition-timing-function: var(--clay-motion-easing-press);
+}
+.clay-accordion__item[open] .clay-accordion__knob {
+  background-color: var(--clay-color-primary);
+  background-image: radial-gradient(120% 90% at 34% 18%, var(--clay-color-gloss), transparent 62%);
+  color: var(--clay-color-primary-ink);
+}
+.clay-accordion__item[open] .clay-accordion__knob .clay-icon { transform: rotate(180deg); }
+
+.clay-accordion__body {
+  margin: 0 22px;
+  padding: 14px 0 20px;
+  border-top: 1px solid var(--clay-color-groove-dark);
+  box-shadow: inset 0 1px 0 var(--clay-color-groove-light);
+  color: var(--clay-color-text-muted);
+  font-size: var(--clay-font-size-small);
+  line-height: 1.55;
+}
+.clay-accordion__body > * + * { margin-top: var(--clay-space-3); }
+
+.clay-accordion__item.is-disabled .clay-accordion__head,
+.clay-accordion__item[aria-disabled="true"] .clay-accordion__head { color: var(--clay-color-disabled-ink); cursor: not-allowed; pointer-events: none; }
+.clay-accordion__item.is-disabled,
+.clay-accordion__item[aria-disabled="true"] { background: var(--clay-color-disabled); box-shadow: var(--clay-shadow-flat); }
+.clay-accordion__item.is-disabled .clay-accordion__knob,
+.clay-accordion__item[aria-disabled="true"] .clay-accordion__knob { background: var(--clay-color-disabled); box-shadow: var(--clay-shadow-flat); color: var(--clay-color-disabled-ink); }

@@ -111,6 +111,12 @@
   <symbol id="i-error" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.5h.01"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.5h.01"/></symbol>
   <symbol id="i-image" viewBox="0 0 24 24"><path d="M3 18 9 11l4 4.5 2.5-2.5L21 18Z" fill="currentColor" stroke="none"/><circle cx="16.5" cy="7" r="2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.6 16a5 5 0 0 1 6.8 0"/><path d="M12 19.5h.01"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path d="M3 9.5h3.5L11 5.5v13l-4.5-4H3Z"/><path d="M14.5 9.5a3.5 3.5 0 0 1 0 5M17.5 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1Z"/></symbol>
   <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
@@ -379,6 +385,54 @@
           <a class="clay-nav__item" href="#"><svg class="clay-icon" aria-hidden="true"><use href="#i-card"/></svg>Payments</a>
           <a class="clay-nav__item" href="#"><svg class="clay-icon" aria-hidden="true"><use href="#i-chart"/></svg>Reports</a>
         </nav>
+      </section>
+
+      <section class="third" aria-labelledby="h-tiles">
+        <h3 class="clay-section-title" id="h-tiles">Widget tiles</h3>
+        <div class="clay-widgets">
+          <button class="clay-widget" type="button" aria-pressed="true">
+            <span class="clay-widget__icon"><svg class="clay-icon" aria-hidden="true"><use href="#i-wifi"/></svg></span>
+            <span class="clay-widget__label">Wi-Fi</span>
+            <span class="clay-widget__meta">Studio 5G</span>
+          </button>
+          <button class="clay-widget" type="button" aria-pressed="false">
+            <span class="clay-widget__icon"><svg class="clay-icon" aria-hidden="true"><use href="#i-moon"/></svg></span>
+            <span class="clay-widget__label">Focus</span>
+            <span class="clay-widget__meta">Off</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="third" aria-labelledby="h-slide">
+        <h3 class="clay-section-title" id="h-slide">Slider and stepper</h3>
+        <div class="clay-stack" style="--gap:22px">
+          <div class="clay-slider-row">
+            <input class="clay-slider" id="s-vol" type="range" min="0" max="100" value="64" style="--clay-value:64" aria-label="Volume">
+            <output class="clay-slider-value" for="s-vol" data-suffix="%">64%</output>
+          </div>
+          <div class="clay-row" style="--gap:14px">
+            <div class="clay-stepper" role="group" aria-label="Seats">
+              <button class="clay-stepper__btn" type="button" data-step="-1" aria-label="Fewer seats"><svg class="clay-icon" aria-hidden="true"><use href="#i-minus"/></svg></button>
+              <input class="clay-stepper__value" type="number" value="4" min="1" max="12" aria-label="Seats">
+              <button class="clay-stepper__btn" type="button" data-step="1" aria-label="More seats"><svg class="clay-icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+            </div>
+            <span class="clay-small clay-muted">seats</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="third" aria-labelledby="h-acc">
+        <h3 class="clay-section-title" id="h-acc">Accordion</h3>
+        <div class="clay-accordion">
+          <details class="clay-accordion__item" name="s-faq" open>
+            <summary class="clay-accordion__head">When is it overdue?<span class="clay-accordion__knob" aria-hidden="true"><svg class="clay-icon"><use href="#i-chevron"/></svg></span></summary>
+            <div class="clay-accordion__body">The day after its due date. A nudge goes out three days before.</div>
+          </details>
+          <details class="clay-accordion__item" name="s-faq">
+            <summary class="clay-accordion__head">Refunds?<span class="clay-accordion__knob" aria-hidden="true"><svg class="clay-icon"><use href="#i-chevron"/></svg></span></summary>
+            <div class="clay-accordion__body">Back to the original card within five working days.</div>
+          </details>
+        </div>
       </section>
 
       <section class="two-thirds" aria-labelledby="h-table">

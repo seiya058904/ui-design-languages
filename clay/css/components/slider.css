@@ -1,0 +1,122 @@
+/* Clay UI — Slider (native range input: a ball of clay rolling in a carved groove)
+   <div class="clay-slider-row">
+     <input class="clay-slider" id="vol" type="range" min="0" max="100" value="64" style="--clay-value:64" aria-label="Volume">
+     <output class="clay-slider-value" for="vol" data-suffix="%">64%</output>
+   </div>
+   --clay-value is 0–100 (the filled share of the groove). js/clay.js keeps it and any
+   <output for="id"> in sync while dragging; without JS the inline value still draws the fill.
+   States: :hover (the knob puffs up) · :active (it squashes under the finger) · :focus-visible (glow) · :disabled */
+
+.clay-slider {
+  --clay-slider-knob: 28px;
+  display: block;
+  width: 100%;
+  min-width: 120px;
+  height: var(--clay-slider-knob);
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+.clay-slider:focus { outline: none; }
+
+/* Carved groove; the mint fill ends under the knob's centre at every value. */
+.clay-slider::-webkit-slider-runnable-track {
+  height: 14px;
+  border-radius: var(--clay-radius-pill);
+  background:
+    linear-gradient(180deg, var(--clay-color-primary-light), var(--clay-color-primary-strong)) 0 0 / calc(var(--clay-slider-knob) / 2 + (100% - var(--clay-slider-knob)) * var(--clay-value, 50) / 100) 100% no-repeat,
+    var(--clay-color-surface-sunken);
+  box-shadow: var(--clay-shadow-well);
+}
+.clay-slider::-moz-range-track {
+  height: 14px;
+  border-radius: var(--clay-radius-pill);
+  background: var(--clay-color-surface-sunken);
+  box-shadow: var(--clay-shadow-well);
+}
+.clay-slider::-moz-range-progress {
+  height: 14px;
+  border-radius: var(--clay-radius-pill);
+  background: linear-gradient(180deg, var(--clay-color-primary-light), var(--clay-color-primary-strong));
+}
+
+/* Knob: a glossy ball of clay. Hover puffs it up, pressing squashes it flat and wide, release springs back. */
+.clay-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: var(--clay-slider-knob);
+  height: var(--clay-slider-knob);
+  margin-top: calc((14px - var(--clay-slider-knob)) / 2);
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(120% 90% at 34% 18%, var(--clay-color-gloss), transparent 62%), var(--clay-color-surface);
+  box-shadow: var(--clay-shadow-knob);
+  transition:
+    transform var(--clay-motion-duration-release) var(--clay-motion-easing-release),
+    box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-slider::-moz-range-thumb {
+  width: var(--clay-slider-knob);
+  height: var(--clay-slider-knob);
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(120% 90% at 34% 18%, var(--clay-color-gloss), transparent 62%), var(--clay-color-surface);
+  box-shadow: var(--clay-shadow-knob);
+  transition:
+    transform var(--clay-motion-duration-release) var(--clay-motion-easing-release),
+    box-shadow var(--clay-motion-duration) var(--clay-motion-easing);
+}
+.clay-slider:hover::-webkit-slider-thumb { transform: scale(1.07); }
+.clay-slider:hover::-moz-range-thumb { transform: scale(1.07); }
+.clay-slider:active::-webkit-slider-thumb {
+  transform: scale(1.14, 0.86);
+  box-shadow: var(--clay-shadow-knob-pressed), var(--clay-shadow-glow);
+  transition-duration: var(--clay-motion-duration-press);
+  transition-timing-function: var(--clay-motion-easing-press);
+}
+.clay-slider:active::-moz-range-thumb {
+  transform: scale(1.14, 0.86);
+  box-shadow: var(--clay-shadow-knob-pressed), var(--clay-shadow-glow);
+}
+.clay-slider:focus-visible::-webkit-slider-thumb { box-shadow: var(--clay-shadow-knob), var(--clay-shadow-glow); }
+.clay-slider:focus-visible::-moz-range-thumb { box-shadow: var(--clay-shadow-knob), var(--clay-shadow-glow); }
+
+.clay-slider:disabled { cursor: not-allowed; }
+.clay-slider:disabled::-webkit-slider-runnable-track {
+  background:
+    linear-gradient(var(--clay-color-neutral), var(--clay-color-neutral)) 0 0 / calc(var(--clay-slider-knob) / 2 + (100% - var(--clay-slider-knob)) * var(--clay-value, 50) / 100) 100% no-repeat,
+    var(--clay-color-disabled);
+  box-shadow: var(--clay-shadow-inset-sm);
+}
+.clay-slider:disabled::-webkit-slider-thumb { background: var(--clay-color-disabled); box-shadow: var(--clay-shadow-flat); transform: none; }
+.clay-slider:disabled::-moz-range-progress { background: var(--clay-color-neutral); }
+.clay-slider:disabled::-moz-range-thumb { background: var(--clay-color-disabled); box-shadow: var(--clay-shadow-flat); transform: none; }
+
+.clay-slider--sm { --clay-slider-knob: 22px; }
+
+/* Row: optional icons at each end and the value in a small raised clay tag */
+.clay-slider-row {
+  display: flex;
+  align-items: center;
+  gap: var(--clay-space-3);
+  width: 100%;
+  color: var(--clay-color-text-muted);
+}
+.clay-slider-row > .clay-icon { width: 20px; height: 20px; }
+.clay-slider-value {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  min-width: 56px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: var(--clay-radius-pill);
+  background: var(--clay-color-surface);
+  box-shadow: var(--clay-shadow-raised-sm);
+  color: var(--clay-color-text);
+  font-size: var(--clay-font-size-small);
+  font-weight: var(--clay-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}

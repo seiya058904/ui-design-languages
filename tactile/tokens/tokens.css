@@ -82,6 +82,8 @@
   --tactile-shadow-pressed: 0 0 0 transparent, 0 0 0 transparent, inset 6px 6px 13px var(--tactile-color-dark), inset -5px -5px 12px var(--tactile-color-light); /* Pushed-in pieces. Leads with two empty outer shadows so raised (outer, outer) interpolates into it: a press sinks through flat instead of snapping */
   --tactile-shadow-accent: -4px -4px 10px var(--tactile-color-light), 5px 6px 14px var(--tactile-color-glow), inset 0 1px 0 rgba(255, 255, 255, 0.14); /* Teal pieces cast a teal shadow */
   --tactile-shadow-focus: 0 0 0 2px var(--tactile-color-primary-light), 0 0 12px 2px var(--tactile-color-glow);
+  --tactile-shadow-knob: -3px -3px 7px var(--tactile-color-light), 4px 4px 9px var(--tactile-color-dark), 0 0 0 transparent, 0 0 0 transparent; /* Slider thumbs and dial knobs at rest (same list shape as knob-pressed, so a press sinks continuously) */
+  --tactile-shadow-knob-pressed: -1px -1px 2px var(--tactile-color-light), 1px 1px 3px var(--tactile-color-dark-soft), inset 2px 2px 4px var(--tactile-color-dark-soft), inset -2px -2px 4px var(--tactile-color-light); /* A knob held down: it sinks into the material */
 
   --tactile-motion-duration: 180ms;
   --tactile-motion-duration-slide: 360ms;
@@ -94,18 +96,20 @@
   --tactile-motion-easing-pop: cubic-bezier(0.25, 1.4, 0.5, 1); /* Check marks and radio dots appearing */
   --tactile-motion-duration-enter: 720ms; /* Page-load entrance (surfaces lift out of the flat material (shadows grow in)) */
   --tactile-motion-stagger: 80ms; /* Delay between siblings in an entrance */
+  --tactile-motion-duration-follow: 140ms; /* Readouts and arcs catching up with a dragged control (micro-damping) */
+  --tactile-motion-easing-follow: cubic-bezier(0.25, 0.8, 0.25, 1); /* Follow curve: quick to catch up, no overshoot */
 }
 
 /* Dark theme — GENERATED from tactile/tokens/tokens.dark.json.
    <html data-theme="dark"> forces it; <html data-theme="auto"> follows the OS setting. */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --tactile-color-surface: #2A2723;
-  --tactile-color-surface-pressed: #25221F;
+  --tactile-color-surface: #2C2824;
+  --tactile-color-surface-pressed: #262320;
   --tactile-color-well: #24211E;
-  --tactile-color-light: rgba(255, 238, 214, 0.075);
-  --tactile-color-dark: rgba(0, 0, 0, 0.58);
-  --tactile-color-dark-soft: rgba(0, 0, 0, 0.38);
+  --tactile-color-light: rgba(255, 236, 210, 0.09);
+  --tactile-color-dark: rgba(0, 0, 0, 0.62);
+  --tactile-color-dark-soft: rgba(0, 0, 0, 0.42);
   --tactile-color-line: #3B3731;
   --tactile-color-primary: #2A9D99;
   --tactile-color-primary-strong: #1F7F7C;
@@ -134,12 +138,12 @@
 @media (prefers-color-scheme: dark) {
   :root[data-theme="auto"] {
     color-scheme: dark;
-    --tactile-color-surface: #2A2723;
-    --tactile-color-surface-pressed: #25221F;
+    --tactile-color-surface: #2C2824;
+    --tactile-color-surface-pressed: #262320;
     --tactile-color-well: #24211E;
-    --tactile-color-light: rgba(255, 238, 214, 0.075);
-    --tactile-color-dark: rgba(0, 0, 0, 0.58);
-    --tactile-color-dark-soft: rgba(0, 0, 0, 0.38);
+    --tactile-color-light: rgba(255, 236, 210, 0.09);
+    --tactile-color-dark: rgba(0, 0, 0, 0.62);
+    --tactile-color-dark-soft: rgba(0, 0, 0, 0.42);
     --tactile-color-line: #3B3731;
     --tactile-color-primary: #2A9D99;
     --tactile-color-primary-strong: #1F7F7C;

@@ -1,12 +1,12 @@
 {
   "$description": "Tactile at night (added; the references are light only). The same four material states on warm charcoal: highlights become a faint warm sheen, shades go near-black, and the teal brightens so it stays readable. Opt in with <html data-theme=\"dark\"> or follow the OS with data-theme=\"auto\".",
   "color": {
-    "surface":         { "$value": "#2A2723" },
-    "surface-pressed": { "$value": "#25221F" },
+    "surface":         { "$value": "#2C2824" },
+    "surface-pressed": { "$value": "#262320" },
     "well":            { "$value": "#24211E" },
-    "light":           { "$value": "rgba(255, 238, 214, 0.075)" },
-    "dark":            { "$value": "rgba(0, 0, 0, 0.58)" },
-    "dark-soft":       { "$value": "rgba(0, 0, 0, 0.38)" },
+    "light":           { "$value": "rgba(255, 236, 210, 0.09)" },
+    "dark":            { "$value": "rgba(0, 0, 0, 0.62)" },
+    "dark-soft":       { "$value": "rgba(0, 0, 0, 0.42)" },
     "line":            { "$value": "#3B3731" },
     "primary":         { "$value": "#2A9D99" },
     "primary-strong":  { "$value": "#1F7F7C" },

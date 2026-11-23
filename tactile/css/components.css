@@ -32,9 +32,11 @@
   box-shadow: var(--tactile-shadow-level-3);
   /* A key: it accelerates into the material on press, springs back up (small overshoot) on release.
      Raised and pressed shadows share a list shape, so the piece sinks through flat instead of snapping. */
+  /* Light and colour move together: the face darkens as the shadow turns inward, on the same curve,
+     so base → raised → pressed reads as one continuous change of light. */
   transition:
     box-shadow var(--tactile-motion-duration-release) var(--tactile-motion-easing-release),
-    background-color var(--tactile-motion-duration),
+    background-color var(--tactile-motion-duration-release) var(--tactile-motion-easing),
     transform var(--tactile-motion-duration-release) var(--tactile-motion-easing-release);
 }
 .tactile-btn:hover { box-shadow: var(--tactile-shadow-level-2); }
@@ -191,11 +193,14 @@ select.tactile-input {
   height: 22px;
   border-radius: var(--tactile-radius-pill);
   background: var(--tactile-color-surface);
-  box-shadow: -1px -1px 2px var(--tactile-color-light), 2px 2px 5px var(--tactile-color-dark);
-  transition: transform var(--tactile-motion-duration-slide) var(--tactile-motion-easing-spring), width var(--tactile-motion-duration) var(--tactile-motion-easing-spring);
+  box-shadow: var(--tactile-shadow-knob);
+  transition:
+    transform var(--tactile-motion-duration-slide) var(--tactile-motion-easing-spring),
+    width var(--tactile-motion-duration) var(--tactile-motion-easing-spring),
+    box-shadow var(--tactile-motion-duration-release) var(--tactile-motion-easing);
   z-index: 1;
 }
-.tactile-toggle:active::before { width: 28px; }
+.tactile-toggle:active::before { width: 28px; box-shadow: var(--tactile-shadow-knob-pressed); }
 .tactile-toggle:checked { background-color: var(--tactile-color-primary); box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3), -2px -2px 5px var(--tactile-color-light), 2px 3px 8px var(--tactile-color-glow); }
 .tactile-toggle:checked::before { transform: translateX(24px); }
 .tactile-toggle:checked:active::before { transform: translateX(18px); }
@@ -234,7 +239,10 @@ select.tactile-input {
   font-size: var(--tactile-font-size-caption);
   font-weight: var(--tactile-font-weight-bold);
   white-space: nowrap;
+  /* micro-damping: the bubble catches up with the thumb instead of being glued to it */
+  transition: left var(--tactile-motion-duration-follow) var(--tactile-motion-easing-follow), transform var(--tactile-motion-duration-release) var(--tactile-motion-easing-release);
 }
+.tactile-range:has(.tactile-slider:active) .tactile-range__bubble { transform: translateX(-50%) translateY(-3px) scale(1.06); }
 .tactile-range__bubble::after { content: ""; position: absolute; left: 50%; bottom: -4px; width: 8px; height: 8px; background: inherit; transform: translateX(-50%) rotate(45deg); }
 .tactile-slider { --fill: inherit; width: 100%; height: 22px; margin: 0; background: transparent; appearance: none; -webkit-appearance: none; cursor: pointer; }
 .tactile-slider::-webkit-slider-runnable-track {
@@ -252,10 +260,15 @@ select.tactile-input {
   margin-top: -7px;
   border-radius: 50%;
   background: var(--tactile-color-surface);
-  box-shadow: -2px -2px 5px var(--tactile-color-light), 2px 2px 6px var(--tactile-color-dark);
+  box-shadow: var(--tactile-shadow-knob);
+  transition: box-shadow var(--tactile-motion-duration-release) var(--tactile-motion-easing), transform var(--tactile-motion-duration-release) var(--tactile-motion-easing-release);
 }
+.tactile-slider:hover::-webkit-slider-thumb { transform: scale(1.06); }
+.tactile-slider:active::-webkit-slider-thumb { transform: scale(0.94); box-shadow: var(--tactile-shadow-knob-pressed); transition-duration: var(--tactile-motion-duration-press); transition-timing-function: var(--tactile-motion-easing-press); }
 .tactile-slider::-moz-range-thumb { width: 22px; height: 22px; border: 0; border-radius: 50%; background: var(--tactile-color-surface); box-shadow: -2px -2px 5px var(--tactile-color-light), 2px 2px 6px var(--tactile-color-dark); }
-.tactile-slider:focus-visible::-webkit-slider-thumb { box-shadow: -2px -2px 5px var(--tactile-color-light), 2px 2px 6px var(--tactile-color-dark), var(--tactile-shadow-focus); }
+.tactile-slider:focus-visible::-webkit-slider-thumb { box-shadow: var(--tactile-shadow-knob), var(--tactile-shadow-focus); }
+.tactile-slider:disabled { cursor: not-allowed; }
+.tactile-slider:disabled::-webkit-slider-thumb { box-shadow: none; background: var(--tactile-color-disabled); }
 .tactile-range__ticks { display: flex; justify-content: space-between; margin-top: 8px; font-size: var(--tactile-font-size-caption); color: var(--tactile-color-text-muted); }
 
 /* =========================================================================
@@ -431,8 +444,10 @@ select.tactile-input {
    <span class="tactile-badge">New</span>   <span class="tactile-avatar is-active">AK</span>
    ========================================================================= */
 .tactile-card { padding: 20px; border-radius: var(--tactile-radius-lg); background: var(--tactile-color-surface); box-shadow: var(--tactile-shadow-level-3); }
-.tactile-card--interactive { cursor: pointer; transition: box-shadow var(--tactile-motion-duration); }
+.tactile-card--interactive { cursor: pointer; transition: box-shadow var(--tactile-motion-duration-release) var(--tactile-motion-easing), transform var(--tactile-motion-duration-release) var(--tactile-motion-easing-release); }
 .tactile-card--interactive:hover { box-shadow: var(--tactile-shadow-level-4); }
+.tactile-card--interactive:active { box-shadow: var(--tactile-shadow-level-1); transform: scale(0.995); transition-duration: var(--tactile-motion-duration-press); transition-timing-function: var(--tactile-motion-easing-press); }
+.tactile-card--interactive:focus-visible { box-shadow: var(--tactile-shadow-level-3), var(--tactile-shadow-focus); }
 .tactile-card__icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--tactile-radius-md); color: var(--tactile-color-primary); box-shadow: var(--tactile-shadow-inset-sm); }
 .tactile-card__title { font-size: var(--tactile-font-size-heading); font-weight: var(--tactile-font-weight-bold); color: var(--tactile-color-ink); }
 .tactile-card__text { font-size: var(--tactile-font-size-small); color: var(--tactile-color-text-muted); }
@@ -543,3 +558,289 @@ select.tactile-input {
 .tactile-note { position: relative; display: flex; align-items: flex-start; gap: 8px; padding-left: 46px; font-size: var(--tactile-font-size-small); color: var(--tactile-color-text); line-height: 1.35; }
 .tactile-note::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 36px; border-top: 1.5px dashed var(--tactile-color-annotation); }
 .tactile-note::after { content: ""; position: absolute; left: 34px; top: calc(0.62em - 3px); width: 7px; height: 7px; border-radius: 50%; background: var(--tactile-color-annotation); }
+
+/* =========================================================================
+   Tabs — labels sit over an engraved groove; a raised teal key glides along it under the active tab.
+   <div class="tactile-tabs" role="tablist" aria-label="Rooms">
+     <button class="tactile-tabs__item" role="tab" aria-selected="true">Living room <span class="tactile-tabs__count">4</span></button>
+     <button class="tactile-tabs__item" role="tab" aria-selected="false">Kitchen</button>
+   </div>
+   Active: aria-selected="true" or .is-active. js/tactile.js adds the gliding key, arrows / Home / End;
+   without it each active tab draws its own key.
+   ========================================================================= */
+.tactile-tabs {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  gap: 4px;
+  max-width: calc(100% + 12px);
+  /* room inside the scroller for focus glows; the negative margin keeps the labels aligned */
+  margin: -6px -6px -6px;
+  padding: 6px 6px 18px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tactile-tabs::-webkit-scrollbar { display: none; }
+/* The groove, carved into the material */
+.tactile-tabs::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 6px;
+  right: 6px;
+  bottom: 8px;
+  height: 6px;
+  border-radius: var(--tactile-radius-pill);
+  background: var(--tactile-color-well);
+  box-shadow: var(--tactile-shadow-inset-sm);
+}
+.tactile-tabs__item {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--tactile-radius-sm);
+  background: transparent;
+  color: var(--tactile-color-text-muted);
+  font-size: var(--tactile-font-size-small);
+  font-weight: var(--tactile-font-weight-bold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--tactile-motion-duration), box-shadow var(--tactile-motion-duration-release) var(--tactile-motion-easing);
+}
+.tactile-tabs__item:hover { color: var(--tactile-color-ink); box-shadow: var(--tactile-shadow-level-1); }
+.tactile-tabs__item:active { box-shadow: var(--tactile-shadow-inset-sm); transition-duration: var(--tactile-motion-duration-press); }
+.tactile-tabs__item:focus-visible { box-shadow: var(--tactile-shadow-focus); }
+.tactile-tabs__item:disabled { color: var(--tactile-color-disabled-ink); box-shadow: none; cursor: not-allowed; }
+.tactile-tabs__item[aria-selected="true"],
+.tactile-tabs__item.is-active { color: var(--tactile-color-ink); }
+.tactile-tabs__count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--tactile-radius-pill);
+  background: var(--tactile-color-well);
+  box-shadow: var(--tactile-shadow-inset-sm);
+  color: var(--tactile-color-text-muted);
+  font-size: var(--tactile-font-size-label);
+  font-weight: var(--tactile-font-weight-black);
+  transition: background-color var(--tactile-motion-duration), color var(--tactile-motion-duration);
+}
+.tactile-tabs__item[aria-selected="true"] .tactile-tabs__count,
+.tactile-tabs__item.is-active .tactile-tabs__count { background: var(--tactile-color-primary); color: var(--tactile-color-primary-ink); box-shadow: none; }
+/* Static key under the active tab (no JS) */
+.tactile-tabs__item::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -10px;
+  height: 6px;
+  border-radius: var(--tactile-radius-pill);
+  background: linear-gradient(180deg, var(--tactile-color-primary-light), var(--tactile-color-primary));
+  box-shadow: 0 2px 6px var(--tactile-color-glow);
+  opacity: 0;
+}
+.tactile-tabs__item[aria-selected="true"]::after,
+.tactile-tabs__item.is-active::after { opacity: 1; }
+/* Gliding key (js/tactile.js) */
+.tactile-tabs.has-indicator .tactile-tabs__item::after { display: none; }
+.tactile-tabs.has-indicator::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  bottom: 8px;
+  width: calc(var(--tactile-indicator-w, 0px) - 20px);
+  height: 6px;
+  transform: translateX(calc(var(--tactile-indicator-x, 0px) + 10px));
+  opacity: var(--tactile-indicator-o, 1);
+  border-radius: var(--tactile-radius-pill);
+  background: linear-gradient(180deg, var(--tactile-color-primary-light), var(--tactile-color-primary));
+  box-shadow: 0 2px 6px var(--tactile-color-glow);
+}
+.tactile-tabs.has-indicator.is-animated::before {
+  transition: transform var(--tactile-motion-duration-slide) var(--tactile-motion-easing-spring), width var(--tactile-motion-duration-slide) var(--tactile-motion-easing-spring);
+}
+.tactile-tabpanel { padding-top: 16px; font-size: var(--tactile-font-size-small); color: var(--tactile-color-text-muted); }
+.tactile-tabpanel[hidden] { display: none; }
+
+/* =========================================================================
+   Chips — raised sand pills; a chosen chip sinks into the material and lights a teal dot.
+   <button class="tactile-chip" type="button" aria-pressed="true">Lights</button>
+   Input chip: <span class="tactile-chip tactile-chip--input">Kitchen<button class="tactile-chip__remove" type="button" aria-label="Remove Kitchen">×</button></span>
+   js/tactile.js flips aria-pressed on click and removes input chips.
+   ========================================================================= */
+.tactile-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.tactile-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--tactile-radius-pill);
+  background: var(--tactile-color-surface);
+  color: var(--tactile-color-text);
+  font-size: var(--tactile-font-size-small);
+  font-weight: var(--tactile-font-weight-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: var(--tactile-shadow-level-2);
+  transition:
+    box-shadow var(--tactile-motion-duration-release) var(--tactile-motion-easing-release),
+    background-color var(--tactile-motion-duration-release) var(--tactile-motion-easing),
+    color var(--tactile-motion-duration),
+    transform var(--tactile-motion-duration-release) var(--tactile-motion-easing-release);
+}
+.tactile-chip .tactile-icon { width: 15px; height: 15px; }
+/* The indicator dot: unlit at rest, teal and glowing when chosen */
+.tactile-chip[aria-pressed]::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--tactile-color-well);
+  box-shadow: var(--tactile-shadow-inset-sm);
+  transition: background-color var(--tactile-motion-duration), box-shadow var(--tactile-motion-duration);
+}
+.tactile-chip:hover { box-shadow: var(--tactile-shadow-level-3); }
+.tactile-chip:active { box-shadow: var(--tactile-shadow-pressed); transform: scale(0.97); transition-duration: var(--tactile-motion-duration-press); transition-timing-function: var(--tactile-motion-easing-press); }
+.tactile-chip:focus-visible { box-shadow: var(--tactile-shadow-level-2), var(--tactile-shadow-focus); outline: none; }
+.tactile-chip[aria-pressed="true"] { background: var(--tactile-color-surface-pressed); color: var(--tactile-color-primary); box-shadow: var(--tactile-shadow-pressed); }
+.tactile-chip[aria-pressed="true"]::before { background: var(--tactile-color-primary); box-shadow: 0 0 6px 1px var(--tactile-color-glow); }
+.tactile-chip:disabled { background: var(--tactile-color-disabled); color: var(--tactile-color-disabled-ink); box-shadow: none; cursor: not-allowed; }
+.tactile-chip--input { cursor: default; padding-right: 5px; }
+.tactile-chip--input:active { transform: none; box-shadow: var(--tactile-shadow-level-2); }
+.tactile-chip__remove {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--tactile-color-well);
+  box-shadow: var(--tactile-shadow-inset-sm);
+  color: var(--tactile-color-text-muted);
+  cursor: pointer;
+  transition: color var(--tactile-motion-duration), box-shadow var(--tactile-motion-duration);
+}
+.tactile-chip__remove .tactile-icon { width: 12px; height: 12px; stroke-width: 2.6; }
+.tactile-chip__remove:hover { color: var(--tactile-color-danger); }
+.tactile-chip__remove:focus-visible { box-shadow: var(--tactile-shadow-focus); outline: none; }
+.tactile-chip.is-leaving { transform: scale(0.85); opacity: 0; transition: transform var(--tactile-motion-duration) var(--tactile-motion-easing), opacity var(--tactile-motion-duration) var(--tactile-motion-easing); }
+
+/* =========================================================================
+   Thermostat dial — a raised disc with a carved groove; the teal arc fills 270° of it and the knob
+   turns with the value. Drag around it, use the arrow keys, or press − / +.
+   <div class="tactile-dial" style="--tactile-dial:0.575">
+     <div class="tactile-dial__face">
+       <svg class="tactile-dial__scale" viewBox="0 0 200 200" aria-hidden="true">
+         <circle class="tactile-dial__track" cx="100" cy="100" r="73" pathLength="100"/>
+         <circle class="tactile-dial__arc" cx="100" cy="100" r="73" pathLength="100"/>
+       </svg>
+       <div class="tactile-dial__knob" role="slider" tabindex="0" aria-label="Target temperature"
+            aria-valuemin="10" aria-valuemax="30" aria-valuenow="21.5" aria-valuetext="21.5 °C" data-step="0.5" data-unit="°">
+         <span class="tactile-dial__notch" aria-hidden="true"></span>
+       </div>
+       <div class="tactile-dial__readout" aria-hidden="true"><b>21.5°</b><span>Heating to</span></div>
+     </div>
+     <div class="tactile-dial__controls">
+       <button class="tactile-btn tactile-btn--icon tactile-btn--round" type="button" data-tactile-dial="-1" aria-label="Cooler">−</button>
+       <span class="tactile-dial__mode">Heat · Eco</span>
+       <button class="tactile-btn tactile-btn--icon tactile-btn--round" type="button" data-tactile-dial="1" aria-label="Warmer">+</button>
+     </div>
+   </div>
+   --tactile-dial is the value as 0–1. js/tactile.js keeps it, aria-valuenow / -valuetext and the readout
+   in sync and fires input / change on the knob; the arc and knob follow with a short damped catch-up.
+   ========================================================================= */
+.tactile-dial { --tactile-dial: 0.5; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.tactile-dial__face {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--tactile-dial-size, 220px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--tactile-color-surface);
+  box-shadow: var(--tactile-shadow-level-4);
+  touch-action: none;
+}
+/* The carved groove the arc runs in */
+.tactile-dial__face::before {
+  content: "";
+  position: absolute;
+  inset: 9%;
+  border-radius: 50%;
+  box-shadow: var(--tactile-shadow-inset);
+  pointer-events: none;
+}
+.tactile-dial__scale { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(135deg); overflow: visible; pointer-events: none; }
+.tactile-dial__scale circle { fill: none; stroke-linecap: round; stroke-width: 7; }
+.tactile-dial__track { stroke: transparent; stroke-dasharray: 75 100; }
+.tactile-dial__arc {
+  stroke: var(--tactile-color-primary);
+  stroke-dasharray: calc(var(--tactile-dial) * 75) 100;
+  filter: drop-shadow(0 0 5px var(--tactile-color-glow));
+  transition: stroke-dasharray var(--tactile-motion-duration-follow) var(--tactile-motion-easing-follow);
+}
+.tactile-dial__knob {
+  position: relative;
+  width: 64%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--tactile-color-surface);
+  box-shadow: var(--tactile-shadow-knob);
+  cursor: grab;
+  outline: none;
+  transform: rotate(calc(-135deg + var(--tactile-dial) * 270deg));
+  transition:
+    transform var(--tactile-motion-duration-follow) var(--tactile-motion-easing-follow),
+    box-shadow var(--tactile-motion-duration-release) var(--tactile-motion-easing);
+}
+.tactile-dial__knob:active,
+.tactile-dial.is-dragging .tactile-dial__knob { cursor: grabbing; box-shadow: var(--tactile-shadow-knob-pressed); }
+.tactile-dial__knob:focus-visible { box-shadow: var(--tactile-shadow-knob), var(--tactile-shadow-focus); }
+/* The notch on the knob's rim points at the value */
+.tactile-dial__notch {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 6px;
+  height: 16%;
+  margin-left: -3px;
+  border-radius: var(--tactile-radius-pill);
+  background: var(--tactile-color-primary);
+  box-shadow: 0 0 6px var(--tactile-color-glow);
+}
+.tactile-dial__readout {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 4px;
+  text-align: center;
+  pointer-events: none;
+}
+.tactile-dial__readout b {
+  font-size: calc(var(--tactile-dial-size, 220px) * 0.19);
+  font-weight: var(--tactile-font-weight-black);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--tactile-color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.tactile-dial__readout span { font-size: var(--tactile-font-size-label); font-weight: var(--tactile-font-weight-bold); letter-spacing: 0.08em; text-transform: uppercase; color: var(--tactile-color-text-muted); }
+.tactile-dial__controls { display: flex; align-items: center; gap: 16px; }
+.tactile-dial__mode { min-width: 96px; text-align: center; font-size: var(--tactile-font-size-caption); font-weight: var(--tactile-font-weight-bold); color: var(--tactile-color-text-muted); }
+.tactile-dial.is-disabled .tactile-dial__knob { cursor: not-allowed; box-shadow: none; }
+.tactile-dial.is-disabled .tactile-dial__arc { stroke: var(--tactile-color-disabled-ink); filter: none; }

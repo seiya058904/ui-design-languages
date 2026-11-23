@@ -390,7 +390,7 @@
         "root": "font-family:var(--tactile-font-family-sans);color:var(--tactile-color-text);font-size:var(--tactile-font-size-body);line-height:1.5",
         "canvas": "background:var(--tactile-color-surface)",
         "page": "background:var(--tactile-color-surface)",
-        "hooks": ".tactile-segmented, .tactile-nav, .tactile-range, input[type=range], .tactile-list__item, [data-tactile-open], [data-tactile-close], [data-tone-set], [data-theme-set], [data-theme-toggle]",
+        "hooks": ".tactile-segmented, .tactile-nav, .tactile-range, input[type=range], .tactile-list__item, [data-tactile-open], [data-tactile-close], [data-tone-set], [data-theme-set], [data-theme-toggle], .tactile-tabs, .tactile-chip[aria-pressed], .tactile-chip__remove, .tactile-dial",
         "wall": [
           [
             "material",
@@ -419,6 +419,18 @@
           [
             "segmented",
             "segmented-tabs"
+          ],
+          [
+            "dial",
+            "thermostat"
+          ],
+          [
+            "chips",
+            "filter-chips"
+          ],
+          [
+            "tabs",
+            "groove-tabs"
           ]
         ]
       }

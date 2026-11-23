@@ -1,5 +1,10 @@
 /* Tactile — optional behaviour (no dependencies). The CSS works without it; this adds:
-   - sliding indicators for .tactile-segmented (raised tile) and .tactile-nav (pressed well)
+   - sliding indicators for .tactile-segmented (raised tile), .tactile-tabs (teal key in a groove) and
+     .tactile-nav (pressed well)
+   - chips: .tactile-chip[aria-pressed] flips on click; .tactile-chip__remove takes an input chip away
+   - dials (.tactile-dial): drag around the face, arrows / PageUp / PageDown / Home / End on the knob, or
+     [data-tactile-dial="-1|1"] buttons; keeps --tactile-dial (0–1), aria-valuenow / -valuetext and the
+     readout in sync and fires input / change on the knob
    - tablists: click + ←/→/Home/End move aria-selected; nav: plain clicks move aria-current="page"
    - sliders: keep --fill / --fill-n on .tactile-range (or the input) and the bubble / <output for> text
    - selectable lists: click a .tactile-list__item to move aria-selected
@@ -12,10 +17,12 @@
   var P = "tactile";
   var GROUPS = [
     { list: "." + P + "-segmented", item: "." + P + "-segmented__item", active: '[aria-selected="true"], .is-active' },
-    { list: "." + P + "-nav", item: "." + P + "-nav__item", active: '[aria-current="page"], [aria-current="true"], .is-active' }
+    { list: "." + P + "-nav", item: "." + P + "-nav__item", active: '[aria-current="page"], [aria-current="true"], .is-active' },
+    { list: "." + P + "-tabs", item: "." + P + "-tabs__item", active: '[aria-selected="true"], .is-active' }
   ];
   var LIST = GROUPS.map(function (g) { return g.list; }).join(", ");
-  var TAB_ITEM = GROUPS[0].item, NAV_ITEM = GROUPS[1].item;
+  var TAB_LIST = GROUPS[0].list + ", " + GROUPS[2].list;
+  var TAB_ITEM = GROUPS[0].item + ", " + GROUPS[2].item, NAV_ITEM = GROUPS[1].item;
 
   function groupOf(list) { for (var i = 0; i < GROUPS.length; i++) if (list.matches(GROUPS[i].list)) return GROUPS[i]; return null; }
   function items(list) {
@@ -66,7 +73,7 @@
     });
   }
   function selectTab(tab) {
-    var list = tab.closest(GROUPS[0].list);
+    var list = tab.closest(TAB_LIST);
     if (!list) return;
     items(list).forEach(function (t) {
       var on = t === tab;
@@ -144,6 +151,63 @@
     if (e.target.matches && e.target.matches("input[data-theme-toggle]")) setTheme(e.target.checked ? "dark" : "light");
   });
 
+  /* ---------- Dials ---------- */
+  function dialParts(dial) { return { knob: dial.querySelector("." + P + "-dial__knob"), out: dial.querySelector("." + P + "-dial__readout b") }; }
+  function dialRange(knob) {
+    var min = parseFloat(knob.getAttribute("aria-valuemin")), max = parseFloat(knob.getAttribute("aria-valuemax"));
+    return { min: isNaN(min) ? 0 : min, max: isNaN(max) ? 100 : max, step: parseFloat(knob.getAttribute("data-step")) || 1 };
+  }
+  function fmtDial(v, step) { var d = (String(step).split(".")[1] || "").length; return v.toFixed(d); }
+  function setDial(dial, value, commit) {
+    var p = dialParts(dial), knob = p.knob;
+    if (!knob) return;
+    var r = dialRange(knob);
+    var v = Math.min(r.max, Math.max(r.min, Math.round((value - r.min) / r.step) * r.step + r.min));
+    var unit = knob.getAttribute("data-unit") || "";
+    var text = fmtDial(v, r.step);
+    var changed = String(v) !== String(parseFloat(knob.getAttribute("aria-valuenow")));
+    knob.setAttribute("aria-valuenow", text);
+    knob.setAttribute("aria-valuetext", text + (unit === "°" ? " °C" : unit ? " " + unit : ""));
+    dial.style.setProperty("--" + P + "-dial", String(Math.round(((v - r.min) / (r.max - r.min)) * 10000) / 10000));
+    if (p.out) p.out.textContent = text + unit;
+    if (changed) knob.dispatchEvent(new Event("input", { bubbles: true }));
+    if (commit) knob.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+  function dialValue(knob) { return parseFloat(knob.getAttribute("aria-valuenow")) || 0; }
+  /* Drag: the angle around the centre maps onto the 270° sweep (−135° … +135° from the top). */
+  var drag = null;
+  document.addEventListener("pointerdown", function (e) {
+    var face = e.target.closest && e.target.closest("." + P + "-dial__face");
+    if (!face || e.button !== 0) return;
+    var dial = face.closest("." + P + "-dial");
+    if (!dial || dial.classList.contains("is-disabled")) return;
+    var knob = dialParts(dial).knob;
+    drag = { dial: dial, face: face, knob: knob };
+    dial.classList.add("is-dragging");
+    if (knob) knob.focus({ preventScroll: true });
+    if (face.setPointerCapture) face.setPointerCapture(e.pointerId);
+    dragTo(e);
+    e.preventDefault();
+  });
+  function dragTo(e) {
+    var rect = drag.face.getBoundingClientRect();
+    var dx = e.clientX - (rect.left + rect.width / 2), dy = e.clientY - (rect.top + rect.height / 2);
+    if (dx * dx + dy * dy < 64) return; // too close to the centre to mean anything
+    var deg = Math.atan2(dx, -dy) * 180 / Math.PI;           // 0 = top, clockwise positive
+    if (deg > 135) deg = 135; else if (deg < -135) deg = -135; // the dead zone at the bottom pins to the ends
+    var r = dialRange(drag.knob);
+    setDial(drag.dial, r.min + ((deg + 135) / 270) * (r.max - r.min), false);
+  }
+  document.addEventListener("pointermove", function (e) { if (drag) dragTo(e); });
+  function endDrag() {
+    if (!drag) return;
+    drag.dial.classList.remove("is-dragging");
+    drag.knob.dispatchEvent(new Event("change", { bubbles: true }));
+    drag = null;
+  }
+  document.addEventListener("pointerup", endDrag);
+  document.addEventListener("pointercancel", endDrag);
+
   document.addEventListener("input", function (e) { if (e.target.matches && e.target.matches("." + P + "-slider")) syncSlider(e.target); });
   document.addEventListener("click", function (e) {
     var tab = e.target.closest(TAB_ITEM);
@@ -152,6 +216,25 @@
     if (navItem && e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) {
       selectNavItem(navItem);
       if (navItem.getAttribute("href") === "#") e.preventDefault();
+    }
+    var chip = e.target.closest("." + P + "-chip[aria-pressed]");
+    if (chip && !chip.disabled) chip.setAttribute("aria-pressed", chip.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    var chipX = e.target.closest("." + P + "-chip__remove");
+    if (chipX) {
+      var gone = chipX.closest("." + P + "-chip"), nextFocus = gone && (gone.nextElementSibling || gone.previousElementSibling);
+      if (gone) {
+        gone.classList.add("is-leaving");
+        setTimeout(function () {
+          gone.remove();
+          var f = nextFocus && (nextFocus.matches("button") ? nextFocus : nextFocus.querySelector("button"));
+          if (f) f.focus();
+        }, 180);
+      }
+    }
+    var dialBtn = e.target.closest("[data-" + P + "-dial]");
+    if (dialBtn) {
+      var dl = dialBtn.closest("." + P + "-dial"), kn = dl && dialParts(dl).knob;
+      if (kn && !dl.classList.contains("is-disabled")) setDial(dl, dialValue(kn) + (parseFloat(dialBtn.getAttribute("data-" + P + "-dial")) || 0) * dialRange(kn).step, true);
     }
     var row = e.target.closest("." + P + "-list__item");
     if (row) {
@@ -169,11 +252,18 @@
     if (closer) { var d = closer.closest("dialog"); if (d) d.close(); }
   });
   document.addEventListener("keydown", function (e) {
+    var knob = e.target.closest && e.target.closest("." + P + "-dial__knob");
+    if (knob) {
+      var dl = knob.closest("." + P + "-dial"), r = dialRange(knob), v = dialValue(knob), big = Math.max(r.step, (r.max - r.min) / 10);
+      var next = { ArrowUp: v + r.step, ArrowRight: v + r.step, ArrowDown: v - r.step, ArrowLeft: v - r.step, PageUp: v + big, PageDown: v - big, Home: r.min, End: r.max }[e.key];
+      if (next !== undefined && dl && !dl.classList.contains("is-disabled")) { setDial(dl, next, true); e.preventDefault(); }
+      return;
+    }
     var tab = e.target.closest && e.target.closest(TAB_ITEM);
     if (!tab) return;
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
     if (!(e.key in keys)) return;
-    var all = items(tab.closest(GROUPS[0].list)).filter(function (t) { return !t.disabled; });
+    var all = items(tab.closest(TAB_LIST)).filter(function (t) { return !t.disabled; });
     var i = all.indexOf(tab), step = keys[e.key];
     var next = step === "first" ? all[0] : step === "last" ? all[all.length - 1] : all[(i + step + all.length) % all.length];
     next.focus();
@@ -198,5 +288,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
-  window.TactileUI = { initIndicators: initIndicators, refresh: refresh, selectTab: selectTab, selectNavItem: selectNavItem, syncSlider: syncSlider, setTone: setTone, setTheme: setTheme };
+  window.TactileUI = { initIndicators: initIndicators, refresh: refresh, selectTab: selectTab, selectNavItem: selectNavItem, syncSlider: syncSlider, setTone: setTone, setTheme: setTheme, setDial: function (el, v) { setDial(el, v, true); } };
 })();

@@ -39,6 +39,11 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" stroke="none"/><path d="M12 7.5v5M12 16.5h.01" stroke="var(--tactile-color-primary)"/></symbol>
   <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z"/></symbol>
+  <symbol id="i-speaker" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="3"/><circle cx="12" cy="14" r="3"/><path d="M12 7.5h.01"/></symbol>
+  <symbol id="i-fan" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M12 10c0-3 1-6 4-6 2 0 3 2 2 4-1 1.5-4 2-6 2ZM14 12c3 0 6 1 6 4 0 2-2 3-4 2-1.5-1-2-4-2-6ZM12 14c0 3-1 6-4 6-2 0-3-2-2-4 1-1.5 4-2 6-2ZM10 12c-3 0-6-1-6-4 0-2 2-3 4-2 1.5 1 2 4 2 6Z"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1Z"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
@@ -52,7 +57,7 @@
   <h1>Tactile components</h1>
   <p>Warm sand neumorphism: one material, four states (base, raised, inset, pressed) and a deep teal accent. Every block below is live markup you can copy: open it in the <a href="../components.html#/tactile">components browser</a> for the code.</p>
 </div>
-<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Toggle, checkbox & radio</a><a href="#segmented">Segmented control</a><a href="#slider">Slider</a><a href="#progress">Progress</a><a href="#alert">Alerts & toasts</a><a href="#card">Card</a><a href="#avatar">Avatar & list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#material">Material layers</a></nav>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Toggle, checkbox & radio</a><a href="#segmented">Segmented control</a><a href="#tabs">Tabs</a><a href="#chips">Chips</a><a href="#slider">Slider</a><a href="#dial">Thermostat dial</a><a href="#progress">Progress</a><a href="#alert">Alerts & toasts</a><a href="#card">Card</a><a href="#avatar">Avatar & list</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#material">Material layers</a></nav>
 <main>
   <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
     <h2 id="h-button">Button</h2>
@@ -140,6 +145,53 @@
     </div>
   </section>
 
+  <section class="cat-section" id="tabs" data-component="tabs" aria-labelledby="h-tabs">
+    <h2 id="h-tabs">Tabs</h2>
+    <p>Labels over an engraved groove; a raised teal key glides along it under the active tab.</p>
+    <div class="demo" data-demo="groove-tabs">
+      <h3>Groove tabs</h3>
+      <div class="demo__stage">
+        <div style="width:min(100%,440px)">
+          <div class="tactile-tabs" role="tablist" aria-label="Rooms">
+            <button class="tactile-tabs__item" type="button" role="tab" aria-selected="true" aria-controls="t-tab-1" id="t-tabb-1">Living room <span class="tactile-tabs__count">4</span></button>
+            <button class="tactile-tabs__item" type="button" role="tab" aria-selected="false" aria-controls="t-tab-2" id="t-tabb-2" tabindex="-1">Kitchen <span class="tactile-tabs__count">2</span></button>
+            <button class="tactile-tabs__item" type="button" role="tab" aria-selected="false" aria-controls="t-tab-3" id="t-tabb-3" tabindex="-1">Bedroom</button>
+            <button class="tactile-tabs__item" type="button" role="tab" aria-selected="false" disabled>Garage</button>
+          </div>
+          <div class="tactile-tabpanel" id="t-tab-1" role="tabpanel" aria-labelledby="t-tabb-1">Ceiling light, speaker, air purifier and blinds.</div>
+          <div class="tactile-tabpanel" id="t-tab-2" role="tabpanel" aria-labelledby="t-tabb-2" hidden>Range hood and pendant lights.</div>
+          <div class="tactile-tabpanel" id="t-tab-3" role="tabpanel" aria-labelledby="t-tabb-3" hidden>No devices yet.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="chips" data-component="chips" aria-labelledby="h-chips">
+    <h2 id="h-chips">Chips</h2>
+    <p>Raised sand pills. A chosen chip sinks into the material and lights its teal dot.</p>
+    <div class="demo" data-demo="filter-chips">
+      <h3>Filter chips</h3>
+      <div class="demo__stage">
+        <div class="tactile-chips" role="group" aria-label="Show devices">
+          <button class="tactile-chip" type="button" aria-pressed="true"><svg class="tactile-icon" aria-hidden="true"><use href="#i-bulb"/></svg>Lights</button>
+          <button class="tactile-chip" type="button" aria-pressed="false"><svg class="tactile-icon" aria-hidden="true"><use href="#i-speaker"/></svg>Speakers</button>
+          <button class="tactile-chip" type="button" aria-pressed="true"><svg class="tactile-icon" aria-hidden="true"><use href="#i-fan"/></svg>Climate</button>
+          <button class="tactile-chip" type="button" aria-pressed="false" disabled>Cameras</button>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="input-chips">
+      <h3>Input chips</h3>
+      <div class="demo__stage">
+        <div class="tactile-chips" aria-label="Rooms in this scene">
+          <span class="tactile-chip tactile-chip--input">Living room<button class="tactile-chip__remove" type="button" aria-label="Remove Living room"><svg class="tactile-icon" aria-hidden="true"><use href="#i-x"/></svg></button></span>
+          <span class="tactile-chip tactile-chip--input">Kitchen<button class="tactile-chip__remove" type="button" aria-label="Remove Kitchen"><svg class="tactile-icon" aria-hidden="true"><use href="#i-x"/></svg></button></span>
+          <span class="tactile-chip tactile-chip--input">Hallway<button class="tactile-chip__remove" type="button" aria-label="Remove Hallway"><svg class="tactile-icon" aria-hidden="true"><use href="#i-x"/></svg></button></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="cat-section" id="slider" data-component="slider" aria-labelledby="h-slider">
     <h2 id="h-slider">Slider</h2>
     <p>Pick a value on a range.</p>
@@ -150,6 +202,31 @@
           <output class="tactile-range__bubble" for="t-vol" data-suffix="%">75%</output>
           <input class="tactile-slider" id="t-vol" type="range" min="0" max="100" value="75" aria-label="Volume">
           <div class="tactile-range__ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="dial" data-component="dial" aria-labelledby="h-dial">
+    <h2 id="h-dial">Thermostat dial</h2>
+    <p>A raised disc with a carved groove. Drag around it, use the arrow keys, or press − and +; the knob and the teal arc follow with a short, damped catch-up.</p>
+    <div class="demo" data-demo="thermostat">
+      <h3>Thermostat</h3>
+      <div class="demo__stage">
+        <div class="tactile-dial" style="--tactile-dial:0.575">
+          <div class="tactile-dial__face">
+            <svg class="tactile-dial__scale" viewBox="0 0 200 200" aria-hidden="true">
+              <circle class="tactile-dial__track" cx="100" cy="100" r="73" pathLength="100"/>
+              <circle class="tactile-dial__arc" cx="100" cy="100" r="73" pathLength="100"/>
+            </svg>
+            <div class="tactile-dial__knob" role="slider" tabindex="0" aria-label="Target temperature" aria-valuemin="10" aria-valuemax="30" aria-valuenow="21.5" aria-valuetext="21.5 °C" data-step="0.5" data-unit="°"><span class="tactile-dial__notch" aria-hidden="true"></span></div>
+            <div class="tactile-dial__readout" aria-hidden="true"><b>21.5°</b><span>Heating to</span></div>
+          </div>
+          <div class="tactile-dial__controls">
+            <button class="tactile-btn tactile-btn--icon tactile-btn--round" type="button" data-tactile-dial="-1" aria-label="Cooler"><svg class="tactile-icon" aria-hidden="true"><use href="#i-minus"/></svg></button>
+            <span class="tactile-dial__mode">Heat · Eco</span>
+            <button class="tactile-btn tactile-btn--icon tactile-btn--round" type="button" data-tactile-dial="1" aria-label="Warmer"><svg class="tactile-icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+          </div>
         </div>
       </div>
     </div>

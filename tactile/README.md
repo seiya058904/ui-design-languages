@@ -37,6 +37,8 @@ Dark theme: `<html data-theme="dark">` (or `"auto"`), or `[data-theme-set="light
 | Inputs | `.tactile-input` (input / select / textarea), `.tactile-field` (grooved, front-faced), `.tactile-form-row`, `.tactile-field-label`, `.tactile-hint` (`--error`) |
 | Selection | `.tactile-check` with `.tactile-checkbox`, `.tactile-radio`, `.tactile-toggle` (`--label` shows ON / OFF) |
 | Slider | `.tactile-range` > `__bubble` + `input.tactile-slider` + `__ticks` |
+| Dial | `.tactile-dial` (`--tactile-dial` 0–1, `--tactile-dial-size`) > `__face` (`__scale` arc SVG, `__knob[role=slider]` with `__notch`, `__readout`) + `__controls` with `[data-tactile-dial="-1|1"]` |
+| Tabs, chips | `.tactile-tabs` > `__item[role=tab]` (+ `__count`), `.tactile-tabpanel` · `.tactile-chips` > `.tactile-chip[aria-pressed]`, `.tactile-chip--input` + `__remove` |
 | Navigation | `.tactile-segmented` (raised tile with teal bar, gliding), `.tactile-breadcrumb`, `.tactile-pagination`, `.tactile-steps` (`li.is-done`, `li[aria-current="step"]`), `.tactile-nav` (pressed well, gliding) |
 | Data | `.tactile-card` (`__icon`, `__title`, `__text`), `.tactile-list` (`__item[aria-selected]`), `.tactile-badge` (`--soft` `--danger` `--warning`), `.tactile-avatar` (`.is-active`), `.tactile-table` (raised header) |
 | Feedback | `.tactile-dialog`, `.tactile-warning-mark`, `.tactile-toast(-stack)`, `.tactile-alert` (`--danger`), `.tactile-progress`, `.tactile-spinner`, `.tactile-skeleton`, `.tactile-empty` |

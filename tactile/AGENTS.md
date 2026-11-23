@@ -32,7 +32,7 @@ Tactile is warm sand neumorphism: every piece is made of the same material as th
 | Type | Plus Jakarta Sans; section titles are small bold caps on a hairline rule with a spec note on the right ("CONTROLS … SPACING: 16PX"); specimen labels are 11px bold caps | Large decorative headings inside panels |
 | Contrast | Teal and ink carry information; sand shadows alone never do | Relying on shadow to show state without a color or position change |
 | Focus | Teal ring + glow on every interactive element | Removing focus to keep the soft look |
-| Motion | 180ms; indicators glide 360ms on `cubic-bezier(.32,.72,0,1)` | Springy overshoot |
+| Motion | 180ms; the face colour moves with the shadow on the same curve; knobs sink with `--tactile-shadow-knob-pressed`; readouts catch up with a dragged control in `--tactile-motion-duration-follow`; indicators glide 360ms on `cubic-bezier(.32,.72,0,1)` | Springy overshoot, readouts glued to the pointer, a colour that snaps while its shadow eases |
 
 ## 4. Copy
 

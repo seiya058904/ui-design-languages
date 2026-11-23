@@ -785,7 +785,7 @@
         "root": "font-family:var(--zine-font-family-sans);color:var(--zine-color-ink);font-size:var(--zine-font-size-body);line-height:1.5",
         "canvas": "background:var(--zine-texture-paper),var(--zine-color-paper)",
         "page": "background:var(--zine-texture-paper),var(--zine-color-paper)",
-        "hooks": ".zine-tabs, .zine-segmented, .zine-menu, .zine-pagination, .zine-chip[aria-pressed], .zine-slider, .zine-sort, [data-zine-open], [data-zine-close], [data-zine-dismiss], [data-theme-set], [data-theme-toggle]",
+        "hooks": ".zine-tabs, .zine-segmented, .zine-menu, .zine-pagination, .zine-chip[aria-pressed], .zine-slider, .zine-sort, [data-zine-open], [data-zine-close], [data-zine-dismiss], [data-theme-set], [data-theme-toggle], .zine-ticket, [data-zine-reprint], .zine-board",
         "wall": [
           [
             "button",
@@ -818,6 +818,18 @@
           [
             "alert",
             "toast"
+          ],
+          [
+            "ticket",
+            "tear-off-ticket"
+          ],
+          [
+            "board",
+            "sticker-board"
+          ],
+          [
+            "accordion",
+            "accordion"
           ]
         ]
       }

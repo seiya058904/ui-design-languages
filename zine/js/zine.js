@@ -7,6 +7,10 @@
    - sortable tables: a .zine-sort button in a <th> sorts the rows (numbers, sizes and dates aware)
      and flips aria-sort
    - dialogs: [data-zine-open="#id"] / [data-zine-close]; toasts and alerts: [data-zine-dismiss]
+   - tickets (.zine-ticket): the stub tears off along the perforation (.is-torn) and the sheet is
+     stamped; [data-zine-reprint] brings a fresh stub back
+   - sticker boards (.zine-board): drag a .zine-slap to move it (lifts while held, slaps down on drop),
+     arrow keys nudge the focused one (Shift = further); the one you touch comes to the top
    - theme: [data-theme-set="light|dark|auto"] or a [data-theme-toggle] button / checkbox switches
      <html data-theme>, remembered in localStorage "zine-theme"; fires "zine:themechange"
    Hooks: window.ZineUI.selectTab(tab), .sort(th, dir), .toast(title, text, opts), .setTheme(name), .syncSlider(input) */
@@ -119,8 +123,57 @@
   /* ---------- events ---------- */
   document.addEventListener("input", function (e) { if (e.target.matches && e.target.matches("." + P + "-slider")) syncSlider(e.target); });
   document.addEventListener("change", function (e) { if (e.target.matches && e.target.matches("input[data-theme-toggle]")) setTheme(e.target.checked ? "dark" : "light"); });
+  /* ---------- tickets ---------- */
+  function tear(ticket, on) {
+    ticket.classList.toggle("is-torn", on);
+    var stub = ticket.querySelector("." + P + "-ticket__stub");
+    if (stub) stub.setAttribute("aria-hidden", on ? "true" : "false");
+    var again = ticket.parentElement && ticket.parentElement.querySelector("[data-" + P + "-reprint]");
+    if (again) { again.hidden = !on; if (on) again.focus({ preventScroll: true }); else if (stub) stub.focus({ preventScroll: true }); }
+  }
+
+  /* ---------- sticker board ---------- */
+  var held = null, topZ = 10;
+  function raise(el) { el.style.setProperty("--z", String(++topZ)); }
+  function slap(el) { el.classList.remove("is-slapped"); void el.offsetWidth; el.classList.add("is-slapped"); }
+  document.addEventListener("pointerdown", function (e) {
+    var st = e.target.closest && e.target.closest("." + P + "-slap");
+    if (!st || e.button > 0) return;
+    var board = st.closest("." + P + "-board");
+    if (!board) return;
+    var b = board.getBoundingClientRect(), r = st.getBoundingClientRect();
+    held = { el: st, board: board, dx: e.clientX - r.left, dy: e.clientY - r.top, moved: false, x0: e.clientX, y0: e.clientY };
+    raise(st);
+    st.classList.add("is-held");
+    try { st.setPointerCapture(e.pointerId); } catch (err) { /* old browsers */ }
+    e.preventDefault();
+    st.focus({ preventScroll: true });
+  });
+  document.addEventListener("pointermove", function (e) {
+    if (!held) return;
+    if (!held.moved && Math.hypot(e.clientX - held.x0, e.clientY - held.y0) < 3) return;
+    held.moved = true;
+    var b = held.board.getBoundingClientRect(), w = held.el.offsetWidth, h = held.el.offsetHeight;
+    var x = Math.max(-w * 0.3, Math.min(b.width - w * 0.7, e.clientX - b.left - held.dx));
+    var y = Math.max(-h * 0.3, Math.min(b.height - h * 0.7, e.clientY - b.top - held.dy));
+    held.el.style.setProperty("--x", (x / b.width * 100).toFixed(2) + "%");
+    held.el.style.setProperty("--y", (y / b.height * 100).toFixed(2) + "%");
+  });
+  function drop() {
+    if (!held) return;
+    held.el.classList.remove("is-held");
+    slap(held.el);
+    held = null;
+  }
+  document.addEventListener("pointerup", drop);
+  document.addEventListener("pointercancel", drop);
+
   document.addEventListener("click", function (e) {
     var t = e.target;
+    var stub = t.closest("." + P + "-ticket__stub");
+    if (stub) { var tk = stub.closest("." + P + "-ticket"); if (tk && !tk.classList.contains("is-torn")) tear(tk, true); }
+    var reprint = t.closest("[data-" + P + "-reprint]");
+    if (reprint) { var host = reprint.parentElement && reprint.parentElement.querySelector("." + P + "-ticket.is-torn"); if (host) tear(host, false); }
     var tab = t.closest(TAB_ITEM);
     if (tab && !tab.disabled) selectTab(tab);
     var item = t.closest("." + P + "-menu__item");
@@ -153,6 +206,19 @@
     if (dismiss) { var box = dismiss.closest("." + P + "-toast, ." + P + "-alert"); if (box) box.hidden = true; }
   });
   document.addEventListener("keydown", function (e) {
+    var st = e.target.closest && e.target.closest("." + P + "-board ." + P + "-slap");
+    var move = st && { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (move) {
+      var board = st.closest("." + P + "-board"), step = e.shiftKey ? 8 : 2;
+      var x = parseFloat(st.style.getPropertyValue("--x") || getComputedStyle(st).getPropertyValue("--x")) || 0;
+      var y = parseFloat(st.style.getPropertyValue("--y") || getComputedStyle(st).getPropertyValue("--y")) || 0;
+      st.style.setProperty("--x", Math.max(-10, Math.min(90, x + move[0] * step)).toFixed(2) + "%");
+      st.style.setProperty("--y", Math.max(-10, Math.min(85, y + move[1] * step)).toFixed(2) + "%");
+      raise(st);
+      e.preventDefault();
+      return;
+    }
+    if (st && (e.key === "Enter" || e.key === " ")) { raise(st); slap(st); e.preventDefault(); return; }
     var tab = e.target.closest && e.target.closest(TAB_ITEM);
     if (!tab) return;
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
@@ -174,5 +240,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
-  window.ZineUI = { selectTab: selectTab, sort: sort, toast: toast, setTheme: setTheme, syncSlider: syncSlider };
+  window.ZineUI = { selectTab: selectTab, sort: sort, toast: toast, setTheme: setTheme, syncSlider: syncSlider, tear: function (el, on) { tear(el, on !== false); } };
 })();

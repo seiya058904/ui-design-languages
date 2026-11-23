@@ -39,6 +39,9 @@ Inverted print: `<html data-theme="dark">` (or `"auto"`), or `[data-theme-set="l
 | Data | `.zine-card` (`--hover`, `__head` `__text` `__actions`), `.zine-profile`, `.zine-avatar` (`--sm` `--lg`, pixel SVG with `.zine-pixel-ink` / `-face`), `.zine-sticker` (`--live` `--beta` `--hot` `--tilt`), `.zine-table` (+ `.zine-sort`), `.zine-progress` (`--live`), `.zine-meter` |
 | Feedback | `.zine-toast` (`--lime`), `.zine-alert` (`--danger` `--info` `--lime`), `.zine-dialog` (`__title` `__text` `__actions` `__close`), `.zine-tooltip[data-tip]`, `.zine-tip` |
 | Print | `.zine-swatch`, `.zine-block`, `.zine-issue` |
+| Ticket | `.zine-ticket` (`__main`, `__kicker`, `__title`, `__meta`, `__stub` with `__code`, `__stamp`; `.is-torn`), `[data-zine-reprint]` |
+| Board | `.zine-board` > `.zine-slap` (`--burst` `--circle` `--tape` `--arrow`, inks `--lime` `--vermilion` `--cobalt`; `--x` / `--y` / `--r`) — drag, nudge with arrows, slap |
+| Accordion | `.zine-accordion` > `details.zine-accordion__item` (`__head`, `__body`) |
 
 ## Tokens
 

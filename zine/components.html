@@ -60,7 +60,7 @@
   <p class="zine-deck">Newsprint, 2px rules, hard shadows, three loud inks.</p>
   <p style="margin-top:12px">Every block below is live markup — hover a button and it lifts off the page, press it and it slams flat. Open it in the <a href="../components.html#zine">components browser</a> for the code.</p>
 </div>
-<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Checkbox &amp; toggle</a><a href="#segmented">Segmented</a><a href="#tabs">Folder tabs</a><a href="#chips">Stickers &amp; chips</a><a href="#slider">Slider</a><a href="#progress">Progress</a><a href="#alert">Toasts &amp; alerts</a><a href="#card">Cards</a><a href="#avatar">Avatars</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#elevation">Print</a></nav>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Checkbox &amp; toggle</a><a href="#segmented">Segmented</a><a href="#tabs">Folder tabs</a><a href="#chips">Stickers &amp; chips</a><a href="#slider">Slider</a><a href="#progress">Progress</a><a href="#alert">Toasts &amp; alerts</a><a href="#card">Cards</a><a href="#avatar">Avatars</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#ticket">Ticket</a><a href="#board">Sticker board</a><a href="#accordion">Accordion</a><a href="#elevation">Print</a></nav>
 <main>
   <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
     <h2 class="zine-title" id="h-button">Button</h2>
@@ -362,6 +362,69 @@
       <div class="demo__stage">
         <span class="zine-tooltip" data-tip="Export as PDF"><button class="zine-btn" type="button">Export</button></span>
         <span class="zine-tip">Export as PDF</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="ticket" data-component="ticket" aria-labelledby="h-ticket">
+    <h2 id="h-ticket">Ticket</h2>
+    <p>Admit one. Pull the stub: it rips along the perforation, tilts and drops away, and the sheet gets stamped.</p>
+    <div class="demo" data-demo="tear-off-ticket">
+      <h3>Tear-off ticket</h3>
+      <div class="demo__stage">
+        <div class="zine-stack" style="--gap:14px;width:min(100%,460px)">
+          <article class="zine-ticket">
+            <div class="zine-ticket__main">
+              <p class="zine-ticket__kicker">Issue 07 launch · Door B</p>
+              <h3 class="zine-ticket__title">Print is not dead</h3>
+              <dl class="zine-ticket__meta"><div><dt>Date</dt><dd>2025-03-14</dd></div><div><dt>Doors</dt><dd>19:00</dd></div><div><dt>Price</dt><dd>€8</dd></div></dl>
+            </div>
+            <button class="zine-ticket__stub" type="button" aria-label="Tear off the stub, seat A-042"><span class="zine-ticket__code" aria-hidden="true"></span><b>A-042</b><small>Tear here</small></button>
+            <span class="zine-ticket__stamp" aria-hidden="true">Admitted</span>
+          </article>
+          <button class="zine-btn zine-btn--sm zine-ticket__reprint" type="button" data-zine-reprint hidden>Reprint</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="board" data-component="board" aria-labelledby="h-board">
+    <h2 id="h-board">Sticker board</h2>
+    <p>Stickers slapped on at odd angles. Drag one around — it lifts while you hold it and slaps flat when you let go; arrow keys nudge the focused one.</p>
+    <div class="demo" data-demo="sticker-board">
+      <h3>Sticker board</h3>
+      <div class="demo__stage">
+        <div class="zine-board" aria-label="Sticker board" style="width:min(100%,520px)">
+          <button class="zine-slap zine-slap--burst" type="button" style="--x:6%;--y:12%;--r:-10deg">Hot!</button>
+          <button class="zine-slap zine-slap--circle" type="button" style="--x:62%;--y:8%;--r:8deg">New</button>
+          <button class="zine-slap zine-slap--tape" type="button" style="--x:34%;--y:34%;--r:-4deg">Sold out</button>
+          <button class="zine-slap zine-slap--cobalt" type="button" style="--x:12%;--y:66%;--r:5deg">Issue 07</button>
+          <button class="zine-slap zine-slap--arrow zine-slap--lime" type="button" style="--x:56%;--y:62%;--r:-6deg">P. 12</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cat-section" id="accordion" data-component="accordion" aria-labelledby="h-accordion">
+    <h2 id="h-accordion">Accordion</h2>
+    <p>Sections behind a black rule. The open one turns lime and its sign is stamped from + to −.</p>
+    <div class="demo" data-demo="accordion">
+      <h3>Accordion</h3>
+      <div class="demo__stage">
+        <div class="zine-accordion" style="width:min(100%,520px)">
+          <details class="zine-accordion__item" name="z-faq" open>
+            <summary class="zine-accordion__head">How do I submit work?</summary>
+            <div class="zine-accordion__body">Send a PDF under 20 MB with bleed marks. We reply within a week — loud yes or a kind no.</div>
+          </details>
+          <details class="zine-accordion__item" name="z-faq">
+            <summary class="zine-accordion__head">Do you pay contributors?</summary>
+            <div class="zine-accordion__body">Every printed page earns €40 and five copies of the issue.</div>
+          </details>
+          <details class="zine-accordion__item" name="z-faq">
+            <summary class="zine-accordion__head">Can I stock the zine?</summary>
+            <div class="zine-accordion__body">Yes. Shops get 40% off cover price on orders of ten or more.</div>
+          </details>
+        </div>
       </div>
     </div>
   </section>

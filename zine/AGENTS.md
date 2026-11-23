@@ -19,7 +19,7 @@ Zine / Brutal is a high-contrast print kit: newsprint, 2px black rules, zero-blu
 | Type | Archivo Black caps for headlines, titles, buttons and big numbers; Space Mono caps for labels and data; Space Grotesk for paragraphs | Light weights, sentence-case buttons, script or serif faces |
 | Labels | Black slug labels (`.zine-label`) name sections; code annotations (`.zine-code`) explain specimens | Grey helper text as the only section heading |
 | Focus | Fields: lime ring + black edge (`--zine-shadow-focus`); everything else: a 2px dashed cut line offset 4–5px | Lime-only rings, removing outlines |
-| Motion | Lift 2px on hover, slam 4px flat in 60ms on press, snap back with one tiny overshoot; stamp checks on | Fades, slow eases, bouncy springs, `transition: all` |
+| Motion | Lift 2px on hover in two printed frames (`--zine-motion-easing-lift`), slam 4px flat in one frame on press (`--zine-motion-easing-slam`), snap back with one tiny overshoot; stamp checks on and let the ink spread | Fades, slow eases, bouncy springs, smooth tweens for lifts, `transition: all` |
 
 ## 3. Recipes
 

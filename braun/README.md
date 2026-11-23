@@ -34,7 +34,7 @@ Black edition: `<html data-theme="dark">` (or `"auto"`), or `[data-theme-set="li
 | Selection | `.braun-keys` (interlocking, `__item[aria-selected]`, `--sm` `--block`), `.braun-tabs` (needle), `.braun-chip[aria-pressed]` (lamp) |
 | Inputs | `.braun-field` (`__label`), `.braun-input` (`--lg`, `aria-invalid`), `.braun-hint` (`--error`), `.braun-affix` |
 | Switches | `.braun-switch` (`--sm` `--lg`) inside `.braun-toggle` + `__legend`, `.braun-checkbox`, `.braun-radio`, `.braun-check` |
-| Instruments | `.braun-dial` + `__knob`, `.braun-readout` (`__value`, `__range`), `.braun-fader` + `.braun-scale`, `.braun-meter` (`--sm`), `.braun-gauge`, `.braun-progress`, `.braun-led` (`--warn` `--off` `--blink`) |
+| Instruments | `.braun-dial` + `__knob`, `.braun-readout` (`__value`, `__range`), `.braun-fader` + `.braun-scale`, `.braun-meter` (`--sm`, `--live` + `__peak`, fed by a `[data-braun-signal]` key), `.braun-gauge`, `.braun-progress`, `.braun-led` (`--warn` `--off` `--blink`), `.braun-scope` (`__screen`, `__trace` with `__ghost` / `__line`, `__tag`, `__readings`, `__controls`; `[data-braun-scope="run"]`, `[data-braun-wave]`) |
 | Navigation | `.braun-nav` (`__item[aria-current]`, `__count`), `.braun-breadcrumb`, `.braun-pagination` (`__gap`) |
 | Data | `.braun-card` (`__head`, `__title`, `__text`, `__actions`, `--inset`), `.braun-readings`, `.braun-glyph`, `.braun-badge` (`--primary` `--inverse` `--outline`), `.braun-status`, `.braun-table` (`.is-num`), `.braun-avatar` (`--lg` `--square` `--inverse`), `.braun-person` |
 | Feedback | `.braun-toast` (`__time`), `.braun-alert` (`__icon` `__title` `__text` `__close`, `--neutral`), `.braun-dialog` (`__body` `__title` `__text` `__actions`), `.braun-tooltip[data-tip]`, `.braun-tip` |

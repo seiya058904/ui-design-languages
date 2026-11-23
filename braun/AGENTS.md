@@ -21,7 +21,7 @@ Braun / Field is a precision instrument panel: every pressable part is a keycap 
 | Structure | Numbered sections on a 2 px black rule with a mono caps triplet on the right; modules split by hairlines | Cards floating on a blank page with no structure |
 | Shape | Keys 6 px, fields 4 px, plates 8 px, capsules only for hero keys and switch tracks | Large radii, pills for ordinary keys |
 | Focus | 2 px ink outline, offset 2–3 px, on every interactive part | An orange focus ring (2.6:1 on aluminium); removing focus |
-| Motion | 55 ms press, 140 ms release, no overshoot; needles travel 220 ms; one detent per dial step | Springs, bounces, `transition: all`, easing that overshoots |
+| Motion | Keycaps: 85 ms press through a tactile bump (`--braun-motion-easing-key-press`), 170 ms return that sticks for an instant first (`--braun-motion-easing-key-return`); other parts 55 ms / 140 ms; never past rest; needles travel 220 ms; one detent per dial step (the crown dips once); peaks hold 900 ms then fall a segment at a time | Springs, bounces, `transition: all`, easing that overshoots, smooth (unsegmented) meter decay |
 
 ## 3. Recipes
 

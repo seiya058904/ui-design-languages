@@ -583,7 +583,7 @@
         "root": "font-family:var(--braun-font-family-mono);color:var(--braun-color-text);font-size:var(--braun-font-size-body);line-height:1.5",
         "canvas": "background:var(--braun-texture-grain),var(--braun-color-canvas)",
         "page": "background:var(--braun-texture-grain),var(--braun-color-canvas)",
-        "hooks": ".braun-keys, .braun-tabs, .braun-nav, .braun-dial, .braun-fader, .braun-chip[aria-pressed], .braun-pagination, [data-braun-open], [data-braun-close], [data-braun-dismiss], [data-theme-set], [data-theme-toggle]",
+        "hooks": ".braun-keys, .braun-tabs, .braun-nav, .braun-dial, .braun-fader, .braun-chip[aria-pressed], .braun-pagination, [data-braun-open], [data-braun-close], [data-braun-dismiss], [data-theme-set], [data-theme-toggle], .braun-scope, .braun-meter__peak, [data-braun-signal], [data-braun-wave], [data-braun-scope]",
         "wall": [
           [
             "slider",
@@ -616,6 +616,14 @@
           [
             "material",
             "grille"
+          ],
+          [
+            "scope",
+            "scope"
+          ],
+          [
+            "progress",
+            "peak-meters"
           ]
         ]
       }

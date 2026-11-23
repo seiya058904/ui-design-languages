@@ -11,7 +11,7 @@
 
 - **Everything is a part.** A button is a keycap with a lit face, a solid skirt and a contact shadow; a field is a bay sunk into the panel; a value is printed in mono like a legend.
 - **One accent, used as a signal.** International Orange marks the primary key, the dial pointer, lit segments and the current item — nothing decorative is orange.
-- **Motion is mechanical.** Keys travel 1.5 mm into a detent in 55 ms and spring back in 140 ms; needles travel along rails; a dial clicks from step to step. Never an overshoot, never a bounce.
+- **Motion is mechanical.** Keys travel 1.5 mm in 85 ms through a tactile bump, stick for an instant at the bottom and spring back in 170 ms; needles travel along rails; a dial clicks from step to step and its crown dips at each detent. Never an overshoot, never a bounce.
 - **Spec-sheet honesty.** Numbered sections on black rules, mono caps notes, labelled specimens, values with units.
 
 ## 2. Reference analysis
@@ -32,7 +32,7 @@ Primary reference: `UI参考图/braun-field.jpg` (kept local, never committed). 
 | Navigation | Joined keys "Overview / System / Logs", Overview orange; breadcrumb "Devices › Module › Configuration" (current orange); square pagination keys with "2" orange; sidebar with an orange bar on "Modules" and counts 12 / 4 / 8 / 6 | Keys behave as interlocking push-buttons; the sidebar bar is a needle that travels along a rail |
 | Data & feedback | Status card MODULE_01 ● Online — Voltage 12.4 V, Current 0.8 A, Temperature 36.1 °C, Uptime 17:42:36; ~24-segment orange meter "68%" "Syncing data to device…"; black toast "● Synced to device — 2 min ago"; pale-orange alert "Temperature threshold exceeded / Module_01 operating at 78.4 °C" with × ; modal "Reset module? / This will clear all configuration data." Cancel / Reset | 24 segments exactly, lit one at a time; alert wash `#F7E0D3` with `#EFA27F` outline |
 | Footer | "LESS BUT BETTER • FUNCTIONAL CLARITY" … "BRAUN / FIELD" on a black rule | Kept |
-| Not in the reference | — | Hover, focus and disabled states, the fader, tabs with a needle, chips with lamps, tooltip, table, operator tokens, the power-on self-test, the console example, **the black anodized edition** |
+| Not in the reference | — | Hover, focus and disabled states, the fader, tabs with a needle, chips with lamps, tooltip, table, operator tokens, the power-on self-test, live meters with peak hold, the oscilloscope readout, the console example, **the black anodized edition** |
 
 ## 3. Foundations
 
@@ -55,7 +55,7 @@ Primary reference: `UI参考图/braun-field.jpg` (kept local, never committed). 
 **Texture** — a fine bead-blasted grain on the panel (inline SVG noise token), brushed lines on plates, concentric turning marks on the knob crown.
 **Black edition (added)** — The same instrument in matte-black anodizing: graphite POM keys, the contrasting key turns satin aluminium, highlights fall to a faint sheen, shadows go near-black and the orange brightens a step so lit segments still read. Because every shadow is built from color tokens, the theme only swaps colors.
 
-**Motion** — Mechanical detent. Press 55 ms on `cubic-bezier(.55,0,1,.45)` (accelerates into the stop); release 140 ms on `cubic-bezier(.2,0,0,1)` (never overshoots). Interlocking keys: the new key latches down at press speed while the old one pops up at release speed. Switch knob snaps over centre (120 ms, `cubic-bezier(.7,0,.25,1)`). Needles travel 220 ms like a motor-driven pointer. The dial moves one detent per step (55 ms); a single registered number, `--braun-value`, drives the dial pointer, knurling and lit ticks, the fader and the LED meters — so meters fill segment by segment (`round(down, …)`). Power-on (`.braun-boot`): modules settle 6 px into the panel with a 45 ms stagger, the dial sweeps full scale and settles, meters fill once. All of it stops under `prefers-reduced-motion`.
+**Motion** — Mechanical detent. Keycaps press in 85 ms on `easing-key-press` `linear(0, .64 40%, .6 56%, 1)` — a quick first half, a one-frame catch at the tactile bump, then the bottom-out — and return in 170 ms on `easing-key-return` `linear(0, .04 14%, .7 40%, .94 66%, 1)`: a release transient that sticks for an instant, then snaps home without passing rest. Other parts press in 55 ms on `cubic-bezier(.55,0,1,.45)` and release in 140 ms on `cubic-bezier(.2,0,0,1)`. Live meters attack in 70 ms and hold their peak segment for 900 ms (`duration-peak-hold`) before it falls one segment per 60 ms (`duration-decay-step`). The oscilloscope trace sweeps at ~30 fps with a 28% afterglow of the previous frame. Interlocking keys: the new key latches down at press speed while the old one pops up at release speed. Switch knob snaps over centre (120 ms, `cubic-bezier(.7,0,.25,1)`). Needles travel 220 ms like a motor-driven pointer. The dial moves one detent per step (55 ms); a single registered number, `--braun-value`, drives the dial pointer, knurling and lit ticks, the fader and the LED meters — so meters fill segment by segment (`round(down, …)`). Power-on (`.braun-boot`): modules settle 6 px into the panel with a 45 ms stagger, the dial sweeps full scale and settles, meters fill once. All of it stops under `prefers-reduced-motion`.
 
 ## 4. Components
 

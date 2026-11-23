@@ -55,7 +55,7 @@
   <h1 class="braun-display">Components</h1>
   <p>A precision instrument panel: every pressable part is a keycap with a lit face and a solid skirt, everything you fill is sunk into the aluminium, and International Orange marks the one thing that matters. Every block below is live markup — press the keys, turn the dial. Open it in the <a href="../components.html#braun">components browser</a> for the code.</p>
 </div>
-<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Switch, checkbox &amp; radio</a><a href="#segmented">Keys</a><a href="#tabs">Tabs</a><a href="#chips">Badges &amp; chips</a><a href="#slider">Dial &amp; fader</a><a href="#progress">Meters</a><a href="#alert">Alerts &amp; toasts</a><a href="#card">Status card</a><a href="#avatar">Operators</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#material">Materials</a></nav>
+<nav class="cat-toc" aria-label="Components"><a href="#button">Button</a><a href="#input">Text field</a><a href="#selection">Switch, checkbox &amp; radio</a><a href="#segmented">Keys</a><a href="#tabs">Tabs</a><a href="#chips">Badges &amp; chips</a><a href="#slider">Dial &amp; fader</a><a href="#scope">Oscilloscope</a><a href="#progress">Meters</a><a href="#alert">Alerts &amp; toasts</a><a href="#card">Status card</a><a href="#avatar">Operators</a><a href="#navigation">Navigation</a><a href="#table">Table</a><a href="#dialog">Dialog</a><a href="#tooltip">Tooltip</a><a href="#material">Materials</a></nav>
 <main>
   <section class="cat-section" id="button" data-component="button" aria-labelledby="h-button">
     <h2 id="h-button">Button</h2>
@@ -249,6 +249,34 @@
     </div>
   </section>
 
+  <section class="cat-section" id="scope" data-component="scope" aria-labelledby="h-scope">
+    <h2 id="h-scope">Oscilloscope</h2>
+    <p>A phosphor trace on black glass behind an engraved graticule. Press RUN to sweep it live; the keys switch the waveform.</p>
+    <div class="demo" data-demo="scope">
+      <h3>Scope readout</h3>
+      <div class="demo__stage">
+        <article class="braun-card" style="width:min(100%,480px)" data-braun-module>
+          <header class="braun-card__head"><h3 class="braun-card__title">SCOPE_02</h3><span class="braun-status"><span class="braun-led" aria-hidden="true"></span>Signal</span></header>
+          <figure class="braun-scope" style="padding-top:16px">
+            <div class="braun-scope__screen">
+              <svg class="braun-scope__trace" viewBox="0 0 400 200" preserveAspectRatio="none" aria-hidden="true"><path class="braun-scope__ghost" d="M0 100.0L2 94.4L4 88.7L6 83.2L8 77.8L10 72.4L12 67.3L14 62.4L16 57.7L18 53.2L20 49.1L22 45.3L24 41.8L26 38.6L28 35.8L30 33.5L32 31.5L34 30.0L36 28.9L38 28.2L40 28.0L42 28.2L44 28.9L46 30.0L48 31.5L50 33.5L52 35.8L54 38.6L56 41.8L58 45.3L60 49.1L62 53.2L64 57.7L66 62.4L68 67.3L70 72.4L72 77.8L74 83.2L76 88.7L78 94.4L80 100.0L82 105.6L84 111.3L86 116.8L88 122.2L90 127.6L92 132.7L94 137.6L96 142.3L98 146.8L100 150.9L102 154.7L104 158.2L106 161.4L108 164.2L110 166.5L112 168.5L114 170.0L116 171.1L118 171.8L120 172.0L122 171.8L124 171.1L126 170.0L128 168.5L130 166.5L132 164.2L134 161.4L136 158.2L138 154.7L140 150.9L142 146.8L144 142.3L146 137.6L148 132.7L150 127.6L152 122.2L154 116.8L156 111.3L158 105.6L160 100.0L162 94.4L164 88.7L166 83.2L168 77.8L170 72.4L172 67.3L174 62.4L176 57.7L178 53.2L180 49.1L182 45.3L184 41.8L186 38.6L188 35.8L190 33.5L192 31.5L194 30.0L196 28.9L198 28.2L200 28.0L202 28.2L204 28.9L206 30.0L208 31.5L210 33.5L212 35.8L214 38.6L216 41.8L218 45.3L220 49.1L222 53.2L224 57.7L226 62.4L228 67.3L230 72.4L232 77.8L234 83.2L236 88.7L238 94.4L240 100.0L242 105.6L244 111.3L246 116.8L248 122.2L250 127.6L252 132.7L254 137.6L256 142.3L258 146.8L260 150.9L262 154.7L264 158.2L266 161.4L268 164.2L270 166.5L272 168.5L274 170.0L276 171.1L278 171.8L280 172.0L282 171.8L284 171.1L286 170.0L288 168.5L290 166.5L292 164.2L294 161.4L296 158.2L298 154.7L300 150.9L302 146.8L304 142.3L306 137.6L308 132.7L310 127.6L312 122.2L314 116.8L316 111.3L318 105.6L320 100.0L322 94.4L324 88.7L326 83.2L328 77.8L330 72.4L332 67.3L334 62.4L336 57.7L338 53.2L340 49.1L342 45.3L344 41.8L346 38.6L348 35.8L350 33.5L352 31.5L354 30.0L356 28.9L358 28.2L360 28.0L362 28.2L364 28.9L366 30.0L368 31.5L370 33.5L372 35.8L374 38.6L376 41.8L378 45.3L380 49.1L382 53.2L384 57.7L386 62.4L388 67.3L390 72.4L392 77.8L394 83.2L396 88.7L398 94.4L400 100.0"/><path class="braun-scope__line" d="M0 100.0L2 94.4L4 88.7L6 83.2L8 77.8L10 72.4L12 67.3L14 62.4L16 57.7L18 53.2L20 49.1L22 45.3L24 41.8L26 38.6L28 35.8L30 33.5L32 31.5L34 30.0L36 28.9L38 28.2L40 28.0L42 28.2L44 28.9L46 30.0L48 31.5L50 33.5L52 35.8L54 38.6L56 41.8L58 45.3L60 49.1L62 53.2L64 57.7L66 62.4L68 67.3L70 72.4L72 77.8L74 83.2L76 88.7L78 94.4L80 100.0L82 105.6L84 111.3L86 116.8L88 122.2L90 127.6L92 132.7L94 137.6L96 142.3L98 146.8L100 150.9L102 154.7L104 158.2L106 161.4L108 164.2L110 166.5L112 168.5L114 170.0L116 171.1L118 171.8L120 172.0L122 171.8L124 171.1L126 170.0L128 168.5L130 166.5L132 164.2L134 161.4L136 158.2L138 154.7L140 150.9L142 146.8L144 142.3L146 137.6L148 132.7L150 127.6L152 122.2L154 116.8L156 111.3L158 105.6L160 100.0L162 94.4L164 88.7L166 83.2L168 77.8L170 72.4L172 67.3L174 62.4L176 57.7L178 53.2L180 49.1L182 45.3L184 41.8L186 38.6L188 35.8L190 33.5L192 31.5L194 30.0L196 28.9L198 28.2L200 28.0L202 28.2L204 28.9L206 30.0L208 31.5L210 33.5L212 35.8L214 38.6L216 41.8L218 45.3L220 49.1L222 53.2L224 57.7L226 62.4L228 67.3L230 72.4L232 77.8L234 83.2L236 88.7L238 94.4L240 100.0L242 105.6L244 111.3L246 116.8L248 122.2L250 127.6L252 132.7L254 137.6L256 142.3L258 146.8L260 150.9L262 154.7L264 158.2L266 161.4L268 164.2L270 166.5L272 168.5L274 170.0L276 171.1L278 171.8L280 172.0L282 171.8L284 171.1L286 170.0L288 168.5L290 166.5L292 164.2L294 161.4L296 158.2L298 154.7L300 150.9L302 146.8L304 142.3L306 137.6L308 132.7L310 127.6L312 122.2L314 116.8L316 111.3L318 105.6L320 100.0L322 94.4L324 88.7L326 83.2L328 77.8L330 72.4L332 67.3L334 62.4L336 57.7L338 53.2L340 49.1L342 45.3L344 41.8L346 38.6L348 35.8L350 33.5L352 31.5L354 30.0L356 28.9L358 28.2L360 28.0L362 28.2L364 28.9L366 30.0L368 31.5L370 33.5L372 35.8L374 38.6L376 41.8L378 45.3L380 49.1L382 53.2L384 57.7L386 62.4L388 67.3L390 72.4L392 77.8L394 83.2L396 88.7L398 94.4L400 100.0"/></svg>
+              <span class="braun-scope__tag">CH1 · DC · 1 V/div</span>
+            </div>
+            <figcaption class="braun-scope__readings"><span><b data-braun-reading="vpp">3.20</b> Vpp</span><span><b data-braun-reading="freq">440</b> Hz</span><span><b>1</b> ms/div</span></figcaption>
+          </figure>
+          <div class="braun-scope__controls" style="padding-top:14px">
+            <div class="braun-keys braun-keys--sm" role="tablist" aria-label="Waveform">
+              <button class="braun-keys__item" role="tab" aria-selected="true" data-braun-wave="sine">Sine</button>
+              <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1" data-braun-wave="square">Square</button>
+              <button class="braun-keys__item" role="tab" aria-selected="false" tabindex="-1" data-braun-wave="saw">Saw</button>
+            </div>
+            <button class="braun-btn braun-btn--sm" type="button" data-braun-scope="run" aria-pressed="false">Run</button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <section class="cat-section" id="progress" data-component="progress" aria-labelledby="h-progress">
     <h2 id="h-progress">Meters</h2>
     <p>24 LED segments light up one at a time as the value changes; a thin bar for quieter places.</p>
@@ -262,6 +290,19 @@
             <span class="braun-gauge__label">Syncing data to device…</span>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="peak-meters">
+      <h3>Live meters with peak hold</h3>
+      <div class="demo__stage">
+        <article class="braun-card" style="width:min(100%,440px)">
+          <header class="braun-card__head"><h3 class="braun-card__title">INPUT_L / R</h3><button class="braun-btn braun-btn--sm" type="button" data-braun-signal aria-pressed="false">Test signal</button></header>
+          <div class="braun-stack" style="--gap:10px;padding-top:16px">
+            <div class="braun-row" style="--gap:12px"><span class="braun-field__label" style="width:14px">L</span><div class="braun-meter braun-meter--sm braun-meter--live" role="meter" aria-label="Left level" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="--braun-value:0;flex:1"><i class="braun-meter__peak"></i></div></div>
+            <div class="braun-row" style="--gap:12px"><span class="braun-field__label" style="width:14px">R</span><div class="braun-meter braun-meter--sm braun-meter--live" role="meter" aria-label="Right level" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="--braun-value:0;flex:1"><i class="braun-meter__peak"></i></div></div>
+            <div class="braun-scale" style="margin-left:26px"><span>−60</span><span>−24</span><span>−12</span><span>−6</span><span>0 dB</span></div>
+          </div>
+        </article>
       </div>
     </div>
     <div class="demo" data-demo="bars">

@@ -49,9 +49,12 @@
   --braun-color-disabled: #DCDCD7;
   --braun-color-disabled-ink: #93938D;
   --braun-color-backdrop: rgba(27, 27, 27, 0.32);
+  --braun-color-screen: #101210; /* Oscilloscope screen: black glass with a hint of phosphor green */
+  --braun-color-graticule: rgba(24, 210, 89, 0.12); /* Minor graticule lines on the screen */
+  --braun-color-graticule-strong: rgba(24, 210, 89, 0.3); /* Centre axes of the graticule */
 
   --braun-texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); /* Bead-blasted anodizing: a fine matte grain laid over the panel */
-  --braun-texture-brushed: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, rgba(0, 0, 0, 0.018) 1px 2px, transparent 2px 4px); /* Brushed aluminium: fine horizontal grain for plates and the engraved border */
+  --braun-texture-brushed: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06) 0 1px, rgba(0, 0, 0, 0.02) 1px 2px, transparent 2px 3px), linear-gradient(100deg, rgba(255, 255, 255, 0) 18%, rgba(255, 255, 255, 0.16) 45%, rgba(255, 255, 255, 0) 72%); /* Brushed aluminium: fine horizontal grain for plates and the engraved border */
   --braun-texture-turned: repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.16) 0 1px, rgba(0, 0, 0, 0.025) 1px 2.5px); /* Concentric turning marks on the knob crown */
 
   --braun-gradient-face: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 58%, rgba(0, 0, 0, 0.035)); /* Keycap face: lit from above, the lower half falls away */
@@ -60,6 +63,7 @@
   --braun-gradient-led: linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 46%, rgba(0, 0, 0, 0.1)); /* Lit LED segment: a bright core under a curved lens */
   --braun-gradient-led-off: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.28)); /* Unlit segment: a concave, empty lens */
   --braun-gradient-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.05)); /* A soft sheen for material samples and plates (subtler than a keycap face) */
+  --braun-gradient-glass: linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 38%); /* Reflection across the top-left of a screen's glass */
 
   --braun-font-family-display: "Space Grotesk", "Helvetica Neue", Arial, sans-serif; /* Display, section titles, big numerals */
   --braun-font-family-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace; /* Everything an instrument prints: labels, values, legends */
@@ -129,6 +133,7 @@
   --braun-shadow-knob: inset 0 2px 1px rgba(255, 255, 255, 0.9), inset 0 -3px 6px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.08), 0 6px 0 -1px var(--braun-color-skirt), 0 16px 24px -8px var(--braun-color-shade-deep); /* Turned aluminium knob standing off the panel */
   --braun-shadow-led: 0 0 0 1.5px rgba(0, 0, 0, 0.14), 0 0 8px 1px var(--braun-color-signal-glow); /* Lit status LED in its bezel */
   --braun-shadow-overlay: inset 0 1px 0 var(--braun-color-highlight), 0 4px 0 var(--braun-color-skirt), 0 28px 48px -16px rgba(20, 20, 14, 0.38); /* Dialogs */
+  --braun-shadow-screen: inset 0 2px 6px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(0, 0, 0, 0.5), 0 1px 0 var(--braun-color-engrave-light), 0 0 0 4px var(--braun-color-bezel), 0 0 0 5px var(--braun-color-engrave); /* A screen set into the panel: deep inner shade, a 4px aluminium bezel and its engraved edge */
 
   --braun-motion-duration-press: 55ms; /* A key bottoms out: one crisp detent */
   --braun-motion-duration-release: 140ms; /* The spring returns it — fast, no overshoot */
@@ -144,6 +149,13 @@
   --braun-motion-easing-snap: cubic-bezier(0.7, 0, 0.25, 1); /* Spring-loaded over-centre switch: resists, then snaps */
   --braun-motion-easing-travel: cubic-bezier(0.45, 0, 0.2, 1); /* A motor-driven needle */
   --braun-motion-easing-fill: linear;
+  --braun-motion-duration-key-press: 85ms; /* A key going down: long enough to feel the tactile bump */
+  --braun-motion-easing-key-press: linear(0, 0.64 40%, 0.6 56%, 1); /* Key travel with a tactile bump: a quick first half, a one-frame catch at the bump, then the bottom-out (never past it) */
+  --braun-motion-duration-key-return: 170ms; /* The spring returning a released key */
+  --braun-motion-easing-key-return: linear(0, 0.04 14%, 0.7 40%, 0.94 66%, 1); /* Release transient: the key sticks for an instant at the bottom, then the spring snaps it home (no overshoot) */
+  --braun-motion-duration-peak-hold: 900ms; /* How long an LED meter's peak segment holds before it falls */
+  --braun-motion-duration-decay-step: 60ms; /* A held peak falls one segment per step */
+  --braun-motion-duration-detent-click: 90ms; /* The dial's crown dips once per detent */
 }
 
 /* Dark theme — GENERATED from braun/tokens/tokens.dark.json.
@@ -200,7 +212,7 @@
   --braun-color-backdrop: rgba(0, 0, 0, 0.6);
 
   --braun-texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  --braun-texture-brushed: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, rgba(0, 0, 0, 0.12) 1px 2px, transparent 2px 4px);
+  --braun-texture-brushed: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, rgba(0, 0, 0, 0.12) 1px 2px, transparent 2px 3px), linear-gradient(100deg, rgba(255, 255, 255, 0) 18%, rgba(255, 255, 255, 0.05) 45%, rgba(255, 255, 255, 0) 72%);
   --braun-texture-turned: repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0 1px, rgba(0, 0, 0, 0.12) 1px 2.5px);
 
   --braun-gradient-face: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0) 58%, rgba(0, 0, 0, 0.12));
@@ -269,7 +281,7 @@
     --braun-color-backdrop: rgba(0, 0, 0, 0.6);
 
     --braun-texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    --braun-texture-brushed: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, rgba(0, 0, 0, 0.12) 1px 2px, transparent 2px 4px);
+    --braun-texture-brushed: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, rgba(0, 0, 0, 0.12) 1px 2px, transparent 2px 3px), linear-gradient(100deg, rgba(255, 255, 255, 0) 18%, rgba(255, 255, 255, 0.05) 45%, rgba(255, 255, 255, 0) 72%);
     --braun-texture-turned: repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0 1px, rgba(0, 0, 0, 0.12) 1px 2.5px);
 
     --braun-gradient-face: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0) 58%, rgba(0, 0, 0, 0.12));

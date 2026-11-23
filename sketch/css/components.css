@@ -33,14 +33,26 @@
 .sketch-btn:hover,
 .sketch-btn.is-hover { transform: translate(-1px, -1px); box-shadow: var(--sketch-shadow-2); }
 .sketch-btn:active,
-.sketch-btn.is-active { transform: translate(2px, 2px); box-shadow: none; background-image: var(--sketch-hatch-default); transition-duration: var(--sketch-motion-duration-press); transition-timing-function: var(--sketch-motion-easing-press); }
-/* Line boil: under the pointer the drawing redraws itself every few frames, like hand-drawn animation. */
-.sketch-btn:hover,
-.sketch-chip:hover { animation: sketch-boil var(--sketch-motion-duration-boil) steps(1, end) infinite; }
+.sketch-btn.is-active { transform: translate(2px, 2px); box-shadow: inset 1px 1px 0 var(--sketch-color-imprint); background-image: var(--sketch-hatch-default); transition-duration: var(--sketch-motion-duration-press); transition-timing-function: var(--sketch-motion-easing-press); }
+/* Line boil: once the piece has lifted, its drawn shadow redraws itself every few frames, like hand-drawn
+   animation. Only the second pencil line moves — the label never jitters. Pressing stops it (and leaves a
+   faint pencil-pressure dent, --sketch-color-imprint). */
+.sketch-btn:hover { animation: sketch-boil var(--sketch-motion-duration-boil) steps(1, end) var(--sketch-motion-duration-release) infinite; }
+.sketch-btn:active,
+.sketch-btn--ghost:hover,
+.sketch-btn--tertiary:hover { animation: none; }
 @keyframes sketch-boil {
-  0%   { rotate: -0.6deg; }
-  33%  { rotate: 0.5deg; }
-  66%  { rotate: -0.2deg; }
+  0%   { box-shadow: 4px 4px 0 -0.5px var(--sketch-color-paper), 4px 4px 0 1.1px var(--sketch-color-ink); }
+  33%  { box-shadow: 4.6px 3.5px 0 -0.5px var(--sketch-color-paper), 4.6px 3.5px 0 1.1px var(--sketch-color-ink); }
+  66%  { box-shadow: 3.6px 4.5px 0 -0.5px var(--sketch-color-paper), 3.6px 4.5px 0 1.1px var(--sketch-color-ink); }
+}
+/* Chips have no drawn shadow: theirs is a barely-there wobble (a quarter of a degree), three frames a loop. */
+.sketch-chip:hover { animation: sketch-wobble var(--sketch-motion-duration-boil) steps(1, end) var(--sketch-motion-duration-release) infinite; }
+.sketch-chip:active { animation: none; }
+@keyframes sketch-wobble {
+  0%   { rotate: -0.25deg; }
+  33%  { rotate: 0.2deg; }
+  66%  { rotate: -0.1deg; }
 }
 .sketch-btn:focus-visible,
 .sketch-btn.is-focus { outline: 2px dashed var(--sketch-color-ink); outline-offset: 4px; }
@@ -155,7 +167,19 @@ select.sketch-input {
     background-size var(--sketch-motion-duration-release) var(--sketch-motion-easing-pop);
 }
 .sketch-checkbox { width: 20px; height: 20px; border-radius: var(--sketch-radius-sm); background-size: 0; } /* the tick pops in, overshooting its box */
-.sketch-checkbox:checked { background-size: 17px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232B2A27' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12.8c1.6 1.2 3 2.6 4.6 4.6 3-4.8 6.2-8.6 10.6-12'/%3E%3C/svg%3E"); }
+/* The tick is drawn like a pen stroke — wiped in left to right, overshooting its box — and erased fast. */
+.sketch-checkbox { position: relative; }
+.sketch-checkbox::after {
+  content: "";
+  position: absolute;
+  inset: -3px -5px -1px -1px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232B2A27' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12.8c1.6 1.2 3 2.6 4.6 4.6 3-4.8 6.2-8.6 10.6-12'/%3E%3C/svg%3E") center / 19px no-repeat;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 90ms linear;
+  pointer-events: none;
+}
+.sketch-checkbox:checked::after { clip-path: inset(0 0 0 0); transition: clip-path var(--sketch-motion-duration-draw) var(--sketch-motion-easing-draw) 40ms; }
+.sketch-checkbox:indeterminate::after { clip-path: inset(0 100% 0 0); }
 .sketch-checkbox:indeterminate { background-image: linear-gradient(var(--sketch-color-ink), var(--sketch-color-ink)); background-size: 10px 2.4px; }
 .sketch-radio { width: 20px; height: 20px; border-radius: 50%; background-size: 0 0; }
 .sketch-radio:checked { background-size: 100% 100%; background-image: radial-gradient(circle, var(--sketch-color-ink) 0 4.5px, transparent 5px); }
@@ -212,7 +236,16 @@ select.sketch-input {
 .sketch-slider::-webkit-slider-runnable-track { height: 8px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-hatch-dense) 0 0 / var(--fill) 100% no-repeat, var(--sketch-color-panel); }
 .sketch-slider::-moz-range-track { height: 6px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-color-panel); }
 .sketch-slider::-moz-range-progress { height: 6px; background: var(--sketch-hatch-dense); }
-.sketch-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -8px; border: var(--sketch-line-bold) solid var(--sketch-color-ink); border-radius: 50%; background: var(--sketch-color-panel); }
+.sketch-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -8px; border: var(--sketch-line-bold) solid var(--sketch-color-ink); border-radius: 50%; background: var(--sketch-color-panel); box-shadow: var(--sketch-shadow-1); transition: transform var(--sketch-motion-duration-release) var(--sketch-motion-easing-release), box-shadow var(--sketch-motion-duration-release) var(--sketch-motion-easing-release); }
+.sketch-slider:hover::-webkit-slider-thumb { transform: translate(-1px, -1px); box-shadow: var(--sketch-shadow-2); }
+.sketch-slider:active::-webkit-slider-thumb { transform: translate(1px, 1px); box-shadow: inset 1px 1px 0 var(--sketch-color-imprint); transition-duration: var(--sketch-motion-duration-press); transition-timing-function: var(--sketch-motion-easing-press); }
+/* While dragging, the hatched fill re-scribbles itself in three drawn frames. */
+.sketch-slider:active::-webkit-slider-runnable-track { animation: sketch-scribble var(--sketch-motion-duration-boil) steps(1, end) infinite; }
+@keyframes sketch-scribble {
+  0%   { background-image: var(--sketch-hatch-dense), none; }
+  33%  { background-image: var(--sketch-hatch-scribble-1), none; }
+  66%  { background-image: var(--sketch-hatch-scribble-2), none; }
+}
 .sketch-slider::-moz-range-thumb { width: 16px; height: 16px; border: var(--sketch-line-bold) solid var(--sketch-color-ink); border-radius: 50%; background: var(--sketch-color-panel); }
 .sketch-slider:focus-visible::-webkit-slider-thumb { outline: 2px dashed var(--sketch-color-ink); outline-offset: 2px; }
 .sketch-range__ticks { display: flex; justify-content: space-between; margin-top: 4px; font-size: var(--sketch-font-size-caption); color: var(--sketch-color-ink-soft); }
@@ -229,11 +262,11 @@ select.sketch-input {
 .sketch-badge { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 10px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-color-panel); font-size: var(--sketch-font-size-caption); white-space: nowrap; }
 .sketch-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; border: 1.3px solid var(--sketch-color-ink); background: var(--badge-dot, var(--sketch-color-panel)); }
 .sketch-badge--plain::before { display: none; }
-.sketch-badge--new     { background: var(--sketch-color-brand-wash);   --badge-dot: var(--sketch-color-brand); }
-.sketch-badge--updated { background: var(--sketch-color-success-wash); --badge-dot: var(--sketch-color-success); }
-.sketch-badge--beta    { background: var(--sketch-color-warning-wash); --badge-dot: var(--sketch-color-warning); }
-.sketch-badge--hot     { background: var(--sketch-color-danger-wash);  --badge-dot: var(--sketch-color-danger); }
-.sketch-badge--info    { background: var(--sketch-color-info-wash);    --badge-dot: var(--sketch-color-info); }
+.sketch-badge--new     { background: var(--sketch-hatch-bloom), var(--sketch-color-brand-wash);   --badge-dot: var(--sketch-color-brand); }
+.sketch-badge--updated { background: var(--sketch-hatch-bloom), var(--sketch-color-success-wash); --badge-dot: var(--sketch-color-success); }
+.sketch-badge--beta    { background: var(--sketch-hatch-bloom), var(--sketch-color-warning-wash); --badge-dot: var(--sketch-color-warning); }
+.sketch-badge--hot     { background: var(--sketch-hatch-bloom), var(--sketch-color-danger-wash);  --badge-dot: var(--sketch-color-danger); }
+.sketch-badge--info    { background: var(--sketch-hatch-bloom), var(--sketch-color-info-wash);    --badge-dot: var(--sketch-color-info); }
 .sketch-chip { display: inline-flex; align-items: center; gap: 6px; height: var(--sketch-size-control-sm); padding: 0 14px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-pill); background: var(--sketch-color-panel); font-size: var(--sketch-font-size-small); cursor: pointer; transition: transform var(--sketch-motion-duration-release) var(--sketch-motion-easing-release); }
 .sketch-chip:hover { transform: translate(-1px, -1px); }
 .sketch-chip:active { transform: translate(1px, 1px); transition-duration: var(--sketch-motion-duration-press); transition-timing-function: var(--sketch-motion-easing-press); }
@@ -388,10 +421,12 @@ select.sketch-input {
    ========================================================================= */
 .sketch-alert { display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 12px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); font-size: var(--sketch-font-size-small); }
 .sketch-alert b { margin-right: 6px; }
-.sketch-alert--success { background: var(--sketch-color-success-wash); }
-.sketch-alert--warning { background: var(--sketch-color-warning-wash); }
-.sketch-alert--danger  { background: var(--sketch-color-danger-wash); }
-.sketch-alert--info    { background: var(--sketch-color-brand-wash); }
+/* Watercolor: the wash is lighter where the water pooled in the middle (--sketch-hatch-bloom) and darker
+   where pigment dried along the edge, just inside the ink line. */
+.sketch-alert--success { background: var(--sketch-hatch-bloom), var(--sketch-color-success-wash); box-shadow: inset 0 0 10px -3px var(--sketch-color-success); }
+.sketch-alert--warning { background: var(--sketch-hatch-bloom), var(--sketch-color-warning-wash); box-shadow: inset 0 0 10px -3px var(--sketch-color-warning); }
+.sketch-alert--danger  { background: var(--sketch-hatch-bloom), var(--sketch-color-danger-wash); box-shadow: inset 0 0 10px -3px var(--sketch-color-danger); }
+.sketch-alert--info    { background: var(--sketch-hatch-bloom), var(--sketch-color-brand-wash); box-shadow: inset 0 0 10px -3px var(--sketch-color-brand); }
 .sketch-close { display: grid; place-items: center; margin-left: auto; width: 26px; height: 26px; border: 0; border-radius: 50%; background: transparent; font-size: 18px; line-height: 1; cursor: pointer; }
 .sketch-close:hover { background-image: var(--sketch-hatch-light); }
 .sketch-close:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 1px; }
@@ -405,7 +440,7 @@ select.sketch-input {
 .sketch-dialog__body { margin-top: 4px; color: var(--sketch-color-ink-soft); }
 .sketch-dialog__actions { display: flex; justify-content: center; gap: 12px; margin-top: 18px; }
 .sketch-dialog__mark { display: inline-grid; place-items: center; width: 34px; height: 34px; margin-bottom: 8px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: 50%; font-family: var(--sketch-font-family-display); font-weight: var(--sketch-font-weight-display); }
-@keyframes sketch-pop { from { opacity: 0; transform: translateY(6px) rotate(-0.6deg); } to { opacity: 1; transform: none; } }
+@keyframes sketch-pop { from { opacity: 0; transform: translateY(8px) rotate(-0.8deg); } 60% { opacity: 1; transform: translateY(-1px) rotate(0.2deg); } to { opacity: 1; transform: none; } }
 
 .sketch-tip,
 .sketch-popover { position: relative; display: inline-block; padding: 6px 12px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); font-size: var(--sketch-font-size-small); }
@@ -425,6 +460,8 @@ select.sketch-input {
 .sketch-card { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-md); background: var(--sketch-color-panel); box-shadow: var(--sketch-shadow-1); }
 .sketch-card--interactive { cursor: pointer; transition: transform var(--sketch-motion-duration-release) var(--sketch-motion-easing-release), box-shadow var(--sketch-motion-duration-release) var(--sketch-motion-easing-release); }
 .sketch-card--interactive:hover { transform: translate(-1px, -1px); box-shadow: var(--sketch-shadow-2); }
+.sketch-card--interactive:active { transform: translate(1px, 1px); box-shadow: inset 1px 1px 0 var(--sketch-color-imprint); transition-duration: var(--sketch-motion-duration-press); transition-timing-function: var(--sketch-motion-easing-press); }
+.sketch-card--interactive:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 4px; }
 .sketch-card__title { font-family: var(--sketch-font-family-display); font-size: 17px; font-weight: var(--sketch-font-weight-display); }
 .sketch-card__text { font-size: var(--sketch-font-size-small); color: var(--sketch-color-ink-soft); }
 /* Classic wireframe image: a box with a cross */
@@ -500,3 +537,279 @@ select.sketch-input {
 
 /* Code block for token overrides */
 .sketch-code { margin: 0; padding: 12px 14px; overflow-x: auto; border: var(--sketch-line-regular) solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); font-family: var(--sketch-font-family-mono); font-size: 12.5px; line-height: 1.55; white-space: pre; }
+
+/* =========================================================================
+   Link — a faint pencil line at rest; on hover / focus a wavy ink underline is drawn in, frame by frame.
+   <a class="sketch-link" href="#">Read the guide</a>
+   ========================================================================= */
+.sketch-link {
+  padding-bottom: 3px;
+  color: var(--sketch-color-ink);
+  text-decoration: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 6' preserveAspectRatio='none'%3E%3Cpath d='M1 3.6c6-2.2 10 1.6 16 .1s10-2.2 16-.1 11 1.7 17-.2 6-1.1 9 .3' fill='none' stroke='%232B2A27' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E") 0 100% / 0% 6px no-repeat,
+    linear-gradient(var(--sketch-color-ink-faint), var(--sketch-color-ink-faint)) 0 calc(100% - 2px) / 100% 1px no-repeat;
+  transition: background-size var(--sketch-motion-duration-draw) steps(5, end);
+}
+.sketch-link:hover,
+.sketch-link:focus-visible { background-size: 100% 6px, 100% 1px; }
+.sketch-link:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 3px; }
+
+/* =========================================================================
+   Sticky notes — square paper notes in watercolor washes, taped to the board at a small tilt.
+   <div class="sketch-notes">
+     <article class="sketch-sticky" style="--tilt:-2deg">
+       <span class="sketch-sticky__tape" aria-hidden="true"></span>
+       <button class="sketch-sticky__pin" type="button" aria-pressed="false" aria-label="Pin note">…</button>
+       <h3 class="sketch-sticky__title">Call the printer</h3>
+       <p class="sketch-sticky__text">Ask about recycled stock.</p>
+       <footer class="sketch-sticky__foot"><span>Mon</span><span>Ana</span></footer>
+     </article>
+   </div>
+   Washes: default (yellow) · --pink · --blue · --green · --violet. Hover straightens a note and lifts it off
+   the board; a pinned note (aria-pressed on the pin, js/sketch.js flips it) stays put. --done strikes it through.
+   ========================================================================= */
+.sketch-notes { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px 18px; padding: 12px 4px 4px; }
+.sketch-sticky {
+  --wash: var(--sketch-color-warning);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 172px;
+  min-height: 164px;
+  padding: 22px 14px 12px;
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-sm);
+  background: var(--sketch-hatch-bloom), color-mix(in srgb, var(--wash) 55%, var(--sketch-color-panel));
+  box-shadow: inset 0 0 14px -5px var(--wash), var(--sketch-shadow-1);
+  rotate: var(--tilt, -1.5deg);
+  transition:
+    rotate var(--sketch-motion-duration-release) var(--sketch-motion-easing-release),
+    transform var(--sketch-motion-duration-release) var(--sketch-motion-easing-release),
+    box-shadow var(--sketch-motion-duration-release) var(--sketch-motion-easing-release);
+}
+.sketch-sticky:hover { rotate: 0deg; transform: translateY(-3px); box-shadow: inset 0 0 14px -5px var(--wash), var(--sketch-shadow-3); }
+.sketch-sticky:has(.sketch-sticky__pin[aria-pressed="true"]) { rotate: var(--tilt, -1.5deg); transform: none; box-shadow: inset 0 0 14px -5px var(--wash), var(--sketch-shadow-1); }
+.sketch-sticky--pink   { --wash: var(--sketch-color-danger); }
+.sketch-sticky--blue   { --wash: var(--sketch-color-brand); }
+.sketch-sticky--green  { --wash: var(--sketch-color-success); }
+.sketch-sticky--violet { --wash: var(--sketch-color-info); }
+.sketch-sticky__tape {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  width: 60px;
+  height: 21px;
+  margin-left: -30px;
+  border: 1px solid color-mix(in srgb, var(--sketch-color-ink) 28%, transparent);
+  background: var(--sketch-hatch-light), var(--sketch-color-tape);
+  rotate: 3deg;
+  pointer-events: none;
+}
+.sketch-sticky__pin {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--sketch-color-ink-soft);
+  cursor: pointer;
+  transition: transform var(--sketch-motion-duration-release) var(--sketch-motion-easing-pop), color var(--sketch-motion-duration);
+}
+.sketch-sticky__pin .sketch-icon { width: 18px; height: 18px; }
+.sketch-sticky__pin:hover { background-image: var(--sketch-hatch-light); color: var(--sketch-color-ink); }
+.sketch-sticky__pin:active { transform: scale(0.85); }
+.sketch-sticky__pin:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 1px; }
+.sketch-sticky__pin[aria-pressed="true"] { color: var(--sketch-color-danger-ink); transform: rotate(-20deg); }
+.sketch-sticky__pin[aria-pressed="true"] .sketch-icon { fill: var(--sketch-color-danger); }
+.sketch-sticky__title { padding-right: 18px; font-family: var(--sketch-font-family-display); font-size: 19px; font-weight: var(--sketch-font-weight-display); line-height: 1.1; }
+.sketch-sticky__text { font-size: 15px; line-height: 1.3; color: var(--sketch-color-ink-soft); }
+.sketch-sticky__foot { display: flex; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 6px; border-top: 1.4px dashed color-mix(in srgb, var(--sketch-color-ink) 30%, transparent); font-size: var(--sketch-font-size-caption); color: var(--sketch-color-ink-soft); }
+.sketch-sticky--done .sketch-sticky__title { text-decoration: line-through 2px var(--sketch-color-ink); }
+
+/* =========================================================================
+   Doodle pad — draw on the paper with the pointer; the line thins as you move faster.
+   <div class="sketch-doodle">
+     <div class="sketch-doodle__paper"><canvas class="sketch-doodle__canvas" role="img" aria-label="Doodle"></canvas><p class="sketch-doodle__hint">Draw here</p></div>
+     <div class="sketch-doodle__tools">
+       <div class="sketch-row" role="group" aria-label="Pen" data-pick-group>
+         <button class="sketch-swatch sketch-swatch--pick" type="button" style="--swatch:var(--sketch-color-ink)" data-sketch-pen="ink" aria-pressed="true" aria-label="Ink"></button> …
+       </div>
+       <button class="sketch-btn sketch-btn--sm sketch-btn--ghost" type="button" data-sketch-doodle="clear">Clear</button>
+     </div>
+   </div>
+   js/sketch.js draws (pointer, mouse or stylus), picks the pen colour from data-sketch-pen (ink | brand |
+   danger | success → --sketch-color-<name>, or -strong if it exists), clears, and keeps the drawing on resize.
+   data-sample on the pad draws a small starter doodle.
+   ========================================================================= */
+.sketch-doodle { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.sketch-doodle__paper {
+  position: relative;
+  height: var(--doodle-height, 200px);
+  overflow: hidden;
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-md);
+  background:
+    radial-gradient(circle, var(--sketch-color-grid) 1px, transparent 1.5px) 0 0 / 18px 18px,
+    var(--sketch-paper-grain),
+    var(--sketch-color-panel);
+  box-shadow: var(--sketch-shadow-1);
+  cursor: crosshair;
+  touch-action: none;
+}
+.sketch-doodle__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sketch-doodle__hint {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--sketch-font-family-display);
+  font-size: 22px;
+  color: var(--sketch-color-ink-faint);
+  pointer-events: none;
+  transition: opacity var(--sketch-motion-duration) steps(3, end);
+}
+.sketch-doodle.has-ink .sketch-doodle__hint { opacity: 0; }
+.sketch-doodle__tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sketch-doodle__tools .sketch-swatch--pick { --swatch-size: 28px; }
+.sketch-doodle__tools .sketch-swatch--pick::after { display: none; }
+
+/* =========================================================================
+   Flow — a hand-drawn flowchart: nodes joined by pencil arrows that draw themselves in.
+   <ol class="sketch-flow" aria-label="Release">
+     <li class="is-done"><button class="sketch-flow__node" type="button"><span class="sketch-flow__mark" aria-hidden="true"></span><b>Draft</b><small>Mon</small></button></li>
+     <li aria-current="step"><button class="sketch-flow__node" type="button">…Review…</button></li>
+     <li><button class="sketch-flow__node" type="button">…Ship…</button></li>
+   </ol>
+   Done nodes are lightly hatched with a tick; the current one is bold on a brand wash; later ones are
+   dashed, and so are the arrows leading to them. js/sketch.js moves aria-current on click. Stacks below 560px.
+   ========================================================================= */
+.sketch-flow { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 0; margin: 0; padding: 0; list-style: none; counter-reset: flow; }
+.sketch-flow > li { display: flex; align-items: center; counter-increment: flow; }
+.sketch-flow > li + li::before {
+  content: "";
+  flex: none;
+  width: 52px;
+  height: 22px;
+  margin: 0 4px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 22' fill='none' stroke='%232B2A27' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12.5c9-3.2 20 2.6 31-.6 4-1.1 7-.9 11 .4'/%3E%3Cpath d='M39 6.5c2.6 2 4.6 3.6 6.4 5.6-2.2 1.8-4.2 3.2-6.8 4.8'/%3E%3C/svg%3E") center / contain no-repeat;
+  animation: sketch-draw-in var(--sketch-motion-duration-draw) var(--sketch-motion-easing-draw) backwards;
+}
+.sketch-flow > li:nth-child(2)::before { animation-delay: 180ms; }
+.sketch-flow > li:nth-child(3)::before { animation-delay: 300ms; }
+.sketch-flow > li:nth-child(4)::before { animation-delay: 420ms; }
+.sketch-flow > li:nth-child(n+5)::before { animation-delay: 540ms; }
+/* Arrows into nodes that are still to come are dashed */
+.sketch-flow > li[aria-current="step"] ~ li::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 22' fill='none' stroke='%23A39D90' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' stroke-dasharray='4 4'%3E%3Cpath d='M3 12.5c9-3.2 20 2.6 31-.6 4-1.1 7-.9 11 .4'/%3E%3Cpath d='M39 6.5c2.6 2 4.6 3.6 6.4 5.6-2.2 1.8-4.2 3.2-6.8 4.8' stroke-dasharray='none'/%3E%3C/svg%3E");
+}
+@keyframes sketch-draw-in { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.sketch-flow__node {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-width: 92px;
+  padding: 10px 14px 9px;
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-md);
+  background: var(--sketch-color-panel);
+  color: var(--sketch-color-ink);
+  font: inherit;
+  box-shadow: var(--sketch-shadow-1);
+  cursor: pointer;
+  transition: transform var(--sketch-motion-duration-release) var(--sketch-motion-easing-release), box-shadow var(--sketch-motion-duration-release) var(--sketch-motion-easing-release);
+}
+.sketch-flow__node b { font-family: var(--sketch-font-family-display); font-size: 17px; font-weight: var(--sketch-font-weight-display); line-height: 1.1; }
+.sketch-flow__node small { font-size: var(--sketch-font-size-caption); color: var(--sketch-color-ink-soft); }
+.sketch-flow__node:hover { transform: translate(-1px, -1px); box-shadow: var(--sketch-shadow-2); }
+.sketch-flow__node:active { transform: translate(1px, 1px); box-shadow: inset 1px 1px 0 var(--sketch-color-imprint); transition-duration: var(--sketch-motion-duration-press); transition-timing-function: var(--sketch-motion-easing-press); }
+.sketch-flow__node:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: 4px; }
+.sketch-flow__mark {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+  border: 1.4px solid var(--sketch-color-ink);
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+}
+.sketch-flow__mark::before { content: counter(flow); }
+.sketch-flow > li.is-done .sketch-flow__node { background: var(--sketch-hatch-light), var(--sketch-color-panel); }
+.sketch-flow > li.is-done .sketch-flow__mark { background: var(--sketch-color-well); }
+.sketch-flow > li.is-done .sketch-flow__mark::before { content: "✓"; }
+.sketch-flow > li[aria-current="step"] .sketch-flow__node { border-width: var(--sketch-line-bold); background: var(--sketch-hatch-bloom), var(--sketch-color-brand-wash); box-shadow: inset 0 0 10px -3px var(--sketch-color-brand), var(--sketch-shadow-2); }
+.sketch-flow > li[aria-current="step"] .sketch-flow__mark { border-width: var(--sketch-line-bold); }
+.sketch-flow > li[aria-current="step"] ~ li .sketch-flow__node { border-style: dashed; color: var(--sketch-color-ink-soft); box-shadow: none; }
+@media (max-width: 560px) {
+  .sketch-flow { flex-direction: column; }
+  .sketch-flow > li { flex-direction: column; }
+  .sketch-flow > li + li::before { margin: 6px 0; rotate: 90deg; }
+}
+
+/* =========================================================================
+   Accordion — drawn boxes that open frame by frame (steps), like a flip-book; the + turns into ×.
+   <div class="sketch-accordion">
+     <details class="sketch-accordion__item" name="faq" open>
+       <summary class="sketch-accordion__head">Can I export my sketches?</summary>
+       <div class="sketch-accordion__body">…</div>
+     </details>
+   </div>
+   ========================================================================= */
+.sketch-accordion { display: flex; flex-direction: column; gap: 12px; width: 100%; interpolate-size: allow-keywords; }
+.sketch-accordion__item {
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-md);
+  background: var(--sketch-color-panel);
+  box-shadow: var(--sketch-shadow-1);
+  transition: box-shadow var(--sketch-motion-duration-release) var(--sketch-motion-easing-release);
+}
+.sketch-accordion__item[open] { box-shadow: var(--sketch-shadow-2); }
+.sketch-accordion__item::details-content {
+  height: 0;
+  overflow: clip;
+  transition: height var(--sketch-motion-duration-slide) steps(6, end), content-visibility var(--sketch-motion-duration-slide) allow-discrete;
+}
+.sketch-accordion__item[open]::details-content { height: auto; }
+.sketch-accordion__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px 10px 16px;
+  border-radius: var(--sketch-radius-md);
+  font-family: var(--sketch-font-family-display);
+  font-size: 18px;
+  font-weight: var(--sketch-font-weight-display);
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+.sketch-accordion__head::-webkit-details-marker { display: none; }
+.sketch-accordion__head::after {
+  content: "+";
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  border: var(--sketch-line-regular) solid var(--sketch-color-ink);
+  border-radius: 50%;
+  background: var(--sketch-color-panel);
+  font-family: var(--sketch-font-family-hand);
+  font-size: 22px;
+  line-height: 1;
+  transition: rotate var(--sketch-motion-duration-release) var(--sketch-motion-easing-pop);
+}
+.sketch-accordion__head:hover::after { background: var(--sketch-hatch-light), var(--sketch-color-panel); }
+.sketch-accordion__head:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: -5px; }
+.sketch-accordion__item[open] .sketch-accordion__head::after { rotate: 45deg; background: var(--sketch-hatch-default), var(--sketch-color-panel); }
+.sketch-accordion__body { margin: 0 16px 14px; padding-top: 10px; border-top: 1.4px dashed var(--sketch-color-ink-faint); color: var(--sketch-color-ink-soft); line-height: 1.4; }

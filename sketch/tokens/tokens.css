@@ -29,10 +29,15 @@
   --sketch-color-offline: #A39D90;
   --sketch-color-error: #D9645F;
   --sketch-color-backdrop: rgba(43, 42, 39, 0.28);
+  --sketch-color-imprint: rgba(43, 42, 39, 0.16); /* Pencil pressure: the faint dent a pressed piece leaves in the paper */
+  --sketch-color-tape: rgba(246, 241, 230, 0.72); /* Masking tape holding sticky notes */
 
   --sketch-hatch-default: repeating-linear-gradient(-45deg, rgba(43, 42, 39, 0.32) 0 1.2px, transparent 1.2px 6px);
   --sketch-hatch-dense: repeating-linear-gradient(-45deg, rgba(43, 42, 39, 0.5) 0 1.4px, transparent 1.4px 4.5px);
   --sketch-hatch-light: repeating-linear-gradient(-45deg, rgba(43, 42, 39, 0.16) 0 1px, transparent 1px 7px);
+  --sketch-hatch-bloom: radial-gradient(130% 170% at 22% 12%, rgba(255, 255, 255, 0.5), transparent 58%); /* Watercolor bloom: the lighter, wetter middle of a wash (layer it over a -wash colour) */
+  --sketch-hatch-scribble-1: repeating-linear-gradient(-41deg, rgba(43, 42, 39, 0.5) 0 1.4px, transparent 1.4px 4.6px); /* Second drawn frame of dense hatching (the scribble boil while a slider is dragged) */
+  --sketch-hatch-scribble-2: repeating-linear-gradient(-49deg, rgba(43, 42, 39, 0.5) 0 1.3px, transparent 1.3px 4.4px); /* Third drawn frame of dense hatching */
 
   --sketch-paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .17 0 0 0 0 .16 0 0 0 0 .15 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); /* Inline SVG noise for the paper texture */
 
@@ -89,4 +94,6 @@
   --sketch-motion-duration-enter: 360ms; /* Page-load entrance (drawn in frame by frame) */
   --sketch-motion-stagger: 90ms; /* Delay between siblings in an entrance */
   --sketch-motion-duration-boil: 480ms; /* One loop of the hover line-boil (three drawn frames) */
+  --sketch-motion-duration-draw: 280ms; /* A pen stroke being drawn (tick marks, underlines, arrows) */
+  --sketch-motion-easing-draw: cubic-bezier(0.55, 0, 0.25, 1); /* Pen stroke: a slow touch-down, a quick middle and a soft lift */
 }

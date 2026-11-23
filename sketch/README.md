@@ -32,7 +32,9 @@ Hand-drawn ink on cream paper: uneven outlines, drawn offset shadows, diagonal h
 | Tags | `.sketch-tag` (`--active`), `.sketch-badge` (`--new` `--updated` `--beta` `--hot` `--info`), `.sketch-chip` (`[aria-pressed]`, `--add`), `.sketch-status`, `.sketch-count` |
 | Navigation | `.sketch-tabs` (+ `--folder`), `.sketch-pills`, `.sketch-segmented`, `.sketch-breadcrumb`, `.sketch-pagination`, `.sketch-nav` (box + corner brackets) — sliding indicators |
 | Feedback | `.sketch-alert` (`--success` `--warning` `--danger` `--info`), `.sketch-toast`, `.sketch-dialog`, `.sketch-tip`, `.sketch-popover`, `.sketch-tooltip[data-tip]`, `.sketch-close` |
-| Data | `.sketch-card`, `.sketch-placeholder`, `.sketch-list`, `.sketch-table`, `.sketch-empty` |
+| Data | `.sketch-card`, `.sketch-placeholder`, `.sketch-list`, `.sketch-table`, `.sketch-empty`, `.sketch-accordion` (`details` + `__head` / `__body`) |
+| Board | `.sketch-notes` > `.sketch-sticky` (`--pink` `--blue` `--green` `--violet` `--done`, `--tilt`; `__tape`, `__pin[aria-pressed]`, `__title`, `__text`, `__foot`) · `.sketch-doodle` (`data-sample`; `__paper`, `__canvas`, `__hint`, `__tools` with `[data-sketch-pen]` and `[data-sketch-doodle="clear"]`) |
+| Flow | `ol.sketch-flow` > `li` (`.is-done`, `[aria-current="step"]`) > `button.sketch-flow__node` (`__mark`) · `.sketch-link` (drawn underline) |
 | Progress | `.sketch-progress`, `.sketch-steps`, `.sketch-ring`, `.sketch-skeleton`, `.sketch-spinner` |
 | Color | `.sketch-swatch` (`--pick` with `data-label`), `.sketch-ramp`, `.sketch-code` |
 | Entrance | `.sketch-enter` (children enter one after another on page load) |

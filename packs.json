@@ -479,7 +479,7 @@
         "root": "font-family:var(--sketch-font-family-hand);color:var(--sketch-color-ink);font-size:var(--sketch-font-size-body);line-height:1.4",
         "canvas": "",
         "page": "background:var(--sketch-paper-grain),var(--sketch-color-paper)",
-        "hooks": ".sketch-tabs, .sketch-pills, .sketch-segmented, .sketch-nav, .sketch-range, input[type=range], .sketch-stepper, .sketch-chip[aria-pressed], [data-pick-group], [data-sketch-open], [data-sketch-close]",
+        "hooks": ".sketch-tabs, .sketch-pills, .sketch-segmented, .sketch-nav, .sketch-range, input[type=range], .sketch-stepper, .sketch-chip[aria-pressed], [data-pick-group], [data-sketch-open], [data-sketch-close], .sketch-sticky__pin, .sketch-flow, .sketch-doodle",
         "wall": [
           [
             "button",
@@ -512,6 +512,22 @@
           [
             "navigation",
             "sidebar"
+          ],
+          [
+            "notes",
+            "sticky-notes"
+          ],
+          [
+            "notes",
+            "doodle-pad"
+          ],
+          [
+            "flow",
+            "flow-card"
+          ],
+          [
+            "accordion",
+            "accordion"
           ]
         ]
       }

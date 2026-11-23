@@ -35,7 +35,7 @@ Sources: **Product UI Style Guide — Master · Flagship Edition** (primary, the
 | Progress & status | Progress bar 60%, stepper Configure → Review → Confirm → Done, circular progress 75%, skeleton, spinner, status dots Online / Busy / Offline / Error | Skeleton as dashed bars |
 | Side columns | Design principles, patterns, interaction, accessibility checklist, platforms, theming (Light / Dark / System pills, color dots, token override code), 12-column grid | Rendered as content on the styleguide |
 | Settings sketch | Theme segmented System / ✓ Light / Dark with sparkle marks, accent circles (one selected with an "Ocean" label), density and corner-radius sliders, typeface select, toggles with helper text, board preview | Becomes `examples/settings.html` |
-| Not in the references | — | Exact colors, fonts, motion timing, dark paper (not offered: the style is paper-only by intent) |
+| Not in the references | — | Exact colors, fonts, motion timing, sticky notes, doodle pad, flow card, accordion, dark paper (not offered: the style is paper-only by intent) |
 
 ## 3. Foundations
 
@@ -51,7 +51,7 @@ Sources: **Product UI Style Guide — Master · Flagship Edition** (primary, the
 **Shape** — wobbly radii `--sketch-radius-sm/md/lg` (asymmetric), pills for chips and toggles.
 **Depth** — offset outline `--sketch-shadow-1/2/3` (2 / 4 / 6px); pressed = no offset + hatching.
 **Lines** — `--sketch-line` 1.6px, `--sketch-line-bold` 2.2px; dashed for ghost, disabled and skeleton.
-**Motion** — A doodle that moves. Hover nudges −1px/−1px so the drawn shadow grows, and buttons and chips *line-boil*: three drawn frames held ~160ms each (`duration-boil`, `steps(1)`). Press pushes the piece into its shadow in 60ms; release snaps back with a cartoon overshoot (`easing-release`). Ticks overshoot their box as they pop in. Indicators glide 360ms on `cubic-bezier(.32,.72,0,1)`. Page load: `.sketch-enter` draws children in over four frames (`steps(4)`, 90ms stagger), once.
+**Motion** — A doodle that moves, never one that shakes. Hover nudges −1px/−1px so the drawn shadow grows; once it has lifted, a button *line-boils* — only its second pencil line is redrawn, three frames held ~160ms each (`duration-boil`, `steps(1)`), so the label never jitters (chips, which have no drawn shadow, wobble a quarter of a degree). Press pushes the piece into its shadow in 60ms and leaves a faint pencil-pressure dent (`--sketch-color-imprint`); release snaps back with a cartoon overshoot (`easing-release`). Ticks are *drawn* — wiped in left to right like one pen stroke (`duration-draw` / `easing-draw`), overshooting their box — and erased fast. Dragging a slider re-scribbles its hatched fill in three frames. Link underlines and flow arrows draw themselves in; accordions open frame by frame (`steps(6)`). Watercolor washes carry a wetter middle (`--sketch-hatch-bloom`) and pigment pooled along the edge. Indicators glide 360ms on `cubic-bezier(.32,.72,0,1)`. Page load: `.sketch-enter` draws children in over four frames (`steps(4)`, 90ms stagger), once.
 
 ## 4. Components
 

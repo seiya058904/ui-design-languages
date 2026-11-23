@@ -20,7 +20,7 @@ Sketch is hand-drawn ink on cream paper. Primary reference: **Product UI Style G
 | Focus | Dashed ink outline offset 3–4px, always visible | Removing outlines |
 | Disabled | Dashed faint outline, faint text, no drawn shadow | Opacity alone |
 | Primary text | Paper halo (`text-shadow`) so hatching never fights the label | Hatching behind small unhaloed text |
-| Motion | 160ms; indicators glide 360ms on `cubic-bezier(.32,.72,0,1)`; dialogs pop with a tiny rotation | Bouncy or long animations |
+| Motion | 160ms; indicators glide 360ms on `cubic-bezier(.32,.72,0,1)`; dialogs pop with a tiny rotation; strokes (ticks, underlines, arrows) are drawn in with `--sketch-motion-duration-draw`; boils redraw the drawn shadow in `steps(1)` frames, never the label | Bouncy or long animations, rotating whole pieces with their text, continuous (non-stepped) wobble |
 
 ## 3. Recipes
 

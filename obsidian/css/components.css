@@ -7,18 +7,6 @@
    nav · breadcrumb · pagination · badge · card/stat · chart/spark · ring · progress · toast ·
    alert · dialog · menu · tooltip · table · avatar · list · empty · glass · swatch · edge · logo */
 
-/* The pointer position the rim light is centred on. Registered, so it can glide (see .obsidian-panel / -card). */
-@property --obsidian-mx {
-  syntax: "<length-percentage>";
-  inherits: true;
-  initial-value: 50%;
-}
-@property --obsidian-my {
-  syntax: "<length-percentage>";
-  inherits: true;
-  initial-value: -60%;
-}
-
 /* One number drives rings, sliders and bars. An integer, so CSS can count it up (counter-reset). */
 @property --obsidian-value {
   syntax: "<integer>";
@@ -37,9 +25,8 @@
 .obsidian-glass--inset { border-color: transparent; background: var(--obsidian-color-glass-inset); box-shadow: var(--obsidian-shadow-inset); }
 
 /* Rim light: on panels and cards the 1px edge catches the light where the pointer is
-   (js/obsidian.js sets --obsidian-mx / --obsidian-my; without it the rim simply stays dark). The two are
-   registered properties with a short transition, so the highlight glides after the pointer — smooth
-   interpolation instead of a jump per frame. */
+   (js/obsidian.js glides --obsidian-mx / --obsidian-my in a rAF loop on the hovered surface only;
+   without JS the rim simply stays dark). */
 .obsidian-panel::after,
 .obsidian-card::after {
   content: "";
@@ -551,9 +538,7 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
   transition:
     border-color var(--obsidian-motion-duration) var(--obsidian-motion-easing),
     box-shadow var(--obsidian-motion-duration) var(--obsidian-motion-easing),
-    transform var(--obsidian-motion-duration) var(--obsidian-motion-easing),
-    --obsidian-mx var(--obsidian-motion-duration-follow) var(--obsidian-motion-easing),
-    --obsidian-my var(--obsidian-motion-duration-follow) var(--obsidian-motion-easing);
+    transform var(--obsidian-motion-duration) var(--obsidian-motion-easing);
 }
 /* same three-shadow shape as --obsidian-shadow-panel, so the hover interpolates */
 .obsidian-card:hover { border-color: var(--obsidian-color-border-medium); box-shadow: inset 0 1px 0 var(--obsidian-color-edge-hover), inset 0 -1px 0 rgba(255, 255, 255, 0.04), 0 28px 56px -24px rgba(0, 0, 0, 0.75); }
@@ -693,7 +678,7 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
 .obsidian-dialog__title { font-size: 17px; font-weight: var(--obsidian-font-weight-semibold); color: var(--obsidian-color-ink); }
 .obsidian-dialog__text { margin-top: 8px; font-size: var(--obsidian-font-size-small); color: var(--obsidian-color-text-muted); }
 .obsidian-dialog__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: var(--obsidian-space-5); }
-@keyframes obsidian-dialog { from { opacity: 0; transform: translateY(10px) scale(0.97); filter: blur(6px); } }
+@keyframes obsidian-dialog { from { opacity: 0; transform: translateY(10px) scale(0.97); } }
 
 /* =========================================================================
    Menu — a button that opens elevated glass with options

@@ -11,9 +11,14 @@
   if (!/^[a-z]+$/.test(p || "")) return;
   var base = new URL("../" + p + "/components.html", location.href);
 
-  function report() {
+  var reportRaf = 0;
+  function reportNow() {
+    reportRaf = 0;
     var h = Math.ceil(document.body.getBoundingClientRect().height);
     parent.postMessage({ type: "demo-size", h: h }, "*");
+  }
+  function report() {
+    if (!reportRaf) reportRaf = requestAnimationFrame(reportNow);
   }
 
   // Placeholder links in demos (href="#") would jump this frame to its top.
@@ -33,7 +38,10 @@
     var symbol = doc.body.querySelector("svg symbol");
     if (symbol) document.body.appendChild(document.importNode(symbol.closest("svg"), true));
 
-    var demo = doc.querySelector('[data-component="' + c + '"] [data-demo="' + d + '"]');
+    var safeId = /^[a-z0-9_-]+$/i;
+    var demo = (safeId.test(c || "") && safeId.test(d || ""))
+      ? doc.querySelector('[data-component="' + c + '"] [data-demo="' + d + '"]')
+      : null;
     if (!demo) { document.body.textContent = "Demo not found."; report(); return; }
     var stage = document.importNode(demo.querySelector(".demo__stage"), true);
     if (demo.getAttribute("data-min-height")) stage.style.minHeight = demo.getAttribute("data-min-height") + "px";

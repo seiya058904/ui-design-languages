@@ -49,8 +49,6 @@ a { color: inherit; }
   -webkit-backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%);
   backdrop-filter: blur(var(--obsidian-blur-frosted)) saturate(140%);
   box-shadow: var(--obsidian-shadow-panel);
-  /* the rim light (components.css) glides after the pointer instead of jumping to it */
-  transition: --obsidian-mx var(--obsidian-motion-duration-follow) var(--obsidian-motion-easing), --obsidian-my var(--obsidian-motion-duration-follow) var(--obsidian-motion-easing);
 }
 .obsidian-divider { height: 0; margin: var(--obsidian-space-5) 0; border: 0; border-top: 1px solid var(--obsidian-color-border-low); }
 
@@ -76,7 +74,7 @@ a { color: inherit; }
 .obsidian-enter > :nth-child(5) { --obsidian-enter-i: 4; }
 .obsidian-enter > :nth-child(6) { --obsidian-enter-i: 5; }
 .obsidian-enter > :nth-child(n+7) { --obsidian-enter-i: 6; }
-@keyframes obsidian-enter { from { opacity: 0; transform: translateY(10px) scale(0.99); filter: blur(4px); } }
+@keyframes obsidian-enter { from { opacity: 0; transform: translateY(10px) scale(0.99); } }
 
 @media (prefers-reduced-motion: reduce) {
   .obsidian-enter > * { animation: none !important; }

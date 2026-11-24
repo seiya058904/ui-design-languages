@@ -480,10 +480,12 @@ textarea.zine-input { height: auto; min-height: 104px; padding: var(--zine-space
    Progress — a ruled bar; the fill is lime with a printed hatch. --live makes the hatch march.
    <div class="zine-progress" role="progressbar" aria-valuenow="70" … style="--zine-value:70"></div>
    ========================================================================= */
-.zine-progress { position: relative; height: 24px; border: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-color-surface); transition: --zine-value var(--zine-motion-duration-slide) var(--zine-motion-easing-out); }
+.zine-progress { position: relative; overflow: hidden; height: 24px; border: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-color-surface); transition: --zine-value var(--zine-motion-duration-slide) var(--zine-motion-easing-out); }
 .zine-progress::after { content: ""; position: absolute; inset: 0 auto 0 0; width: calc(var(--zine-value) * 1%); border-right: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-texture-stripes), var(--zine-color-primary); }
-.zine-progress--live::after { animation: zine-march 900ms linear infinite; }
-@keyframes zine-march { to { background-position: calc(9px * 1.41421) 0, 0 0; } }
+/* --live: compositor-only stripe march (::before slides on GPU, ::after masks the unfilled right track) */
+.zine-progress--live::before { content: ""; position: absolute; inset: 0 0 0 -16px; background: var(--zine-texture-stripes), var(--zine-color-primary); animation: zine-march 900ms linear infinite; }
+.zine-progress--live::after { inset: 0 0 0 calc(var(--zine-value) * 1%); width: auto; border-right: 0; border-left: var(--zine-border-regular) solid var(--zine-color-ink); background: var(--zine-color-surface); }
+@keyframes zine-march { to { translate: calc(9px * 1.41421) 0; } }
 /* Bar with its number: <div class="zine-meter"><div class="zine-progress" …></div><span>70%</span></div> */
 .zine-meter { display: flex; align-items: center; gap: var(--zine-space-3); }
 .zine-meter > .zine-progress { flex: 1; }

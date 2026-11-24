@@ -26,6 +26,13 @@
   var TAB_ITEM = GROUPS[0].item + ", " + GROUPS[1].item;
   var NAV_ITEM = GROUPS[2].item + ", " + GROUPS[3].item;
 
+  function isWallHost() { return document.documentElement.hasAttribute("data-wall-host"); }
+  function ownsControl(el) {
+    if (!isWallHost()) return true;
+    var st = el.closest && el.closest("[data-pack-stage]");
+    return !!st && st.getAttribute("data-pack-stage") === P;
+  }
+
   function groupOf(list) {
     for (var i = 0; i < GROUPS.length; i++) if (list.matches(GROUPS[i].list)) return GROUPS[i];
     return null;
@@ -35,49 +42,101 @@
     return g ? Array.prototype.filter.call(list.querySelectorAll(g.item), function (el) { return el.closest(LIST) === list; }) : [];
   }
 
-  /* Layout changes (resize, fonts) move an indicator instantly; only a new selection glides. */
-  function snapTo(list) {
-    var on = list.classList.contains("is-animated");
-    if (on) list.classList.remove("is-animated");
-    refresh(list);
-    if (on) { void list.offsetWidth; list.classList.add("is-animated"); }
+  function measure(list) {
+    var g = groupOf(list);
+    if (!g) return null;
+    var active = items(list).filter(function (el) { return el.matches(g.active); })[0];
+    if (!active) return { o: "0" };
+    return { o: "1", x: active.offsetLeft + "px", y: active.offsetTop + "px", w: active.offsetWidth + "px", h: active.offsetHeight + "px" };
   }
-  /* Turn indicator transitions on only once the page has settled (loaded, fonts ready), after a final
-     measurement — so an indicator never glides in from a stale first-frame position on load. */
-  function settle(fn) {
+  function applyMetrics(list, m) {
+    if (!m) return;
+    var prev = list.__lilacMetrics;
+    if (prev && prev.o === m.o && prev.x === m.x && prev.y === m.y && prev.w === m.w && prev.h === m.h) return;
+    list.__lilacMetrics = m;
+    var s = list.style;
+    s.setProperty("--" + P + "-indicator-o", m.o);
+    if (m.o === "0") return;
+    s.setProperty("--" + P + "-indicator-x", m.x);
+    s.setProperty("--" + P + "-indicator-y", m.y);
+    s.setProperty("--" + P + "-indicator-w", m.w);
+    s.setProperty("--" + P + "-indicator-h", m.h);
+  }
+  function refresh(list) { applyMetrics(list, measure(list)); }
+
+  var snapSet = new Set(), snapRaf = 0;
+  function flushSnap() {
+    snapRaf = 0;
+    var lists = Array.from(snapSet);
+    snapSet.clear();
+    var restore = [];
+    for (var i = 0; i < lists.length; i++) {
+      if (lists[i].classList.contains("is-animated")) { lists[i].classList.remove("is-animated"); restore.push(lists[i]); }
+    }
+    var ms = lists.map(measure);
+    for (var j = 0; j < lists.length; j++) applyMetrics(lists[j], ms[j]);
+    if (restore.length) {
+      requestAnimationFrame(function () {
+        for (var k = 0; k < restore.length; k++) restore[k].classList.add("is-animated");
+      });
+    }
+  }
+  function queueSnap(list) {
+    snapSet.add(list);
+    if (!snapRaf) snapRaf = requestAnimationFrame(flushSnap);
+  }
+  var roMap = new WeakMap();
+  var sharedRO = "ResizeObserver" in window ? new ResizeObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      var list = roMap.get(entries[i].target);
+      if (list) queueSnap(list);
+    }
+  }) : null;
+
+  var settledPromise = null;
+  function whenSettled() {
+    if (settledPromise) return settledPromise;
     var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     var loaded = document.readyState === "complete" ? Promise.resolve() : new Promise(function (r) { window.addEventListener("load", r, { once: true }); });
-    Promise.all([fonts, loaded]).then(function () { requestAnimationFrame(function () { requestAnimationFrame(fn); }); });
-  }
-  function refresh(list) {
-    var g = groupOf(list);
-    if (!g) return;
-    var active = items(list).filter(function (el) { return el.matches(g.active); })[0];
-    var s = list.style;
-    if (!active) { s.setProperty("--" + P + "-indicator-o", "0"); return; }
-    s.setProperty("--" + P + "-indicator-o", "1");
-    s.setProperty("--" + P + "-indicator-x", active.offsetLeft + "px");
-    s.setProperty("--" + P + "-indicator-y", active.offsetTop + "px");
-    s.setProperty("--" + P + "-indicator-w", active.offsetWidth + "px");
-    s.setProperty("--" + P + "-indicator-h", active.offsetHeight + "px");
+    settledPromise = Promise.all([fonts, loaded]);
+    return settledPromise;
   }
 
   function initIndicators(root) {
     var scope = root || document;
     var lists = scope.matches && scope.matches(LIST) ? [scope] : scope.querySelectorAll(LIST);
+    var fresh = [];
     Array.prototype.forEach.call(lists, function (list) {
       if (list.__lilacIndicator) return;
       list.__lilacIndicator = true;
       list.classList.add("has-indicator");
-      refresh(list);
-      settle(function () { refresh(list); list.classList.add("is-animated"); });
-      if ("ResizeObserver" in window) {
-        var ro = new ResizeObserver(function () { snapTo(list); });
-        ro.observe(list);
-        items(list).forEach(function (el) { ro.observe(el); });
+      fresh.push(list);
+    });
+    if (!fresh.length) return;
+    var ms = fresh.map(measure);
+    for (var i = 0; i < fresh.length; i++) {
+      var list = fresh[i];
+      applyMetrics(list, ms[i]);
+      if (sharedRO) {
+        roMap.set(list, list);
+        sharedRO.observe(list);
+        items(list).forEach(function (el) { roMap.set(el, list); sharedRO.observe(el); });
       }
-      new MutationObserver(function () { refresh(list); }).observe(list, {
-        subtree: true, childList: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"]
+      (function (l) {
+        new MutationObserver(function () { if (!l.__lilacUpdating) refresh(l); }).observe(l, {
+          subtree: true, childList: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"]
+        });
+      })(list);
+    }
+    whenSettled().then(function () {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          var ms2 = fresh.map(measure);
+          for (var j = 0; j < fresh.length; j++) {
+            applyMetrics(fresh[j], ms2[j]);
+            fresh[j].classList.add("is-animated");
+          }
+        });
       });
     });
   }
@@ -85,6 +144,7 @@
   function selectTab(tab) {
     var list = tab.closest(TAB_LIST);
     if (!list) return;
+    list.__lilacUpdating = true;
     items(list).forEach(function (t) {
       var on = t === tab;
       t.setAttribute("aria-selected", on ? "true" : "false");
@@ -95,31 +155,37 @@
       if (panel) panel.hidden = !on;
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__lilacUpdating = false; });
   }
 
   function selectNavItem(link) {
     var list = link.closest(LIST);
     if (!list) return;
+    list.__lilacUpdating = true;
     items(list).forEach(function (el) {
       if (el === link) el.setAttribute("aria-current", "page");
       else el.removeAttribute("aria-current");
       el.classList.toggle("is-active", el === link);
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__lilacUpdating = false; });
   }
 
   /* ---------- Sliders ---------- */
   function syncSlider(input) {
     var min = parseFloat(input.min || 0), max = parseFloat(input.max || 100), v = parseFloat(input.value);
-    input.style.setProperty("--fill", ((v - min) / (max - min)) * 100 + "%");
+    var fill = ((v - min) / (max - min)) * 100 + "%";
+    if (input.style.getPropertyValue("--fill") !== fill) input.style.setProperty("--fill", fill);
     if (input.id) {
       document.querySelectorAll('output[for~="' + input.id + '"]').forEach(function (o) {
-        o.textContent = input.value + (o.getAttribute("data-suffix") || "");
+        var txt = input.value + (o.getAttribute("data-suffix") || "");
+        if (o.textContent !== txt) o.textContent = txt;
       });
     }
   }
 
   /* ---------- Focus timer ---------- */
+  var activeTimers = new Set();
   function pad2(n) { return (n < 10 ? "0" : "") + n; }
   function clock(sec) { sec = Math.max(0, Math.ceil(sec)); return pad2(Math.floor(sec / 60)) + ":" + pad2(sec % 60); }
   function timerOf(t) {
@@ -132,21 +198,26 @@
   }
   function renderTimer(t) {
     var st = timerOf(t);
-    t.style.setProperty("--value", String(Math.round((st.left / st.total) * 1000) / 10));
+    var val = String(Math.round((st.left / st.total) * 1000) / 10);
+    if (t.style.getPropertyValue("--value") !== val) t.style.setProperty("--value", val);
     var out = t.querySelector("." + P + "-timer__time");
-    if (out) out.textContent = clock(st.left);
+    var txt = clock(st.left);
+    if (out && out.textContent !== txt) out.textContent = txt;
   }
   function runTimer(t, on) {
     var st = timerOf(t), btn = t.querySelector('[data-' + P + '-timer="run"]');
     clearInterval(st.id);
     st.id = 0;
+    activeTimers.delete(t);
     t.classList.toggle("is-running", on);
     if (btn) btn.setAttribute("aria-pressed", on ? "true" : "false");
     if (!on) return;
     if (st.left <= 0) st.left = st.total;
     t.classList.remove("is-done");
     st.last = Date.now();
+    activeTimers.add(t);
     st.id = setInterval(function () {
+      if (!t.isConnected) { runTimer(t, false); return; }
       var now = Date.now();
       st.left -= (now - st.last) / 1000;
       st.last = now;
@@ -158,9 +229,12 @@
         t.dispatchEvent(new CustomEvent(P + ":timerdone", { bubbles: true }));
         return;
       }
-      renderTimer(t);
+      if (!document.hidden) renderTimer(t);
     }, 250);
   }
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) activeTimers.forEach(renderTimer);
+  });
   function timerAction(btn) {
     var t = btn.closest("." + P + "-timer");
     if (!t) return;
@@ -195,11 +269,12 @@
     var mover = dir > 0 ? order[0] : order[order.length - 1];
     stack.__lilacBusy = true;
     mover.setAttribute("data-fling", dir > 0 ? "out" : "in");
+    // Aligned with CSS 320ms fling transition so cards settle seamlessly without snapping early.
     setTimeout(function () {
       setDepths(stack, dir > 0 ? order.slice(1).concat([mover]) : [mover].concat(order.slice(0, -1)));
       mover.removeAttribute("data-fling");
-      setTimeout(function () { stack.__lilacBusy = false; }, still ? 0 : 120);
-    }, still ? 0 : 300);
+      setTimeout(function () { stack.__lilacBusy = false; }, still ? 0 : 140);
+    }, still ? 0 : 320);
   }
 
   /* ---------- Accent ---------- */
@@ -207,6 +282,7 @@
   function syncAccentControls() {
     var a = document.documentElement.getAttribute("data-accent") || "violet";
     document.querySelectorAll("[data-accent-set]").forEach(function (b) {
+      if (!ownsControl(b)) return;
       var on = b.getAttribute("data-accent-set") === a;
       if (b.matches(TAB_ITEM)) { b.setAttribute("aria-selected", on ? "true" : "false"); b.classList.toggle("is-active", on); b.tabIndex = on ? 0 : -1; }
       else b.setAttribute("aria-pressed", on ? "true" : "false");
@@ -215,10 +291,11 @@
   function setAccent(name) {
     if (!name || name === "violet") document.documentElement.removeAttribute("data-accent");
     else document.documentElement.setAttribute("data-accent", name);
-    try { localStorage.setItem(ACCENT_KEY, name || "violet"); } catch (err) { /* not remembered */ }
+    if (!isWallHost()) {
+      try { localStorage.setItem(ACCENT_KEY, name || "violet"); } catch (err) { /* not remembered */ }
+    }
     syncAccentControls();
   }
-
 
   /* ---------- Theme ---------- */
   var THEME_KEY = P + "-theme";
@@ -228,24 +305,28 @@
   function syncThemeControls() {
     var t = currentTheme();
     document.querySelectorAll("[data-theme-set]").forEach(function (b) {
+      if (!ownsControl(b)) return;
       var on = b.getAttribute("data-theme-set") === t;
       if (b.matches(TAB_ITEM)) { b.setAttribute("aria-selected", on ? "true" : "false"); b.classList.toggle("is-active", on); b.tabIndex = on ? 0 : -1; }
       else b.setAttribute("aria-pressed", on ? "true" : "false");
     });
     document.querySelectorAll("[data-theme-toggle]").forEach(function (b) {
+      if (!ownsControl(b)) return;
       if (b.type === "checkbox") b.checked = isDark(); else b.setAttribute("aria-pressed", isDark() ? "true" : "false");
     });
   }
   function setTheme(t) {
     if (!t || t === "light") document.documentElement.removeAttribute("data-theme");
     else document.documentElement.setAttribute("data-theme", t);
-    try { localStorage.setItem(THEME_KEY, t || "light"); } catch (err) { /* not remembered */ }
+    if (!isWallHost()) {
+      try { localStorage.setItem(THEME_KEY, t || "light"); } catch (err) { /* not remembered */ }
+    }
     syncThemeControls();
     document.dispatchEvent(new CustomEvent(P + ":themechange", { detail: { theme: t || "light", dark: isDark() } }));
   }
   if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener("change", function () { if (currentTheme() === "auto") syncThemeControls(); });
   document.addEventListener("change", function (e) {
-    if (e.target.matches && e.target.matches("input[data-theme-toggle]")) setTheme(e.target.checked ? "dark" : "light");
+    if (e.target.matches && e.target.matches("input[data-theme-toggle]") && ownsControl(e.target)) setTheme(e.target.checked ? "dark" : "light");
   });
 
   document.addEventListener("input", function (e) {
@@ -263,11 +344,11 @@
     }
 
     var accent = e.target.closest("[data-accent-set]");
-    if (accent) setAccent(accent.getAttribute("data-accent-set"));
+    if (accent && ownsControl(accent)) setAccent(accent.getAttribute("data-accent-set"));
     var themeSet = e.target.closest("[data-theme-set]");
-    if (themeSet) setTheme(themeSet.getAttribute("data-theme-set"));
+    if (themeSet && ownsControl(themeSet)) setTheme(themeSet.getAttribute("data-theme-set"));
     var themeToggle = e.target.closest("button[data-theme-toggle]");
-    if (themeToggle) setTheme(isDark() ? "light" : "dark");
+    if (themeToggle && ownsControl(themeToggle)) setTheme(isDark() ? "light" : "dark");
 
     var chip = e.target.closest("." + P + "-chip[aria-pressed]");
     if (chip && !chip.disabled) chip.setAttribute("aria-pressed", chip.getAttribute("aria-pressed") === "true" ? "false" : "true");
@@ -280,7 +361,7 @@
     var opener = e.target.closest("[data-" + P + "-open]");
     if (opener) {
       var dlg = document.querySelector(opener.getAttribute("data-" + P + "-open"));
-      if (dlg && dlg.showModal) dlg.showModal();
+      if (dlg && dlg.showModal && !dlg.open) dlg.showModal();
     }
     var closer = e.target.closest("[data-" + P + "-close]");
     if (closer) { var d = closer.closest("dialog"); if (d) d.close(); }
@@ -298,12 +379,13 @@
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
     if (!(e.key in keys)) return;
     var all = items(tab.closest(TAB_LIST)).filter(function (t) { return !t.disabled; });
+    if (!all.length) return;
     var i = all.indexOf(tab), step = keys[e.key];
     var next = step === "first" ? all[0] : step === "last" ? all[all.length - 1] : all[(i + step + all.length) % all.length];
     next.focus();
     selectTab(next);
-    if (next.hasAttribute("data-accent-set")) setAccent(next.getAttribute("data-accent-set"));
-    if (next.hasAttribute("data-theme-set")) setTheme(next.getAttribute("data-theme-set"));
+    if (next.hasAttribute("data-accent-set") && ownsControl(next)) setAccent(next.getAttribute("data-accent-set"));
+    if (next.hasAttribute("data-theme-set") && ownsControl(next)) setTheme(next.getAttribute("data-theme-set"));
     e.preventDefault();
   });
 
@@ -312,11 +394,19 @@
     syncThemeControls();
     document.querySelectorAll("." + P + "-slider").forEach(syncSlider);
     initIndicators(document);
-    var queued = false;
-    new MutationObserver(function () {
-      if (queued) return;
+    var added = [], queued = false;
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var nodes = muts[i].addedNodes;
+        for (var j = 0; j < nodes.length; j++) if (nodes[j].nodeType === 1) added.push(nodes[j]);
+      }
+      if (!added.length || queued) return;
       queued = true;
-      requestAnimationFrame(function () { queued = false; initIndicators(document); });
+      requestAnimationFrame(function () {
+        queued = false;
+        var batch = added.splice(0, added.length);
+        for (var k = 0; k < batch.length; k++) if (batch[k].isConnected) initIndicators(batch[k]);
+      });
     }).observe(document.body, { childList: true, subtree: true });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

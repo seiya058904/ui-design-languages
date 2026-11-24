@@ -8,8 +8,8 @@
    - dialogs: [data-sketch-open="#id"] / [data-sketch-close]
    - sticky notes: the pin (.sketch-sticky__pin[aria-pressed]) flips on click
    - flow (.sketch-flow): clicking a node makes it the current step; earlier ones are marked done
-   - doodle pads (.sketch-doodle): draw with any pointer (the line thins as it speeds up), pick the pen
-     from [data-sketch-pen], [data-sketch-doodle="clear"] wipes the paper; data-sample draws a starter
+   - doodle pads (.sketch-doodle): draw with any pointer (the line thins as it speeds up, uses coalesced
+     events for smooth fast strokes), pick the pen from [data-sketch-pen], [data-sketch-doodle="clear"] wipes
    Hooks: window.SketchUI.refresh(el), .initIndicators(root), .syncSlider(input) */
 (function () {
   var P = "sketch";
@@ -29,52 +29,107 @@
     var g = groupOf(list);
     return g ? Array.prototype.filter.call(list.querySelectorAll(g.item), function (el) { return el.closest(LIST) === list; }) : [];
   }
-  /* Layout changes (resize, fonts) move an indicator instantly; only a new selection glides. */
-  function snapTo(list) {
-    var on = list.classList.contains("is-animated");
-    if (on) list.classList.remove("is-animated");
-    refresh(list);
-    if (on) { void list.offsetWidth; list.classList.add("is-animated"); }
+
+  function measure(list) {
+    var g = groupOf(list);
+    if (!g) return null;
+    var active = items(list).filter(function (el) { return el.matches(g.active); })[0];
+    if (!active) return { o: "0" };
+    return { o: "1", x: active.offsetLeft + "px", y: active.offsetTop + "px", w: active.offsetWidth + "px", h: active.offsetHeight + "px" };
   }
-  /* Turn indicator transitions on only once the page has settled (loaded, fonts ready), after a final
-     measurement — so an indicator never glides in from a stale first-frame position on load. */
-  function settle(fn) {
+  function applyMetrics(list, m) {
+    if (!m) return;
+    var prev = list.__sketchMetrics;
+    if (prev && prev.o === m.o && prev.x === m.x && prev.y === m.y && prev.w === m.w && prev.h === m.h) return;
+    list.__sketchMetrics = m;
+    var s = list.style;
+    s.setProperty("--" + P + "-indicator-o", m.o);
+    if (m.o === "0") return;
+    s.setProperty("--" + P + "-indicator-x", m.x);
+    s.setProperty("--" + P + "-indicator-y", m.y);
+    s.setProperty("--" + P + "-indicator-w", m.w);
+    s.setProperty("--" + P + "-indicator-h", m.h);
+  }
+  function refresh(list) { applyMetrics(list, measure(list)); }
+
+  var snapSet = new Set(), snapRaf = 0;
+  function flushSnap() {
+    snapRaf = 0;
+    var lists = Array.from(snapSet);
+    snapSet.clear();
+    var restore = [];
+    for (var i = 0; i < lists.length; i++) {
+      if (lists[i].classList.contains("is-animated")) { lists[i].classList.remove("is-animated"); restore.push(lists[i]); }
+    }
+    var ms = lists.map(measure);
+    for (var j = 0; j < lists.length; j++) applyMetrics(lists[j], ms[j]);
+    if (restore.length) {
+      requestAnimationFrame(function () {
+        for (var k = 0; k < restore.length; k++) restore[k].classList.add("is-animated");
+      });
+    }
+  }
+  function queueSnap(list) {
+    snapSet.add(list);
+    if (!snapRaf) snapRaf = requestAnimationFrame(flushSnap);
+  }
+  var roMap = new WeakMap();
+  var sharedRO = "ResizeObserver" in window ? new ResizeObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      var list = roMap.get(entries[i].target);
+      if (list) queueSnap(list);
+    }
+  }) : null;
+
+  var settledPromise = null;
+  function whenSettled() {
+    if (settledPromise) return settledPromise;
     var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     var loaded = document.readyState === "complete" ? Promise.resolve() : new Promise(function (r) { window.addEventListener("load", r, { once: true }); });
-    Promise.all([fonts, loaded]).then(function () { requestAnimationFrame(function () { requestAnimationFrame(fn); }); });
+    settledPromise = Promise.all([fonts, loaded]);
+    return settledPromise;
   }
-  function refresh(list) {
-    var g = groupOf(list);
-    if (!g) return;
-    var active = items(list).filter(function (el) { return el.matches(g.active); })[0];
-    var s = list.style;
-    if (!active) { s.setProperty("--" + P + "-indicator-o", "0"); return; }
-    s.setProperty("--" + P + "-indicator-o", "1");
-    s.setProperty("--" + P + "-indicator-x", active.offsetLeft + "px");
-    s.setProperty("--" + P + "-indicator-y", active.offsetTop + "px");
-    s.setProperty("--" + P + "-indicator-w", active.offsetWidth + "px");
-    s.setProperty("--" + P + "-indicator-h", active.offsetHeight + "px");
-  }
+
   function initIndicators(root) {
     var scope = root || document;
     var lists = scope.matches && scope.matches(LIST) ? [scope] : scope.querySelectorAll(LIST);
+    var fresh = [];
     Array.prototype.forEach.call(lists, function (list) {
       if (list.__sketchIndicator) return;
       list.__sketchIndicator = true;
       list.classList.add("has-indicator");
-      refresh(list);
-      settle(function () { refresh(list); list.classList.add("is-animated"); });
-      if ("ResizeObserver" in window) {
-        var ro = new ResizeObserver(function () { snapTo(list); });
-        ro.observe(list);
-        items(list).forEach(function (el) { ro.observe(el); });
+      fresh.push(list);
+    });
+    if (!fresh.length) return;
+    var ms = fresh.map(measure);
+    for (var i = 0; i < fresh.length; i++) {
+      var list = fresh[i];
+      applyMetrics(list, ms[i]);
+      if (sharedRO) {
+        roMap.set(list, list);
+        sharedRO.observe(list);
+        items(list).forEach(function (el) { roMap.set(el, list); sharedRO.observe(el); });
       }
-      new MutationObserver(function () { refresh(list); }).observe(list, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"] });
+      (function (l) {
+        new MutationObserver(function () { if (!l.__sketchUpdating) refresh(l); }).observe(l, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"] });
+      })(list);
+    }
+    whenSettled().then(function () {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          var ms2 = fresh.map(measure);
+          for (var j = 0; j < fresh.length; j++) {
+            applyMetrics(fresh[j], ms2[j]);
+            fresh[j].classList.add("is-animated");
+          }
+        });
+      });
     });
   }
   function selectTab(tab) {
     var list = tab.closest(TAB_LIST);
     if (!list) return;
+    list.__sketchUpdating = true;
     items(list).forEach(function (t) {
       var on = t === tab;
       t.setAttribute("aria-selected", on ? "true" : "false");
@@ -84,45 +139,62 @@
       if (panel) panel.hidden = !on;
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__sketchUpdating = false; });
   }
   function selectNavItem(link) {
     var list = link.closest(GROUPS[3].list);
     if (!list) return;
+    list.__sketchUpdating = true;
     items(list).forEach(function (el) {
       if (el === link) el.setAttribute("aria-current", "page"); else el.removeAttribute("aria-current");
       el.classList.toggle("is-active", el === link);
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__sketchUpdating = false; });
   }
 
   function syncSlider(input) {
     var min = parseFloat(input.min || 0), max = parseFloat(input.max || 100), v = parseFloat(input.value);
     var host = input.closest("." + P + "-range") || input;
-    host.style.setProperty("--fill-n", String((v - min) / (max - min)));
+    var ns = String((v - min) / (max - min));
+    if (host.style.getPropertyValue("--fill-n") !== ns) host.style.setProperty("--fill-n", ns);
     var outs = Array.prototype.slice.call(host.querySelectorAll ? host.querySelectorAll("output") : []);
     if (input.id) outs = outs.concat(Array.prototype.slice.call(document.querySelectorAll('output[for~="' + input.id + '"]')));
-    outs.forEach(function (o) { o.textContent = input.value + (o.getAttribute("data-suffix") || ""); });
+    outs.forEach(function (o) {
+      var txt = input.value + (o.getAttribute("data-suffix") || "");
+      if (o.textContent !== txt) o.textContent = txt;
+    });
     var ticks = host.querySelector && host.querySelector("." + P + "-range__ticks");
     if (ticks) Array.prototype.forEach.call(ticks.children, function (t) { t.classList.toggle("is-current", t.textContent.trim() === String(input.value)); });
   }
 
   /* ---------- Doodle pad ---------- */
+  var penColorCache = {};
   function penColor(name) {
+    var k = name || "ink";
+    if (penColorCache[k]) return penColorCache[k];
     var cs = getComputedStyle(document.documentElement);
-    var strong = cs.getPropertyValue("--" + P + "-color-" + name + "-strong").trim();
-    return strong || cs.getPropertyValue("--" + P + "-color-" + (name || "ink")).trim() || "#2B2A27";
+    var strong = cs.getPropertyValue("--" + P + "-color-" + k + "-strong").trim();
+    return (penColorCache[k] = strong || cs.getPropertyValue("--" + P + "-color-" + k).trim() || "#2B2A27");
   }
+  var padRoMap = new WeakMap();
+  var padRO = "ResizeObserver" in window ? new ResizeObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      var pad = padRoMap.get(entries[i].target);
+      if (pad) fitPad(pad);
+    }
+  }) : null;
+
   function padState(pad) {
     if (pad.__sketchDoodle) return pad.__sketchDoodle;
     var canvas = pad.querySelector("." + P + "-doodle__canvas");
-    var st = pad.__sketchDoodle = { canvas: canvas, ctx: canvas.getContext("2d"), w: 0, h: 0, pen: "ink", last: null };
+    var st = pad.__sketchDoodle = { canvas: canvas, ctx: canvas.getContext("2d"), w: 0, h: 0, pen: "ink", last: null, rect: null };
     var picked = pad.querySelector('[data-' + P + '-pen][aria-pressed="true"]');
     if (picked) st.pen = picked.getAttribute("data-" + P + "-pen");
     fitPad(pad);
-    if ("ResizeObserver" in window) new ResizeObserver(function () { fitPad(pad); }).observe(canvas);
+    if (padRO) { padRoMap.set(canvas, pad); padRO.observe(canvas); }
     return st;
   }
-  /* Match the canvas to its box at device resolution; whatever was drawn is carried over. */
   function fitPad(pad) {
     var st = pad.__sketchDoodle, c = st.canvas, r = c.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
     var w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
@@ -135,7 +207,6 @@
     st.ctx.lineJoin = "round";
     if (keep) st.ctx.drawImage(keep, 0, 0, keep.width / dpr, keep.height / dpr);
     st.w = r.width; st.h = r.height;
-    // A starter doodle (data-sample) is drawn the first time the pad has a real size.
     if (pad.hasAttribute("data-sample") && !st.sampled) { st.sampled = true; drawSample(pad); }
   }
   function stroke(st, from, to, width) {
@@ -147,8 +218,8 @@
     ctx.quadraticCurveTo(from.x, from.y, to.mx, to.my);
     ctx.stroke();
   }
-  function point(e, canvas) {
-    var r = canvas.getBoundingClientRect();
+  function point(e, st) {
+    var r = st.rect || st.canvas.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top, t: e.timeStamp || Date.now() };
   }
   function drawSample(pad) {
@@ -162,7 +233,6 @@
         ctx.beginPath(); ctx.moveTo(points[k - 1][0], points[k - 1][1]); ctx.lineTo(points[k][0], points[k][1]); ctx.stroke();
       }
     }
-    // a doodled daisy: five looped petals round a small centre, a stem and one leaf, then a wavy line
     var cx = w * 0.3, cy = h * 0.4, R = Math.min(w, h) * 0.2;
     for (n = 0; n < 5; n++) {
       var base = (n / 5) * Math.PI * 2 - Math.PI / 2, pts = [];
@@ -188,14 +258,17 @@
     line(wave, "brand", 2.4);
     pad.classList.add("has-ink");
   }
+  var drawingSt = null;
   document.addEventListener("pointerdown", function (e) {
     var paper = e.target.closest && e.target.closest("." + P + "-doodle__paper");
     if (!paper || (e.pointerType === "mouse" && e.button !== 0)) return;
     var pad = paper.closest("." + P + "-doodle"), st = padState(pad);
-    var p = point(e, st.canvas);
+    st.rect = st.canvas.getBoundingClientRect();
+    var p = point(e, st);
     p.mx = p.x; p.my = p.y;
     st.last = p;
     st.width = 2.6;
+    drawingSt = st;
     if (paper.setPointerCapture) paper.setPointerCapture(e.pointerId);
     st.ctx.fillStyle = penColor(st.pen);
     st.ctx.beginPath(); st.ctx.arc(p.x, p.y, 1.3, 0, Math.PI * 2); st.ctx.fill();
@@ -203,21 +276,23 @@
     e.preventDefault();
   });
   document.addEventListener("pointermove", function (e) {
-    var paper = e.target.closest && e.target.closest("." + P + "-doodle__paper");
-    var pad = paper && paper.closest("." + P + "-doodle"), st = pad && pad.__sketchDoodle;
+    var st = drawingSt;
     if (!st || !st.last) return;
-    var p = point(e, st.canvas), q = st.last;
-    var dist = Math.hypot(p.x - q.x, p.y - q.y), dt = Math.max(1, p.t - q.t);
-    if (dist < 1.2) return;
-    // faster strokes come out thinner, like a felt-tip skimming the paper; eased so it never jumps
-    var target = Math.max(1.1, Math.min(3.2, 3.4 - (dist / dt) * 1.1));
-    st.width = st.width * 0.7 + target * 0.3;
-    p.mx = (q.x + p.x) / 2; p.my = (q.y + p.y) / 2;
-    stroke(st, q, p, st.width);
-    st.last = p;
+    var evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+    if (!evs.length) evs = [e];
+    for (var i = 0; i < evs.length; i++) {
+      var p = point(evs[i], st), q = st.last;
+      var dist = Math.hypot(p.x - q.x, p.y - q.y), dt = Math.max(1, p.t - q.t);
+      if (dist < 1.2) continue;
+      var target = Math.max(1.1, Math.min(3.2, 3.4 - (dist / dt) * 1.1));
+      st.width = st.width * 0.7 + target * 0.3;
+      p.mx = (q.x + p.x) / 2; p.my = (q.y + p.y) / 2;
+      stroke(st, q, p, st.width);
+      st.last = p;
+    }
   });
-  function lift(e) {
-    document.querySelectorAll("." + P + "-doodle").forEach(function (pad) { if (pad.__sketchDoodle) pad.__sketchDoodle.last = null; });
+  function lift() {
+    if (drawingSt) { drawingSt.last = null; drawingSt.rect = null; drawingSt = null; }
   }
   document.addEventListener("pointerup", lift);
   document.addEventListener("pointercancel", lift);
@@ -262,7 +337,7 @@
       out.textContent = String(Math.min(max, Math.max(min, (parseFloat(out.textContent) || 0) + dir)));
     }
     var opener = e.target.closest("[data-" + P + "-open]");
-    if (opener) { var dlg = document.querySelector(opener.getAttribute("data-" + P + "-open")); if (dlg && dlg.showModal) dlg.showModal(); }
+    if (opener) { var dlg = document.querySelector(opener.getAttribute("data-" + P + "-open")); if (dlg && dlg.showModal && !dlg.open) dlg.showModal(); }
     var closer = e.target.closest("[data-" + P + "-close]");
     if (closer) { var d = closer.closest("dialog"); if (d) d.close(); }
   });
@@ -272,6 +347,7 @@
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
     if (!(e.key in keys)) return;
     var all = items(tab.closest(TAB_LIST)).filter(function (t) { return !t.disabled; });
+    if (!all.length) return;
     var i = all.indexOf(tab), stepK = keys[e.key];
     var next = stepK === "first" ? all[0] : stepK === "last" ? all[all.length - 1] : all[(i + stepK + all.length) % all.length];
     next.focus();
@@ -281,14 +357,21 @@
 
   function boot() {
     document.querySelectorAll("." + P + "-slider").forEach(syncSlider);
-    // pads with a starter doodle draw it as soon as layout gives them a size (see fitPad)
     document.querySelectorAll("." + P + "-doodle[data-sample]").forEach(function (pad) { padState(pad); });
     initIndicators(document);
-    var queued = false;
-    new MutationObserver(function () {
-      if (queued) return;
+    var added = [], queued = false;
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var nodes = muts[i].addedNodes;
+        for (var j = 0; j < nodes.length; j++) if (nodes[j].nodeType === 1) added.push(nodes[j]);
+      }
+      if (!added.length || queued) return;
       queued = true;
-      requestAnimationFrame(function () { queued = false; initIndicators(document); });
+      requestAnimationFrame(function () {
+        queued = false;
+        var batch = added.splice(0, added.length);
+        for (var k = 0; k < batch.length; k++) if (batch[k].isConnected) initIndicators(batch[k]);
+      });
     }).observe(document.body, { childList: true, subtree: true });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

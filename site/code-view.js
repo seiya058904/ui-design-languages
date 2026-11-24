@@ -115,9 +115,14 @@
       }
     });
 
+    var copyTimer = 0;
     copy.addEventListener("click", function () {
       var text = code.textContent;
-      function done() { copy.textContent = "Copied"; setTimeout(function () { copy.textContent = "Copy"; }, 1400); }
+      function done() {
+        copy.textContent = "Copied";
+        clearTimeout(copyTimer);
+        copyTimer = setTimeout(function () { copy.textContent = "Copy"; }, 1400);
+      }
       if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, done);
       else {
         var range = document.createRange();

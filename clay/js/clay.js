@@ -11,8 +11,7 @@
    - dialogs: [data-clay-open="#id"] opens a <dialog>, [data-clay-close] closes it
    - theme: [data-theme-set="light|dark|auto"] picks a theme, [data-theme-toggle] flips
      light/dark; the choice is remembered (localStorage "clay-theme") and fires a
-     "clay:themechange" event. Add the one-line restore script from the README to <head>
-     to avoid a flash of the wrong theme.
+     "clay:themechange" event.
 
    Frameworks (React, Vue, Svelte…): just render aria-selected="true" / aria-current="page"
    (or .is-active) on the active item. Groups added later are picked up automatically and
@@ -20,7 +19,7 @@
    window.ClayUI.initIndicators(root), window.ClayUI.refresh(group), window.ClayUI.selectTab(tab),
    window.ClayUI.syncSlider(input), window.ClayUI.syncStepper(group). */
 (function () {
-  /* Every group that gets a sliding indicator */
+  var P = "clay";
   var GROUPS = [
     { list: ".clay-segmented", item: ".clay-segmented__item", active: '[aria-selected="true"], .is-active' },
     { list: ".clay-tabs", item: ".clay-tabs__item", active: '[aria-selected="true"], .is-active' },
@@ -29,6 +28,13 @@
   var LIST = GROUPS.map(function (g) { return g.list; }).join(", ");
   var TAB_LIST = ".clay-segmented, .clay-tabs";
   var TAB_ITEM = ".clay-segmented__item, .clay-tabs__item";
+
+  function isWallHost() { return document.documentElement.hasAttribute("data-wall-host"); }
+  function ownsControl(el) {
+    if (!isWallHost()) return true;
+    var st = el.closest && el.closest("[data-pack-stage]");
+    return !!st && st.getAttribute("data-pack-stage") === P;
+  }
 
   function groupOf(list) {
     for (var i = 0; i < GROUPS.length; i++) if (list.matches(GROUPS[i].list)) return GROUPS[i];
@@ -43,59 +49,104 @@
     });
   }
 
-  /* Layout changes (resize, fonts) move an indicator instantly; only a new selection glides. */
-  function snapTo(list) {
-    var on = list.classList.contains("is-animated");
-    if (on) list.classList.remove("is-animated");
-    refresh(list);
-    if (on) { void list.offsetWidth; list.classList.add("is-animated"); }
+  function measure(list) {
+    var g = groupOf(list);
+    if (!g) return null;
+    var active = items(list).filter(function (el) { return el.matches(g.active); })[0];
+    if (!active) return { o: "0" };
+    return { o: "1", x: active.offsetLeft + "px", y: active.offsetTop + "px", w: active.offsetWidth + "px", h: active.offsetHeight + "px" };
   }
-  /* Turn indicator transitions on only once the page has settled (loaded, fonts ready), after a final
-     measurement — so an indicator never glides in from a stale first-frame position on load. */
-  function settle(fn) {
+  function applyMetrics(list, m) {
+    if (!m) return;
+    var prev = list.__clayMetrics;
+    if (prev && prev.o === m.o && prev.x === m.x && prev.y === m.y && prev.w === m.w && prev.h === m.h) return;
+    list.__clayMetrics = m;
+    var s = list.style;
+    s.setProperty("--clay-indicator-o", m.o);
+    if (m.o === "0") return;
+    s.setProperty("--clay-indicator-x", m.x);
+    s.setProperty("--clay-indicator-y", m.y);
+    s.setProperty("--clay-indicator-w", m.w);
+    s.setProperty("--clay-indicator-h", m.h);
+  }
+  function refresh(list) { applyMetrics(list, measure(list)); }
+
+  /* Batched, zero-reflow snap on layout/resize changes (1 shared ResizeObserver for the whole pack). */
+  var snapSet = new Set(), snapRaf = 0;
+  function flushSnap() {
+    snapRaf = 0;
+    var lists = Array.from(snapSet);
+    snapSet.clear();
+    var restore = [];
+    for (var i = 0; i < lists.length; i++) {
+      if (lists[i].classList.contains("is-animated")) { lists[i].classList.remove("is-animated"); restore.push(lists[i]); }
+    }
+    var ms = lists.map(measure);
+    for (var j = 0; j < lists.length; j++) applyMetrics(lists[j], ms[j]);
+    if (restore.length) {
+      requestAnimationFrame(function () {
+        for (var k = 0; k < restore.length; k++) restore[k].classList.add("is-animated");
+      });
+    }
+  }
+  function queueSnap(list) {
+    snapSet.add(list);
+    if (!snapRaf) snapRaf = requestAnimationFrame(flushSnap);
+  }
+
+  var roMap = new WeakMap();
+  var sharedRO = "ResizeObserver" in window ? new ResizeObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      var list = roMap.get(entries[i].target);
+      if (list) queueSnap(list);
+    }
+  }) : null;
+
+  var settledPromise = null;
+  function whenSettled() {
+    if (settledPromise) return settledPromise;
     var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     var loaded = document.readyState === "complete" ? Promise.resolve() : new Promise(function (r) { window.addEventListener("load", r, { once: true }); });
-    Promise.all([fonts, loaded]).then(function () { requestAnimationFrame(function () { requestAnimationFrame(fn); }); });
-  }
-  /* Move the indicator to the active item (positions come from layout, so any size works). */
-  function refresh(list) {
-    var g = groupOf(list);
-    if (!g) return;
-    var active = items(list).filter(function (el) { return el.matches(g.active); })[0];
-    var s = list.style;
-    if (!active) {
-      s.setProperty("--clay-indicator-o", "0");
-      return;
-    }
-    s.setProperty("--clay-indicator-o", "1");
-    s.setProperty("--clay-indicator-x", active.offsetLeft + "px");
-    s.setProperty("--clay-indicator-y", active.offsetTop + "px");
-    s.setProperty("--clay-indicator-w", active.offsetWidth + "px");
-    s.setProperty("--clay-indicator-h", active.offsetHeight + "px");
+    settledPromise = Promise.all([fonts, loaded]);
+    return settledPromise;
   }
 
   function initIndicators(root) {
     var scope = root || document;
     var lists = scope.matches && scope.matches(LIST) ? [scope] : scope.querySelectorAll(LIST);
+    var fresh = [];
     Array.prototype.forEach.call(lists, function (list) {
       if (list.__clayIndicator) return;
       list.__clayIndicator = true;
       list.classList.add("has-indicator");
-      refresh(list);
-      // Turn transitions on only after the first placement, so nothing slides in on page load.
-      requestAnimationFrame(function () {
-        settle(function () { refresh(list); list.classList.add("is-animated"); });
-      });
-      if ("ResizeObserver" in window) {
-        var ro = new ResizeObserver(function () { snapTo(list); });
-        ro.observe(list);
-        items(list).forEach(function (el) { ro.observe(el); }); // web fonts, label changes
+      fresh.push(list);
+    });
+    if (!fresh.length) return;
+    // Batched read then write for all newly initialized lists
+    var ms = fresh.map(measure);
+    for (var i = 0; i < fresh.length; i++) {
+      var list = fresh[i];
+      applyMetrics(list, ms[i]);
+      if (sharedRO) {
+        roMap.set(list, list);
+        sharedRO.observe(list);
+        items(list).forEach(function (el) { roMap.set(el, list); sharedRO.observe(el); });
       }
-      new MutationObserver(function () { refresh(list); }).observe(list, {
-        subtree: true,
-        childList: true,
-        attributes: true,
-        attributeFilter: ["aria-selected", "aria-current", "class"]
+      (function (l) {
+        new MutationObserver(function () { if (!l.__clayUpdating) refresh(l); }).observe(l, {
+          subtree: true, childList: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"]
+        });
+      })(list);
+    }
+    whenSettled().then(function () {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          var ms2 = fresh.map(measure);
+          for (var j = 0; j < fresh.length; j++) {
+            applyMetrics(fresh[j], ms2[j]);
+            fresh[j].classList.add("is-animated");
+          }
+        });
       });
     });
   }
@@ -103,6 +154,7 @@
   function selectTab(tab) {
     var list = tab.closest(TAB_LIST);
     if (!list) return;
+    list.__clayUpdating = true;
     items(list).forEach(function (t) {
       var on = t === tab;
       t.setAttribute("aria-selected", on ? "true" : "false");
@@ -115,6 +167,7 @@
       }
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__clayUpdating = false; });
   }
 
   /* ---------- Theme ---------- */
@@ -129,6 +182,7 @@
   function syncThemeControls() {
     var t = currentTheme();
     document.querySelectorAll("[data-theme-set]").forEach(function (b) {
+      if (!ownsControl(b)) return;
       var on = b.getAttribute("data-theme-set") === t;
       if (b.matches(TAB_ITEM)) {
         b.setAttribute("aria-selected", on ? "true" : "false");
@@ -139,6 +193,7 @@
       }
     });
     document.querySelectorAll("[data-theme-toggle]").forEach(function (b) {
+      if (!ownsControl(b)) return;
       b.setAttribute("aria-pressed", isDark() ? "true" : "false");
     });
   }
@@ -146,7 +201,9 @@
     var el = document.documentElement;
     if (t === "light") el.removeAttribute("data-theme");
     else el.setAttribute("data-theme", t);
-    try { localStorage.setItem(THEME_KEY, t); } catch (err) { /* private mode: theme just isn't remembered */ }
+    if (!isWallHost()) {
+      try { localStorage.setItem(THEME_KEY, t); } catch (err) { /* private mode */ }
+    }
     syncThemeControls();
     document.dispatchEvent(new CustomEvent("clay:themechange", { detail: { theme: t, dark: isDark() } }));
   }
@@ -162,10 +219,12 @@
   function syncSlider(input) {
     var min = parseFloat(input.min || 0), max = parseFloat(input.max || 100), v = parseFloat(input.value);
     var pct = max > min ? ((v - min) / (max - min)) * 100 : 0;
-    input.style.setProperty("--clay-value", String(Math.round(pct * 100) / 100));
+    var val = String(Math.round(pct * 100) / 100);
+    if (input.style.getPropertyValue("--clay-value") !== val) input.style.setProperty("--clay-value", val);
     if (input.id) {
       document.querySelectorAll('output[for~="' + input.id + '"]').forEach(function (o) {
-        o.textContent = input.value + (o.getAttribute("data-suffix") || "");
+        var txt = input.value + (o.getAttribute("data-suffix") || "");
+        if (o.textContent !== txt) o.textContent = txt;
       });
     }
   }
@@ -194,15 +253,12 @@
     if (String(v) === input.value) return false;
     input.value = String(v);
     input.classList.remove("is-bump");
-    void input.offsetWidth; // restart the pop
-    input.classList.add("is-bump");
+    requestAnimationFrame(function () { input.classList.add("is-bump"); });
     input.dispatchEvent(new Event("input", { bubbles: true }));
     input.dispatchEvent(new Event("change", { bubbles: true }));
     syncStepper(group);
     return true;
   }
-  /* Press and hold a key to keep stepping (after a short pause, then faster). The click that ends a
-     hold doesn't step again; keyboard clicks (detail 0) always step once. */
   var hold = null;
   function stopTimer() { if (hold && hold.t) { clearTimeout(hold.t); hold.t = 0; } }
   document.addEventListener("pointerdown", function (e) {
@@ -226,19 +282,20 @@
   function selectNavItem(link) {
     var list = link.closest(".clay-nav");
     if (!list) return;
+    list.__clayUpdating = true;
     items(list).forEach(function (el) {
       if (el === link) el.setAttribute("aria-current", "page");
       else el.removeAttribute("aria-current");
       el.classList.toggle("is-active", el === link);
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__clayUpdating = false; });
   }
 
   document.addEventListener("click", function (e) {
     var tab = e.target.closest(TAB_ITEM);
     if (tab && !tab.disabled) selectTab(tab);
 
-    // Plain left clicks only, so "open in new tab" doesn't move the highlight.
     var navItem = e.target.closest(".clay-nav__item");
     if (navItem && e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) {
       selectNavItem(navItem);
@@ -246,9 +303,9 @@
     }
 
     var themeSet = e.target.closest("[data-theme-set]");
-    if (themeSet) setTheme(themeSet.getAttribute("data-theme-set"));
+    if (themeSet && ownsControl(themeSet)) setTheme(themeSet.getAttribute("data-theme-set"));
     var themeToggle = e.target.closest("[data-theme-toggle]");
-    if (themeToggle) setTheme(isDark() ? "light" : "dark");
+    if (themeToggle && ownsControl(themeToggle)) setTheme(isDark() ? "light" : "dark");
 
     var chip = e.target.closest(".clay-chip[aria-pressed], .clay-widget[aria-pressed]");
     if (chip && !chip.disabled) {
@@ -266,7 +323,7 @@
     var opener = e.target.closest("[data-clay-open]");
     if (opener) {
       var dlg = document.querySelector(opener.getAttribute("data-clay-open"));
-      if (dlg && dlg.showModal) dlg.showModal();
+      if (dlg && dlg.showModal && !dlg.open) dlg.showModal();
     }
 
     var closer = e.target.closest("[data-clay-close]");
@@ -293,6 +350,7 @@
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
     if (!(e.key in keys)) return;
     var all = items(tab.closest(TAB_LIST)).filter(function (t) { return !t.disabled; });
+    if (!all.length) return;
     var i = all.indexOf(tab);
     var step = keys[e.key];
     var next = step === "first" ? all[0] : step === "last" ? all[all.length - 1] : all[(i + step + all.length) % all.length];
@@ -306,12 +364,23 @@
     initIndicators(document);
     document.querySelectorAll(".clay-slider").forEach(syncSlider);
     document.querySelectorAll(".clay-stepper").forEach(syncStepper);
-    // Pick up groups rendered later (SPAs, dialogs, templates). Batched to one pass per frame.
-    var queued = false;
-    new MutationObserver(function () {
-      if (queued) return;
+    // Only scan newly added subtrees when Element nodes are actually inserted.
+    var added = [], queued = false;
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var nodes = muts[i].addedNodes;
+        for (var j = 0; j < nodes.length; j++) if (nodes[j].nodeType === 1) added.push(nodes[j]);
+      }
+      if (!added.length || queued) return;
       queued = true;
-      requestAnimationFrame(function () { queued = false; initIndicators(document); });
+      requestAnimationFrame(function () {
+        queued = false;
+        var batch = added.splice(0, added.length);
+        for (var k = 0; k < batch.length; k++) {
+          var n = batch[k];
+          if (n.isConnected) initIndicators(n);
+        }
+      });
     }).observe(document.body, { childList: true, subtree: true });
   }
 
@@ -327,7 +396,6 @@
     isDark: isDark,
     syncSlider: syncSlider,
     syncStepper: syncStepper,
-    // Aliases kept for the earlier tabs-only API
     initTabs: initIndicators,
     refreshTabs: refresh
   };

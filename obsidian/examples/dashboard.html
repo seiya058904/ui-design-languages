@@ -43,9 +43,9 @@
     .chart__x span:last-child:not(:first-child) { transform: translateX(-100%); }
     .chart__plot svg { width: 100%; height: 100%; }
     .chart__x { grid-column: 2; position: relative; height: 16px; margin-top: 8px; font-size: var(--obsidian-font-size-label); color: var(--obsidian-color-text-subtle); font-family: var(--obsidian-font-family-mono); }
-    .scrub { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--obsidian-color-border-medium); opacity: 0; pointer-events: none; transition: opacity var(--obsidian-motion-duration-fast); }
-    .scrub i { position: absolute; left: -5px; width: 11px; height: 11px; border-radius: 50%; background: var(--obsidian-color-ink); box-shadow: 0 0 0 3px var(--obsidian-color-primary), 0 0 14px var(--obsidian-color-primary-glow); }
-    .scrub .obsidian-tip { position: absolute; left: 12px; top: -6px; white-space: nowrap; }
+    .scrub { position: absolute; top: 0; bottom: 0; left: 0; width: 1px; background: var(--obsidian-color-border-medium); opacity: 0; pointer-events: none; transition: opacity var(--obsidian-motion-duration-fast); }
+    .scrub i { position: absolute; top: 0; left: -5px; width: 11px; height: 11px; border-radius: 50%; background: var(--obsidian-color-ink); box-shadow: 0 0 0 3px var(--obsidian-color-primary), 0 0 14px var(--obsidian-color-primary-glow); }
+    .scrub .obsidian-tip { position: absolute; left: 0; top: 0; white-space: nowrap; }
     .chart__plot:hover .scrub, .chart__plot.is-scrubbing .scrub { opacity: 1; }
     .views > [hidden] { display: none; }
     .proj-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
@@ -318,16 +318,22 @@
     var link = $('[data-view="' + view + '"]');
     if (link && link.getAttribute("aria-current") !== "page") ObsidianUI.selectNavItem(link);
     if (view === "overview") drawChart(period, true);
-    if (view === "projects") $$("[data-filter] .obsidian-tabs__item").forEach(function () { ObsidianUI.refresh($("[data-filter]")); });
+    if (view === "projects") ObsidianUI.refresh($("[data-filter]"));
   }
   $$("[data-view]").forEach(function (a) { a.addEventListener("click", function () { show(a.getAttribute("data-view")); }); });
   $$("[data-go]").forEach(function (a) { a.addEventListener("click", function (e) { e.preventDefault(); show(a.getAttribute("data-go")); }); });
 
   /* ---------- KPI count-up ---------- */
   $$("[data-count]").forEach(function (el) {
-    var to = +el.getAttribute("data-count"), t0 = performance.now(), dur = 1200;
+    var to = +el.getAttribute("data-count"), t0 = performance.now(), dur = 1200, last = "";
     if (reduce) return;
-    (function tick(t) { var k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 4); el.textContent = Math.round(to * e).toLocaleString("en-US"); if (k < 1) requestAnimationFrame(tick); })(t0);
+    (function tick(t) {
+      if (!el.isConnected) return;
+      var k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 4);
+      var txt = Math.round(to * e).toLocaleString("en-US");
+      if (txt !== last) { el.textContent = txt; last = txt; }
+      if (k < 1) requestAnimationFrame(tick);
+    })(t0);
   });
 
   /* ---------- chart ---------- */
@@ -371,20 +377,37 @@
   drawChart(30);
   $("[data-period]").addEventListener("obsidian:select", function (e) { drawChart(+e.detail.value, true); });
 
-  var plot = $("[data-plot]"), scrub = $("[data-scrub]"), tip = $("[data-scrub-tip]");
-  function scrubTo(clientX) {
-    var r = plot.getBoundingClientRect(), k = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
-    var i = Math.round(k * (period - 1)), x = i / (period - 1) * r.width, y = (1 - data[i] / MAX) * r.height;
-    scrub.style.transform = "translateX(" + x + "px)";
-    scrub.querySelector("i").style.top = (y - 5) + "px";
-    tip.style.top = (y - 34) + "px";
-    tip.textContent = label(i) + " · " + Math.round(data[i]).toLocaleString("en-US") + " sessions";
-    tip.style.left = x > r.width - 170 ? "auto" : "12px";
-    tip.style.right = x > r.width - 170 ? "12px" : "auto";
+  var plot = $("[data-plot]"), scrub = $("[data-scrub]"), scrubDot = scrub.querySelector("i"), tip = $("[data-scrub-tip]");
+  var plotRect = null, scrubRaf = 0, scrubX = 0, lastIdx = -1;
+  function clearPlotRect() { plotRect = null; }
+  window.addEventListener("resize", clearPlotRect, { passive: true });
+  window.addEventListener("scroll", clearPlotRect, { passive: true });
+  function scrubPaint() {
+    scrubRaf = 0;
+    var r = plotRect || (plotRect = plot.getBoundingClientRect());
+    if (!r.width || !r.height) return;
+    var k = Math.max(0, Math.min(1, (scrubX - r.left) / r.width));
+    var i = Math.round(k * (period - 1));
+    var x = i / (period - 1) * r.width, y = (1 - data[i] / MAX) * r.height;
+    scrub.style.transform = "translate3d(" + x.toFixed(1) + "px,0,0)";
+    scrubDot.style.transform = "translate3d(0," + (y - 5).toFixed(1) + "px,0)";
+    if (i !== lastIdx) {
+      lastIdx = i;
+      tip.textContent = label(i) + " · " + Math.round(data[i]).toLocaleString("en-US") + " sessions";
+    }
+    var flip = x > r.width - 170;
+    tip.style.transform = flip
+      ? "translate3d(calc(-100% - 12px)," + (y - 34).toFixed(1) + "px,0)"
+      : "translate3d(12px," + (y - 34).toFixed(1) + "px,0)";
   }
+  function scrubTo(clientX) {
+    scrubX = clientX;
+    if (!scrubRaf) scrubRaf = requestAnimationFrame(scrubPaint);
+  }
+  plot.addEventListener("pointerenter", function () { plotRect = plot.getBoundingClientRect(); lastIdx = -1; });
   plot.addEventListener("pointermove", function (e) { scrubTo(e.clientX); });
-  plot.addEventListener("pointerdown", function (e) { plot.classList.add("is-scrubbing"); scrubTo(e.clientX); });
-  plot.addEventListener("pointerleave", function () { plot.classList.remove("is-scrubbing"); });
+  plot.addEventListener("pointerdown", function (e) { plotRect = plot.getBoundingClientRect(); plot.classList.add("is-scrubbing"); scrubTo(e.clientX); });
+  plot.addEventListener("pointerleave", function () { plot.classList.remove("is-scrubbing"); plotRect = null; });
 
   /* ---------- projects ---------- */
   var PROJECTS = [
@@ -396,10 +419,11 @@
     { n: "Launch retro 2025", s: "archived", p: 100, ss: 3765, u: "Dec 12" }
   ];
   var BADGE = { live: ["success", "Live"], pending: ["warning", "Pending"], error: ["danger", "Error"], archived: ["", "Archived"] };
+  function escHtml(s) { return String(s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
   function rows(filter) {
     $("[data-rows]").innerHTML = PROJECTS.filter(function (p) { return filter === "all" || (filter === "shared" ? p.sh : filter === "live" ? p.s !== "archived" : p.s === filter); }).map(function (p) {
-      var b = BADGE[p.s];
-      return "<tr><td><b>" + p.n + '</b></td><td><span class="obsidian-badge' + (b[0] ? " obsidian-badge--" + b[0] : "") + '">' + b[1] + '</span></td><td><div class="bar-cell"><div class="obsidian-progress" role="progressbar" aria-label="' + p.n + ' progress" aria-valuenow="' + p.p + '" aria-valuemin="0" aria-valuemax="100" style="--obsidian-value:' + p.p + '"></div><span class="obsidian-caption">' + p.p + '%</span></div></td><td class="is-num">' + p.ss.toLocaleString("en-US") + "</td><td>" + p.u + "</td></tr>";
+      var b = BADGE[p.s], name = escHtml(p.n);
+      return "<tr><td><b>" + name + '</b></td><td><span class="obsidian-badge' + (b[0] ? " obsidian-badge--" + b[0] : "") + '">' + b[1] + '</span></td><td><div class="bar-cell"><div class="obsidian-progress" role="progressbar" aria-label="' + name + ' progress" aria-valuenow="' + p.p + '" aria-valuemin="0" aria-valuemax="100" style="--obsidian-value:' + p.p + '"></div><span class="obsidian-caption">' + p.p + '%</span></div></td><td class="is-num">' + p.ss.toLocaleString("en-US") + "</td><td>" + escHtml(p.u) + "</td></tr>";
     }).join("");
   }
   rows("all");

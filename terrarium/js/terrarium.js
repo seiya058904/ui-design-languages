@@ -1,17 +1,8 @@
 /* Terrarium / Earth — optional behaviour (no dependencies). The CSS works without it; this adds:
    - sliding indicators for .terrarium-segmented (terracotta pill), .terrarium-tabs (moss marker) and
      .terrarium-nav (moss pill), swaying into place on the organic spring
-   - tablists: click + ←/→/Home/End move aria-selected and show the matching aria-controls panel;
-     nav and pagination: plain clicks move aria-current="page"
-   - chips: .terrarium-chip[aria-pressed] toggles; inside [data-terrarium-single] only one stays on
-   - sliders: keep --terrarium-value on input.terrarium-slider and its <output> in sync
-   - dialogs: [data-terrarium-open="#id"] / [data-terrarium-close]; toasts and alerts: [data-terrarium-dismiss]
-   - theme: [data-theme-set="light|dark|auto"] or a [data-theme-toggle] button / checkbox switches
-     <html data-theme>, remembered in localStorage "terrarium-theme"; fires "terrarium:themechange"
-   - gardens (.terrarium-garden): ticking a habit grows the ring and the sprout together (the share of
-     ticked habits becomes --terrarium-value on both) and rewrites the note
-   - watering calendars (.terrarium-calendar): days toggle aria-pressed; the streak recounts
-   - mood dials (.terrarium-mood): click or ←/→ pick a mood (role=radio, roving focus), turning the knob
+   - tablists, nav & pagination, chips, sliders, dialogs, toasts, theme
+   - gardens (.terrarium-garden), watering calendars (.terrarium-calendar), mood dials (.terrarium-mood)
    Hooks: window.TerrariumUI.setValue(el, n), .toast(title, text), .refresh(list), .setTheme(name), .selectTab(tab), .setMood(el, i) */
 (function () {
   var P = "terrarium";
@@ -24,56 +15,120 @@
   var TAB_ITEM = "." + P + "-segmented__item, ." + P + "-tabs__item";
   var TABLISTS = "." + P + "-segmented, ." + P + "-tabs";
 
+  function isWallHost() { return document.documentElement.hasAttribute("data-wall-host"); }
+  function ownsControl(el) {
+    if (!isWallHost()) return true;
+    var st = el.closest && el.closest("[data-pack-stage]");
+    return !!st && st.getAttribute("data-pack-stage") === P;
+  }
+
   function groupOf(list) { for (var i = 0; i < LISTS.length; i++) if (list.matches(LISTS[i].list)) return LISTS[i]; return null; }
   function itemsOf(list) {
     var g = groupOf(list);
     return g ? Array.prototype.filter.call(list.querySelectorAll(g.item), function (el) { return el.closest(LIST_SEL) === list; }) : [];
   }
-  /* Layout changes (resize, fonts) move an indicator instantly; only a new selection glides. */
-  function snapTo(list) {
-    var on = list.classList.contains("is-animated");
-    if (on) list.classList.remove("is-animated");
-    refresh(list);
-    if (on) { void list.offsetWidth; list.classList.add("is-animated"); }
+
+  function measure(list) {
+    var g = groupOf(list);
+    if (!g) return null;
+    var on = itemsOf(list).filter(function (el) { return g.tab ? el.matches('[aria-selected="true"], .is-active') : el.matches('[aria-current="page"], [aria-current="true"], .is-active'); })[0];
+    if (!on || on.offsetParent === null) return { o: "0" };
+    return { o: "1", x: on.offsetLeft + "px", y: on.offsetTop + "px", w: on.offsetWidth + "px", h: on.offsetHeight + "px" };
   }
-  /* Turn indicator transitions on only once the page has settled (loaded, fonts ready), after a final
-     measurement — so an indicator never glides in from a stale first-frame position on load. */
-  function settle(fn) {
+  function applyMetrics(list, m) {
+    if (!m) return;
+    var prev = list.__terrariumMetrics;
+    if (prev && prev.o === m.o && prev.x === m.x && prev.y === m.y && prev.w === m.w && prev.h === m.h) return;
+    list.__terrariumMetrics = m;
+    var s = list.style;
+    s.setProperty("--" + P + "-indicator-o", m.o);
+    if (m.o === "0") return;
+    s.setProperty("--" + P + "-indicator-x", m.x);
+    s.setProperty("--" + P + "-indicator-y", m.y);
+    s.setProperty("--" + P + "-indicator-w", m.w);
+    s.setProperty("--" + P + "-indicator-h", m.h);
+  }
+  function refresh(list) { applyMetrics(list, measure(list)); }
+
+  var snapSet = new Set(), snapRaf = 0;
+  function flushSnap() {
+    snapRaf = 0;
+    var lists = Array.from(snapSet);
+    snapSet.clear();
+    var restore = [];
+    for (var i = 0; i < lists.length; i++) {
+      if (lists[i].classList.contains("is-animated")) { lists[i].classList.remove("is-animated"); restore.push(lists[i]); }
+    }
+    var ms = lists.map(measure);
+    for (var j = 0; j < lists.length; j++) applyMetrics(lists[j], ms[j]);
+    if (restore.length) {
+      requestAnimationFrame(function () {
+        for (var k = 0; k < restore.length; k++) restore[k].classList.add("is-animated");
+      });
+    }
+  }
+  function queueSnap(list) {
+    snapSet.add(list);
+    if (!snapRaf) snapRaf = requestAnimationFrame(flushSnap);
+  }
+  var roMap = new WeakMap();
+  var sharedRO = "ResizeObserver" in window ? new ResizeObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      var list = roMap.get(entries[i].target);
+      if (list) queueSnap(list);
+    }
+  }) : null;
+
+  var settledPromise = null;
+  function whenSettled() {
+    if (settledPromise) return settledPromise;
     var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     var loaded = document.readyState === "complete" ? Promise.resolve() : new Promise(function (r) { window.addEventListener("load", r, { once: true }); });
-    Promise.all([fonts, loaded]).then(function () { requestAnimationFrame(function () { requestAnimationFrame(fn); }); });
+    settledPromise = Promise.all([fonts, loaded]);
+    return settledPromise;
   }
-  function refresh(list) {
-    var g = groupOf(list), s = list.style;
-    var on = itemsOf(list).filter(function (el) { return g.tab ? el.matches('[aria-selected="true"], .is-active') : el.matches('[aria-current="page"], [aria-current="true"], .is-active'); })[0];
-    if (!on || on.offsetParent === null) { s.setProperty("--" + P + "-indicator-o", "0"); return; }
-    s.setProperty("--" + P + "-indicator-o", "1");
-    s.setProperty("--" + P + "-indicator-x", on.offsetLeft + "px");
-    s.setProperty("--" + P + "-indicator-y", on.offsetTop + "px");
-    s.setProperty("--" + P + "-indicator-w", on.offsetWidth + "px");
-    s.setProperty("--" + P + "-indicator-h", on.offsetHeight + "px");
-  }
+
   function initIndicators(root) {
     var scope = root || document;
     var lists = scope.matches && scope.matches(LIST_SEL) ? [scope] : scope.querySelectorAll(LIST_SEL);
+    var fresh = [];
     Array.prototype.forEach.call(lists, function (list) {
       if (list.__terrariumIndicator) return;
       list.__terrariumIndicator = true;
       list.classList.add("has-indicator");
-      refresh(list);
-      settle(function () { refresh(list); list.classList.add("is-animated"); });
-      if ("ResizeObserver" in window) {
-        var ro = new ResizeObserver(function () { snapTo(list); });
-        ro.observe(list);
-        itemsOf(list).forEach(function (el) { ro.observe(el); });
+      fresh.push(list);
+    });
+    if (!fresh.length) return;
+    var ms = fresh.map(measure);
+    for (var i = 0; i < fresh.length; i++) {
+      var list = fresh[i];
+      applyMetrics(list, ms[i]);
+      if (sharedRO) {
+        roMap.set(list, list);
+        sharedRO.observe(list);
+        itemsOf(list).forEach(function (el) { roMap.set(el, list); sharedRO.observe(el); });
       }
-      new MutationObserver(function () { refresh(list); }).observe(list, { subtree: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"] });
+      (function (l) {
+        new MutationObserver(function () { if (!l.__terrariumUpdating) refresh(l); }).observe(l, { subtree: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"] });
+      })(list);
+    }
+    whenSettled().then(function () {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          var ms2 = fresh.map(measure);
+          for (var j = 0; j < fresh.length; j++) {
+            applyMetrics(fresh[j], ms2[j]);
+            fresh[j].classList.add("is-animated");
+          }
+        });
+      });
     });
   }
 
   function selectTab(tab) {
     var list = tab.closest(TABLISTS);
     if (!list) return;
+    list.__terrariumUpdating = true;
     itemsOf(list).forEach(function (t) {
       var on = t === tab;
       t.setAttribute("aria-selected", on ? "true" : "false");
@@ -83,22 +138,26 @@
       if (panel) panel.hidden = !on;
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__terrariumUpdating = false; });
   }
   function selectNavItem(link) {
     var list = link.closest("." + P + "-nav");
     if (!list) return;
+    list.__terrariumUpdating = true;
     itemsOf(list).forEach(function (el) {
       if (el === link) el.setAttribute("aria-current", "page"); else el.removeAttribute("aria-current");
       el.classList.toggle("is-active", el === link);
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__terrariumUpdating = false; });
   }
 
   /* ---------- values: rings, bars, sliders ---------- */
   function setValue(el, n) {
     var v = Math.max(0, Math.min(100, Math.round(n)));
-    el.style.setProperty("--" + P + "-value", String(v));
-    if (el.getAttribute("role") === "progressbar") el.setAttribute("aria-valuenow", String(v));
+    var vs = String(v);
+    if (el.style.getPropertyValue("--" + P + "-value") !== vs) el.style.setProperty("--" + P + "-value", vs);
+    if (el.getAttribute("role") === "progressbar") el.setAttribute("aria-valuenow", vs);
     if (el.getAttribute("role") === "img" && el.hasAttribute("data-label")) el.setAttribute("aria-label", v + "% " + el.getAttribute("data-label"));
   }
   function syncSlider(input) {
@@ -145,18 +204,22 @@
   function syncThemeControls() {
     var t = currentTheme();
     document.querySelectorAll("[data-theme-set]").forEach(function (b) {
+      if (!ownsControl(b)) return;
       var on = b.getAttribute("data-theme-set") === t;
       if (b.matches(TAB_ITEM)) { b.setAttribute("aria-selected", on ? "true" : "false"); b.classList.toggle("is-active", on); b.tabIndex = on ? 0 : -1; }
       else b.setAttribute("aria-pressed", on ? "true" : "false");
     });
     document.querySelectorAll("[data-theme-toggle]").forEach(function (b) {
+      if (!ownsControl(b)) return;
       if (b.type === "checkbox") b.checked = isDark(); else b.setAttribute("aria-pressed", isDark() ? "true" : "false");
     });
   }
   function setTheme(t) {
     if (!t || t === "light") document.documentElement.removeAttribute("data-theme");
     else document.documentElement.setAttribute("data-theme", t);
-    try { localStorage.setItem(THEME_KEY, t || "light"); } catch (err) { /* not remembered */ }
+    if (!isWallHost()) {
+      try { localStorage.setItem(THEME_KEY, t || "light"); } catch (err) { /* not remembered */ }
+    }
     syncThemeControls();
     document.dispatchEvent(new CustomEvent(P + ":themechange", { detail: { theme: t || "light", dark: isDark() } }));
   }
@@ -164,6 +227,7 @@
 
   /* ---------- events ---------- */
   document.addEventListener("input", function (e) { if (e.target.matches && e.target.matches("." + P + "-slider")) syncSlider(e.target); });
+
   /* ---------- garden ---------- */
   var WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six"];
   function tendGarden(g) {
@@ -183,7 +247,7 @@
     var days = Array.prototype.slice.call(cal.querySelectorAll("." + P + "-calendar__day"));
     var today = days.filter(function (d) { return d.getAttribute("aria-current") === "date"; })[0];
     var i = today ? days.indexOf(today) : days.length - 1, n = 0;
-    if (today && today.getAttribute("aria-pressed") !== "true") i--; // today not watered yet: the streak runs to yesterday
+    if (today && today.getAttribute("aria-pressed") !== "true") i--;
     for (; i >= 0 && days[i].getAttribute("aria-pressed") === "true"; i--) n++;
     var out = cal.querySelector("." + P + "-calendar__streak b");
     if (out) out.textContent = String(n);
@@ -202,7 +266,7 @@
   }
 
   document.addEventListener("change", function (e) {
-    if (e.target.matches && e.target.matches("input[data-theme-toggle]")) setTheme(e.target.checked ? "dark" : "light");
+    if (e.target.matches && e.target.matches("input[data-theme-toggle]") && ownsControl(e.target)) setTheme(e.target.checked ? "dark" : "light");
     var g = e.target.closest && e.target.closest("." + P + "-garden");
     if (g) tendGarden(g);
   });
@@ -235,9 +299,9 @@
       else chip.setAttribute("aria-pressed", chip.getAttribute("aria-pressed") === "true" ? "false" : "true");
     }
     var themeSet = t.closest("[data-theme-set]");
-    if (themeSet) setTheme(themeSet.getAttribute("data-theme-set"));
+    if (themeSet && ownsControl(themeSet)) setTheme(themeSet.getAttribute("data-theme-set"));
     var themeToggle = t.closest("button[data-theme-toggle]");
-    if (themeToggle) setTheme(isDark() ? "light" : "dark");
+    if (themeToggle && ownsControl(themeToggle)) setTheme(isDark() ? "light" : "dark");
     var opener = t.closest("[data-" + P + "-open]");
     if (opener) { var dlg = document.querySelector(opener.getAttribute("data-" + P + "-open")); if (dlg && dlg.showModal && !dlg.open) dlg.showModal(); }
     var closer = t.closest("[data-" + P + "-close]");
@@ -261,11 +325,12 @@
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
     if (!(e.key in keys)) return;
     var all = itemsOf(tab.closest(TABLISTS)).filter(function (x) { return !x.disabled; });
+    if (!all.length) return;
     var i = all.indexOf(tab), s = keys[e.key];
-    var to = s === "first" ? all[0] : s === "last" ? all[all.length - 1] : all[(i + s + all.length) % all.length];
-    to.focus();
-    selectTab(to);
-    if (to.hasAttribute("data-theme-set")) setTheme(to.getAttribute("data-theme-set"));
+    var to2 = s === "first" ? all[0] : s === "last" ? all[all.length - 1] : all[(i + s + all.length) % all.length];
+    to2.focus();
+    selectTab(to2);
+    if (to2.hasAttribute("data-theme-set") && ownsControl(to2)) setTheme(to2.getAttribute("data-theme-set"));
     e.preventDefault();
   });
 
@@ -273,13 +338,24 @@
     syncThemeControls();
     initSliders(document);
     initIndicators(document);
-    var q = false;
-    new MutationObserver(function () {
-      if (q) return;
+    var added = [], q = false;
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var nodes = muts[i].addedNodes;
+        for (var j = 0; j < nodes.length; j++) if (nodes[j].nodeType === 1) added.push(nodes[j]);
+      }
+      if (!added.length || q) return;
       q = true;
-      requestAnimationFrame(function () { q = false; initIndicators(document); initSliders(document); });
+      requestAnimationFrame(function () {
+        q = false;
+        var batch = added.splice(0, added.length);
+        for (var k = 0; k < batch.length; k++) {
+          var n = batch[k];
+          if (n.isConnected) { initIndicators(n); initSliders(n); }
+        }
+      });
     }).observe(document.body, { childList: true, subtree: true });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { document.querySelectorAll(LIST_SEL).forEach(refresh); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { document.querySelectorAll(LIST_SEL).forEach(queueSnap); });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();

@@ -2,17 +2,18 @@
    It reads the registry (packs.json) and each pack's own catalog (<pack>/components.html), and renders
    real demos straight into this page: every pack's CSS is linked in <head> (all classes are prefixed,
    so they coexist; a pack the page doesn't link yet is linked automatically), their icon sprites are
-   merged with per-pack ids, and their JS is loaded once. No screenshots, no iframes. Not part of any pack.
+   merged with per-pack ids, and their JS is loaded once in parallel. No screenshots, no iframes.
+   Not part of any pack.
 
    UIWall.ready()            → Promise: reads packs.json, then every pack's catalog and icon sprite
    UIWall.demo(pack, c, d)   → { component, demo } data or null
-   UIWall.stage(pack, c, d)  → a live element (.wstage) for that demo
-   UIWall.packs / .byId      → the registry from packs.json (after ready): name, dot, label font,
-                               stage styles, backdrop, script hooks, wall picks, fonts, dark support, tone
-   UIWall.scripts()          → loads each pack's own JS once (after ready) */
+   UIWall.stage(pack, c, d)  → a live element (.wstage) for that demo (with collision-free ids/names)
+   UIWall.packs / .byId      → the registry from packs.json (after ready)
+   UIWall.scripts()          → loads each pack's own JS once in parallel (after ready) */
 (function () {
-  /* The registry is packs.json: every pack with a "site" block shows up here (see siteFields there).
-     PACKS and byId are filled in place by ready(), so references taken early stay valid. */
+  /* Mark multi-pack host pages so individual packs don't fight over global <html> theme/accent state. */
+  document.documentElement.setAttribute("data-wall-host", "");
+
   var PACKS = [];
   var byId = {};
   function register(list) {
@@ -31,8 +32,6 @@
       linkAssets(pk);
     });
   }
-  /* A pack registered after this page was written still renders: link its stylesheet before the site
-     chrome (so site.css keeps the last word) and any font family the page doesn't load yet. */
   function linkAssets(pk) {
     var head = document.head, chrome = head.querySelector('link[href$="site/site.css"]');
     var css = pk.entry && pk.entry.css;
@@ -49,7 +48,7 @@
       head.insertBefore(l, chrome);
     });
   }
-  var data = {};   // pack -> { items: { [component]: { title, summary, demos: [{ id, label, html, classes }] } }, order: [] }
+  var data = {};
 
   function dedent(html) {
     var lines = html.replace(/\t/g, "  ").split("\n");
@@ -69,11 +68,13 @@
       sprite.setAttribute("style", "position:absolute;width:0;height:0;overflow:hidden");
       document.body.insertBefore(sprite, document.body.firstChild);
     }
+    var frag = document.createDocumentFragment();
     doc.querySelectorAll("symbol[id]").forEach(function (s) {
       var copy = document.importNode(s, true);
       copy.id = packId + "--" + s.id;
-      sprite.appendChild(copy);
+      frag.appendChild(copy);
     });
+    sprite.appendChild(frag);
   }
   /* Icons are referenced as #i-name inside each pack; give them pack-scoped ids on this shared page. */
   function scopeIcons(html, packId) { return html.replace(/(<use\b[^>]*\bhref=")#/g, "$1#" + packId + "--"); }
@@ -109,10 +110,12 @@
     });
   }
 
+  /* Parallel download + deterministic insertion-order execution (async = false). */
   function loadScript(src) {
     return new Promise(function (resolve) {
       var s = document.createElement("script");
       s.src = src;
+      s.async = false;
       s.onload = s.onerror = function () { resolve(); };
       document.body.appendChild(s);
     });
@@ -139,9 +142,9 @@
   function scripts() {
     if (scriptsPromise) return scriptsPromise;
     scriptsPromise = ready().then(function () {
-      return PACKS.reduce(function (chain, p) {
-        return p.js ? chain.then(function () { return loadScript(p.id + "/js/" + p.id + ".js"); }) : chain;
-      }, Promise.resolve());
+      return Promise.all(PACKS.filter(function (p) { return p.js; }).map(function (p) {
+        return loadScript(p.id + "/js/" + p.id + ".js");
+      }));
     }).then(resetAppearance);
     return scriptsPromise;
   }
@@ -158,14 +161,59 @@
     var dm = demoId ? comp.demos.filter(function (d) { return d.id === demoId; })[0] : comp.demos[0];
     return dm ? { component: comp, demo: dm } : null;
   }
+
+  /* Scope ids, id-references and radio group names inside rendered live stages so multiple packs and
+     cloned marquee stages never collide (raw source in data[packId] stays untouched for UISource). */
+  var stageSeq = 0;
+  function scopeStageDom(el, packId) {
+    var prefix = "ws" + (++stageSeq) + "-";
+    var idMap = {};
+    el.querySelectorAll("[id]").forEach(function (n) {
+      var old = n.id;
+      if (!old) return;
+      idMap[old] = prefix + old;
+      n.id = idMap[old];
+    });
+    var keys = Object.keys(idMap);
+    if (keys.length) {
+      ["for", "aria-controls", "aria-labelledby", "aria-describedby"].forEach(function (attr) {
+        el.querySelectorAll("[" + attr + "]").forEach(function (n) {
+          var val = n.getAttribute(attr);
+          if (!val) return;
+          var next = val.split(/\s+/).map(function (tok) { return idMap[tok] || tok; }).join(" ");
+          if (next !== val) n.setAttribute(attr, next);
+        });
+      });
+      var openAttr = "data-" + packId + "-open";
+      el.querySelectorAll("[" + openAttr + "]").forEach(function (n) {
+        var sel = n.getAttribute(openAttr);
+        if (sel && sel.charAt(0) === "#" && idMap[sel.slice(1)]) n.setAttribute(openAttr, "#" + idMap[sel.slice(1)]);
+      });
+      // Also rewrite url(#id) in inline SVG gradients/masks if any
+      el.querySelectorAll("[fill^='url(#'], [stroke^='url(#'], [clip-path^='url(#']").forEach(function (n) {
+        ["fill", "stroke", "clip-path"].forEach(function (a) {
+          var v = n.getAttribute(a);
+          if (!v) return;
+          var m = /^url\(#([^)]+)\)$/.exec(v);
+          if (m && idMap[m[1]]) n.setAttribute(a, "url(#" + idMap[m[1]] + ")");
+        });
+      });
+    }
+    el.querySelectorAll('input[type="radio"][name]').forEach(function (n) {
+      n.name = prefix + n.name;
+    });
+  }
+
   function stage(packId, compId, demoId) {
     var hit = demo(packId, compId, demoId);
     if (!hit) return null;
     var p = byId[packId];
     var el = document.createElement("div");
     el.className = ["wstage"].concat(hit.demo.classes).join(" ");
+    el.setAttribute("data-pack-stage", packId);
     el.setAttribute("style", p.root + (p.canvas ? ";" + p.canvas : ""));
     el.innerHTML = scopeIcons(hit.demo.html, packId);
+    scopeStageDom(el, packId);
     el.addEventListener("click", inertLinks);
     return el;
   }

@@ -1,20 +1,11 @@
 /* Braun / Field — optional behaviour (no dependencies). The CSS works without it; this adds:
    - rotary dial: drag around (or up/down), wheel, ←/→/↑/↓ (1), PgUp/PgDn (10), Home/End — one detent
      per step. Keeps --braun-value on .braun-dial, aria-valuenow/-valuetext, and every <output for="id">.
-     Fires a bubbling "input" event on the knob (and "change" when a drag or key press ends).
    - fader: keeps --braun-value on input.braun-fader and its <output for> text in sync
-   - keys and tabs (role=tablist): click + ←/→/Home/End move aria-selected and show the matching
-     aria-controls panel; tabs and the sidebar nav get a travelling needle
-   - nav: plain clicks move aria-current="page"; pagination keys too
-   - chips: .braun-chip[aria-pressed] latches on click
-   - dialogs: [data-braun-open="#id"] / [data-braun-close]; alerts and toasts: [data-braun-dismiss]
-   - theme: [data-theme-set="light|dark|auto"] or a [data-theme-toggle] button / checkbox switches
-     <html data-theme>, remembered in localStorage "braun-theme"; fires "braun:themechange"
-   - dial detents: every step dips the crown once (.is-tick) — and ticks a touch device's haptics
-   - live meters (.braun-meter--live with an .braun-meter__peak): peak hold, then one segment per step;
-     a [data-braun-signal] key (aria-pressed) feeds a test signal into the live meters of its module
-   - oscilloscope (.braun-scope): [data-braun-scope="run"] sweeps the trace live (with afterglow),
-     [data-braun-wave="sine|square|saw"] keys switch the waveform; readings follow
+   - keys and tabs (role=tablist): click + ←/→/Home/End move aria-selected and show aria-controls panel
+   - nav & pagination: plain clicks move aria-current="page"
+   - chips, dialogs, alerts/toasts, theme
+   - live meters (.braun-meter--live) and oscilloscope (.braun-scope) with automatic offscreen / hidden pause
    Hooks: window.BraunUI.setDial(el, value), .setMeter(el, value), .runSignal(key, on), .runScope(scope, on),
    .setWave(scope, type), .refresh(list), .setTheme(name) */
 (function () {
@@ -24,54 +15,116 @@
   var TAB_ITEM = "." + P + "-keys__item, ." + P + "-tabs__item";
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  function isWallHost() { return document.documentElement.hasAttribute("data-wall-host"); }
+  function ownsControl(el) {
+    if (!isWallHost()) return true;
+    var st = el.closest && el.closest("[data-pack-stage]");
+    return !!st && st.getAttribute("data-pack-stage") === P;
+  }
+
   /* ---------- travelling needles (tabs: horizontal, nav: vertical) ---------- */
   function itemsOf(list) {
     var sel = list.matches("." + P + "-nav") ? "." + P + "-nav__item" : TAB_ITEM;
     return Array.prototype.filter.call(list.querySelectorAll(sel), function (el) { return el.closest(INDICATED + ", " + TABLISTS) === list; });
   }
-  /* Layout changes (resize, fonts) move an indicator instantly; only a new selection glides. */
-  function snapTo(list) {
-    var on = list.classList.contains("is-animated");
-    if (on) list.classList.remove("is-animated");
-    refresh(list);
-    if (on) { void list.offsetWidth; list.classList.add("is-animated"); }
-  }
-  /* Turn indicator transitions on only once the page has settled (loaded, fonts ready), after a final
-     measurement — so an indicator never glides in from a stale first-frame position on load. */
-  function settle(fn) {
-    var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-    var loaded = document.readyState === "complete" ? Promise.resolve() : new Promise(function (r) { window.addEventListener("load", r, { once: true }); });
-    Promise.all([fonts, loaded]).then(function () { requestAnimationFrame(function () { requestAnimationFrame(fn); }); });
-  }
-  function refresh(list) {
+  function measure(list) {
     var nav = list.matches("." + P + "-nav");
     var on = itemsOf(list).filter(function (el) { return nav ? el.matches('[aria-current="page"], [aria-current="true"], .is-active') : el.matches('[aria-selected="true"], .is-active'); })[0];
+    if (!on) return { nav: nav, o: "0" };
+    return nav
+      ? { nav: true, o: "1", y: on.offsetTop + 4 + "px", h: Math.max(0, on.offsetHeight - 8) + "px" }
+      : { nav: false, o: "1", x: on.offsetLeft + "px", w: on.offsetWidth + "px" };
+  }
+  function applyMetrics(list, m) {
+    if (!m) return;
+    var prev = list.__braunMetrics;
+    if (prev && prev.o === m.o && prev.x === m.x && prev.y === m.y && prev.w === m.w && prev.h === m.h) return;
+    list.__braunMetrics = m;
     var s = list.style;
-    if (!on) { s.setProperty("--" + P + "-indicator-o", "0"); return; }
-    s.setProperty("--" + P + "-indicator-o", "1");
-    if (nav) {
-      s.setProperty("--" + P + "-indicator-y", on.offsetTop + 4 + "px");
-      s.setProperty("--" + P + "-indicator-h", Math.max(0, on.offsetHeight - 8) + "px");
+    s.setProperty("--" + P + "-indicator-o", m.o);
+    if (m.o === "0") return;
+    if (m.nav) {
+      s.setProperty("--" + P + "-indicator-y", m.y);
+      s.setProperty("--" + P + "-indicator-h", m.h);
     } else {
-      s.setProperty("--" + P + "-indicator-x", on.offsetLeft + "px");
-      s.setProperty("--" + P + "-indicator-w", on.offsetWidth + "px");
+      s.setProperty("--" + P + "-indicator-x", m.x);
+      s.setProperty("--" + P + "-indicator-w", m.w);
     }
   }
+  function refresh(list) { applyMetrics(list, measure(list)); }
+
+  var snapSet = new Set(), snapRaf = 0;
+  function flushSnap() {
+    snapRaf = 0;
+    var lists = Array.from(snapSet);
+    snapSet.clear();
+    var restore = [];
+    for (var i = 0; i < lists.length; i++) {
+      if (lists[i].classList.contains("is-animated")) { lists[i].classList.remove("is-animated"); restore.push(lists[i]); }
+    }
+    var ms = lists.map(measure);
+    for (var j = 0; j < lists.length; j++) applyMetrics(lists[j], ms[j]);
+    if (restore.length) {
+      requestAnimationFrame(function () {
+        for (var k = 0; k < restore.length; k++) restore[k].classList.add("is-animated");
+      });
+    }
+  }
+  function queueSnap(list) {
+    snapSet.add(list);
+    if (!snapRaf) snapRaf = requestAnimationFrame(flushSnap);
+  }
+  var roMap = new WeakMap();
+  var sharedRO = "ResizeObserver" in window ? new ResizeObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      var list = roMap.get(entries[i].target);
+      if (list) queueSnap(list);
+    }
+  }) : null;
+
+  var settledPromise = null;
+  function whenSettled() {
+    if (settledPromise) return settledPromise;
+    var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    var loaded = document.readyState === "complete" ? Promise.resolve() : new Promise(function (r) { window.addEventListener("load", r, { once: true }); });
+    settledPromise = Promise.all([fonts, loaded]);
+    return settledPromise;
+  }
+
   function initIndicators(root) {
     var scope = root || document;
     var lists = scope.matches && scope.matches(INDICATED) ? [scope] : scope.querySelectorAll(INDICATED);
+    var fresh = [];
     Array.prototype.forEach.call(lists, function (list) {
       if (list.__braunIndicator) return;
       list.__braunIndicator = true;
       list.classList.add("has-indicator");
-      refresh(list);
-      settle(function () { refresh(list); list.classList.add("is-animated"); });
-      if ("ResizeObserver" in window) {
-        var ro = new ResizeObserver(function () { snapTo(list); });
-        ro.observe(list);
-        itemsOf(list).forEach(function (el) { ro.observe(el); });
+      fresh.push(list);
+    });
+    if (!fresh.length) return;
+    var ms = fresh.map(measure);
+    for (var i = 0; i < fresh.length; i++) {
+      var list = fresh[i];
+      applyMetrics(list, ms[i]);
+      if (sharedRO) {
+        roMap.set(list, list);
+        sharedRO.observe(list);
+        itemsOf(list).forEach(function (el) { roMap.set(el, list); sharedRO.observe(el); });
       }
-      new MutationObserver(function () { refresh(list); }).observe(list, { subtree: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"] });
+      (function (l) {
+        new MutationObserver(function () { if (!l.__braunUpdating) refresh(l); }).observe(l, { subtree: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"] });
+      })(list);
+    }
+    whenSettled().then(function () {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          var ms2 = fresh.map(measure);
+          for (var j = 0; j < fresh.length; j++) {
+            applyMetrics(fresh[j], ms2[j]);
+            fresh[j].classList.add("is-animated");
+          }
+        });
+      });
     });
   }
 
@@ -79,6 +132,7 @@
   function selectTab(tab) {
     var list = tab.closest(TABLISTS);
     if (!list) return;
+    list.__braunUpdating = true;
     itemsOf(list).forEach(function (t) {
       var on = t === tab;
       t.setAttribute("aria-selected", on ? "true" : "false");
@@ -88,15 +142,18 @@
       if (panel) panel.hidden = !on;
     });
     if (list.matches(INDICATED)) refresh(list);
+    Promise.resolve().then(function () { list.__braunUpdating = false; });
   }
   function selectNavItem(link) {
     var list = link.closest("." + P + "-nav");
     if (!list) return;
+    list.__braunUpdating = true;
     itemsOf(list).forEach(function (el) {
       if (el === link) el.setAttribute("aria-current", "page"); else el.removeAttribute("aria-current");
       el.classList.toggle("is-active", el === link);
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__braunUpdating = false; });
   }
 
   /* ---------- rotary dial ---------- */
@@ -106,7 +163,6 @@
   }
   function num(v, d) { var n = parseFloat(v); return isNaN(n) ? d : n; }
   function decimals(n) { return (String(n).split(".")[1] || "").length; }
-  /* An <output>: data-scale multiplies the value (tenths → units), data-decimals fixes the places, data-suffix appends. */
   function format(v, o, dec) {
     var sc = o.getAttribute("data-scale"), d = o.getAttribute("data-decimals");
     if (sc) { v = v * parseFloat(sc); dec = Math.max(dec, decimals(sc)); }
@@ -126,10 +182,10 @@
     k.setAttribute("aria-valuenow", String(v));
     var unit = k.getAttribute("data-unit") || "";
     k.setAttribute("aria-valuetext", v.toFixed(dec) + (unit ? " " + unit : ""));
-    p.dial.style.setProperty("--" + P + "-value", String((visual - min) / (max - min) * 100));
+    var pct = String((visual - min) / (max - min) * 100);
+    if (p.dial.style.getPropertyValue("--" + P + "-value") !== pct) p.dial.style.setProperty("--" + P + "-value", pct);
     if (k.id) document.querySelectorAll('output[for~="' + k.id + '"]').forEach(function (o) { var txt = format(v, o, dec); if (o.textContent !== txt) o.textContent = txt; });
     if (v !== prev && !(opts && opts.silent)) {
-      // Discrete steps (keys / wheel) get the crisp crown dip; continuous drags stay silky without layout thrash.
       if (!(opts && opts.smooth)) {
         p.dial.classList.remove("is-tick");
         requestAnimationFrame(function () { p.dial.classList.add("is-tick"); });
@@ -169,14 +225,13 @@
       setDial(k, drag.start + (drag.y0 - e.clientY) * (max - min) / 180, { smooth: true });
     } else {
       var dx = e.clientX - drag.cx, dy = e.clientY - drag.cy;
-      if (Math.hypot(dx, dy) < 8) return; // avoid 180° flip right over the pivot
+      if (Math.hypot(dx, dy) < 8) return;
       var cur = Math.atan2(dx, -dy) * 180 / Math.PI;
       var da = cur - drag.prevAngle;
       if (da > 180) da -= 360; else if (da < -180) da += 360;
       drag.prevAngle = cur;
       drag.accAngle += da;
       var raw = Math.max(min, Math.min(max, drag.start + (drag.accAngle / 270) * (max - min)));
-      // Pin accumulator at the physical stops so reversing direction responds immediately with zero slack.
       drag.accAngle = ((raw - drag.start) / (max - min)) * 270;
       setDial(k, raw, { smooth: true });
     }
@@ -187,13 +242,12 @@
     k.classList.remove("is-dragging");
     dial.classList.remove("is-dragging");
     drag = null;
-    // Settle smoothly onto the exact stepped detent once released.
     setDial(k, getDial(k), { silent: true });
     commit(k);
   }
   document.addEventListener("pointerup", endDrag);
   document.addEventListener("pointercancel", endDrag);
-  /* Wheel turns a knob smoothly: notched mice step immediately, fine trackpads accumulate cleanly. */
+
   function onWheel(e) {
     var k = e.currentTarget;
     e.preventDefault();
@@ -239,33 +293,34 @@
     });
   }
 
-  /* ---------- meters ---------- */
+  /* ---------- meters (cached CSS timing tokens, zero per-tick getComputedStyle) ---------- */
+  var msCache = {};
   function cssMs(name, fallback) {
+    if (name in msCache) return msCache[name];
     var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--" + P + "-motion-" + name));
-    return isNaN(v) ? fallback : v;
+    return (msCache[name] = isNaN(v) ? fallback : v);
   }
-  /* Peak hold: a meter with an .braun-meter__peak segment keeps its highest reading for
-     --braun-motion-duration-peak-hold, then lets it fall one segment per --braun-motion-duration-decay-step. */
   function setMeter(el, value) {
     var v = Math.max(0, Math.min(100, value));
-    el.style.setProperty("--" + P + "-value", String(v));
-    el.setAttribute("aria-valuenow", String(Math.round(v)));
-    var peak = el.querySelector("." + P + "-meter__peak");
+    var vs = String(Math.round(v * 10) / 10);
+    if (el.style.getPropertyValue("--" + P + "-value") !== vs) el.style.setProperty("--" + P + "-value", vs);
+    var rounded = String(Math.round(v));
+    if (el.getAttribute("aria-valuenow") !== rounded) el.setAttribute("aria-valuenow", rounded);
+    var peak = el.__braunPeakEl !== undefined ? el.__braunPeakEl : (el.__braunPeakEl = el.querySelector("." + P + "-meter__peak"));
     if (!peak) return;
-    var st = el.__braunPeak || (el.__braunPeak = { p: 0, until: 0, t: 0 });
+    var st = el.__braunPeak || (el.__braunPeak = { p: 0, cur: 0, until: 0, t: 0 });
+    st.cur = v;
     var now = performance.now();
     if (v >= st.p) { st.p = v; st.until = now + cssMs("duration-peak-hold", 900); }
     el.style.setProperty("--" + P + "-peak", String(st.p));
     if (!st.t) st.t = setTimeout(function fall() {
       st.t = 0;
-      var cur = parseFloat(el.style.getPropertyValue("--" + P + "-value")) || 0;
-      if (performance.now() >= st.until) st.p = Math.max(cur, st.p - 100 / 24);
+      if (!el.isConnected) return;
+      if (performance.now() >= st.until) st.p = Math.max(st.cur, st.p - 100 / 24);
       el.style.setProperty("--" + P + "-peak", String(st.p));
-      if (st.p > cur + 0.01) st.t = setTimeout(fall, cssMs("duration-decay-step", 60));
+      if (st.p > st.cur + 0.01) st.t = setTimeout(fall, cssMs("duration-decay-step", 60));
     }, cssMs("duration-decay-step", 60));
   }
-  /* Test signal: a [data-braun-signal] key (aria-pressed) feeds a lively level into the live meters of its
-     module (.braun-card, else the closest section / the page) until it is released. */
   var signals = [];
   function signalTargets(key) {
     var scope = key.closest("." + P + "-card, section, [data-" + P + "-module]") || document;
@@ -278,6 +333,8 @@
     if (!on) { meters.forEach(function (m) { setMeter(m, 0); }); return; }
     var lv = meters.map(function () { return 40; }), t = 0;
     var id = setInterval(function () {
+      if (!key.isConnected) { clearInterval(id); return; }
+      if (document.hidden) return;
       t++;
       meters.forEach(function (m, i) {
         var beat = t % 9 === 0 ? 26 : 0, drift = Math.sin((t + i * 7) / 6) * 14;
@@ -288,7 +345,7 @@
     signals.push({ key: key, id: id });
   }
 
-  /* ---------- oscilloscope ---------- */
+  /* ---------- oscilloscope (cached SVG nodes + auto-pause when hidden or offscreen) ---------- */
   function wave(type, x) {
     var p = x - Math.floor(x);
     if (type === "square") return p < 0.5 ? 0.9 : -0.9;
@@ -304,41 +361,71 @@
     return d;
   }
   function scopeOf(el) { var sc = el.closest("[data-" + P + "-module]") || el.closest("." + P + "-card") || el.parentElement; return sc && sc.querySelector("." + P + "-scope"); }
+  var scopeIO = "IntersectionObserver" in window ? new IntersectionObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      var sc = entries[i].target, st = sc.__braunScope;
+      if (!st) continue;
+      st.visible = entries[i].isIntersecting;
+      if (st.visible && st.run && !st.raf && !document.hidden) pumpScope(sc);
+    }
+  }, { rootMargin: "100px 0px" }) : null;
+
   function scopeState(scope) {
-    return scope.__braunScope || (scope.__braunScope = { type: "sine", run: false, phase: 0, raf: 0, last: 0, prev: "" });
+    if (scope.__braunScope) return scope.__braunScope;
+    var st = scope.__braunScope = {
+      type: "sine", run: false, visible: true, phase: 0, raf: 0, last: 0, prev: "",
+      line: scope.querySelector("." + P + "-scope__line"),
+      ghost: scope.querySelector("." + P + "-scope__ghost"),
+      vpp: scope.querySelector("[data-" + P + "-reading=vpp]"),
+      freq: scope.querySelector("[data-" + P + "-reading=freq]")
+    };
+    if (scopeIO) scopeIO.observe(scope);
+    return st;
   }
   function drawScope(scope, d) {
-    var st = scopeState(scope), line = scope.querySelector("." + P + "-scope__line"), ghost = scope.querySelector("." + P + "-scope__ghost");
-    if (ghost) ghost.setAttribute("d", st.prev || d);
-    if (line) line.setAttribute("d", d);
+    var st = scopeState(scope);
+    if (st.ghost) st.ghost.setAttribute("d", st.prev || d);
+    if (st.line) st.line.setAttribute("d", d);
     st.prev = d;
   }
   function setWave(scope, type) {
     var st = scopeState(scope);
     st.type = type;
-    var freq = scope.querySelector("[data-" + P + "-reading=freq]");
-    if (freq) freq.textContent = type === "square" ? "220" : type === "saw" ? "330" : "440";
+    if (st.freq) st.freq.textContent = type === "square" ? "220" : type === "saw" ? "330" : "440";
     if (!st.run) { st.prev = ""; drawScope(scope, tracePath(type, 0, 2.5, 1, 0)); }
+  }
+  var activeScopes = new Set();
+  function pumpScope(scope) {
+    var st = scopeState(scope);
+    cancelAnimationFrame(st.raf);
+    st.raf = 0;
+    if (!st.run || !st.visible || document.hidden || !scope.isConnected) return;
+    var still = reduce;
+    function frame(t) {
+      st.raf = 0;
+      if (!st.run || !st.visible || document.hidden || !scope.isConnected) return;
+      if (!st.last || t - st.last >= (still ? 500 : 33)) {
+        st.phase = (st.phase + (still ? 0.25 : 0.035)) % 1;
+        var amp = 0.92 + Math.sin(t / 900) * 0.06;
+        drawScope(scope, tracePath(st.type, st.phase, 2.5, amp, 0.8));
+        if (st.vpp) st.vpp.textContent = (3.2 * amp / 0.92).toFixed(2);
+        st.last = t;
+      }
+      st.raf = requestAnimationFrame(frame);
+    }
+    st.raf = requestAnimationFrame(frame);
   }
   function runScope(scope, on) {
     var st = scopeState(scope);
     st.run = on;
     cancelAnimationFrame(st.raf);
-    if (!on) return;
-    var still = reduce;
-    (function frame(t) {
-      if (!st.run) return;
-      if (!st.last || t - st.last >= (still ? 500 : 33)) {
-        st.phase = (st.phase + (still ? 0.25 : 0.035)) % 1;
-        var amp = 0.92 + Math.sin(t / 900) * 0.06;
-        drawScope(scope, tracePath(st.type, st.phase, 2.5, amp, 0.8));
-        var vpp = scope.querySelector("[data-" + P + "-reading=vpp]");
-        if (vpp) vpp.textContent = (3.2 * amp / 0.92).toFixed(2);
-        st.last = t;
-      }
-      st.raf = requestAnimationFrame(frame);
-    })(performance.now());
+    st.raf = 0;
+    if (on) { activeScopes.add(scope); pumpScope(scope); }
+    else activeScopes.delete(scope);
   }
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) activeScopes.forEach(pumpScope);
+  });
 
   /* ---------- theme ---------- */
   var THEME_KEY = P + "-theme";
@@ -348,18 +435,22 @@
   function syncThemeControls() {
     var t = currentTheme();
     document.querySelectorAll("[data-theme-set]").forEach(function (b) {
+      if (!ownsControl(b)) return;
       var on = b.getAttribute("data-theme-set") === t;
       if (b.matches(TAB_ITEM)) { b.setAttribute("aria-selected", on ? "true" : "false"); b.classList.toggle("is-active", on); b.tabIndex = on ? 0 : -1; }
       else b.setAttribute("aria-pressed", on ? "true" : "false");
     });
     document.querySelectorAll("[data-theme-toggle]").forEach(function (b) {
+      if (!ownsControl(b)) return;
       if (b.type === "checkbox") b.checked = isDark(); else b.setAttribute("aria-pressed", isDark() ? "true" : "false");
     });
   }
   function setTheme(t) {
     if (!t || t === "light") document.documentElement.removeAttribute("data-theme");
     else document.documentElement.setAttribute("data-theme", t);
-    try { localStorage.setItem(THEME_KEY, t || "light"); } catch (err) { /* not remembered */ }
+    if (!isWallHost()) {
+      try { localStorage.setItem(THEME_KEY, t || "light"); } catch (err) { /* not remembered */ }
+    }
     syncThemeControls();
     document.dispatchEvent(new CustomEvent(P + ":themechange", { detail: { theme: t || "light", dark: isDark() } }));
   }
@@ -368,7 +459,7 @@
   /* ---------- events ---------- */
   document.addEventListener("input", function (e) { if (e.target.matches && e.target.matches("." + P + "-fader")) syncFader(e.target); });
   document.addEventListener("change", function (e) {
-    if (e.target.matches && e.target.matches("input[data-theme-toggle]")) setTheme(e.target.checked ? "dark" : "light");
+    if (e.target.matches && e.target.matches("input[data-theme-toggle]") && ownsControl(e.target)) setTheme(e.target.checked ? "dark" : "light");
   });
   document.addEventListener("click", function (e) {
     var t = e.target;
@@ -397,9 +488,9 @@
     var chip = t.closest("." + P + "-chip[aria-pressed]");
     if (chip && !chip.disabled) chip.setAttribute("aria-pressed", chip.getAttribute("aria-pressed") === "true" ? "false" : "true");
     var themeSet = t.closest("[data-theme-set]");
-    if (themeSet) setTheme(themeSet.getAttribute("data-theme-set"));
+    if (themeSet && ownsControl(themeSet)) setTheme(themeSet.getAttribute("data-theme-set"));
     var themeToggle = t.closest("button[data-theme-toggle]");
-    if (themeToggle) setTheme(isDark() ? "light" : "dark");
+    if (themeToggle && ownsControl(themeToggle)) setTheme(isDark() ? "light" : "dark");
     var opener = t.closest("[data-" + P + "-open]");
     if (opener) { var dlg = document.querySelector(opener.getAttribute("data-" + P + "-open")); if (dlg && dlg.showModal && !dlg.open) dlg.showModal(); }
     var closer = t.closest("[data-" + P + "-close]");
@@ -426,11 +517,12 @@
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
     if (!(e.key in keys)) return;
     var all = itemsOf(tab.closest(TABLISTS)).filter(function (x) { return !x.disabled; });
+    if (!all.length) return;
     var i = all.indexOf(tab), s = keys[e.key];
     var to = s === "first" ? all[0] : s === "last" ? all[all.length - 1] : all[(i + s + all.length) % all.length];
     to.focus();
     selectTab(to);
-    if (to.hasAttribute("data-theme-set")) setTheme(to.getAttribute("data-theme-set"));
+    if (to.hasAttribute("data-theme-set") && ownsControl(to)) setTheme(to.getAttribute("data-theme-set"));
     if (to.hasAttribute("data-" + P + "-wave")) { var sw = scopeOf(to); if (sw) setWave(sw, to.getAttribute("data-" + P + "-wave")); }
     e.preventDefault();
   });
@@ -440,11 +532,22 @@
     initDials(document);
     initFaders(document);
     initIndicators(document);
-    var queued = false;
-    new MutationObserver(function () {
-      if (queued) return;
+    var added = [], queued = false;
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var nodes = muts[i].addedNodes;
+        for (var j = 0; j < nodes.length; j++) if (nodes[j].nodeType === 1) added.push(nodes[j]);
+      }
+      if (!added.length || queued) return;
       queued = true;
-      requestAnimationFrame(function () { queued = false; initIndicators(document); initDials(document); initFaders(document); });
+      requestAnimationFrame(function () {
+        queued = false;
+        var batch = added.splice(0, added.length);
+        for (var k = 0; k < batch.length; k++) {
+          var n = batch[k];
+          if (n.isConnected) { initIndicators(n); initDials(n); initFaders(n); }
+        }
+      });
     }).observe(document.body, { childList: true, subtree: true });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

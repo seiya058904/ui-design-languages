@@ -4,21 +4,10 @@
    - sliders: keep --fill and a linked <output for="id"> in sync
    - dialogs: [data-atelier-open="#id"] / [data-atelier-close]
    - appearance: theme, accent, density, radius, motion and contrast, stored in localStorage
-     ("atelier-appearance") and applied to <html>. Controls declare what they change:
-       <button data-appearance="theme" data-value="dark">          (light | dark | auto)
-       <button data-appearance="accent" data-value="violet">       (cobalt | violet | cyan | green | orange)
-       <input type="range" data-appearance="density" min="0" max="2">  (cozy | balanced | compact)
-       <input type="range" data-appearance="radius" min="8" max="24" step="4">
-       <input type="checkbox" data-appearance="motion">            (checked = reduced)
-       <input type="checkbox" data-appearance="contrast">          (checked = high)
-     Other open pages and iframes of the same site update live through the storage event. Discrete
-     changes cross-fade through the View Transitions API where available (not with reduced motion).
-   - command palette (.atelier-command): typing filters the results (text + data-keywords), ↑/↓ and the
-     pointer move one gliding highlight, ↵ or a click runs the item and fires "atelier:command"
-   - filter bar (.atelier-filterbar): operators cycle through data-ops, × folds a capsule away, Clear
-     removes them all; F (outside text fields) focuses [data-atelier-filter-add]
-   - menus (.atelier-menu): the trigger's aria-expanded opens the panel; ↓/↑ to open and move, Home/End,
-     Esc and outside clicks close; menuitemcheckbox toggles aria-checked; fires "atelier:menu"
+     ("atelier-appearance") and applied to <html>.
+   - command palette (.atelier-command): typing filters the results, ↑/↓ and pointer move highlight, ↵ runs
+   - filter bar (.atelier-filterbar): operators cycle through data-ops, × folds away, Clear removes all
+   - menus (.atelier-menu): aria-expanded opens panel, ↓/↑/Home/End/Esc navigate and close
    Hooks: window.AtelierUI.setAppearance({ accent: "green" }), .getAppearance(), .refresh(el), .initIndicators(root) */
 (function () {
   var P = "atelier";
@@ -33,57 +22,114 @@
   var TAB_ITEM = GROUPS[0].item + ", " + GROUPS[1].item;
   var NAV_ITEM = GROUPS[2].item;
 
+  function isWallHost() { return document.documentElement.hasAttribute("data-wall-host"); }
+
   function groupOf(list) { for (var i = 0; i < GROUPS.length; i++) if (list.matches(GROUPS[i].list)) return GROUPS[i]; return null; }
   function items(list) {
     var g = groupOf(list);
     return g ? Array.prototype.filter.call(list.querySelectorAll(g.item), function (el) { return el.closest(LIST) === list; }) : [];
   }
-  /* Layout changes (resize, fonts) move an indicator instantly; only a new selection glides. */
-  function snapTo(list) {
-    var on = list.classList.contains("is-animated");
-    if (on) list.classList.remove("is-animated");
-    refresh(list);
-    if (on) { void list.offsetWidth; list.classList.add("is-animated"); }
+
+  function measure(list) {
+    var g = groupOf(list);
+    if (!g) return null;
+    var active = items(list).filter(function (el) { return el.matches(g.active); })[0];
+    if (!active) return { o: "0" };
+    return { o: "1", x: active.offsetLeft + "px", y: active.offsetTop + "px", w: active.offsetWidth + "px", h: active.offsetHeight + "px" };
   }
-  /* Turn indicator transitions on only once the page has settled (loaded, fonts ready), after a final
-     measurement — so an indicator never glides in from a stale first-frame position on load. */
-  function settle(fn) {
+  function applyMetrics(list, m) {
+    if (!m) return;
+    var prev = list.__atelierMetrics;
+    if (prev && prev.o === m.o && prev.x === m.x && prev.y === m.y && prev.w === m.w && prev.h === m.h) return;
+    list.__atelierMetrics = m;
+    var s = list.style;
+    s.setProperty("--" + P + "-indicator-o", m.o);
+    if (m.o === "0") return;
+    s.setProperty("--" + P + "-indicator-x", m.x);
+    s.setProperty("--" + P + "-indicator-y", m.y);
+    s.setProperty("--" + P + "-indicator-w", m.w);
+    s.setProperty("--" + P + "-indicator-h", m.h);
+  }
+  function refresh(list) { applyMetrics(list, measure(list)); }
+
+  var snapSet = new Set(), snapRaf = 0;
+  function flushSnap() {
+    snapRaf = 0;
+    var lists = Array.from(snapSet);
+    snapSet.clear();
+    var restore = [];
+    for (var i = 0; i < lists.length; i++) {
+      if (lists[i].classList.contains("is-animated")) { lists[i].classList.remove("is-animated"); restore.push(lists[i]); }
+    }
+    var ms = lists.map(measure);
+    for (var j = 0; j < lists.length; j++) applyMetrics(lists[j], ms[j]);
+    if (restore.length) {
+      requestAnimationFrame(function () {
+        for (var k = 0; k < restore.length; k++) restore[k].classList.add("is-animated");
+      });
+    }
+  }
+  function queueSnap(list) {
+    snapSet.add(list);
+    if (!snapRaf) snapRaf = requestAnimationFrame(flushSnap);
+  }
+  var roMap = new WeakMap();
+  var sharedRO = "ResizeObserver" in window ? new ResizeObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      var list = roMap.get(entries[i].target);
+      if (list) queueSnap(list);
+    }
+  }) : null;
+
+  var settledPromise = null;
+  function whenSettled() {
+    if (settledPromise) return settledPromise;
     var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     var loaded = document.readyState === "complete" ? Promise.resolve() : new Promise(function (r) { window.addEventListener("load", r, { once: true }); });
-    Promise.all([fonts, loaded]).then(function () { requestAnimationFrame(function () { requestAnimationFrame(fn); }); });
+    settledPromise = Promise.all([fonts, loaded]);
+    return settledPromise;
   }
-  function refresh(list) {
-    var g = groupOf(list);
-    if (!g) return;
-    var active = items(list).filter(function (el) { return el.matches(g.active); })[0];
-    var s = list.style;
-    if (!active) { s.setProperty("--" + P + "-indicator-o", "0"); return; }
-    s.setProperty("--" + P + "-indicator-o", "1");
-    s.setProperty("--" + P + "-indicator-x", active.offsetLeft + "px");
-    s.setProperty("--" + P + "-indicator-y", active.offsetTop + "px");
-    s.setProperty("--" + P + "-indicator-w", active.offsetWidth + "px");
-    s.setProperty("--" + P + "-indicator-h", active.offsetHeight + "px");
-  }
+
   function initIndicators(root) {
     var scope = root || document;
     var lists = scope.matches && scope.matches(LIST) ? [scope] : scope.querySelectorAll(LIST);
+    var fresh = [];
     Array.prototype.forEach.call(lists, function (list) {
       if (list.__atelierIndicator) return;
       list.__atelierIndicator = true;
       list.classList.add("has-indicator");
-      refresh(list);
-      settle(function () { refresh(list); list.classList.add("is-animated"); });
-      if ("ResizeObserver" in window) {
-        var ro = new ResizeObserver(function () { snapTo(list); });
-        ro.observe(list);
-        items(list).forEach(function (el) { ro.observe(el); });
+      fresh.push(list);
+    });
+    if (!fresh.length) return;
+    var ms = fresh.map(measure);
+    for (var i = 0; i < fresh.length; i++) {
+      var list = fresh[i];
+      applyMetrics(list, ms[i]);
+      if (sharedRO) {
+        roMap.set(list, list);
+        sharedRO.observe(list);
+        items(list).forEach(function (el) { roMap.set(el, list); sharedRO.observe(el); });
       }
-      new MutationObserver(function () { refresh(list); }).observe(list, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"] });
+      (function (l) {
+        new MutationObserver(function () { if (!l.__atelierUpdating) refresh(l); }).observe(l, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"] });
+      })(list);
+    }
+    whenSettled().then(function () {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          var ms2 = fresh.map(measure);
+          for (var j = 0; j < fresh.length; j++) {
+            applyMetrics(fresh[j], ms2[j]);
+            fresh[j].classList.add("is-animated");
+          }
+        });
+      });
     });
   }
   function selectTab(tab) {
     var list = tab.closest(TAB_LIST);
     if (!list) return;
+    list.__atelierUpdating = true;
     items(list).forEach(function (t) {
       var on = t === tab;
       t.setAttribute("aria-selected", on ? "true" : "false");
@@ -93,22 +139,29 @@
       if (panel) panel.hidden = !on;
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__atelierUpdating = false; });
   }
   function selectNavItem(link) {
     var list = link.closest(LIST);
     if (!list) return;
+    list.__atelierUpdating = true;
     items(list).forEach(function (el) {
       if (el === link) el.setAttribute("aria-current", "page"); else el.removeAttribute("aria-current");
       el.classList.toggle("is-active", el === link);
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__atelierUpdating = false; });
   }
 
   /* ---------- Sliders ---------- */
   function syncSlider(input) {
     var min = parseFloat(input.min || 0), max = parseFloat(input.max || 100), v = parseFloat(input.value);
-    input.style.setProperty("--fill", ((v - min) / (max - min)) * 100 + "%");
-    if (input.id) document.querySelectorAll('output[for~="' + input.id + '"]').forEach(function (o) { o.textContent = input.value + (o.getAttribute("data-suffix") || ""); });
+    var fill = ((v - min) / (max - min)) * 100 + "%";
+    if (input.style.getPropertyValue("--fill") !== fill) input.style.setProperty("--fill", fill);
+    if (input.id) document.querySelectorAll('output[for~="' + input.id + '"]').forEach(function (o) {
+      var txt = input.value + (o.getAttribute("data-suffix") || "");
+      if (o.textContent !== txt) o.textContent = txt;
+    });
   }
 
   /* ---------- Appearance ---------- */
@@ -122,19 +175,27 @@
     for (var k in DEFAULTS) out[k] = s[k] != null ? s[k] : DEFAULTS[k];
     return out;
   }
-  var state = read();
+  var state = isWallHost() ? Object.assign({}, DEFAULTS) : read();
   function attr(name, value, fallback) {
     var d = document.documentElement;
     if (value === fallback) d.removeAttribute(name); else d.setAttribute(name, value);
   }
   function apply() {
-    attr("data-theme", state.theme, "light");
-    attr("data-accent", state.accent, "cobalt");
-    attr("data-density", state.density, "balanced");
-    attr("data-motion", state.motion, "full");
-    attr("data-contrast", state.contrast, "normal");
-    if (+state.radius === DEFAULTS.radius) document.documentElement.style.removeProperty("--" + P + "-radius-base");
-    else document.documentElement.style.setProperty("--" + P + "-radius-base", state.radius + "px");
+    if (!isWallHost()) {
+      attr("data-theme", state.theme, "light");
+      attr("data-accent", state.accent, "cobalt");
+      attr("data-density", state.density, "balanced");
+      attr("data-motion", state.motion, "full");
+      attr("data-contrast", state.contrast, "normal");
+      if (+state.radius === DEFAULTS.radius) document.documentElement.style.removeProperty("--" + P + "-radius-base");
+      else document.documentElement.style.setProperty("--" + P + "-radius-base", state.radius + "px");
+    } else {
+      // On multi-pack wall pages, scope appearance demos to Atelier's own stages only.
+      document.querySelectorAll('[data-pack-stage="' + P + '"]').forEach(function (st) {
+        if (state.accent === "cobalt") st.removeAttribute("data-accent"); else st.setAttribute("data-accent", state.accent);
+        if (state.density === "balanced") st.removeAttribute("data-density"); else st.setAttribute("data-density", state.density);
+      });
+    }
     syncControls();
   }
   function syncControls() {
@@ -162,18 +223,18 @@
     for (var k in patch) if (k in DEFAULTS && k !== "radius" && String(patch[k]) !== String(state[k])) discrete = true;
     function run() {
       for (var key in patch) if (key in DEFAULTS) state[key] = patch[key];
-      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (err) { /* not remembered */ }
+      if (!isWallHost()) {
+        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (err) { /* not remembered */ }
+      }
       apply();
       document.dispatchEvent(new CustomEvent(P + ":appearance", { detail: Object.assign({}, state) }));
     }
-    // A theme or accent change cross-fades the whole page once (snapshot → new state, 220ms) instead of
-    // every element repainting its own transition. Radius drags stay direct.
     var calm = state.motion === "reduced" || patch.motion === "reduced" || (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    if (discrete && !calm && document.startViewTransition && document.visibilityState === "visible") document.startViewTransition(run);
+    if (!isWallHost() && discrete && !calm && document.startViewTransition && document.visibilityState === "visible") document.startViewTransition(run);
     else run();
   }
   window.addEventListener("storage", function (e) {
-    if (e.key !== KEY) return;
+    if (e.key !== KEY || isWallHost()) return;
     state = read();
     apply();
   });
@@ -184,10 +245,16 @@
     return Array.prototype.filter.call(cmd.querySelectorAll(CMD_ITEM), function (el) { return !el.hidden && el.getAttribute("aria-disabled") !== "true"; });
   }
   function selectCommand(cmd, item, scroll) {
+    var list = cmd.querySelector("." + P + "-command__list");
+    if (list) list.__atelierUpdating = true;
     Array.prototype.forEach.call(cmd.querySelectorAll(CMD_ITEM), function (el) { el.setAttribute("aria-selected", el === item ? "true" : "false"); });
     var input = cmd.querySelector("." + P + "-command__search input");
     if (input) { if (item && item.id) input.setAttribute("aria-activedescendant", item.id); else input.removeAttribute("aria-activedescendant"); }
     if (item && scroll && item.scrollIntoView) item.scrollIntoView({ block: "nearest" });
+    if (list) {
+      refresh(list);
+      Promise.resolve().then(function () { list.__atelierUpdating = false; });
+    }
   }
   function filterCommand(cmd) {
     var input = cmd.querySelector("." + P + "-command__search input");
@@ -211,14 +278,15 @@
     }
     var cur = cmd.querySelector(CMD_ITEM + '[aria-selected="true"]');
     if (!cur || cur.hidden) selectCommand(cmd, commandItems(cmd)[0] || null, true);
-    var list = cmd.querySelector("." + P + "-command__list");
-    if (list) refresh(list);
+    else {
+      var list = cmd.querySelector("." + P + "-command__list");
+      if (list) refresh(list);
+    }
   }
   function runCommand(cmd, item) {
     if (!item || item.getAttribute("aria-disabled") === "true") return;
     item.classList.remove("is-run");
-    void item.offsetWidth;
-    item.classList.add("is-run");
+    requestAnimationFrame(function () { item.classList.add("is-run"); });
     var label = item.cloneNode(true);
     Array.prototype.forEach.call(label.querySelectorAll("." + P + "-command__keys, ." + P + "-command__hint"), function (n) { n.remove(); });
     cmd.dispatchEvent(new CustomEvent(P + ":command", { bubbles: true, detail: { item: item, value: item.getAttribute("data-value") || label.textContent.trim() } }));
@@ -258,7 +326,7 @@
         var target = (next && next.matches("." + P + "-filter") && next.querySelector("." + P + "-filter__remove")) || bar.querySelector("[data-" + P + "-filter-add]");
         if (target) target.focus();
       }
-    }, 140);
+    }, 150);
   }
   function makeFilter(preset) {
     var el = document.createElement("div");
@@ -330,8 +398,7 @@
       var ops = op.getAttribute("data-ops").split("|"), at = ops.indexOf(op.textContent.trim());
       op.textContent = ops[(at + 1) % ops.length];
       op.classList.remove("is-flip");
-      void op.offsetWidth;
-      op.classList.add("is-flip");
+      requestAnimationFrame(function () { op.classList.add("is-flip"); });
     }
     var rm = e.target.closest("." + P + "-filter__remove");
     if (rm) removeFilter(rm.closest("." + P + "-filter"));
@@ -366,13 +433,12 @@
     if (ap) { var patch = {}; patch[ap.getAttribute("data-appearance")] = ap.getAttribute("data-value"); setAppearance(patch); }
 
     var opener = e.target.closest("[data-" + P + "-open]");
-    if (opener) { var dlg = document.querySelector(opener.getAttribute("data-" + P + "-open")); if (dlg && dlg.showModal) dlg.showModal(); }
+    if (opener) { var dlg = document.querySelector(opener.getAttribute("data-" + P + "-open")); if (dlg && dlg.showModal && !dlg.open) dlg.showModal(); }
     var closer = e.target.closest("[data-" + P + "-close]");
     if (closer) { var d = closer.closest("dialog"); if (d) d.close(); }
   });
   document.addEventListener("keydown", function (e) {
     var t = e.target;
-    /* Command palette input */
     if (t.matches && t.matches("." + P + "-command__search input")) {
       var cmd = t.closest("." + P + "-command"), list = commandItems(cmd), cur = cmd.querySelector(CMD_ITEM + '[aria-selected="true"]'), i = list.indexOf(cur);
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
@@ -382,21 +448,18 @@
       else if (e.key === "Escape" && t.value) { t.value = ""; filterCommand(cmd); e.preventDefault(); e.stopPropagation(); }
       return;
     }
-    /* Menus */
     var menu = t.closest && t.closest("." + P + "-menu");
     if (menu) {
-      var trig = menuTrigger(menu), items = menuItems(menu), idx = items.indexOf(document.activeElement), isOpen = trig && trig.getAttribute("aria-expanded") === "true";
+      var trig = menuTrigger(menu), mItems = menuItems(menu), idx = mItems.indexOf(document.activeElement), isOpen = trig && trig.getAttribute("aria-expanded") === "true";
       if (t === trig && (e.key === "ArrowDown" || e.key === "ArrowUp")) { closeMenus(menu); setMenu(menu, true, e.key === "ArrowUp" ? "last" : "first"); e.preventDefault(); return; }
-      if (idx >= 0) {
-        var move = { ArrowDown: idx + 1, ArrowUp: idx - 1, Home: 0, End: items.length - 1 }[e.key];
-        if (move !== undefined) { items[(move + items.length) % items.length].focus(); e.preventDefault(); return; }
+      if (idx >= 0 && mItems.length) {
+        var move = { ArrowDown: idx + 1, ArrowUp: idx - 1, Home: 0, End: mItems.length - 1 }[e.key];
+        if (move !== undefined) { mItems[(move + mItems.length) % mItems.length].focus(); e.preventDefault(); return; }
         if (e.key === "Tab" && !menu.classList.contains(P + "-menu--static")) setMenu(menu, false);
       }
       if (e.key === "Escape" && isOpen) { setMenu(menu, false, true); e.preventDefault(); e.stopPropagation(); return; }
     }
-    /* F focuses the add button of a filter bar in view (outside text fields, no modifiers) */
     if ((e.key === "f" || e.key === "F") && !e.metaKey && !e.ctrlKey && !e.altKey && !(t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) {
-      // Only a filter bar that is on screen answers, and focusing it never scrolls the page.
       var add = Array.prototype.filter.call(document.querySelectorAll("[data-" + P + "-filter-add]"), function (b) {
         var r = b.getBoundingClientRect();
         return b.offsetParent && r.bottom > 0 && r.top < window.innerHeight;
@@ -407,9 +470,10 @@
     if (!tab) return;
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
     if (!(e.key in keys)) return;
-    var all = items(tab.closest(TAB_LIST)).filter(function (t) { return !t.disabled; });
-    var i = all.indexOf(tab), step = keys[e.key];
-    var next = step === "first" ? all[0] : step === "last" ? all[all.length - 1] : all[(i + step + all.length) % all.length];
+    var all = items(tab.closest(TAB_LIST)).filter(function (x) { return !x.disabled; });
+    if (!all.length) return;
+    var idx2 = all.indexOf(tab), step = keys[e.key];
+    var next = step === "first" ? all[0] : step === "last" ? all[all.length - 1] : all[(idx2 + step + all.length) % all.length];
     next.focus();
     selectTab(next);
     if (next.hasAttribute("data-appearance")) next.click();
@@ -421,11 +485,19 @@
     document.querySelectorAll("." + P + "-filterbar").forEach(syncFilterbar);
     document.querySelectorAll("." + P + "-slider").forEach(syncSlider);
     initIndicators(document);
-    var queued = false;
-    new MutationObserver(function () {
-      if (queued) return;
+    var added = [], queued = false;
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var nodes = muts[i].addedNodes;
+        for (var j = 0; j < nodes.length; j++) if (nodes[j].nodeType === 1) added.push(nodes[j]);
+      }
+      if (!added.length || queued) return;
       queued = true;
-      requestAnimationFrame(function () { queued = false; initIndicators(document); });
+      requestAnimationFrame(function () {
+        queued = false;
+        var batch = added.splice(0, added.length);
+        for (var k = 0; k < batch.length; k++) if (batch[k].isConnected) initIndicators(batch[k]);
+      });
     }).observe(document.body, { childList: true, subtree: true });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

@@ -272,6 +272,18 @@
   var DEF = { set: 12, limit: 15, fan: true };
   var cur = "01", acked = {}, muted = false, calibrating = false;
   var dial = $("#dial-v"), limit = $("#limit"), fan = $("[data-fan]"), enable = $("[data-enable]");
+  var dom = {
+    v: $("[data-r='v']"), i: $("[data-r='i']"), p: $("[data-r='p']"), up: $("[data-r='up']"),
+    t: $("[data-r='t']"), rpm: $("[data-r='rpm']"), trend: $("[data-r='trend']"), pp: $("[data-r='pp']"),
+    powerMeter: $("[data-meter='power']"), tempMeter: $("[data-meter='temp']"),
+    mode: $("[data-mode]"), state: $("[data-state]"),
+    alarm: $("[data-alarm]"), alarmText: $("[data-alarm-text]"),
+    sounder: $("[data-sounder]"), clock: $("[data-clock]"),
+    modLeds: $$("[data-module]").map(function (a) { return { id: a.getAttribute("data-module"), led: a.querySelector(".braun-led") }; })
+  };
+  var lastPower = -1, lastTemp = -1;
+  function setText(el, val) { if (el && el.textContent !== val) el.textContent = val; }
+  function setClass(el, cls) { if (el && el.className !== cls) el.className = cls; }
 
   function clock(s) { s = Math.floor(s); var h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60; return [h, m, s % 60].map(function (n) { return String(n).padStart(2, "0"); }).join(":"); }
   function now() { var d = new Date(); return [d.getHours(), d.getMinutes(), d.getSeconds()].map(function (n) { return String(n).padStart(2, "0"); }).join(":"); }
@@ -323,39 +335,38 @@
 
   function render(instant) {
     var m = M[cur], r = physics(m);
-    $("[data-r='v']").textContent = r.v.toFixed(1) + " V";
-    $("[data-r='i']").textContent = r.i.toFixed(2) + " A";
-    $("[data-r='p']").textContent = r.p.toFixed(1) + " W";
-    $("[data-r='up']").textContent = m.online ? clock(m.up) : "—";
-    $("[data-r='t']").textContent = m.temp.toFixed(1);
-    $("[data-r='rpm']").textContent = m.fan && m.online ? Math.round(1700 + m.temp * 15).toLocaleString("en-US") + " rpm" : "0 rpm";
+    setText(dom.v, r.v.toFixed(1) + " V");
+    setText(dom.i, r.i.toFixed(2) + " A");
+    setText(dom.p, r.p.toFixed(1) + " W");
+    setText(dom.up, m.online ? clock(m.up) : "—");
+    setText(dom.t, m.temp.toFixed(1));
+    setText(dom.rpm, m.fan && m.online ? Math.round(1700 + m.temp * 15).toLocaleString("en-US") + " rpm" : "0 rpm");
     var tr = (m.trend || 0) * 2;
-    $("[data-r='trend']").textContent = (tr >= 0 ? "+" : "−") + Math.abs(tr).toFixed(2) + " °C/s";
+    setText(dom.trend, (tr >= 0 ? "+" : "−") + Math.abs(tr).toFixed(2) + " °C/s");
     var pp = Math.round(r.p / 72 * 100);
-    $("[data-r='pp']").textContent = pp + "% of 72 W";
-    BraunUI.setMeter($("[data-meter='power']"), pp);
-    BraunUI.setMeter($("[data-meter='temp']"), m.temp);
-    var mode = $("[data-mode]");
-    mode.lastChild.textContent = !m.online ? "Off" : !m.on ? "Standby" : r.cc ? "CC" : "CV";
-    mode.firstChild.className = "braun-led" + (!m.online || !m.on ? " braun-led--off" : r.cc ? " braun-led--warn" : "");
+    setText(dom.pp, pp + "% of 72 W");
+    if (instant || pp !== lastPower) { lastPower = pp; BraunUI.setMeter(dom.powerMeter, pp); }
+    var tempInt = Math.round(m.temp);
+    if (instant || tempInt !== lastTemp) { lastTemp = tempInt; BraunUI.setMeter(dom.tempMeter, tempInt); }
+    setText(dom.mode.lastChild, !m.online ? "Off" : !m.on ? "Standby" : r.cc ? "CC" : "CV");
+    setClass(dom.mode.firstChild, "braun-led" + (!m.online || !m.on ? " braun-led--off" : r.cc ? " braun-led--warn" : ""));
     var alarm = m.temp > 75 && m.online;
-    var st = $("[data-state]");
-    st.lastChild.textContent = !m.online ? "Offline" : alarm ? "Alarm" : "Online";
-    st.firstChild.className = "braun-led" + (!m.online ? " braun-led--off" : alarm ? " braun-led--warn" : "");
-    var box = $("[data-alarm]");
-    box.hidden = !alarm || acked[cur];
-    $("[data-alarm-text]").textContent = m.name + " operating at " + m.temp.toFixed(1) + " °C";
+    setText(dom.state.lastChild, !m.online ? "Offline" : alarm ? "Alarm" : "Online");
+    setClass(dom.state.firstChild, "braun-led" + (!m.online ? " braun-led--off" : alarm ? " braun-led--warn" : ""));
+    var hideAlarm = !alarm || !!acked[cur];
+    if (dom.alarm.hidden !== hideAlarm) dom.alarm.hidden = hideAlarm;
+    if (!hideAlarm) setText(dom.alarmText, m.name + " operating at " + m.temp.toFixed(1) + " °C");
     var sounding = Object.keys(M).some(function (k) { return M[k].temp > 75 && M[k].online && !acked[k]; }) && !muted;
-    var snd = $("[data-sounder]");
-    snd.firstChild.className = "braun-led" + (sounding ? " braun-led--warn braun-led--blink" : " braun-led--off");
-    snd.lastChild.textContent = sounding ? "Sounding" : muted ? "Muted" : "Quiet";
-    $$("[data-module]").forEach(function (a) {
-      var k = a.getAttribute("data-module"), mm = M[k], led = a.querySelector(".braun-led");
-      led.className = "braun-led" + (!mm.online ? " braun-led--off" : mm.temp > 75 ? " braun-led--warn" : "");
+    setClass(dom.sounder.firstChild, "braun-led" + (sounding ? " braun-led--warn braun-led--blink" : " braun-led--off"));
+    setText(dom.sounder.lastChild, sounding ? "Sounding" : muted ? "Muted" : "Quiet");
+    dom.modLeds.forEach(function (item) {
+      var mm = M[item.id];
+      setClass(item.led, "braun-led" + (!mm.online ? " braun-led--off" : mm.temp > 75 ? " braun-led--warn" : ""));
     });
   }
 
   function tick() {
+    if (document.hidden) return;
     Object.keys(M).forEach(function (k) {
       var m = M[k], r = physics(m), was = m.temp > 75;
       var target = 22.4 + r.p * (m.fan ? 1.38 : 2.9);
@@ -403,8 +414,9 @@
       }
     }, 160);
   });
-  setInterval(function () { $("[data-clock]").textContent = now(); }, 1000);
-  $("[data-clock]").textContent = now();
+  setInterval(function () { if (!document.hidden) setText(dom.clock, now()); }, 1000);
+  setText(dom.clock, now());
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) { setText(dom.clock, now()); render(); } });
   $$("[data-events] tr").forEach(function (r) { $("[data-log]").appendChild(r.cloneNode(true)); });
   load("01");
   setInterval(tick, 500);

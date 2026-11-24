@@ -12,13 +12,18 @@ body {
   font-size: var(--atelier-font-size-body);
   line-height: 1.5;
   color: var(--atelier-color-text);
-  background:
-    radial-gradient(1200px 600px at 10% -10%, color-mix(in srgb, var(--atelier-color-primary) 7%, transparent), transparent 60%),
-    var(--atelier-color-canvas);
-  background-attachment: fixed;
+  background: var(--atelier-color-canvas);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color var(--atelier-motion-duration), color var(--atelier-motion-duration);
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(1200px 600px at 10% -10%, color-mix(in srgb, var(--atelier-color-primary) 7%, transparent), transparent 60%);
 }
 
 img, svg, video { display: block; max-width: 100%; }

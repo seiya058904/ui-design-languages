@@ -544,8 +544,9 @@ select.tactile-input {
 @keyframes tactile-spin { to { transform: rotate(360deg); } }
 
 .tactile-skeleton { display: flex; flex-direction: column; gap: 10px; }
-.tactile-skeleton > span { display: block; height: 12px; border-radius: var(--tactile-radius-pill); background: linear-gradient(90deg, var(--tactile-color-skeleton) 0%, var(--tactile-color-surface) 50%, var(--tactile-color-skeleton) 100%) 0 0 / 200% 100%; box-shadow: var(--tactile-shadow-inset-sm); animation: tactile-shimmer 1.6s ease-in-out infinite; }
-@keyframes tactile-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.tactile-skeleton > span { position: relative; display: block; height: 12px; overflow: hidden; border-radius: var(--tactile-radius-pill); background: var(--tactile-color-skeleton); box-shadow: var(--tactile-shadow-inset-sm); }
+.tactile-skeleton > span::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 10%, var(--tactile-color-surface) 50%, transparent 90%); opacity: 0.85; pointer-events: none; translate: -100% 0; animation: tactile-shimmer 1.6s ease-in-out infinite; }
+@keyframes tactile-shimmer { from { translate: -100% 0; } to { translate: 100% 0; } }
 
 .tactile-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px; border: 2px dashed var(--tactile-color-line); border-radius: var(--tactile-radius-lg); text-align: center; }
 .tactile-empty__art { display: grid; place-items: center; width: 84px; height: 84px; border-radius: 50%; color: var(--tactile-color-text-muted); box-shadow: var(--tactile-shadow-inset); }

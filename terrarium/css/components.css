@@ -552,7 +552,7 @@ a.terrarium-list__item:focus-visible { box-shadow: var(--terrarium-shadow-focus)
 .terrarium-pebble--5 { border-radius: 40% 60% 58% 42% / 50% 44% 56% 50%; }
 .terrarium-pebble:hover { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; transform: translateY(-3px) rotate(-3deg); }
 .terrarium-pebble--breathe { animation: terrarium-breathe 7s ease-in-out infinite; }
-@keyframes terrarium-breathe { 50% { border-radius: 48% 52% 60% 40% / 44% 60% 40% 56%; transform: scale(1.03); } }
+@keyframes terrarium-breathe { 50% { transform: scale(1.035) rotate(2deg); } }
 .terrarium-surface { border-radius: var(--terrarium-radius-md); background: var(--terrarium-color-surface-raised); }
 .terrarium-surface--1 { box-shadow: var(--terrarium-shadow-level-1); }
 .terrarium-surface--2 { box-shadow: var(--terrarium-shadow-level-2); }

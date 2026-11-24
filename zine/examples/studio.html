@@ -161,7 +161,7 @@
               <button class="zine-btn" type="button" data-copy style="justify-self:start"><svg class="zine-icon" aria-hidden="true"><use href="#i-link"/></svg>Copy link</button>
             </div>
             <div class="zine-stack" style="--gap:12px">
-              <span class="zine-label" style="align-self:flex-start">People <small>(4)</small></span>
+              <span class="zine-label" style="align-self:flex-start">People <small data-people-count>(4)</small></span>
               <ul class="zine-list" data-people>
                 <li class="zine-list__item"><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-cobalt);color:var(--zine-color-white)">AK</span><div><b>Alex Kim</b><span>Owner</span></div></li>
                 <li class="zine-list__item"><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-vermilion)">MR</span><div><b>Mia Rossi</b><span>Can edit</span></div></li>
@@ -249,8 +249,12 @@
   var body = $("[data-files]"), pending = null, n = 0;
   function row(f) {
     var tr = document.createElement("tr");
-    tr.innerHTML = "<td>" + String(++n).padStart(2, "0") + "</td><td></td><td>" + f[1] + '</td><td class="is-num">' + f[2] + "</td><td>" + f[3] + '</td><td><span class="row-act"><button class="zine-btn zine-btn--sm zine-btn--icon zine-btn--ghost" type="button" aria-label="Delete ' + f[0] + '" data-del><svg class="zine-icon" aria-hidden="true"><use href="#i-trash"/></svg></button></span></td>';
+    tr.innerHTML = "<td>" + String(++n).padStart(2, "0") + "</td><td></td><td></td><td class=\"is-num\"></td><td></td><td><span class=\"row-act\"><button class=\"zine-btn zine-btn--sm zine-btn--icon zine-btn--ghost\" type=\"button\" data-del><svg class=\"zine-icon\" aria-hidden=\"true\"><use href=\"#i-trash\"/></svg></button></span></td>";
     tr.children[1].textContent = f[0];
+    tr.children[2].textContent = f[1];
+    tr.children[3].textContent = f[2];
+    tr.children[4].textContent = f[3];
+    tr.querySelector("[data-del]").setAttribute("aria-label", "Delete " + f[0]);
     tr.setAttribute("data-type", f[1]);
     return tr;
   }
@@ -291,12 +295,16 @@
   $("[data-invite]").addEventListener("submit", function (e) {
     e.preventDefault();
     var input = this.querySelector("input"), email = input.value.trim();
+    if (!email) return;
     var p = document.createElement("li");
     p.className = "zine-list__item";
     p.innerHTML = '<span class="zine-avatar zine-avatar--sm"></span><div><b></b><span>Invited · can view</span></div>';
     p.querySelector(".zine-avatar").textContent = email.slice(0, 2).toUpperCase();
     p.querySelector("b").textContent = email.split("@")[0];
-    $("[data-people]").appendChild(p);
+    var people = $("[data-people]");
+    people.appendChild(p);
+    var cnt = $("[data-people-count]");
+    if (cnt) cnt.textContent = "(" + people.children.length + ")";
     input.value = "";
     ZineUI.toast("Invite sent!", email + " can view the proofs.");
   });

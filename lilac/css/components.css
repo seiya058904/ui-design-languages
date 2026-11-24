@@ -509,10 +509,11 @@ select.lilac-input {
   border-radius: inherit;
   background: linear-gradient(90deg, var(--lilac-color-primary-light), var(--lilac-color-primary));
   box-shadow: 0 0 12px var(--lilac-color-glow);
+  transform-origin: left center;
   transition: width var(--lilac-motion-duration-slide) var(--lilac-motion-easing-spring);
   animation: lilac-bar-fill 1200ms var(--lilac-motion-easing-spring) 150ms backwards;
 }
-@keyframes lilac-bar-fill { from { width: 0; } }
+@keyframes lilac-bar-fill { from { transform: scaleX(0); } }
 
 .lilac-ring { position: relative; width: var(--ring-size, 210px); aspect-ratio: 1; flex: none; }
 .lilac-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }

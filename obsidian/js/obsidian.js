@@ -1,20 +1,12 @@
 /* Obsidian / Glass — optional behaviour (no dependencies). The CSS works without it; this adds:
-   - liquid indicators for .obsidian-tabs, .obsidian-segmented and .obsidian-nav: the edge that leads
-     moves first and the other follows, so the light stretches and gathers (data-obsidian-dir)
+   - liquid indicators for .obsidian-tabs, .obsidian-segmented, .obsidian-nav and .obsidian-dock
    - tablists: click + ←/→/Home/End move aria-selected and show the matching aria-controls panel;
      nav and pagination: plain clicks move aria-current="page"
    - sliders: keep --obsidian-value on input.obsidian-slider and its <output> in sync
-   - menus: .obsidian-menu opens on click / ↓, arrows move, Enter picks, Esc or a click outside closes;
-     picking an option fires "obsidian:select" (detail: { value, label }) on the menu
-   - rim light: panels and cards catch the light where the pointer is (--obsidian-mx / --obsidian-my,
-     registered properties that glide after the pointer)
-   - dock (.obsidian-dock): clicking an item moves aria-current and the lit drop glides under it
-   - media (.obsidian-media): the play key (aria-pressed) runs the scrubber and the time; the artwork's
-     light breathes while it plays; dragging the scrubber seeks
-   - dialogs: [data-obsidian-open="#id"] / [data-obsidian-close]; toasts and alerts: [data-obsidian-dismiss]
-   - command search: ⌘K / Ctrl+K focuses the first .obsidian-command field
-   - accent: [data-accent-set="cyan|emerald|violet"] switches <html data-accent>, remembered in
-     localStorage "obsidian-accent"; fires "obsidian:accentchange"
+   - menus: .obsidian-menu opens on click / ↓, arrows move, Enter picks, Esc or a click outside closes
+   - rim light: cards and panels catch the light where the pointer is (rAF-damped, cached rects,
+     targets the hovered surface directly so it never causes cascading ancestor subtree recalcs)
+   - dock (.obsidian-dock), media (.obsidian-media), dialogs, command search (⌘K / Ctrl+K), accent
    Hooks: window.ObsidianUI.refresh(list), .initIndicators(root), .setAccent(name), .syncSlider(input), .setValue(el, n) */
 (function () {
   var P = "obsidian";
@@ -27,6 +19,13 @@
   var LIST_SEL = LISTS.map(function (g) { return g.list; }).join(", ");
   var TAB_ITEM = "." + P + "-tabs__item, ." + P + "-segmented__item";
 
+  function isWallHost() { return document.documentElement.hasAttribute("data-wall-host"); }
+  function ownsControl(el) {
+    if (!isWallHost()) return true;
+    var st = el.closest && el.closest("[data-pack-stage]");
+    return !!st && st.getAttribute("data-pack-stage") === P;
+  }
+
   function groupOf(list) { for (var i = 0; i < LISTS.length; i++) if (list.matches(LISTS[i].list)) return LISTS[i]; return null; }
   function itemsOf(list) {
     var g = groupOf(list);
@@ -38,58 +37,111 @@
   }
 
   /* ---------- liquid indicators ---------- */
-  /* Layout changes (resize, fonts) move an indicator instantly; only a new selection glides. */
-  function snapTo(list) {
-    var on = list.classList.contains("is-animated");
-    if (on) list.classList.remove("is-animated");
-    refresh(list);
-    if (on) { void list.offsetWidth; list.classList.add("is-animated"); }
-  }
-  /* Turn indicator transitions on only once the page has settled (loaded, fonts ready), after a final
-     measurement — so an indicator never glides in from a stale first-frame position on load. */
-  function settle(fn) {
-    var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-    var loaded = document.readyState === "complete" ? Promise.resolve() : new Promise(function (r) { window.addEventListener("load", r, { once: true }); });
-    Promise.all([fonts, loaded]).then(function () { requestAnimationFrame(function () { requestAnimationFrame(fn); }); });
-  }
-  function refresh(list) {
-    var on = activeOf(list), s = list.style;
-    if (!on || on.offsetParent === null) { s.setProperty("--" + P + "-indicator-o", "0"); return; }
+  function measure(list) {
+    var on = activeOf(list);
+    if (!on || on.offsetParent === null) return { o: "0" };
     var l = on.offsetLeft, t = on.offsetTop;
     var r = list.clientWidth - (l + on.offsetWidth), b = list.clientHeight - (t + on.offsetHeight);
-    var prev = list.__obsidianPos;
-    if (prev) {
-      var dir = Math.abs(t - prev.t) > Math.abs(l - prev.l) ? (t > prev.t ? "down" : "up") : (l > prev.l ? "right" : l < prev.l ? "left" : list.getAttribute("data-" + P + "-dir"));
+    return { o: "1", l: l, r: r, t: t, b: b };
+  }
+  function applyMetrics(list, m) {
+    if (!m) return;
+    var prev = list.__obsidianMetrics;
+    if (prev && prev.o === m.o && prev.l === m.l && prev.r === m.r && prev.t === m.t && prev.b === m.b) return;
+    var s = list.style;
+    if (m.o === "0") { list.__obsidianMetrics = m; s.setProperty("--" + P + "-indicator-o", "0"); return; }
+    if (prev && prev.o === "1") {
+      var dir = Math.abs(m.t - prev.t) > Math.abs(m.l - prev.l) ? (m.t > prev.t ? "down" : "up") : (m.l > prev.l ? "right" : m.l < prev.l ? "left" : list.getAttribute("data-" + P + "-dir"));
       if (dir) list.setAttribute("data-" + P + "-dir", dir);
     }
-    list.__obsidianPos = { l: l, t: t };
+    list.__obsidianMetrics = m;
     s.setProperty("--" + P + "-indicator-o", "1");
-    s.setProperty("--" + P + "-indicator-l", l + "px");
-    s.setProperty("--" + P + "-indicator-r", r + "px");
-    s.setProperty("--" + P + "-indicator-t", t + "px");
-    s.setProperty("--" + P + "-indicator-b", b + "px");
+    s.setProperty("--" + P + "-indicator-l", m.l + "px");
+    s.setProperty("--" + P + "-indicator-r", m.r + "px");
+    s.setProperty("--" + P + "-indicator-t", m.t + "px");
+    s.setProperty("--" + P + "-indicator-b", m.b + "px");
   }
+  function refresh(list) { applyMetrics(list, measure(list)); }
+
+  var snapSet = new Set(), snapRaf = 0;
+  function flushSnap() {
+    snapRaf = 0;
+    var lists = Array.from(snapSet);
+    snapSet.clear();
+    var restore = [];
+    for (var i = 0; i < lists.length; i++) {
+      if (lists[i].classList.contains("is-animated")) { lists[i].classList.remove("is-animated"); restore.push(lists[i]); }
+    }
+    var ms = lists.map(measure);
+    for (var j = 0; j < lists.length; j++) applyMetrics(lists[j], ms[j]);
+    if (restore.length) {
+      requestAnimationFrame(function () {
+        for (var k = 0; k < restore.length; k++) restore[k].classList.add("is-animated");
+      });
+    }
+  }
+  function queueSnap(list) {
+    snapSet.add(list);
+    if (!snapRaf) snapRaf = requestAnimationFrame(flushSnap);
+  }
+  var roMap = new WeakMap();
+  var sharedRO = "ResizeObserver" in window ? new ResizeObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      var list = roMap.get(entries[i].target);
+      if (list) queueSnap(list);
+    }
+  }) : null;
+
+  var settledPromise = null;
+  function whenSettled() {
+    if (settledPromise) return settledPromise;
+    var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    var loaded = document.readyState === "complete" ? Promise.resolve() : new Promise(function (r) { window.addEventListener("load", r, { once: true }); });
+    settledPromise = Promise.all([fonts, loaded]);
+    return settledPromise;
+  }
+
   function initIndicators(root) {
     var scope = root || document;
     var lists = scope.matches && scope.matches(LIST_SEL) ? [scope] : scope.querySelectorAll(LIST_SEL);
+    var fresh = [];
     Array.prototype.forEach.call(lists, function (list) {
       if (list.__obsidianIndicator) return;
       list.__obsidianIndicator = true;
       list.classList.add("has-indicator");
-      refresh(list);
-      settle(function () { refresh(list); list.classList.add("is-animated"); });
-      if ("ResizeObserver" in window) {
-        var ro = new ResizeObserver(function () { snapTo(list); });
-        ro.observe(list);
-        itemsOf(list).forEach(function (el) { ro.observe(el); });
+      fresh.push(list);
+    });
+    if (!fresh.length) return;
+    var ms = fresh.map(measure);
+    for (var i = 0; i < fresh.length; i++) {
+      var list = fresh[i];
+      applyMetrics(list, ms[i]);
+      if (sharedRO) {
+        roMap.set(list, list);
+        sharedRO.observe(list);
+        itemsOf(list).forEach(function (el) { roMap.set(el, list); sharedRO.observe(el); });
       }
-      new MutationObserver(function () { refresh(list); }).observe(list, { subtree: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"] });
+      (function (l) {
+        new MutationObserver(function () { if (!l.__obsidianUpdating) refresh(l); }).observe(l, { subtree: true, attributes: true, attributeFilter: ["aria-selected", "aria-current", "class"] });
+      })(list);
+    }
+    whenSettled().then(function () {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          var ms2 = fresh.map(measure);
+          for (var j = 0; j < fresh.length; j++) {
+            applyMetrics(fresh[j], ms2[j]);
+            fresh[j].classList.add("is-animated");
+          }
+        });
+      });
     });
   }
 
   function selectTab(tab) {
     var list = tab.closest("." + P + "-tabs, ." + P + "-segmented");
     if (!list) return;
+    list.__obsidianUpdating = true;
     itemsOf(list).forEach(function (t) {
       var on = t === tab;
       t.setAttribute("aria-selected", on ? "true" : "false");
@@ -99,19 +151,25 @@
       if (panel) panel.hidden = !on;
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__obsidianUpdating = false; });
   }
   function selectNavItem(link) {
     var list = link.closest("." + P + "-nav");
     if (!list) return;
+    list.__obsidianUpdating = true;
     itemsOf(list).forEach(function (el) {
       if (el === link) el.setAttribute("aria-current", "page"); else el.removeAttribute("aria-current");
       el.classList.toggle("is-active", el === link);
     });
     refresh(list);
+    Promise.resolve().then(function () { list.__obsidianUpdating = false; });
   }
 
   /* ---------- sliders ---------- */
-  function setValue(el, n) { el.style.setProperty("--" + P + "-value", String(Math.round(n))); }
+  function setValue(el, n) {
+    var v = String(Math.round(n));
+    if (el.style.getPropertyValue("--" + P + "-value") !== v) el.style.setProperty("--" + P + "-value", v);
+  }
   function syncSlider(input) {
     var min = parseFloat(input.min || 0), max = parseFloat(input.max || 100), v = parseFloat(input.value);
     setValue(input, (v - min) / (max - min) * 100);
@@ -136,8 +194,10 @@
   function selectDockItem(item) {
     var dock = item.closest("." + P + "-dock");
     if (!dock) return;
+    dock.__obsidianUpdating = true;
     itemsOf(dock).forEach(function (el) { if (el === item) el.setAttribute("aria-current", "true"); else el.removeAttribute("aria-current"); });
     refresh(dock);
+    Promise.resolve().then(function () { dock.__obsidianUpdating = false; });
   }
 
   /* ---------- media ---------- */
@@ -152,10 +212,13 @@
   function playMedia(card, on) {
     var key = card.querySelector("." + P + "-media__play"), seek = card.querySelector("." + P + "-media__seek");
     clearInterval(card.__obsidianPlay);
+    card.__obsidianPlay = 0;
     card.classList.toggle("is-playing", on);
     if (key) { key.setAttribute("aria-pressed", on ? "true" : "false"); key.setAttribute("aria-label", on ? "Pause" : "Play"); }
     if (!on || !seek) return;
     card.__obsidianPlay = setInterval(function () {
+      if (!card.isConnected) { playMedia(card, false); return; }
+      if (document.hidden) return;
       var max = parseFloat(seek.max || 100), v = parseFloat(seek.value) + 1;
       if (v > max) { v = max; playMedia(card, false); }
       seek.value = String(v);
@@ -200,6 +263,7 @@
   function syncAccentControls() {
     var a = currentAccent();
     document.querySelectorAll("[data-accent-set]").forEach(function (b) {
+      if (!ownsControl(b)) return;
       var on = b.getAttribute("data-accent-set") === a;
       if (b.matches(TAB_ITEM)) { b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1; }
       else if (b.getAttribute("role") === "radio" || b.getAttribute("role") === "menuitemradio") b.setAttribute("aria-checked", on ? "true" : "false");
@@ -207,30 +271,56 @@
     });
   }
   function setAccent(name) {
-    if (!name || name === "cyan") document.documentElement.removeAttribute("data-accent");
-    else document.documentElement.setAttribute("data-accent", name);
-    try { localStorage.setItem(ACCENT_KEY, name || "cyan"); } catch (err) { /* not remembered */ }
+    if (isWallHost()) {
+      document.querySelectorAll('[data-pack-stage="' + P + '"]').forEach(function (st) {
+        if (!name || name === "cyan") st.removeAttribute("data-accent"); else st.setAttribute("data-accent", name);
+      });
+    } else {
+      if (!name || name === "cyan") document.documentElement.removeAttribute("data-accent");
+      else document.documentElement.setAttribute("data-accent", name);
+      try { localStorage.setItem(ACCENT_KEY, name || "cyan"); } catch (err) { /* not remembered */ }
+    }
     syncAccentControls();
     document.dispatchEvent(new CustomEvent(P + ":accentchange", { detail: { accent: name || "cyan" } }));
   }
 
-  /* ---------- rim light ---------- */
-  var lit = [], queued = null;
+  /* ---------- rim light (cached rect, innermost glass surface only, rAF-damped, zero layout per move) ---------- */
+  var rimTarget = null, rimRect = null, rimTx = 0, rimTy = 0, rimCx = 0, rimCy = 0, rimRaf = 0, rimInit = false;
+  var clearRimRect = function () { rimRect = null; };
+  window.addEventListener("scroll", clearRimRect, { passive: true });
+  window.addEventListener("resize", clearRimRect, { passive: true });
+
+  function stepRim() {
+    rimRaf = 0;
+    if (!rimTarget || !rimTarget.isConnected) return;
+    rimCx += (rimTx - rimCx) * 0.28;
+    rimCy += (rimTy - rimCy) * 0.28;
+    var moving = Math.abs(rimTx - rimCx) > 1 || Math.abs(rimTy - rimCy) > 1;
+    if (!moving) { rimCx = rimTx; rimCy = rimTy; }
+    var xStr = Math.round(rimCx) + "px", yStr = Math.round(rimCy) + "px";
+    if (rimTarget.__rimX !== xStr || rimTarget.__rimY !== yStr) {
+      rimTarget.__rimX = xStr;
+      rimTarget.__rimY = yStr;
+      rimTarget.style.setProperty("--" + P + "-mx", xStr);
+      rimTarget.style.setProperty("--" + P + "-my", yStr);
+    }
+    if (moving) rimRaf = requestAnimationFrame(stepRim);
+  }
   document.addEventListener("pointermove", function (e) {
     if (e.pointerType === "touch") return;
-    queued = e;
-    if (lit.pending) return;
-    lit.pending = true;
-    requestAnimationFrame(function () {
-      lit.pending = false;
-      var ev = queued, el = ev.target && ev.target.closest ? ev.target.closest("." + P + "-card, ." + P + "-panel") : null;
-      while (el) {
-        var r = el.getBoundingClientRect();
-        el.style.setProperty("--" + P + "-mx", (ev.clientX - r.left).toFixed(0) + "px");
-        el.style.setProperty("--" + P + "-my", (ev.clientY - r.top).toFixed(0) + "px");
-        el = el.parentElement && el.parentElement.closest("." + P + "-card, ." + P + "-panel");
-      }
-    });
+    var el = e.target && e.target.closest ? e.target.closest("." + P + "-card, ." + P + "-panel") : null;
+    if (!el) return;
+    if (el !== rimTarget) {
+      rimTarget = el;
+      rimRect = el.getBoundingClientRect();
+      rimInit = true;
+    } else if (!rimRect) {
+      rimRect = el.getBoundingClientRect();
+    }
+    rimTx = e.clientX - rimRect.left;
+    rimTy = e.clientY - rimRect.top;
+    if (rimInit) { rimCx = rimTx; rimCy = rimTy; rimInit = false; }
+    if (!rimRaf) rimRaf = requestAnimationFrame(stepRim);
   }, { passive: true });
 
   /* ---------- events ---------- */
@@ -268,7 +358,7 @@
     var item = t.closest("." + P + "-menu__item");
     if (item && !item.disabled) pick(item);
     var accent = t.closest("[data-accent-set]");
-    if (accent) setAccent(accent.getAttribute("data-accent-set"));
+    if (accent && ownsControl(accent)) setAccent(accent.getAttribute("data-accent-set"));
     var opener = t.closest("[data-" + P + "-open]");
     if (opener) { var dlg = document.querySelector(opener.getAttribute("data-" + P + "-open")); if (dlg && dlg.showModal && !dlg.open) dlg.showModal(); }
     var closer = t.closest("[data-" + P + "-close]");
@@ -289,6 +379,7 @@
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         e.preventDefault();
         if (!mi.classList.contains("is-open")) { openMenu(mi, true); return; }
+        if (!m.items.length) return;
         var n = e.key === "ArrowDown" ? (i + 1) % m.items.length : (i - 1 + m.items.length) % m.items.length;
         if (i < 0) n = 0;
         m.items[n].focus();
@@ -301,11 +392,12 @@
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
     if (!(e.key in keys)) return;
     var all = itemsOf(tab.closest("." + P + "-tabs, ." + P + "-segmented")).filter(function (x) { return !x.disabled; });
+    if (!all.length) return;
     var k = all.indexOf(tab), s = keys[e.key];
     var to = s === "first" ? all[0] : s === "last" ? all[all.length - 1] : all[(k + s + all.length) % all.length];
     to.focus();
     selectTab(to);
-    if (to.hasAttribute("data-accent-set")) setAccent(to.getAttribute("data-accent-set"));
+    if (to.hasAttribute("data-accent-set") && ownsControl(to)) setAccent(to.getAttribute("data-accent-set"));
     e.preventDefault();
   });
 
@@ -313,13 +405,24 @@
     syncAccentControls();
     initSliders(document);
     initIndicators(document);
-    var q = false;
-    new MutationObserver(function () {
-      if (q) return;
+    var added = [], q = false;
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var nodes = muts[i].addedNodes;
+        for (var j = 0; j < nodes.length; j++) if (nodes[j].nodeType === 1) added.push(nodes[j]);
+      }
+      if (!added.length || q) return;
       q = true;
-      requestAnimationFrame(function () { q = false; initIndicators(document); initSliders(document); });
+      requestAnimationFrame(function () {
+        q = false;
+        var batch = added.splice(0, added.length);
+        for (var k = 0; k < batch.length; k++) {
+          var n = batch[k];
+          if (n.isConnected) { initIndicators(n); initSliders(n); }
+        }
+      });
     }).observe(document.body, { childList: true, subtree: true });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { document.querySelectorAll(LIST_SEL).forEach(refresh); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { document.querySelectorAll(LIST_SEL).forEach(queueSnap); });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();

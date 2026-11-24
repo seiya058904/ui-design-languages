@@ -1,23 +1,22 @@
 /* Zine / Brutal — optional behaviour (no dependencies). The CSS works without it; this adds:
-   - tablists (.zine-tabs folder tabs, .zine-segmented): click + ←/→/Home/End move aria-selected and
-     show the matching aria-controls panel
+   - tablists (.zine-tabs folder tabs, .zine-segmented): click + ←/→/Home/End move aria-selected
    - menus and pagination: plain clicks move aria-current="page"
    - chips: .zine-chip[aria-pressed] latches; inside [data-zine-single] only one stays down
    - sliders: keep --zine-value on input.zine-slider and its <output> in sync
-   - sortable tables: a .zine-sort button in a <th> sorts the rows (numbers, sizes and dates aware)
-     and flips aria-sort
-   - dialogs: [data-zine-open="#id"] / [data-zine-close]; toasts and alerts: [data-zine-dismiss]
-   - tickets (.zine-ticket): the stub tears off along the perforation (.is-torn) and the sheet is
-     stamped; [data-zine-reprint] brings a fresh stub back
-   - sticker boards (.zine-board): drag a .zine-slap to move it (lifts while held, slaps down on drop),
-     arrow keys nudge the focused one (Shift = further); the one you touch comes to the top
-   - theme: [data-theme-set="light|dark|auto"] or a [data-theme-toggle] button / checkbox switches
-     <html data-theme>, remembered in localStorage "zine-theme"; fires "zine:themechange"
+   - sortable tables: a .zine-sort button in a <th> sorts the rows and flips aria-sort
+   - dialogs, toasts/alerts, tear-off tickets (.zine-ticket), sticker boards (.zine-board), theme
    Hooks: window.ZineUI.selectTab(tab), .sort(th, dir), .toast(title, text, opts), .setTheme(name), .syncSlider(input) */
 (function () {
   var P = "zine";
   var TABLISTS = "." + P + "-tabs, ." + P + "-segmented";
   var TAB_ITEM = "." + P + "-tabs__item, ." + P + "-segmented__item";
+
+  function isWallHost() { return document.documentElement.hasAttribute("data-wall-host"); }
+  function ownsControl(el) {
+    if (!isWallHost()) return true;
+    var st = el.closest && el.closest("[data-pack-stage]");
+    return !!st && st.getAttribute("data-pack-stage") === P;
+  }
 
   function itemsOf(list) {
     return Array.prototype.filter.call(list.querySelectorAll(TAB_ITEM), function (el) { return el.closest(TABLISTS) === list; });
@@ -86,7 +85,9 @@
       var r = typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y));
       return next === "ascending" ? r : -r;
     });
-    rows.forEach(function (r) { body.appendChild(r); });
+    var frag = document.createDocumentFragment();
+    rows.forEach(function (r) { frag.appendChild(r); });
+    body.appendChild(frag);
     table.dispatchEvent(new CustomEvent(P + ":sort", { bubbles: true, detail: { column: col, direction: next } }));
   }
 
@@ -114,18 +115,22 @@
   function syncThemeControls() {
     var t = currentTheme();
     document.querySelectorAll("[data-theme-set]").forEach(function (b) {
+      if (!ownsControl(b)) return;
       var on = b.getAttribute("data-theme-set") === t;
       if (b.matches(TAB_ITEM)) { b.setAttribute("aria-selected", on ? "true" : "false"); b.classList.toggle("is-active", on); b.tabIndex = on ? 0 : -1; }
       else b.setAttribute("aria-pressed", on ? "true" : "false");
     });
     document.querySelectorAll("[data-theme-toggle]").forEach(function (b) {
+      if (!ownsControl(b)) return;
       if (b.type === "checkbox") b.checked = isDark(); else b.setAttribute("aria-pressed", isDark() ? "true" : "false");
     });
   }
   function setTheme(t) {
     if (!t || t === "light") document.documentElement.removeAttribute("data-theme");
     else document.documentElement.setAttribute("data-theme", t);
-    try { localStorage.setItem(THEME_KEY, t || "light"); } catch (err) { /* not remembered */ }
+    if (!isWallHost()) {
+      try { localStorage.setItem(THEME_KEY, t || "light"); } catch (err) { /* not remembered */ }
+    }
     syncThemeControls();
     document.dispatchEvent(new CustomEvent(P + ":themechange", { detail: { theme: t || "light", dark: isDark() } }));
   }
@@ -137,7 +142,8 @@
     var form = e.target;
     if (form && form.querySelectorAll) requestAnimationFrame(function () { form.querySelectorAll("." + P + "-slider").forEach(syncSlider); });
   });
-  document.addEventListener("change", function (e) { if (e.target.matches && e.target.matches("input[data-theme-toggle]")) setTheme(e.target.checked ? "dark" : "light"); });
+  document.addEventListener("change", function (e) { if (e.target.matches && e.target.matches("input[data-theme-toggle]") && ownsControl(e.target)) setTheme(e.target.checked ? "dark" : "light"); });
+
   /* ---------- tickets ---------- */
   function tear(ticket, on) {
     ticket.classList.toggle("is-torn", on);
@@ -150,17 +156,25 @@
     if (again) { again.hidden = !on; if (on) again.focus({ preventScroll: true }); else if (stub) stub.focus({ preventScroll: true }); }
   }
 
-  /* ---------- sticker board ---------- */
+  /* ---------- sticker board (GPU translate3d during drag, commit % on drop — zero layout thrash) ---------- */
   var held = null, topZ = 10;
   function raise(el) { el.style.setProperty("--z", String(++topZ)); }
-  function slap(el) { el.classList.remove("is-slapped"); void el.offsetWidth; el.classList.add("is-slapped"); }
+  function slap(el) {
+    el.classList.remove("is-slapped");
+    requestAnimationFrame(function () { el.classList.add("is-slapped"); });
+  }
   document.addEventListener("pointerdown", function (e) {
     var st = e.target.closest && e.target.closest("." + P + "-slap");
     if (!st || e.button > 0) return;
     var board = st.closest("." + P + "-board");
     if (!board) return;
-    var b = board.getBoundingClientRect(), r = st.getBoundingClientRect();
-    held = { el: st, board: board, dx: e.clientX - r.left, dy: e.clientY - r.top, moved: false, x0: e.clientX, y0: e.clientY };
+    var b = board.getBoundingClientRect();
+    var w = st.offsetWidth, h = st.offsetHeight;
+    var ox = st.offsetLeft, oy = st.offsetTop;
+    held = {
+      el: st, board: board, bw: b.width, bh: b.height, w: w, h: h,
+      ox: ox, oy: oy, x0: e.clientX, y0: e.clientY, tx: 0, ty: 0, moved: false
+    };
     raise(st);
     st.classList.add("is-held");
     try { st.setPointerCapture(e.pointerId); } catch (err) { /* old browsers */ }
@@ -169,18 +183,25 @@
   });
   document.addEventListener("pointermove", function (e) {
     if (!held) return;
-    if (!held.moved && Math.hypot(e.clientX - held.x0, e.clientY - held.y0) < 3) return;
+    var dx = e.clientX - held.x0, dy = e.clientY - held.y0;
+    if (!held.moved && Math.hypot(dx, dy) < 3) return;
     held.moved = true;
-    var b = held.board.getBoundingClientRect(), w = held.el.offsetWidth, h = held.el.offsetHeight;
-    var x = Math.max(-w * 0.3, Math.min(b.width - w * 0.7, e.clientX - b.left - held.dx));
-    var y = Math.max(-h * 0.3, Math.min(b.height - h * 0.7, e.clientY - b.top - held.dy));
-    held.el.style.setProperty("--x", (x / b.width * 100).toFixed(2) + "%");
-    held.el.style.setProperty("--y", (y / b.height * 100).toFixed(2) + "%");
+    var nx = Math.max(-held.w * 0.3, Math.min(held.bw - held.w * 0.7, held.ox + dx));
+    var ny = Math.max(-held.h * 0.3, Math.min(held.bh - held.h * 0.7, held.oy + dy));
+    held.tx = nx - held.ox;
+    held.ty = ny - held.oy;
+    held.el.style.transform = "translate3d(" + held.tx.toFixed(1) + "px," + held.ty.toFixed(1) + "px,0)";
   });
   function drop() {
     if (!held) return;
-    held.el.classList.remove("is-held");
-    slap(held.el);
+    var el = held.el;
+    if (held.moved) {
+      el.style.setProperty("--x", ((held.ox + held.tx) / held.bw * 100).toFixed(2) + "%");
+      el.style.setProperty("--y", ((held.oy + held.ty) / held.bh * 100).toFixed(2) + "%");
+      el.style.transform = "";
+    }
+    el.classList.remove("is-held");
+    slap(el);
     held = null;
   }
   document.addEventListener("pointerup", drop);
@@ -213,9 +234,9 @@
     var sorter = t.closest("." + P + "-sort");
     if (sorter) { var th = sorter.closest("th"); if (th) sort(th); }
     var themeSet = t.closest("[data-theme-set]");
-    if (themeSet) setTheme(themeSet.getAttribute("data-theme-set"));
+    if (themeSet && ownsControl(themeSet)) setTheme(themeSet.getAttribute("data-theme-set"));
     var themeToggle = t.closest("button[data-theme-toggle]");
-    if (themeToggle) setTheme(isDark() ? "light" : "dark");
+    if (themeToggle && ownsControl(themeToggle)) setTheme(isDark() ? "light" : "dark");
     var opener = t.closest("[data-" + P + "-open]");
     if (opener) { var dlg = document.querySelector(opener.getAttribute("data-" + P + "-open")); if (dlg && dlg.showModal && !dlg.open) dlg.showModal(); }
     var closer = t.closest("[data-" + P + "-close]");
@@ -227,7 +248,7 @@
     var st = e.target.closest && e.target.closest("." + P + "-board ." + P + "-slap");
     var move = st && { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
     if (move) {
-      var board = st.closest("." + P + "-board"), step = e.shiftKey ? 8 : 2;
+      var step = e.shiftKey ? 8 : 2;
       var x = parseFloat(st.style.getPropertyValue("--x") || getComputedStyle(st).getPropertyValue("--x")) || 0;
       var y = parseFloat(st.style.getPropertyValue("--y") || getComputedStyle(st).getPropertyValue("--y")) || 0;
       st.style.setProperty("--x", Math.max(-10, Math.min(90, x + move[0] * step)).toFixed(2) + "%");
@@ -242,22 +263,31 @@
     var keys = { ArrowRight: 1, ArrowLeft: -1, Home: "first", End: "last" };
     if (!(e.key in keys)) return;
     var all = itemsOf(tab.closest(TABLISTS)).filter(function (x) { return !x.disabled; });
+    if (!all.length) return;
     var i = all.indexOf(tab), s = keys[e.key];
     var to = s === "first" ? all[0] : s === "last" ? all[all.length - 1] : all[(i + s + all.length) % all.length];
     to.focus();
     selectTab(to);
-    if (to.hasAttribute("data-theme-set")) setTheme(to.getAttribute("data-theme-set"));
+    if (to.hasAttribute("data-theme-set") && ownsControl(to)) setTheme(to.getAttribute("data-theme-set"));
     e.preventDefault();
   });
 
   function boot() {
     syncThemeControls();
     initSliders(document);
-    var queued = false;
-    new MutationObserver(function () {
-      if (queued) return;
+    var added = [], queued = false;
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var nodes = muts[i].addedNodes;
+        for (var j = 0; j < nodes.length; j++) if (nodes[j].nodeType === 1) added.push(nodes[j]);
+      }
+      if (!added.length || queued) return;
       queued = true;
-      requestAnimationFrame(function () { queued = false; initSliders(document); });
+      requestAnimationFrame(function () {
+        queued = false;
+        var batch = added.splice(0, added.length);
+        for (var k = 0; k < batch.length; k++) if (batch[k].isConnected) initSliders(batch[k]);
+      });
     }).observe(document.body, { childList: true, subtree: true });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

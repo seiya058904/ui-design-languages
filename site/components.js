@@ -14,8 +14,12 @@
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var grid = $("[data-grid]"), stylesEl = $("[data-styles]"), catsEl = $("[data-cats]"), backdrops = $("[data-backdrops]"), note = $("[data-note]"), search = $("[data-search]");
+  var cwSection = $(".cw");
   var state = { style: "all", kind: "all", theme: "light", query: "" };
   var cards = [];
+  var lastColW = -1;
+  var animTimer = 0;
+  var goneTimer = 0;
 
   /* ---------- build ---------- */
   function interleave() {
@@ -32,14 +36,16 @@
   function buildCard(packId, compId, demoId) {
     var hit = W.demo(packId, compId, demoId), p = W.byId[packId];
     if (!hit) return null;
+    var kind = KIND[compId] || "content";
     var card = document.createElement("article");
     card.className = "wcard";
     card.setAttribute("data-pack", packId);
-    card.setAttribute("data-kind", KIND[compId] || "content");
+    card.setAttribute("data-kind", kind);
     card.style.setProperty("--glow", p.dot);
     var inner = document.createElement("div");
     inner.className = "wcard__in";
-    inner.appendChild(W.stage(packId, compId, demoId));
+    var stage = W.stage(packId, compId, demoId);
+    inner.appendChild(stage);
     var bar = document.createElement("div");
     bar.className = "wcard__bar";
     bar.innerHTML = '<button class="wcard__tag" type="button"><i></i><b></b><span></span></button><button class="wcard__code" type="button">' + CODE_ICON + "</button>";
@@ -51,25 +57,38 @@
     bar.querySelectorAll("button").forEach(function (b) { b.addEventListener("click", function () { openDrawer(packId, compId, demoId); }); });
     inner.appendChild(bar);
     card.appendChild(inner);
-    /* Spotlight: one small element moved by transform, once per frame, so the pointer never
-       restyles the demo itself. */
-    var stage = inner.firstChild, spot = document.createElement("span"), dot = document.createElement("i");
+
+    /* Spotlight container: driven by one delegated pointermove on grid (zero per-card listeners). */
+    var spot = document.createElement("span"), dot = document.createElement("i");
     spot.className = "wcard__spot"; spot.setAttribute("aria-hidden", "true");
     spot.appendChild(dot); stage.appendChild(spot);
-    var at = null, queued = false;
-    card.addEventListener("pointermove", function (e) {
-      at = e;
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(function () {
-        queued = false;
-        var r = stage.getBoundingClientRect();
-        dot.style.transform = "translate3d(" + (at.clientX - r.left).toFixed(0) + "px," + (at.clientY - r.top).toFixed(0) + "px,0)";
+    card.__spotStage = stage;
+    card.__spotDot = dot;
+
+    var words = [p.name, p.id, hit.component.title, compId, hit.demo.label, kind].join(" ").toLowerCase();
+    return { el: card, pack: packId, comp: compId, demo: demoId, kind: kind, words: words, shown: true, x: 0, y: 0 };
+  }
+
+  /* Delegated hover spotlight across all 96 cards (caches active stage rect, 1 rAF per frame). */
+  if (grid && window.matchMedia && window.matchMedia("(hover: hover)").matches) {
+    var spotCard = null, spotRect = null, spotEv = null, spotRaf = 0;
+    var clearSpotRect = function () { spotRect = null; };
+    window.addEventListener("scroll", clearSpotRect, { passive: true });
+    window.addEventListener("resize", clearSpotRect, { passive: true });
+    grid.addEventListener("pointermove", function (e) {
+      var card = e.target.closest && e.target.closest(".wcard");
+      if (!card || !card.__spotDot) return;
+      if (card !== spotCard) { spotCard = card; spotRect = null; }
+      spotEv = e;
+      if (spotRaf) return;
+      spotRaf = requestAnimationFrame(function () {
+        spotRaf = 0;
+        if (!spotCard || !spotEv) return;
+        if (!spotRect) spotRect = spotCard.__spotStage.getBoundingClientRect();
+        spotCard.__spotDot.style.transform = "translate3d(" + Math.round(spotEv.clientX - spotRect.left) + "px," + Math.round(spotEv.clientY - spotRect.top) + "px,0)";
       });
-    });
-    // what the search box matches: language, component, demo and kind
-    var words = [p.name, p.id, hit.component.title, compId, hit.demo.label, KIND[compId] || "content"].join(" ").toLowerCase();
-    return { el: card, pack: packId, comp: compId, demo: demoId, words: words };
+    }, { passive: true });
+    grid.addEventListener("pointerleave", function () { spotCard = null; spotRect = null; });
   }
 
   function buildFilters() {
@@ -110,94 +129,153 @@
       backdrops.appendChild(layer);
     });
   }
-  function glide() {
+  function glide(scrollIntoView) {
     var on = stylesEl.querySelector('[aria-pressed="true"]'), g = stylesEl.querySelector(".cw-filter__glider");
     if (!on || !g) return;
     g.style.width = on.offsetWidth + "px";
-    g.style.transform = "translateX(" + on.offsetLeft + "px)";
+    g.style.transform = "translate3d(" + on.offsetLeft + "px,0,0)";
+    if (scrollIntoView && on.scrollIntoView) on.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
   }
-  function syncFilters() {
+  function syncFilters(scrollActive) {
     stylesEl.querySelectorAll("[data-style]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-style") === state.style)); });
+    var tokens = state.query ? state.query.split(/\s+/) : null;
     catsEl.querySelectorAll("[data-kind]").forEach(function (b) {
-      var k = b.getAttribute("data-kind");
-      var n = cards.filter(function (c) { return (state.style === "all" || c.pack === state.style) && (k === "all" || c.el.getAttribute("data-kind") === k) && matches(c); }).length;
+      var k = b.getAttribute("data-kind"), n = 0;
+      for (var i = 0; i < cards.length; i++) {
+        var c = cards[i];
+        if ((state.style === "all" || c.pack === state.style) && (k === "all" || c.kind === k) && matchesTokens(c, tokens)) n++;
+      }
       b.setAttribute("aria-pressed", String(k === state.kind));
       b.disabled = n === 0 && k !== "all";
     });
-    glide();
+    glide(scrollActive);
   }
   function setStyle(id) {
     state.style = id;
-    if (state.kind !== "all" && !cards.some(function (c) { return c.pack === id && c.el.getAttribute("data-kind") === state.kind; })) state.kind = "all";
-    syncFilters();
+    /* Fix: only reset kind if a specific language has no cards of that kind ("all" always keeps kind). */
+    if (id !== "all" && state.kind !== "all" && !cards.some(function (c) { return c.pack === id && c.kind === state.kind; })) state.kind = "all";
+    syncFilters(true);
     var hash = id === "all" ? "" : "#" + id;
     if (location.hash !== hash) history.replaceState(null, "", hash || location.pathname + location.search);
     apply(true);
   }
 
-  /* ---------- masonry ---------- */
-  function matches(c) {
-    if (!state.query) return true;
-    return state.query.split(/\s+/).every(function (w) { return c.words.indexOf(w) >= 0; });
+  /* ---------- masonry (strict batched read/write — 1 layout instead of 96 forced reflows) ---------- */
+  function matchesTokens(c, tokens) {
+    if (!tokens) return true;
+    for (var i = 0; i < tokens.length; i++) if (c.words.indexOf(tokens[i]) < 0) return false;
+    return true;
   }
-  function visible(c) { return (state.style === "all" || c.pack === state.style) && (state.kind === "all" || c.el.getAttribute("data-kind") === state.kind) && matches(c); }
   function layout() {
     var width = grid.clientWidth;
+    if (!width) return;
     var cols = width >= 1060 ? 3 : width >= 660 ? 2 : 1, gap = width >= 660 ? 20 : 16;
     var colW = (width - gap * (cols - 1)) / cols;
     var heights = [];
     for (var i = 0; i < cols; i++) heights.push(0);
-    var shown = cards.filter(visible);
-    shown.forEach(function (c) { c.el.style.width = colW + "px"; });
-    shown.forEach(function (c) {
-      var col = heights.indexOf(Math.min.apply(null, heights));
+
+    var shown = [];
+    for (var k = 0; k < cards.length; k++) if (cards[k].shown) shown.push(cards[k]);
+
+    // Phase 1: Batch write widths only when colW changed
+    if (colW !== lastColW) {
+      var colWpx = colW + "px";
+      for (var w = 0; w < cards.length; w++) cards[w].el.style.width = colWpx;
+      lastColW = colW;
+    }
+
+    // Phase 2: Batch read all visible card heights (single layout pass)
+    var cardHeights = new Array(shown.length);
+    for (var r = 0; r < shown.length; r++) cardHeights[r] = shown[r].el.offsetHeight;
+
+    // Phase 3: Compute positions and batch write transforms (zero interleaved reads)
+    for (var p = 0; p < shown.length; p++) {
+      var c = shown[p];
+      var col = 0;
+      for (var j = 1; j < cols; j++) if (heights[j] < heights[col]) col = j;
       c.x = col * (colW + gap);
       c.y = heights[col];
-      c.el.style.transform = "translate(" + c.x + "px," + c.y + "px)";
-      heights[col] += c.el.offsetHeight + gap;
-    });
-    cards.forEach(function (c) { if (!visible(c)) c.el.style.transform = "translate(" + (c.x || 0) + "px," + (c.y || 0) + "px)"; });
-    grid.style.height = Math.max(0, Math.max.apply(null, heights) - gap) + "px";
+      heights[col] += cardHeights[p] + gap;
+      c.el.style.transform = "translate3d(" + c.x + "px," + c.y + "px,0)";
+    }
+    var maxH = 0;
+    for (var m = 0; m < cols; m++) if (heights[m] > maxH) maxH = heights[m];
+    grid.style.height = Math.max(0, maxH - gap) + "px";
   }
   function apply(animate) {
-    grid.classList.toggle("is-animating", !!animate);
+    clearTimeout(animTimer);
+    clearTimeout(goneTimer);
+    if (animate) {
+      grid.classList.add("is-animating");
+      animTimer = setTimeout(function () { grid.classList.remove("is-animating"); }, 700);
+    } else {
+      grid.classList.remove("is-animating");
+    }
     document.body.setAttribute("data-wall-style", state.style);
     backdrops.querySelectorAll(".cw-backdrop").forEach(function (b) { b.classList.toggle("is-on", b.getAttribute("data-pack") === state.style); });
-    $(".cw").classList.toggle("is-unified", state.style !== "all");
-    $(".cw").classList.toggle("is-light-only", !!W.byId[state.style] && !W.byId[state.style].dark); // e.g. paper-only Sketch
-    $(".cw").classList.toggle("is-dark-canvas", !!W.byId[state.style] && W.byId[state.style].tone === "dark"); // e.g. dark-first Obsidian
-    cards.forEach(function (c) { c.el.classList.toggle("is-out", !visible(c)); c.el.setAttribute("aria-hidden", String(!visible(c))); c.el.inert = !visible(c); });
+    cwSection.classList.toggle("is-unified", state.style !== "all");
+    cwSection.classList.toggle("is-light-only", !!W.byId[state.style] && !W.byId[state.style].dark);
+    cwSection.classList.toggle("is-dark-canvas", !!W.byId[state.style] && W.byId[state.style].tone === "dark");
+
+    var tokens = state.query ? state.query.split(/\s+/) : null;
+    var n = 0;
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+      var vis = (state.style === "all" || c.pack === state.style) && (state.kind === "all" || c.kind === state.kind) && matchesTokens(c, tokens);
+      c.shown = vis;
+      if (vis) {
+        n++;
+        c.el.classList.remove("is-gone", "is-out");
+        c.el.setAttribute("aria-hidden", "false");
+        c.el.inert = false;
+      } else {
+        c.el.classList.add("is-out");
+        c.el.setAttribute("aria-hidden", "true");
+        c.el.inert = true;
+      }
+    }
     layout();
-    var n = cards.filter(visible).length;
+    // Hide filtered-out cards from painting/compositing once their 280ms fade finishes.
+    goneTimer = setTimeout(function () {
+      for (var j = 0; j < cards.length; j++) if (!cards[j].shown) cards[j].el.classList.add("is-gone");
+    }, animate ? 320 : 0);
+
     var p = W.byId[state.style];
     if (state.query && !n) note.textContent = "Nothing matches “" + state.query + "”" + (p ? " in " + p.name : "") + ". Try a component (slider, menu, dial) or a language name.";
     else if (state.query) note.textContent = n + (n === 1 ? " component matches" : " components match") + " “" + state.query + "”" + (p ? " in " + p.name : "") + ".";
     else note.textContent = p ? n + " " + p.name + " components, on " + p.name + "'s own canvas. Open any of them for its complete source." : n + " components from " + W.packs.length + " languages, all live. Open any card for its complete source.";
   }
   var raf = 0;
-  function relayout() { if (raf) return; raf = requestAnimationFrame(function () { raf = 0; layout(); glide(); }); }
+  function relayout() { if (raf) return; raf = requestAnimationFrame(function () { raf = 0; layout(); glide(false); }); }
 
-  /* ---------- reveal ---------- */
+  /* ---------- reveal & offscreen pause ---------- */
   function reveal() {
     if (!("IntersectionObserver" in window)) { cards.forEach(function (c) { c.el.classList.add("is-in"); }); return; }
     var queue = 0;
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        io.unobserve(e.target);
-        var delay = (queue++ % 6) * 70;
-        setTimeout(function () { e.target.classList.add("is-in"); }, delay);
-        setTimeout(function () { queue = Math.max(0, queue - 1); }, 600);
+        var el = e.target;
+        el.classList.toggle("is-offscreen", !e.isIntersecting);
+        if (!e.isIntersecting || el.classList.contains("is-in")) return;
+        var delay = (queue++ % 6) * 55;
+        setTimeout(function () { el.classList.add("is-in"); }, delay);
+        setTimeout(function () { queue = Math.max(0, queue - 1); }, 500);
       });
-    }, { rootMargin: "0px 0px -8% 0px" });
+    }, { rootMargin: "160px 0px 160px 0px" });
     cards.forEach(function (c) { io.observe(c.el); });
   }
 
   /* ---------- drawer ---------- */
-  var drawer = $("[data-drawer]"), frame = null, lastFocus = null, current = null;
+  var drawer = $("[data-drawer]"), frame = null, lastFocus = null, current = null, closeTimer = 0;
   function copy(btn, text) {
-    var label = btn.querySelector("span") || btn, original = label.textContent;
-    function done(ok) { label.textContent = ok ? "Copied" : "Copy failed"; btn.classList.toggle("is-copied", ok); setTimeout(function () { label.textContent = original; btn.classList.remove("is-copied"); }, 1500); }
+    var label = btn.querySelector("span") || btn;
+    if (!btn.__origCopyLabel) btn.__origCopyLabel = label.textContent;
+    clearTimeout(btn.__copyTimer);
+    function done(ok) {
+      label.textContent = ok ? "Copied" : "Copy failed";
+      btn.classList.toggle("is-copied", ok);
+      btn.__copyTimer = setTimeout(function () { label.textContent = btn.__origCopyLabel; btn.classList.remove("is-copied"); }, 1500);
+    }
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
     else {
       var ta = document.createElement("textarea");
@@ -236,6 +314,7 @@
   srcTabs.addEventListener("click", function (e) { var b = e.target.closest("[data-src]"); if (b && !b.disabled) setSrcTab(b.getAttribute("data-src")); });
   srcTabs.addEventListener("keydown", function (e) {
     var list = Array.prototype.filter.call(srcTabs.querySelectorAll("[data-src]"), function (b) { return !b.disabled; });
+    if (!list.length) return;
     var i = list.indexOf(document.activeElement), n = i;
     if (e.key === "ArrowRight") n = (i + 1) % list.length;
     else if (e.key === "ArrowLeft") n = (i - 1 + list.length) % list.length;
@@ -279,8 +358,9 @@
   function openDrawer(packId, compId, demoId, fromHash) {
     var hit = W.demo(packId, compId, demoId);
     if (!hit) return;
+    clearTimeout(closeTimer); // prevent a pending close timer from hiding a freshly reopened drawer
     var p = W.byId[packId], comp = hit.component;
-    lastFocus = document.activeElement;
+    if (drawer.hidden) lastFocus = document.activeElement;
     $("[data-dr-tag]").innerHTML = '<i style="background:' + p.dot + '"></i><b style="' + p.font + '"></b>';
     $("[data-dr-tag] b").textContent = p.name;
     $("[data-dr-title]").textContent = comp.title;
@@ -308,7 +388,12 @@
     if (drawer.hidden) return;
     drawer.classList.remove("is-open");
     document.documentElement.classList.remove("has-drawer");
-    setTimeout(function () { drawer.hidden = true; $("[data-dr-view]").innerHTML = ""; frame = null; }, 420);
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(function () {
+      drawer.hidden = true;
+      $("[data-dr-view]").innerHTML = "";
+      frame = null;
+    }, 380);
     history.replaceState(null, "", state.style === "all" ? location.pathname + location.search : "#" + state.style);
     if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
   }
@@ -318,7 +403,6 @@
     if (!frame || e.source !== frame.contentWindow || !e.data || e.data.type !== "demo-size") return;
     frame.style.height = Math.max(160, e.data.h) + "px";
   });
-  /* Copy / download act on whatever is built; a click before it's ready waits for it. */
   function withSource(fn) {
     if (!current) return;
     S.build(current.pack, current.comp.id, current.demo.id).then(fn, function () {});
@@ -334,9 +418,11 @@
       a.href = url; a.download = d.info.fileName;
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-      var label = b.querySelector("span"), was = label.textContent;
+      var label = b.querySelector("span");
+      if (!b.__origDlLabel) b.__origDlLabel = label.textContent;
+      clearTimeout(b.__dlTimer);
       label.textContent = "Saved " + d.info.fileName;
-      setTimeout(function () { label.textContent = was; }, 1800);
+      b.__dlTimer = setTimeout(function () { label.textContent = b.__origDlLabel; }, 1800);
     });
   });
 
@@ -355,7 +441,7 @@
   function fromHash() {
     var parts = location.hash.replace(/^#\/?/, "").split("/");
     if (W.byId[parts[0]]) {
-      if (state.style !== parts[0]) { state.style = parts[0]; syncFilters(); apply(true); }
+      if (state.style !== parts[0]) { state.style = parts[0]; syncFilters(true); apply(true); }
       if (parts[1]) {
         var pick = W.byId[parts[0]].wall.filter(function (pk) { return pk[0] === parts[1]; })[0];
         openDrawer(parts[0], parts[1], pick ? pick[1] : null, true);
@@ -371,12 +457,12 @@
       queued = requestAnimationFrame(function () {
         queued = 0;
         state.query = search.value.trim().toLowerCase();
-        syncFilters();
+        syncFilters(false);
         apply(true);
       });
     });
     search.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && search.value) { search.value = ""; state.query = ""; syncFilters(); apply(true); e.stopPropagation(); }
+      if (e.key === "Escape" && search.value) { search.value = ""; state.query = ""; syncFilters(false); apply(true); e.stopPropagation(); }
     });
     document.addEventListener("keydown", function (e) {
       if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
@@ -388,33 +474,54 @@
     });
   }
 
-  /* ---------- sticky bar gets a frosted background once it sticks ---------- */
+  /* ---------- sticky bar gets a frosted background once it sticks (sentinel IO, zero scroll read) ---------- */
   var bar = $("[data-bar]");
-  function stuck() { bar.classList.toggle("is-stuck", bar.getBoundingClientRect().top <= 65); }
-  window.addEventListener("scroll", stuck, { passive: true });
-  stuck();
+  if (bar) {
+    if ("IntersectionObserver" in window) {
+      var barSent = document.createElement("div");
+      barSent.setAttribute("aria-hidden", "true");
+      barSent.style.cssText = "position:relative;height:1px;margin-bottom:-1px;pointer-events:none";
+      bar.parentNode.insertBefore(barSent, bar);
+      new IntersectionObserver(function (es) {
+        bar.classList.toggle("is-stuck", !es[0].isIntersecting);
+      }, { rootMargin: "-65px 0px 0px 0px" }).observe(barSent);
+    } else {
+      var stuck = function () { bar.classList.toggle("is-stuck", bar.getBoundingClientRect().top <= 65); };
+      window.addEventListener("scroll", stuck, { passive: true });
+      stuck();
+    }
+  }
 
   /* ---------- boot ---------- */
   W.ready().then(function () {
+    var frag = document.createDocumentFragment();
     interleave().forEach(function (pk) {
       var c = buildCard(pk[0], pk[1], pk[2]);
-      if (c) { cards.push(c); grid.appendChild(c.el); }
+      if (c) { cards.push(c); frag.appendChild(c.el); }
     });
+    grid.appendChild(frag);
     var total = document.querySelector("[data-total]");
     if (total) total.textContent = cards.length;
     buildFilters();
     var start = location.hash.replace(/^#\/?/, "").split("/")[0];
     if (W.byId[start]) state.style = start;
-    syncFilters();
+    syncFilters(false);
     apply(false);
     reveal();
     W.scripts().then(function () { relayout(); fromHash(); });
     if (document.fonts) document.fonts.ready.then(relayout);
     if ("ResizeObserver" in window) {
-      var ro = new ResizeObserver(relayout);
+      var ro = new ResizeObserver(function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          var t = entries[i].target;
+          if (t === grid) { relayout(); return; }
+          var card = t.parentElement;
+          if (card && !card.classList.contains("is-out")) { relayout(); return; }
+        }
+      });
       ro.observe(grid);
       cards.forEach(function (c) { ro.observe(c.el.firstChild); });
-    } else window.addEventListener("resize", relayout);
+    } else window.addEventListener("resize", relayout, { passive: true });
     window.addEventListener("hashchange", fromHash);
   }).catch(function () {
     note.textContent = "The component catalogs could not be loaded. Open this page over http (GitHub Pages or a local server), not file://.";

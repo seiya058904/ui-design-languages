@@ -138,7 +138,7 @@
   /* ---------- masonry ---------- */
   function matches(c) {
     if (!state.query) return true;
-    return state.query.split(/s+/).every(function (w) { return c.words.indexOf(w) >= 0; });
+    return state.query.split(/\s+/).every(function (w) { return c.words.indexOf(w) >= 0; });
   }
   function visible(c) { return (state.style === "all" || c.pack === state.style) && (state.kind === "all" || c.el.getAttribute("data-kind") === state.kind) && matches(c); }
   function layout() {

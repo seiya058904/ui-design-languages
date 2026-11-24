@@ -127,7 +127,10 @@
   function tear(ticket, on) {
     ticket.classList.toggle("is-torn", on);
     var stub = ticket.querySelector("." + P + "-ticket__stub");
-    if (stub) stub.setAttribute("aria-hidden", on ? "true" : "false");
+    if (stub) {
+      if (on) stub.setAttribute("aria-hidden", "true"); else stub.removeAttribute("aria-hidden");
+      stub.inert = on;
+    }
     var again = ticket.parentElement && ticket.parentElement.querySelector("[data-" + P + "-reprint]");
     if (again) { again.hidden = !on; if (on) again.focus({ preventScroll: true }); else if (stub) stub.focus({ preventScroll: true }); }
   }

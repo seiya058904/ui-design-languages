@@ -385,6 +385,7 @@
     to.focus();
     selectTab(to);
     if (to.hasAttribute("data-theme-set")) setTheme(to.getAttribute("data-theme-set"));
+    if (to.hasAttribute("data-" + P + "-wave")) { var sw = scopeOf(to); if (sw) setWave(sw, to.getAttribute("data-" + P + "-wave")); }
     e.preventDefault();
   });
 

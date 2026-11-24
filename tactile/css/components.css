@@ -773,6 +773,8 @@ select.tactile-input {
   border-radius: 50%;
   background: var(--tactile-color-surface);
   box-shadow: var(--tactile-shadow-level-4);
+  user-select: none;
+  -webkit-user-select: none;
   touch-action: none;
 }
 /* The carved groove the arc runs in */

@@ -569,14 +569,14 @@ select.sketch-input {
    Washes: default (yellow) · --pink · --blue · --green · --violet. Hover straightens a note and lifts it off
    the board; a pinned note (aria-pressed on the pin, js/sketch.js flips it) stays put. --done strikes it through.
    ========================================================================= */
-.sketch-notes { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px 18px; padding: 12px 4px 4px; }
+.sketch-notes { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px 18px; width: 100%; padding: 12px 4px 4px; }
 .sketch-sticky {
   --wash: var(--sketch-color-warning);
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  width: 172px;
+  width: clamp(148px, calc(50% - 9px), 172px);
   min-height: 164px;
   padding: 22px 14px 12px;
   border: var(--sketch-line-regular) solid var(--sketch-color-ink);
@@ -691,7 +691,8 @@ select.sketch-input {
    Done nodes are lightly hatched with a tick; the current one is bold on a brand wash; later ones are
    dashed, and so are the arrows leading to them. js/sketch.js moves aria-current on click. Stacks below 560px.
    ========================================================================= */
-.sketch-flow { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 0; width: 100%; margin: 0; padding: 0; list-style: none; counter-reset: flow; container-type: inline-size; }
+.sketch-flow { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 0; width: 100%; min-width: 240px; margin: 0; padding: 0; list-style: none; counter-reset: flow; container-type: inline-size; }
+@media (max-width: 320px) { .sketch-flow { min-width: 0; } }
 .sketch-flow > li { display: flex; align-items: center; counter-increment: flow; }
 .sketch-flow > li + li::before {
   content: "";

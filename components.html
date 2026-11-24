@@ -51,6 +51,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
           <input type="search" placeholder="Search components" aria-label="Search components" autocomplete="off" spellcheck="false" data-search>
           <kbd aria-hidden="true">/</kbd>
+          <button class="cw-search__clear" type="button" aria-label="Clear search" data-search-clear hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
         </label>
         <div class="cw-cats" role="group" aria-label="Kind of component" data-cats></div>
         <div class="seg" role="group" aria-label="Theme" data-theme-seg>
@@ -64,6 +65,10 @@
   <section class="wrap cw" aria-label="Component wall">
     <div class="cw-backdrops" aria-hidden="true" data-backdrops></div>
     <div class="cw-grid" data-grid aria-live="polite"></div>
+    <div class="cw-empty" data-empty hidden>
+      <p data-empty-text></p>
+      <button class="pill pill--sm" type="button" data-reset>Reset filters</button>
+    </div>
     <p class="cw-note" data-note></p>
   </section>
 </main>

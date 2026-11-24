@@ -244,6 +244,7 @@
           inner.className = "same__inner";
           inner.setAttribute("style", p.root + ";" + (p.page || "") + ";padding:" + (m ? m[1] : "22px"));
           inner.innerHTML = wrap.innerHTML.replace(/min-height:\s*100vh;?/g, "");
+          inner.addEventListener("click", UIWall.inertLinks);
           view.appendChild(inner);
           fitCompare(view);
           if (cro) { cro.observe(view); cro.observe(inner); }
@@ -257,8 +258,8 @@
   var rows = Array.prototype.slice.call(document.querySelectorAll("[data-marquee]"));
   if (rows.length && window.UIWall) {
     var ROWS = [
-      [["clay", "widget", "control-tiles"], ["braun", "slider", "rotary-dial"], ["lilac", "timer", "focus-timer"], ["zine", "ticket", "tear-off-ticket"], ["atelier", "command", "command-palette"], ["obsidian", "dock", "floating-dock"], ["tactile", "dial", "thermostat"], ["terrarium", "garden", "habit-garden"], ["sketch", "notes", "sticky-notes"], ["clay", "button", "variants"], ["zine", "tabs", "folder-tabs"], ["obsidian", "card", "kpi-card"], ["atelier", "tabs", "pill-tabs"]],
-      [["braun", "scope", "scope"], ["lilac", "progress", "ring-and-steps"], ["obsidian", "media", "now-playing"], ["sketch", "flow", "flow-card"], ["terrarium", "mood", "mood-dial"], ["tactile", "chips", "filter-chips"], ["atelier", "filter", "filter-capsules"], ["zine", "board", "sticker-board"], ["clay", "slider", "slider"], ["lilac", "deck", "card-stack"], ["braun", "progress", "led-meter"], ["terrarium", "progress", "ring"], ["tactile", "selection", "switch"], ["sketch", "tabs", "folder-tabs"]]
+      [["clay", "stepper", "stepper"], ["braun", "slider", "rotary-dial"], ["lilac", "timer", "focus-timer"], ["zine", "ticket", "tear-off-ticket"], ["atelier", "card", "project-card"], ["obsidian", "dock", "floating-dock"], ["tactile", "dial", "thermostat"], ["terrarium", "garden", "habit-garden"], ["sketch", "notes", "doodle-pad"], ["clay", "button", "variants"], ["zine", "tabs", "folder-tabs"], ["obsidian", "card", "kpi-card"], ["atelier", "tabs", "pill-tabs"]],
+      [["braun", "progress", "peak-meters"], ["lilac", "progress", "ring-and-steps"], ["obsidian", "media", "now-playing"], ["sketch", "flow", "flow-card"], ["terrarium", "mood", "mood-dial"], ["tactile", "chips", "filter-chips"], ["atelier", "filter", "filter-capsules"], ["zine", "board", "sticker-board"], ["clay", "slider", "slider"], ["lilac", "card", "profile-card"], ["braun", "progress", "led-meter"], ["terrarium", "progress", "ring"], ["tactile", "selection", "switch"], ["sketch", "tabs", "folder-tabs"]]
     ];
     // Hold the marquee still while dragging a dial, slider or sticker even if the pointer leaves the row.
     var dragRow = null;

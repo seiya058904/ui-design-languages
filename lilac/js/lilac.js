@@ -279,8 +279,15 @@
 
   /* ---------- Accent ---------- */
   var ACCENT_KEY = P + "-accent";
+  function currentAccent() {
+    if (isWallHost()) {
+      var st = document.querySelector('[data-pack-stage="' + P + '"]');
+      return (st && st.getAttribute("data-accent")) || "violet";
+    }
+    return document.documentElement.getAttribute("data-accent") || "violet";
+  }
   function syncAccentControls() {
-    var a = document.documentElement.getAttribute("data-accent") || "violet";
+    var a = currentAccent();
     document.querySelectorAll("[data-accent-set]").forEach(function (b) {
       if (!ownsControl(b)) return;
       var on = b.getAttribute("data-accent-set") === a;
@@ -289,9 +296,13 @@
     });
   }
   function setAccent(name) {
-    if (!name || name === "violet") document.documentElement.removeAttribute("data-accent");
-    else document.documentElement.setAttribute("data-accent", name);
-    if (!isWallHost()) {
+    if (isWallHost()) {
+      document.querySelectorAll('[data-pack-stage="' + P + '"]').forEach(function (st) {
+        if (!name || name === "violet") st.removeAttribute("data-accent"); else st.setAttribute("data-accent", name);
+      });
+    } else {
+      if (!name || name === "violet") document.documentElement.removeAttribute("data-accent");
+      else document.documentElement.setAttribute("data-accent", name);
       try { localStorage.setItem(ACCENT_KEY, name || "violet"); } catch (err) { /* not remembered */ }
     }
     syncAccentControls();

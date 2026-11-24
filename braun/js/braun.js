@@ -215,8 +215,9 @@
     p.dial.classList.add("is-dragging");
     p.dial.classList.remove("is-tick");
     try { k.setPointerCapture(e.pointerId); } catch (err) { /* old browsers */ }
-    k.focus({ preventScroll: true });
-    e.preventDefault();
+    // Let mouse pointerdown focus natively (keeps :focus-visible off while allowing arrow keys);
+    // only suppress default browser gestures on touch/pen.
+    if (e.pointerType !== "mouse") e.preventDefault();
   });
   document.addEventListener("pointermove", function (e) {
     if (!drag) return;

@@ -14,7 +14,8 @@
 .cw-bar { position: sticky; top: 64px; z-index: 40; padding: 12px 0; border-block: 1px solid transparent; transition: background-color .3s, border-color .3s; }
 .cw-bar.is-stuck { background: rgba(15, 15, 17, 0.78); border-color: var(--line); -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%); }
 .cw-bar__in { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; }
-.cw-bar__end { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.cw-bar__end { display: flex; flex: 1 1 auto; align-items: center; gap: 12px; flex-wrap: wrap; }
+.cw-bar__end > [data-theme-seg] { margin-left: auto; }
 .cw-filter { position: relative; display: inline-flex; gap: 2px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, 0.03); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
 .cw-filter::-webkit-scrollbar { display: none; }
 .cw-filter__glider { position: absolute; top: 4px; bottom: 4px; left: 0; border-radius: 999px; background: rgba(255, 255, 255, 0.1); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08); transition: transform .42s var(--ease), width .42s var(--ease); pointer-events: none; }
@@ -23,7 +24,7 @@
 .cw-filter button i { width: 8px; height: 8px; border-radius: 50%; }
 .cw-filter button b { font-weight: 500; }
 .cw-filter button small { font: 500 11px/1 "Geist Mono", ui-monospace, monospace; color: var(--faint); }
-/* Search: narrows the wall as you type ("/" focuses it, Esc clears). Fixed width avoids shifting neighbour chips on focus. */
+/* Search: narrows the wall as you type ("/" or ⌘K focuses it, Esc clears). Fixed width avoids shifting neighbour chips on focus. */
 .cw-search { position: relative; display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 8px 0 12px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, 0.03); color: var(--muted); transition: border-color .2s, background-color .2s, box-shadow .3s var(--ease); }
 .cw-search:focus-within { border-color: var(--line-strong); background: rgba(255, 255, 255, 0.06); box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.04); color: var(--ink); }
 .cw-search svg { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
@@ -31,7 +32,11 @@
 .cw-search input::placeholder { color: var(--faint); }
 .cw-search input::-webkit-search-cancel-button { display: none; }
 .cw-search kbd { display: inline-grid; place-items: center; min-width: 20px; height: 20px; border: 1px solid var(--line-strong); border-radius: 6px; font: 500 11px/1 "Geist Mono", ui-monospace, monospace; color: var(--faint); transition: opacity .2s; }
-.cw-search:focus-within kbd { opacity: 0; }
+.cw-search:focus-within kbd, .cw-search.has-value kbd { display: none; }
+.cw-search__clear { display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--muted); cursor: pointer; transition: background-color .2s, color .2s; }
+.cw-search__clear:hover { background: rgba(255, 255, 255, 0.16); color: var(--ink); }
+.cw-search__clear svg { width: 12px; height: 12px; }
+@media (hover: none) { .cw-search kbd { display: none; } }
 .cw-cats { display: inline-flex; flex-wrap: wrap; gap: 6px; }
 .cw-cats button { height: 30px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--muted); font-size: 13px; white-space: nowrap; cursor: pointer; transition: color .2s, border-color .2s, background-color .2s; }
 .cw-cats button:hover { color: var(--ink); border-color: var(--line-strong); }
@@ -47,6 +52,14 @@
 .cw-backdrop { position: absolute; inset: 0; border-radius: 36px; opacity: 0; transform: scale(0.985); transition: opacity .5s var(--ease), transform .65s var(--ease); visibility: hidden; }
 .cw-backdrop.is-on { opacity: 1; transform: none; visibility: visible; }
 .cw-grid { position: relative; min-height: 400px; overflow: clip; overflow-clip-margin: 64px; } /* filtered-out cards keep their spot without stretching the page */
+.cw-grid.is-empty { min-height: 0; }
+.cw-empty { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; min-height: 240px; padding: 48px 20px; text-align: center; color: var(--muted); font-size: 15px; }
+.cw.is-unified .cw-empty { color: rgba(0, 0, 0, 0.65); }
+.cw.is-unified .cw-empty .pill { color: rgba(0, 0, 0, 0.85); border-color: rgba(0, 0, 0, 0.22); background: rgba(0, 0, 0, 0.04); }
+html[data-theme="dark"] .cw.is-unified:not(.is-light-only) .cw-empty,
+.cw.is-unified.is-dark-canvas .cw-empty { color: rgba(255, 255, 255, 0.72); }
+html[data-theme="dark"] .cw.is-unified:not(.is-light-only) .cw-empty .pill,
+.cw.is-unified.is-dark-canvas .cw-empty .pill { color: var(--ink); border-color: var(--line-strong); background: rgba(255, 255, 255, 0.04); }
 .cw-note { position: relative; margin-top: 24px; text-align: center; font-size: 13.5px; color: var(--faint); transition: color .4s; }
 .cw.is-unified .cw-note { color: rgba(0, 0, 0, 0.55); }
 html[data-theme="dark"] .cw.is-unified:not(.is-light-only) .cw-note,
@@ -65,6 +78,8 @@ html[data-theme="dark"] .cw.is-unified:not(.is-light-only) .cw-note,
 .wcard.is-out *, .wcard.is-out *::before, .wcard.is-out *::after { animation-play-state: paused !important; }
 /* Hover: a soft halo in the language's own color (a gradient, not a blur filter) and a small lift. */
 .wcard__in::before { content: ""; position: absolute; inset: 10% 4% -8%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--glow) 55%, transparent), transparent); opacity: 0; transition: opacity .5s var(--ease); pointer-events: none; }
+/* Subtle 1px specular hairline in mixed-wall mode so dark stages separate cleanly from #0F0F11. */
+body[data-wall-style="all"] .wcard__in::after { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: 22px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.075); pointer-events: none; transition: opacity .35s var(--ease); }
 .wcard:hover .wcard__in::before { opacity: .5; }
 .wcard.is-in:hover .wcard__in { transform: translate3d(0, -3px, 0); transition-duration: .45s; }
 
@@ -112,7 +127,8 @@ html.has-drawer { overflow: hidden; }
 .drawer__sub { max-width: 60ch; margin-top: -6px; color: var(--muted); font-size: 15px; line-height: 1.55; }
 .drawer__tabs { align-self: flex-start; flex-wrap: wrap; border-radius: 16px; }
 .drawer__view { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: rgba(0, 0, 0, 0.25); }
-.drawer__frame { display: block; width: 100%; height: 220px; border: 0; }
+.drawer__frame { display: block; width: 100%; height: 220px; border: 0; opacity: 0; transition: opacity .22s ease; }
+.drawer__frame.is-ready { opacity: 1; }
 
 /* Source: HTML / CSS / JS / single file */
 .src { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: #0B0B0D; }
@@ -148,11 +164,15 @@ html.has-drawer { overflow: hidden; }
 @media (max-width: 760px) {
   .cw-hero { padding: 44px 0 28px; text-align: left; }
   .cw-hero__lede { margin-left: 0; }
-  .cw-bar__in { flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
-  .cw-bar__end { justify-content: space-between; flex-wrap: wrap; }
-  .cw-cats { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; min-width: 0; }
-  .cw-search { flex: 1 1 100%; }
+  .cw-bar { padding: 10px 0; }
+  .cw-bar__in { flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 10px; }
+  .cw-filter { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); padding-right: 24px; }
+  .cw-bar__end { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .cw-search { order: 1; flex: 1 1 0; min-width: 0; }
   .cw-search input { width: 100%; }
+  .cw-search kbd { display: none; }
+  .cw-bar__end > [data-theme-seg] { order: 2; margin-left: 0; flex: none; }
+  .cw-cats { order: 3; flex: 1 1 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; min-width: 0; padding-right: 24px; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent); }
   .cw-cats::-webkit-scrollbar { display: none; }
   .cw.is-unified { padding: 18px 14px 56px; }
   .cw-backdrop { border-radius: 24px; }

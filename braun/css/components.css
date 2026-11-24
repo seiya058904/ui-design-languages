@@ -524,6 +524,8 @@ textarea.braun-input { height: auto; min-height: 96px; padding: var(--braun-spac
   background: var(--braun-texture-turned), radial-gradient(circle at 50% 26%, var(--braun-color-knob-light), var(--braun-color-knob) 55%, var(--braun-color-knob-dark));
   box-shadow: var(--braun-shadow-knob);
   cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
   transition: transform var(--braun-motion-duration-release) var(--braun-motion-easing-release);
@@ -547,7 +549,7 @@ textarea.braun-input { height: auto; min-height: 96px; padding: var(--braun-spac
   -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
   mask: radial-gradient(closest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
 }
-.braun-dial__knob:focus-visible { outline: 2px solid var(--braun-color-ink); outline-offset: 8px; }
+.braun-dial__knob:focus-visible { outline: 2px solid var(--braun-color-ink); outline-offset: 6px; }
 /* Detent: js/braun.js sets .is-tick on every step, and the crown dips once — a click you can see. */
 .braun-dial.is-tick .braun-dial__knob { animation: braun-detent var(--braun-motion-duration-detent-click) var(--braun-motion-easing-snap); }
 @keyframes braun-detent { 45% { scale: 0.988; } }

@@ -459,7 +459,7 @@
       }
       if (e.key === "Escape" && isOpen) { setMenu(menu, false, true); e.preventDefault(); e.stopPropagation(); return; }
     }
-    if ((e.key === "f" || e.key === "F") && !e.metaKey && !e.ctrlKey && !e.altKey && !(t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) {
+    if (!isWallHost() && (e.key === "f" || e.key === "F") && !e.metaKey && !e.ctrlKey && !e.altKey && !(t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) {
       var add = Array.prototype.filter.call(document.querySelectorAll("[data-" + P + "-filter-add]"), function (b) {
         var r = b.getBoundingClientRect();
         return b.offsetParent && r.bottom > 0 && r.top < window.innerHeight;

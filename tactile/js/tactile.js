@@ -176,8 +176,15 @@
   }
 
   var TONE_KEY = P + "-tone";
+  function currentTone() {
+    if (isWallHost()) {
+      var st = document.querySelector('[data-pack-stage="' + P + '"]');
+      return (st && st.getAttribute("data-tone")) || "sand";
+    }
+    return document.documentElement.getAttribute("data-tone") || "sand";
+  }
   function syncToneControls() {
-    var t = document.documentElement.getAttribute("data-tone") || "sand";
+    var t = currentTone();
     document.querySelectorAll("[data-tone-set]").forEach(function (b) {
       if (!ownsControl(b)) return;
       var on = b.getAttribute("data-tone-set") === t;
@@ -186,9 +193,13 @@
     });
   }
   function setTone(name) {
-    if (!name || name === "sand") document.documentElement.removeAttribute("data-tone");
-    else document.documentElement.setAttribute("data-tone", name);
-    if (!isWallHost()) {
+    if (isWallHost()) {
+      document.querySelectorAll('[data-pack-stage="' + P + '"]').forEach(function (st) {
+        if (!name || name === "sand") st.removeAttribute("data-tone"); else st.setAttribute("data-tone", name);
+      });
+    } else {
+      if (!name || name === "sand") document.documentElement.removeAttribute("data-tone");
+      else document.documentElement.setAttribute("data-tone", name);
       try { localStorage.setItem(TONE_KEY, name || "sand"); } catch (err) { /* not remembered */ }
     }
     syncToneControls();
@@ -264,10 +275,9 @@
     var startDeg = ((dialValue(knob) - r.min) / (r.max - r.min)) * 270 - 135;
     drag = { dial: dial, face: face, knob: knob, cx: rect.left + rect.width / 2, cy: rect.top + rect.height / 2, lastDeg: startDeg };
     dial.classList.add("is-dragging");
-    if (knob) knob.focus({ preventScroll: true });
     if (face.setPointerCapture) face.setPointerCapture(e.pointerId);
     dragTo(e);
-    e.preventDefault();
+    if (e.pointerType !== "mouse") e.preventDefault();
   });
   function dragTo(e) {
     var dx = e.clientX - drag.cx, dy = e.clientY - drag.cy;

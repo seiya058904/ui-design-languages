@@ -29,12 +29,16 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-a { color: inherit; text-decoration: none; }
-h1, h2, h3, p, figure, dl, dd { margin: 0; }
-img { display: block; max-width: 100%; }
-button { font: inherit; color: inherit; }
-code, pre { font-family: "Geist Mono", ui-monospace, "SF Mono", Consolas, monospace; }
-:focus-visible { outline: 2px solid #fff; outline-offset: 3px; border-radius: 6px; }
+/* Clear any pack's body::before backdrop (e.g. Atelier) so site chrome stays neutral. */
+body::before { content: none; }
+:where(a) { color: inherit; text-decoration: none; }
+:where(h1, h2, h3, p, figure, dl, dd) { margin: 0; }
+:where(img) { display: block; max-width: 100%; }
+:where(button) { font: inherit; color: inherit; }
+:where(code, pre) { font-family: "Geist Mono", ui-monospace, "SF Mono", Consolas, monospace; }
+/* Site-chrome focus ring only — never override border-radius or leak into live pack stages. */
+:focus-visible:not(.wstage, .wstage *, .same__inner, .same__inner *) { outline: 2px solid #fff; outline-offset: 3px; }
+.top nav a, .names a, .foot a { border-radius: 4px; }
 ::selection { background: rgba(255, 255, 255, 0.9); color: #111; }
 .wrap { width: min(100% - 40px, 1280px); margin: 0 auto; }
 main { overflow-x: clip; }
@@ -70,18 +74,17 @@ main { overflow-x: clip; }
 .names a:hover { color: var(--ink); }
 .names i { width: 8px; height: 8px; border-radius: 50%; }
 
-/* Perspective wall of real page renders: flat 2D columns on a tilted plane, soft edge vignette overlay
-   (no preserve-3d, no per-frame mask-composite intersect) so scrolling stays on the GPU compositor. */
-.wall { position: relative; pointer-events: none; height: 700px; margin: -40px 0; overflow: hidden; contain: layout style paint; }
-.wall::after {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  z-index: 2;
+/* Perspective wall of real page renders: flat 2D columns on a tilted plane with a single radial
+   feather mask (no preserve-3d, no mask-composite intersect, no opaque box edge over the aurora). */
+.wall {
+  position: relative;
   pointer-events: none;
-  background:
-    linear-gradient(to bottom, var(--bg) 0%, rgba(15, 15, 17, 0.72) 8%, transparent 22%, transparent 78%, rgba(15, 15, 17, 0.78) 92%, var(--bg) 100%),
-    linear-gradient(to right, var(--bg) 0%, rgba(15, 15, 17, 0.65) 7%, transparent 19%, transparent 86%, rgba(15, 15, 17, 0.72) 94%, var(--bg) 100%);
+  height: 700px;
+  margin: -40px 0;
+  overflow: hidden;
+  contain: layout style paint;
+  -webkit-mask-image: radial-gradient(ellipse 68% 66% at 54% 50%, #000 50%, rgba(0, 0, 0, 0.72) 70%, transparent 98%);
+  mask-image: radial-gradient(ellipse 68% 66% at 54% 50%, #000 50%, rgba(0, 0, 0, 0.72) 70%, transparent 98%);
 }
 /* Each column holds two identical 8-card sets and translates by -50% for a mathematically seamless loop. */
 .wall__plane { position: absolute; left: 50%; top: -120px; display: grid; grid-template-columns: repeat(6, 168px); gap: 12px; transform-origin: 50% 470px; transform: translate3d(-48%, 0, 0) perspective(1800px) rotateX(16deg) rotateZ(14deg); will-change: transform; }
@@ -146,8 +149,9 @@ main { overflow-x: clip; }
 /* ---------- Same markup ---------- */
 .same { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
 .same figure { display: flex; flex-direction: column; gap: 12px; flex: 0 1 calc((100% - 4 * 14px) / 5); min-width: 0; }
-.same__view { position: relative; overflow: hidden; min-height: 300px; border: 1px solid var(--line-strong); border-radius: 14px; background: rgba(255, 255, 255, 0.04); }
-.same__inner { width: 360px; min-height: 470px; transform-origin: 0 0; }
+.same__view { position: relative; overflow: hidden; min-height: 300px; border: 1px solid var(--line-strong); border-radius: 14px; background: rgba(255, 255, 255, 0.04); transition: border-color .3s var(--ease), transform .4s var(--ease); }
+.same figure:hover .same__view { border-color: rgba(255, 255, 255, 0.28); transform: translateY(-2px); }
+.same__inner { display: flex; flex-direction: column; justify-content: center; width: 360px; min-height: 456px; transform-origin: 0 0; }
 /* The compare pages' own layout helpers, scoped to the inline cards */
 .same__inner .spec { display: flex; flex-direction: column; gap: 16px; }
 .same__inner .line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -161,7 +165,7 @@ main { overflow-x: clip; }
 .way h3 { font-size: 19px; font-weight: 600; letter-spacing: -0.015em; }
 .way p { color: var(--muted); font-size: 14.5px; }
 .code { position: relative; margin-top: auto; }
-.code pre { margin: 10px 0 0; padding: 40px 16px 14px; overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: #0B0B0D; color: #D7D7DA; font-size: 12.5px; line-height: 1.6; white-space: pre; }
+.code pre { margin: 10px 0 0; min-height: 128px; padding: 40px 16px 16px; overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: #0B0B0D; color: #D7D7DA; font-size: 12.5px; line-height: 1.65; white-space: pre; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.16) transparent; }
 .code .pill { position: absolute; top: 18px; right: 8px; z-index: 1; height: 26px; padding: 0 10px; font-size: 12px; background: #1C1C20; }
 
 .legal { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; font-size: 14px; color: var(--muted); }
@@ -216,7 +220,7 @@ main { overflow-x: clip; }
 .live { position: relative; padding: 40px 0 96px; overflow: hidden; }
 .live__head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr) auto; gap: 18px 40px; align-items: end; margin-bottom: 40px; }
 .live__head h2 { font-size: clamp(34px, 4.4vw, 58px); line-height: 1; letter-spacing: -0.04em; font-weight: 600; }
-.live__head h2 > span:not(.w) { color: var(--muted); }
+.live__head h2 > span:not(.w) { display: block; color: var(--muted); }
 .live__head p { color: var(--muted); font-size: 16px; max-width: 46ch; }
 .marquee { position: relative; overflow: hidden; padding: 10px 0; -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
 .marquee + .marquee { margin-top: 8px; }
@@ -224,8 +228,11 @@ main { overflow-x: clip; }
 .marquee--rev .marquee__track { animation-direction: reverse; }
 .marquee:hover .marquee__track, .marquee:focus-within .marquee__track, .marquee.is-dragging .marquee__track { animation-play-state: paused; }
 @keyframes marquee { to { transform: translate3d(-50%, 0, 0); } }
-.mq-card { position: relative; display: flex; flex: none; max-width: 440px; margin-right: 18px; contain: layout style; transition: transform .5s var(--ease); }
-.mq-card .wstage { flex: 1; min-height: 244px; padding: 38px 34px 76px; }
+.mq-card { position: relative; display: flex; flex: none; min-width: 320px; max-width: 440px; margin-right: 18px; contain: layout style; transition: transform .5s var(--ease); }
+.mq-card::after { content: ""; position: absolute; inset: 0; border-radius: 22px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); pointer-events: none; z-index: 2; }
+.mq-card:has(.sketch-flow) { width: 620px; max-width: 620px; }
+.mq-card:has(.zine-board, .sketch-doodle) { width: 400px; }
+.mq-card .wstage { flex: 1; min-height: 244px; padding: 28px 28px 66px; }
 .mq-card:hover { transform: translateY(-4px); }
 .mq-tag { position: absolute; left: 12px; bottom: 12px; z-index: 3; display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px 0 10px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 999px; background: rgba(18, 18, 21, 0.9); color: #F3F3F1; font: 500 12.5px/1 "Geist", system-ui, sans-serif; }
 .mq-tag i { width: 7px; height: 7px; border-radius: 50%; }
@@ -265,9 +272,12 @@ main { overflow-x: clip; }
   .wall { height: 360px; }
   .wall__plane { grid-template-columns: repeat(6, 120px); }
   .frame__url { display: none; }
+  .mq-card { min-width: 280px; max-width: min(360px, calc(100vw - 40px)); }
+  .mq-card:has(.sketch-flow), .mq-card:has(.zine-board, .sketch-doodle) { width: min(340px, calc(100vw - 40px)); max-width: min(340px, calc(100vw - 40px)); }
 }
-/* Sections out of view stop their loops (home.js toggles .is-paused). */
+/* Sections out of view stop their loops and release compositor layers (home.js toggles .is-paused). */
 .is-paused .wall__col, .is-paused .aurora i, .is-paused .marquee__track, .is-paused .marquee__track *, .is-paused .marquee__track *::before, .is-paused .marquee__track *::after, .is-paused .pill__beam i { animation-play-state: paused !important; }
+.is-paused .wall__plane, .is-paused .wall__col, .is-paused .aurora i, .is-paused .marquee__track, .is-paused .pill__beam i { will-change: auto; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

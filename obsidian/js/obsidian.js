@@ -259,7 +259,13 @@
 
   /* ---------- accent ---------- */
   var ACCENT_KEY = P + "-accent";
-  function currentAccent() { return document.documentElement.getAttribute("data-accent") || "cyan"; }
+  function currentAccent() {
+    if (isWallHost()) {
+      var st = document.querySelector('[data-pack-stage="' + P + '"]');
+      return (st && st.getAttribute("data-accent")) || "cyan";
+    }
+    return document.documentElement.getAttribute("data-accent") || "cyan";
+  }
   function syncAccentControls() {
     var a = currentAccent();
     document.querySelectorAll("[data-accent-set]").forEach(function (b) {
@@ -367,7 +373,7 @@
     if (dismiss) { var box = dismiss.closest("." + P + "-toast, ." + P + "-alert"); if (box) box.hidden = true; }
   });
   document.addEventListener("keydown", function (e) {
-    if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
+    if (!isWallHost() && (e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
       var field = document.querySelector("." + P + "-command input");
       if (field) { e.preventDefault(); field.focus(); field.select(); }
       return;

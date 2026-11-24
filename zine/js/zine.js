@@ -178,8 +178,7 @@
     raise(st);
     st.classList.add("is-held");
     try { st.setPointerCapture(e.pointerId); } catch (err) { /* old browsers */ }
-    e.preventDefault();
-    st.focus({ preventScroll: true });
+    if (e.pointerType !== "mouse") e.preventDefault();
   });
   document.addEventListener("pointermove", function (e) {
     if (!held) return;

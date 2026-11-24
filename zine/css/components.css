@@ -743,6 +743,7 @@ th[aria-sort="descending"] .zine-sort::after { opacity: 1; }
 .zine-board {
   position: relative;
   width: 100%;
+  min-width: 260px;
   height: var(--zine-board-height, 260px);
   overflow: hidden;
   border: var(--zine-border-thick) solid var(--zine-color-ink);
@@ -754,6 +755,7 @@ th[aria-sort="descending"] .zine-sort::after { opacity: 1; }
   box-shadow: var(--zine-shadow-md);
   touch-action: none;
 }
+@media (max-width: 340px) { .zine-board { min-width: 0; } }
 .zine-slap {
   position: absolute;
   left: var(--x, 10%);

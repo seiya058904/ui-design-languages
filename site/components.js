@@ -13,7 +13,7 @@
   var KINDS = [["all", "All"], ["actions", "Actions"], ["inputs", "Inputs"], ["choices", "Choices"], ["feedback", "Feedback"], ["content", "Content"], ["navigation", "Navigation"]];
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
-  var grid = $("[data-grid]"), stylesEl = $("[data-styles]"), catsEl = $("[data-cats]"), backdrops = $("[data-backdrops]"), note = $("[data-note]"), search = $("[data-search]");
+  var grid = $("[data-grid]"), stylesEl = $("[data-styles]"), catsEl = $("[data-cats]"), backdrops = $("[data-backdrops]"), note = $("[data-note]"), search = $("[data-search]"), searchClear = $("[data-search-clear]"), emptyBox = $("[data-empty]"), emptyText = $("[data-empty-text]"), resetBtn = $("[data-reset]");
   var cwSection = $(".cw");
   var state = { style: "all", kind: "all", theme: "light", query: "" };
   var cards = [];
@@ -188,15 +188,18 @@
     var cardHeights = new Array(shown.length);
     for (var r = 0; r < shown.length; r++) cardHeights[r] = shown[r].el.offsetHeight;
 
-    // Phase 3: Compute positions and batch write transforms (zero interleaved reads)
+    // Phase 3: Compute positions and batch write transforms only when changed
     for (var p = 0; p < shown.length; p++) {
       var c = shown[p];
       var col = 0;
       for (var j = 1; j < cols; j++) if (heights[j] < heights[col]) col = j;
-      c.x = col * (colW + gap);
-      c.y = heights[col];
+      var nx = col * (colW + gap), ny = heights[col];
       heights[col] += cardHeights[p] + gap;
-      c.el.style.transform = "translate3d(" + c.x + "px," + c.y + "px,0)";
+      if (nx !== c.x || ny !== c.y || !c.laid) {
+        c.x = nx; c.y = ny; c.laid = true;
+        c.el.style.transform = "translate3d(" + nx + "px," + ny + "px,0)";
+      }
+      c.h = cardHeights[p];
     }
     var maxH = 0;
     for (var m = 0; m < cols; m++) if (heights[m] > maxH) maxH = heights[m];
@@ -241,7 +244,16 @@
     }, animate ? 320 : 0);
 
     var p = W.byId[state.style];
-    if (state.query && !n) note.textContent = "Nothing matches “" + state.query + "”" + (p ? " in " + p.name : "") + ". Try a component (slider, menu, dial) or a language name.";
+    grid.classList.toggle("is-empty", n === 0);
+    if (emptyBox) {
+      emptyBox.hidden = n > 0;
+      if (n === 0 && emptyText) {
+        emptyText.textContent = state.query
+          ? "Nothing matches “" + state.query + "”" + (p ? " in " + p.name : "") + ". Try a component (slider, menu, dial) or a language name."
+          : "No components match the current filter.";
+      }
+    }
+    if (n === 0) note.textContent = "";
     else if (state.query) note.textContent = n + (n === 1 ? " component matches" : " components match") + " “" + state.query + "”" + (p ? " in " + p.name : "") + ".";
     else note.textContent = p ? n + " " + p.name + " components, on " + p.name + "'s own canvas. Open any of them for its complete source." : n + " components from " + W.packs.length + " languages, all live. Open any card for its complete source.";
   }
@@ -351,6 +363,7 @@
     frame.title = W.byId[packId].name + " " + comp.title + ": " + dm.label;
     var qs = new URLSearchParams({ p: packId, c: comp.id, d: dm.id });
     if (state.theme === "dark" && W.byId[packId].dark) qs.set("theme", "dark");
+    frame.onload = function () { frame.classList.add("is-ready"); };
     frame.src = "site/demo.html?" + qs.toString();
     view.appendChild(frame);
     loadSource(packId, comp, dm);
@@ -398,10 +411,25 @@
     if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
   }
   drawer.addEventListener("click", function (e) { if (e.target.closest("[data-close]")) closeDrawer(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDrawer(); });
+  document.addEventListener("keydown", function (e) {
+    if (drawer.hidden) return;
+    if (e.key === "Escape") { closeDrawer(); return; }
+    if (e.key === "Tab") {
+      var panel = drawer.querySelector(".drawer__panel");
+      var focusables = Array.prototype.filter.call(
+        panel.querySelectorAll('a[href], button:not(:disabled), input:not(:disabled), [tabindex]:not([tabindex="-1"])'),
+        function (el) { return el.offsetParent !== null; }
+      );
+      if (!focusables.length) return;
+      var first = focusables[0], last = focusables[focusables.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
   window.addEventListener("message", function (e) {
     if (!frame || e.source !== frame.contentWindow || !e.data || e.data.type !== "demo-size") return;
     frame.style.height = Math.max(160, e.data.h) + "px";
+    frame.classList.add("is-ready");
   });
   function withSource(fn) {
     if (!current) return;
@@ -449,10 +477,17 @@
     }
   }
 
-  /* ---------- search: type to narrow the wall; "/" focuses it, Esc clears ---------- */
+  /* ---------- search: type to narrow the wall; "/" or ⌘K focuses it, Esc clears ---------- */
+  function syncSearchUi() {
+    if (!search) return;
+    var has = !!search.value;
+    if (search.parentElement) search.parentElement.classList.toggle("has-value", has);
+    if (searchClear) searchClear.hidden = !has;
+  }
   if (search) {
     var queued = 0;
     search.addEventListener("input", function () {
+      syncSearchUi();
       if (queued) return;
       queued = requestAnimationFrame(function () {
         queued = 0;
@@ -461,16 +496,37 @@
         apply(true);
       });
     });
+    if (searchClear) {
+      searchClear.addEventListener("click", function () {
+        search.value = "";
+        state.query = "";
+        syncSearchUi();
+        syncFilters(false);
+        apply(true);
+        search.focus();
+      });
+    }
     search.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && search.value) { search.value = ""; state.query = ""; syncFilters(false); apply(true); e.stopPropagation(); }
+      if (e.key === "Escape" && search.value) { search.value = ""; state.query = ""; syncSearchUi(); syncFilters(false); apply(true); e.stopPropagation(); }
     });
     document.addEventListener("keydown", function (e) {
-      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (!drawer.hidden) return;
       var t = e.target;
-      if (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || !drawer.hidden) return;
+      var isCmdK = (e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K");
+      var isSlash = e.key === "/" && !e.metaKey && !e.ctrlKey && !e.altKey && !(t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+      if (!isCmdK && !isSlash) return;
       e.preventDefault();
       search.focus();
       search.select();
+    });
+  }
+  if (resetBtn) {
+    resetBtn.addEventListener("click", function () {
+      state.style = "all"; state.kind = "all"; state.query = "";
+      if (search) { search.value = ""; syncSearchUi(); }
+      if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+      syncFilters(true);
+      apply(true);
     });
   }
 
@@ -511,12 +567,14 @@
     W.scripts().then(function () { relayout(); fromHash(); });
     if (document.fonts) document.fonts.ready.then(relayout);
     if ("ResizeObserver" in window) {
+      var byEl = new WeakMap();
+      cards.forEach(function (c) { byEl.set(c.el.firstChild, c); });
       var ro = new ResizeObserver(function (entries) {
         for (var i = 0; i < entries.length; i++) {
           var t = entries[i].target;
           if (t === grid) { relayout(); return; }
-          var card = t.parentElement;
-          if (card && !card.classList.contains("is-out")) { relayout(); return; }
+          var cardObj = byEl.get(t);
+          if (cardObj && cardObj.shown && Math.round(t.offsetHeight) !== cardObj.h) { relayout(); return; }
         }
       });
       ro.observe(grid);

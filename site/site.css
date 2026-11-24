@@ -36,6 +36,7 @@ code, pre { font-family: "Geist Mono", ui-monospace, "SF Mono", Consolas, monosp
 :focus-visible { outline: 2px solid #fff; outline-offset: 3px; border-radius: 6px; }
 ::selection { background: rgba(255, 255, 255, 0.9); color: #111; }
 .wrap { width: min(100% - 40px, 1280px); margin: 0 auto; }
+main { overflow-x: clip; }
 
 /* ---------- Header ---------- */
 .top { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid transparent; transition: background-color .3s, border-color .3s; }
@@ -160,7 +161,7 @@ code, pre { font-family: "Geist Mono", ui-monospace, "SF Mono", Consolas, monosp
 /* ---------- Motion system (shared with the component wall) ---------- */
 /* Aurora: nine slow, blurred lights in the nine languages' colors */
 .hero__copy { position: relative; isolation: isolate; }
-.aurora { position: absolute; inset: -80px -60px -60px; z-index: -1; overflow: hidden; pointer-events: none; opacity: 0.62; -webkit-mask-image: radial-gradient(60% 55% at 45% 45%, #000 25%, transparent 75%); mask-image: radial-gradient(60% 55% at 45% 45%, #000 25%, transparent 75%); }
+.aurora { position: absolute; inset: -120px -140px -100px; z-index: -1; overflow: hidden; pointer-events: none; opacity: 0.62; -webkit-mask-image: radial-gradient(closest-side at 50% 48%, #000 20%, transparent 100%); mask-image: radial-gradient(closest-side at 50% 48%, #000 20%, transparent 100%); }
 /* Each light is a soft radial gradient moved on the compositor: no blur filter, no blend mode, so it costs nothing per frame. */
 .aurora i { position: absolute; width: 58%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--c) 78%, transparent), color-mix(in srgb, var(--c) 26%, transparent) 55%, transparent); will-change: transform; animation: aurora 26s ease-in-out infinite alternate; }
 .aurora i:nth-child(1) { --c: #A8E6CF; left: -4%; top: -2%; }
@@ -174,8 +175,8 @@ code, pre { font-family: "Geist Mono", ui-monospace, "SF Mono", Consolas, monosp
 .aurora i:nth-child(9) { --c: #C85A32; width: 42%; right: -8%; top: 62%; opacity: .6; animation-duration: 30s; animation-delay: -12s; }
 @keyframes aurora { 0% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(14%, -10%, 0) scale(1.18); } 100% { transform: translate3d(-12%, 12%, 0) scale(0.88); } }
 
-/* Pointer light over the hero */
-.hero__glow { position: absolute; inset: -40px 0; z-index: -1; overflow: hidden; pointer-events: none; }
+/* Pointer light over the hero — full-bleed across the viewport so it never clips at the .wrap gutter */
+.hero__glow { position: absolute; top: -120px; bottom: -120px; left: 50%; width: 100vw; transform: translateX(-50%); z-index: -1; overflow: hidden; pointer-events: none; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent); mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent); }
 .hero__glow i { position: absolute; left: 0; top: 0; width: 1040px; height: 1040px; margin: -520px 0 0 -520px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.06), transparent); opacity: 0; transition: opacity .6s; will-change: transform; }
 .hero__glow.is-on i { opacity: 1; }
 
@@ -237,7 +238,7 @@ code, pre { font-family: "Geist Mono", ui-monospace, "SF Mono", Consolas, monosp
   .legal { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 1100px) {
-  .aurora { inset: -60px -16px -40px; }
+  .aurora { inset: -80px -40px -60px; }
 }
 @media (max-width: 1000px) {
   .live__head { grid-template-columns: minmax(0, 1fr); }

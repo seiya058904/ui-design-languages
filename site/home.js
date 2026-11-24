@@ -146,10 +146,10 @@
       queued = true;
       requestAnimationFrame(function () {
         queued = false;
-        var r = hero.getBoundingClientRect(), ev = pending;
+        var r = hero.getBoundingClientRect(), gr = glow.getBoundingClientRect(), ev = pending;
         var x = ev.clientX - r.left, y = ev.clientY - r.top;
         lean(x / r.width * 2 - 1, y / r.height * 2 - 1);
-        light.style.transform = "translate3d(" + x.toFixed(0) + "px," + (y + 40).toFixed(0) + "px,0)";
+        light.style.transform = "translate3d(" + (ev.clientX - gr.left).toFixed(0) + "px," + (ev.clientY - gr.top).toFixed(0) + "px,0)";
         glow.classList.add("is-on");
       });
     });

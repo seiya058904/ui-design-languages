@@ -119,18 +119,21 @@
     var k = p.knob;
     var min = num(k.getAttribute("aria-valuemin"), 0), max = num(k.getAttribute("aria-valuemax"), 100), step = num(k.getAttribute("data-step"), 1);
     var dec = decimals(step);
-    var v = +Math.min(max, Math.max(min, Math.round(value / step) * step)).toFixed(dec);
+    var raw = Math.min(max, Math.max(min, value));
+    var v = +Math.min(max, Math.max(min, Math.round(raw / step) * step)).toFixed(dec);
     var prev = num(k.getAttribute("aria-valuenow"), min);
+    var visual = opts && opts.smooth ? raw : v;
     k.setAttribute("aria-valuenow", String(v));
     var unit = k.getAttribute("data-unit") || "";
     k.setAttribute("aria-valuetext", v.toFixed(dec) + (unit ? " " + unit : ""));
-    p.dial.style.setProperty("--" + P + "-value", String((v - min) / (max - min) * 100));
-    if (k.id) document.querySelectorAll('output[for~="' + k.id + '"]').forEach(function (o) { o.textContent = format(v, o, dec); });
+    p.dial.style.setProperty("--" + P + "-value", String((visual - min) / (max - min) * 100));
+    if (k.id) document.querySelectorAll('output[for~="' + k.id + '"]').forEach(function (o) { var txt = format(v, o, dec); if (o.textContent !== txt) o.textContent = txt; });
     if (v !== prev && !(opts && opts.silent)) {
-      // one detent: the crown dips once (CSS .is-tick) and a touch drag gets a 2 ms tick of haptics
-      p.dial.classList.remove("is-tick");
-      void p.dial.offsetWidth;
-      p.dial.classList.add("is-tick");
+      // Discrete steps (keys / wheel) get the crisp crown dip; continuous drags stay silky without layout thrash.
+      if (!(opts && opts.smooth)) {
+        p.dial.classList.remove("is-tick");
+        requestAnimationFrame(function () { p.dial.classList.add("is-tick"); });
+      }
       if (drag && drag.touch && navigator.vibrate) { try { navigator.vibrate(2); } catch (err) { /* not allowed */ } }
       k.dispatchEvent(new Event("input", { bubbles: true }));
     }
@@ -142,9 +145,19 @@
   document.addEventListener("pointerdown", function (e) {
     var k = e.target.closest && e.target.closest("." + P + "-dial__knob");
     if (!k || e.button > 0 || k.getAttribute("aria-disabled") === "true") return;
-    var r = k.getBoundingClientRect();
-    drag = { k: k, cx: r.left + r.width / 2, cy: r.top + r.height / 2, y: e.clientY, start: getDial(k), last: null, mode: null, x0: e.clientX, touch: e.pointerType === "touch" };
+    var p = dialParts(k), r = k.getBoundingClientRect();
+    var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    var dx = e.clientX - cx, dy = e.clientY - cy;
+    drag = {
+      k: k, dial: p.dial, cx: cx, cy: cy,
+      x0: e.clientX, y0: e.clientY, start: getDial(k),
+      prevAngle: Math.atan2(dx, -dy) * 180 / Math.PI, accAngle: 0,
+      mode: Math.hypot(dx, dy) < 22 ? "slide" : "turn",
+      touch: e.pointerType === "touch"
+    };
     k.classList.add("is-dragging");
+    p.dial.classList.add("is-dragging");
+    p.dial.classList.remove("is-tick");
     try { k.setPointerCapture(e.pointerId); } catch (err) { /* old browsers */ }
     k.focus({ preventScroll: true });
     e.preventDefault();
@@ -152,30 +165,52 @@
   document.addEventListener("pointermove", function (e) {
     if (!drag) return;
     var k = drag.k, min = num(k.getAttribute("aria-valuemin"), 0), max = num(k.getAttribute("aria-valuemax"), 100);
-    var dx = e.clientX - drag.cx, dy = e.clientY - drag.cy;
-    // Close to the centre, turning is ambiguous: use vertical travel (up = more), like a studio knob.
-    if (!drag.mode) drag.mode = Math.hypot(dx, dy) > 24 ? "turn" : Math.abs(e.clientY - drag.y) > 3 ? "slide" : null;
     if (drag.mode === "slide") {
-      setDial(k, drag.start + (drag.y - e.clientY) * (max - min) / 180);
-    } else if (drag.mode === "turn") {
-      var a = Math.atan2(dx, -dy) * 180 / Math.PI; // 0° at 12 o'clock, clockwise
-      a = Math.max(-135, Math.min(135, a));
-      if (drag.last !== null && Math.abs(a - drag.last) > 200) return; // ignore the jump across the dead zone at the bottom
-      drag.last = a;
-      setDial(k, min + (a + 135) / 270 * (max - min));
+      setDial(k, drag.start + (drag.y0 - e.clientY) * (max - min) / 180, { smooth: true });
+    } else {
+      var dx = e.clientX - drag.cx, dy = e.clientY - drag.cy;
+      if (Math.hypot(dx, dy) < 8) return; // avoid 180° flip right over the pivot
+      var cur = Math.atan2(dx, -dy) * 180 / Math.PI;
+      var da = cur - drag.prevAngle;
+      if (da > 180) da -= 360; else if (da < -180) da += 360;
+      drag.prevAngle = cur;
+      drag.accAngle += da;
+      var raw = Math.max(min, Math.min(max, drag.start + (drag.accAngle / 270) * (max - min)));
+      // Pin accumulator at the physical stops so reversing direction responds immediately with zero slack.
+      drag.accAngle = ((raw - drag.start) / (max - min)) * 270;
+      setDial(k, raw, { smooth: true });
     }
   });
-  function endDrag() { if (!drag) return; drag.k.classList.remove("is-dragging"); commit(drag.k); drag = null; }
+  function endDrag() {
+    if (!drag) return;
+    var k = drag.k, dial = drag.dial;
+    k.classList.remove("is-dragging");
+    dial.classList.remove("is-dragging");
+    drag = null;
+    // Settle smoothly onto the exact stepped detent once released.
+    setDial(k, getDial(k), { silent: true });
+    commit(k);
+  }
   document.addEventListener("pointerup", endDrag);
   document.addEventListener("pointercancel", endDrag);
-  /* Wheel turns a knob one detent per notch. Bound to each knob (not the document) so page scrolling
-     everywhere else stays passive. */
+  /* Wheel turns a knob smoothly: notched mice step immediately, fine trackpads accumulate cleanly. */
   function onWheel(e) {
     var k = e.currentTarget;
     e.preventDefault();
-    setDial(k, getDial(k) + (e.deltaY < 0 ? 1 : -1) * num(k.getAttribute("data-step"), 1));
+    var step = num(k.getAttribute("data-step"), 1);
+    if (e.deltaMode !== 0 || Math.abs(e.deltaY) >= 50) {
+      k.__braunWheelAcc = 0;
+      setDial(k, getDial(k) + (e.deltaY < 0 ? 1 : -1) * step);
+    } else {
+      k.__braunWheelAcc = (k.__braunWheelAcc || 0) + e.deltaY;
+      if (Math.abs(k.__braunWheelAcc) >= 20) {
+        var steps = Math.trunc(k.__braunWheelAcc / 20);
+        k.__braunWheelAcc -= steps * 20;
+        setDial(k, getDial(k) - steps * step);
+      }
+    }
     clearTimeout(k.__braunWheel);
-    k.__braunWheel = setTimeout(function () { commit(k); }, 250);
+    k.__braunWheel = setTimeout(function () { k.__braunWheelAcc = 0; commit(k); }, 250);
   }
   function initDials(root) {
     (root || document).querySelectorAll("." + P + "-dial__knob").forEach(function (k) {
@@ -189,8 +224,19 @@
   /* ---------- fader ---------- */
   function syncFader(input) {
     var min = num(input.min, 0), max = num(input.max, 100), v = num(input.value, 0);
-    input.style.setProperty("--" + P + "-value", String((v - min) / (max - min) * 100));
-    if (input.id) document.querySelectorAll('output[for~="' + input.id + '"]').forEach(function (o) { o.textContent = format(v, o, decimals(input.step || 1)); });
+    var pct = String((v - min) / (max - min) * 100);
+    if (input.style.getPropertyValue("--" + P + "-value") !== pct) input.style.setProperty("--" + P + "-value", pct);
+    if (input.id) document.querySelectorAll('output[for~="' + input.id + '"]').forEach(function (o) {
+      var txt = format(v, o, decimals(input.step || 1));
+      if (o.textContent !== txt) o.textContent = txt;
+    });
+  }
+  function initFaders(root) {
+    (root || document).querySelectorAll("." + P + "-fader").forEach(function (f) {
+      if (f.__braunFader) return;
+      f.__braunFader = true;
+      syncFader(f);
+    });
   }
 
   /* ---------- meters ---------- */
@@ -392,13 +438,13 @@
   function boot() {
     syncThemeControls();
     initDials(document);
-    document.querySelectorAll("." + P + "-fader").forEach(syncFader);
+    initFaders(document);
     initIndicators(document);
     var queued = false;
     new MutationObserver(function () {
       if (queued) return;
       queued = true;
-      requestAnimationFrame(function () { queued = false; initIndicators(document); initDials(document); document.querySelectorAll("." + P + "-fader").forEach(syncFader); });
+      requestAnimationFrame(function () { queued = false; initIndicators(document); initDials(document); initFaders(document); });
     }).observe(document.body, { childList: true, subtree: true });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

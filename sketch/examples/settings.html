@@ -23,8 +23,6 @@
     .cols { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 26px; align-items: start; }
     .controls { display: flex; flex-direction: column; gap: 22px; }
     .accents { display: grid; grid-template-columns: repeat(4, max-content); gap: 14px 18px; padding-bottom: 18px; }
-    .stops { display: flex; justify-content: space-between; font-size: var(--sketch-font-size-small); color: var(--sketch-color-ink-soft); margin-top: 2px; }
-    .stops .is-current { color: var(--sketch-color-ink); font-weight: 700; }
     .preview { position: relative; display: grid; grid-template-columns: 44px 210px minmax(0, 1fr); min-height: 520px; padding: 0; overflow: hidden; }
     .rail { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 12px 0; border-right: var(--sketch-line-regular) solid var(--sketch-color-ink); }
     .projects { padding: 12px; border-right: var(--sketch-line-regular) solid var(--sketch-color-ink); }
@@ -35,10 +33,6 @@
     .board { padding: 12px 14px; min-width: 0; }
     .board__top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
     .board__top .sketch-input-icon { flex: 1 1 220px; }
-    .columns { display: grid; grid-template-columns: repeat(3, minmax(150px, 1fr)); gap: 12px; overflow-x: auto; }
-    .column { padding: 8px; border: 1.4px solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-well); }
-    .column h3 { font-size: 15px; margin-bottom: 8px; }
-    .task { display: flex; flex-direction: column; gap: 6px; padding: 8px; margin-bottom: 8px; border: 1.4px solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); background: var(--sketch-color-panel); font-size: 14px; line-height: 1.15; }
     .saved { position: absolute; right: 16px; bottom: 16px; }
     .icon-box { display: grid; place-items: center; width: 26px; height: 26px; border: 1.4px solid var(--sketch-color-ink); border-radius: var(--sketch-radius-sm); }
     @media (max-width: 1080px) { .cols { grid-template-columns: minmax(0, 1fr); } }
@@ -120,8 +114,7 @@
         </div>
         <div>
           <span class="sketch-label">Density</span>
-          <div class="sketch-range" style="--fill-n:1;padding-top:6px"><input class="sketch-slider" type="range" min="0" max="2" value="2" aria-label="Density" id="density"></div>
-          <div class="stops" id="density-stops"><span>Cozy</span><span>Balanced</span><span class="is-current">Compact</span></div>
+          <div class="sketch-range" style="--fill-n:1;padding-top:6px"><input class="sketch-slider" type="range" min="0" max="2" value="2" aria-label="Density" id="density"><div class="sketch-range__ticks" id="density-stops"><span>Cozy</span><span>Balanced</span><span class="is-current">Compact</span></div></div>
         </div>
         <div class="sketch-form-row">
           <label class="sketch-label" for="face" style="margin:0">Typeface</label>
@@ -129,8 +122,7 @@
         </div>
         <div>
           <span class="sketch-label">Corner radius</span>
-          <div class="sketch-range" style="--fill-n:.66;padding-top:6px"><input class="sketch-slider" type="range" min="8" max="20" step="4" value="16" aria-label="Corner radius" id="radius"></div>
-          <div class="stops" id="radius-stops"><span>8</span><span>12</span><span class="is-current">16</span><span>20</span></div>
+          <div class="sketch-range" style="--fill-n:.66;padding-top:6px"><input class="sketch-slider" type="range" min="8" max="20" step="4" value="16" aria-label="Corner radius" id="radius"><div class="sketch-range__ticks" id="radius-stops"><span>8</span><span>12</span><span class="is-current">16</span><span>20</span></div></div>
         </div>
         <hr class="sketch-rule" style="margin:0">
         <label class="sketch-check sketch-check--between"><span><span class="sketch-check__title">Reduce motion</span><span class="sketch-check__hint">Simpler animations for better performance.</span></span><input type="checkbox" class="sketch-toggle"></label>
@@ -162,20 +154,20 @@
             <strong class="sketch-h3" style="font-size:18px">All board</strong>
             <div class="sketch-tabs" role="tablist" aria-label="View"><button class="sketch-tabs__item" role="tab" aria-selected="false" tabindex="-1">Projects</button><button class="sketch-tabs__item" role="tab" aria-selected="true">Board</button></div>
           </div>
-          <div class="columns">
-            <div class="column"><h3 class="sketch-label">To do</h3>
-              <div class="task">Project team care<span><span class="sketch-tag">Tags</span></span></div>
-              <div class="task">Plan a roadmap<span><span class="sketch-tag">Tags</span></span></div>
-              <div class="task">Write release notes<span><span class="sketch-tag">Tags</span></span></div>
+          <div class="sketch-board">
+            <div class="sketch-column"><h3 class="sketch-label">To do</h3>
+              <div class="sketch-task">Project team care<span><span class="sketch-tag">Tags</span></span></div>
+              <div class="sketch-task">Plan a roadmap<span><span class="sketch-tag">Tags</span></span></div>
+              <div class="sketch-task">Write release notes<span><span class="sketch-tag">Tags</span></span></div>
             </div>
-            <div class="column"><h3 class="sketch-label">In progress</h3>
-              <div class="task">Project engagement<span><span class="sketch-tag sketch-tag--active">Tags</span></span></div>
-              <div class="task">Your project breaks<span class="sketch-row" style="--gap:4px"><span class="sketch-badge sketch-badge--beta">Blocked</span><span class="sketch-badge">Review</span></span></div>
+            <div class="sketch-column"><h3 class="sketch-label">In progress</h3>
+              <div class="sketch-task">Project engagement<span><span class="sketch-tag sketch-tag--active">Tags</span></span></div>
+              <div class="sketch-task">Your project breaks<span class="sketch-row" style="--gap:4px"><span class="sketch-badge sketch-badge--beta">Blocked</span><span class="sketch-badge">Review</span></span></div>
             </div>
-            <div class="column"><h3 class="sketch-label">Done</h3>
-              <div class="task">Project archive<span><span class="sketch-tag">Tags</span></span></div>
-              <div class="task">Develop new items<span><span class="sketch-badge sketch-badge--updated">Shipped</span></span></div>
-              <div class="task">Project amendment<span><span class="sketch-tag">Tags</span></span></div>
+            <div class="sketch-column"><h3 class="sketch-label">Done</h3>
+              <div class="sketch-task">Project archive<span><span class="sketch-tag">Tags</span></span></div>
+              <div class="sketch-task">Develop new items<span><span class="sketch-badge sketch-badge--updated">Shipped</span></span></div>
+              <div class="sketch-task">Project amendment<span><span class="sketch-tag">Tags</span></span></div>
             </div>
           </div>
         </div>

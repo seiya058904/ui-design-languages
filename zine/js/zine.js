@@ -44,12 +44,23 @@
   /* ---------- sliders ---------- */
   function syncSlider(input) {
     var min = parseFloat(input.min || 0), max = parseFloat(input.max || 100), v = parseFloat(input.value);
-    input.style.setProperty("--" + P + "-value", String((v - min) / (max - min) * 100));
+    var pct = String((v - min) / (max - min) * 100);
+    if (input.style.getPropertyValue("--" + P + "-value") !== pct) input.style.setProperty("--" + P + "-value", pct);
     var outs = [];
     var range = input.closest("." + P + "-range");
     if (range) outs = Array.prototype.slice.call(range.querySelectorAll("output"));
     if (input.id) outs = outs.concat(Array.prototype.slice.call(document.querySelectorAll('output[for~="' + input.id + '"]')));
-    outs.forEach(function (o) { o.textContent = input.value + (o.getAttribute("data-suffix") || ""); });
+    outs.forEach(function (o) {
+      var txt = input.value + (o.getAttribute("data-suffix") || "");
+      if (o.textContent !== txt) o.textContent = txt;
+    });
+  }
+  function initSliders(root) {
+    (root || document).querySelectorAll("." + P + "-slider").forEach(function (s) {
+      if (s.__zineSlider) return;
+      s.__zineSlider = true;
+      syncSlider(s);
+    });
   }
 
   /* ---------- sortable tables ---------- */
@@ -122,6 +133,10 @@
 
   /* ---------- events ---------- */
   document.addEventListener("input", function (e) { if (e.target.matches && e.target.matches("." + P + "-slider")) syncSlider(e.target); });
+  document.addEventListener("reset", function (e) {
+    var form = e.target;
+    if (form && form.querySelectorAll) requestAnimationFrame(function () { form.querySelectorAll("." + P + "-slider").forEach(syncSlider); });
+  });
   document.addEventListener("change", function (e) { if (e.target.matches && e.target.matches("input[data-theme-toggle]")) setTheme(e.target.checked ? "dark" : "light"); });
   /* ---------- tickets ---------- */
   function tear(ticket, on) {
@@ -237,8 +252,13 @@
 
   function boot() {
     syncThemeControls();
-    document.querySelectorAll("." + P + "-slider").forEach(syncSlider);
-    new MutationObserver(function () { document.querySelectorAll("." + P + "-slider").forEach(syncSlider); }).observe(document.body, { childList: true, subtree: true });
+    initSliders(document);
+    var queued = false;
+    new MutationObserver(function () {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () { queued = false; initSliders(document); });
+    }).observe(document.body, { childList: true, subtree: true });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();

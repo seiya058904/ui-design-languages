@@ -149,6 +149,16 @@
         <div class="sketch-stepper" data-min="0" data-max="9"><button type="button" aria-label="Decrease">−</button><output aria-live="polite">1</output><button type="button" aria-label="Increase">+</button></div>
       </div>
     </div>
+    <div class="demo" data-demo="settings-rows">
+      <h3>Settings toggle rows</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-stack" style="--gap:14px;width:min(100%,380px)">
+          <label class="sketch-check sketch-check--between"><span><span class="sketch-check__title">Reduce motion</span><span class="sketch-check__hint">Simpler animations for better performance.</span></span><input type="checkbox" class="sketch-toggle"></label>
+          <hr class="sketch-rule" style="margin:0">
+          <label class="sketch-check sketch-check--between"><span><span class="sketch-check__title">High contrast outlines</span><span class="sketch-check__hint">Makes borders and edges more distinct.</span></span><input type="checkbox" class="sketch-toggle" checked></label>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="cat-section" id="segmented" data-component="segmented" aria-labelledby="h-segmented">
@@ -271,6 +281,21 @@
         <div class="sketch-empty" style="width:min(100%,240px)"><svg class="sketch-icon" aria-hidden="true"><use href="#i-cloud"/></svg><strong>No data found</strong><span class="sketch-caption">Create a new item to get started.</span><button class="sketch-btn sketch-btn--sm sketch-btn--primary" type="button">Create new</button></div>
       </div>
     </div>
+    <div class="demo" data-demo="task-board">
+      <h3>Task board</h3>
+      <div class="demo__stage sketch-box">
+        <div class="sketch-board" style="--columns:2;max-width:440px">
+          <div class="sketch-column"><h3 class="sketch-label">To do</h3>
+            <div class="sketch-task">Plan a roadmap<span><span class="sketch-tag">Notes</span></span></div>
+            <div class="sketch-task">Write release notes<span><span class="sketch-tag">Docs</span></span></div>
+          </div>
+          <div class="sketch-column"><h3 class="sketch-label">In progress</h3>
+            <div class="sketch-task">Project engagement<span><span class="sketch-tag sketch-tag--active">Active</span></span></div>
+            <div class="sketch-task">Review flow<span class="sketch-row" style="--gap:4px"><span class="sketch-badge sketch-badge--beta">Blocked</span><span class="sketch-badge">Review</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="cat-section" id="notes" data-component="notes" aria-labelledby="h-notes">
@@ -278,7 +303,7 @@
     <p>Sticky notes taped to the board at a tilt — hover straightens one, the pin keeps it put — and a pad you can really draw on.</p>
     <div class="demo" data-demo="sticky-notes">
       <h3>Sticky notes</h3>
-      <div class="demo__stage">
+      <div class="demo__stage sketch-box">
         <div class="sketch-notes">
           <article class="sketch-sticky" style="--tilt:-2.5deg">
             <span class="sketch-sticky__tape" aria-hidden="true"></span>
@@ -306,7 +331,7 @@
     </div>
     <div class="demo" data-demo="doodle-pad">
       <h3>Doodle pad</h3>
-      <div class="demo__stage">
+      <div class="demo__stage sketch-box">
         <div class="sketch-doodle" data-sample style="width:min(100%,460px)">
           <div class="sketch-doodle__paper"><canvas class="sketch-doodle__canvas" role="img" aria-label="Doodle"></canvas><p class="sketch-doodle__hint">Draw here</p></div>
           <div class="sketch-doodle__tools">
@@ -327,7 +352,7 @@
     <p>A hand-drawn flowchart: pencil arrows draw themselves in, the current step is bold on a wash, what's next is still dashed. Click a node to move along.</p>
     <div class="demo" data-demo="flow-card">
       <h3>Flow card</h3>
-      <div class="demo__stage">
+      <div class="demo__stage sketch-box">
         <ol class="sketch-flow" aria-label="Release">
           <li class="is-done"><button class="sketch-flow__node" type="button"><span class="sketch-flow__mark" aria-hidden="true"></span><b>Sketch</b><small>Mon</small></button></li>
           <li class="is-done"><button class="sketch-flow__node" type="button"><span class="sketch-flow__mark" aria-hidden="true"></span><b>Prototype</b><small>Wed</small></button></li>
@@ -340,10 +365,10 @@
 
   <section class="cat-section" id="accordion" data-component="accordion" aria-labelledby="h-accordion">
     <h2 id="h-accordion">Accordion</h2>
-    <p>Drawn boxes that open frame by frame, like a flip-book; the + turns into ×.</p>
+    <p>Drawn boxes that open smoothly; the + turns into ×.</p>
     <div class="demo" data-demo="accordion">
       <h3>Accordion</h3>
-      <div class="demo__stage">
+      <div class="demo__stage sketch-box">
         <div class="sketch-accordion" style="width:min(100%,500px)">
           <details class="sketch-accordion__item" name="s-faq" open>
             <summary class="sketch-accordion__head">Can I export my sketches?</summary>
@@ -385,8 +410,8 @@
       <div class="demo__stage sketch-box">
         <nav class="sketch-nav" aria-label="Sections" style="width:min(100%,220px)">
           <a class="sketch-nav__item" href="#" aria-current="page"><svg class="sketch-icon" aria-hidden="true"><use href="#i-home"/></svg>Overview</a>
-          <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-bulb"/></svg>Principles</a>
-          <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-puzzle"/></svg>Components</a>
+          <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-bulb"/></svg>Principles<span class="sketch-count">2</span></a>
+          <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-puzzle"/></svg>Components<span class="sketch-count">5</span></a>
           <a class="sketch-nav__item" href="#"><svg class="sketch-icon" aria-hidden="true"><use href="#i-hand"/></svg>Interactions</a>
         </nav>
       </div>

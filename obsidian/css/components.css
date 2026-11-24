@@ -870,8 +870,8 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
   isolation: isolate;
   display: inline-flex;
   align-items: flex-end;
-  gap: 6px;
-  padding: 8px 10px 12px;
+  gap: 10px;
+  padding: 9px 12px 13px;
   border: 1px solid var(--obsidian-color-border-medium);
   border-radius: var(--obsidian-radius-2xl);
   background: var(--obsidian-atmosphere-sheen), var(--obsidian-atmosphere-refraction), var(--obsidian-color-glass-elevated);
@@ -896,8 +896,8 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
   z-index: 1;
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: 1px solid var(--obsidian-color-border-low);
   border-radius: var(--obsidian-radius-md);
@@ -913,12 +913,12 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
     border-color var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing),
     box-shadow var(--obsidian-motion-duration-fast) var(--obsidian-motion-easing);
 }
-.obsidian-dock__item .obsidian-icon { width: 20px; height: 20px; }
-/* Magnification: the hovered item swells most, its neighbours a little */
-.obsidian-dock__item:hover { scale: 1.3; translate: 0 -4px; color: var(--obsidian-color-ink); border-color: var(--obsidian-color-border-medium); }
+.obsidian-dock__item .obsidian-icon { width: 19px; height: 19px; }
+/* Magnification: airy 10px spacing lets the hovered item (1.2×) and its neighbours (1.08×) swell cleanly without ever colliding */
+.obsidian-dock__item:hover { z-index: 3; scale: 1.2; translate: 0 -5px; color: var(--obsidian-color-ink); border-color: var(--obsidian-color-border-medium); box-shadow: var(--obsidian-shadow-control), 0 10px 20px -10px rgba(0, 0, 0, 0.75); }
 .obsidian-dock__item:hover + .obsidian-dock__item,
-.obsidian-dock__item:has(+ .obsidian-dock__item:hover) { scale: 1.12; translate: 0 -1px; }
-.obsidian-dock__item:active { scale: 1.18; translate: 0 -2px; transition-duration: var(--obsidian-motion-duration-press); transition-timing-function: var(--obsidian-motion-easing-press); }
+.obsidian-dock__item:has(+ .obsidian-dock__item:hover) { z-index: 2; scale: 1.08; translate: 0 -2px; }
+.obsidian-dock__item:active { scale: 1.12; translate: 0 -2px; transition-duration: var(--obsidian-motion-duration-press); transition-timing-function: var(--obsidian-motion-easing-press); }
 .obsidian-dock__item:focus-visible { outline: none; box-shadow: var(--obsidian-shadow-control), var(--obsidian-shadow-focus); }
 .obsidian-dock__item[aria-current="true"],
 .obsidian-dock__item[aria-current="page"] { color: var(--obsidian-color-primary); border-color: var(--obsidian-color-border-high); }
@@ -928,7 +928,7 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
   content: attr(aria-label);
   position: absolute;
   left: 50%;
-  bottom: calc(100% + 6px);
+  bottom: calc(100% + 8px);
   padding: 3px 8px;
   border: 1px solid var(--obsidian-color-border-medium);
   border-radius: var(--obsidian-radius-sm);
@@ -937,7 +937,7 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
   font-size: 11px;
   font-weight: var(--obsidian-font-weight-medium);
   white-space: nowrap;
-  scale: 0.77; /* counter-scales the 1.3× hover swell, so the label reads at its own size */
+  scale: 0.83; /* counter-scales the 1.2× hover swell, so the label reads at its own size */
   translate: -50% 4px;
   opacity: 0;
   pointer-events: none;
@@ -946,7 +946,7 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
 .obsidian-dock__item:hover::after,
 .obsidian-dock__item:focus-visible::after { opacity: 1; translate: -50% 0; }
 .obsidian-dock__item:focus-visible:not(:hover)::after { scale: 1; }
-.obsidian-dock__sep { align-self: center; width: 1px; height: 28px; margin: 0 4px 2px; background: var(--obsidian-color-border-medium); }
+.obsidian-dock__sep { align-self: center; width: 1px; height: 26px; margin: 0 2px 2px; background: var(--obsidian-color-border-medium); }
 
 /* =========================================================================
    Media card — now playing: artwork that glows into the glass, a lit scrubber and transport keys.
@@ -1042,3 +1042,26 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
   .obsidian-media { grid-template-columns: minmax(0, 1fr); }
   .obsidian-media__art { width: min(100%, 220px); justify-self: center; }
 }
+
+/* =========================================================================
+   Notification dot on icon button & settings toggle row
+   <button class="obsidian-btn obsidian-btn--icon obsidian-btn--ghost obsidian-btn--dot">…</button>
+   <div class="obsidian-setting"><div><b>Allow AI Copilot</b><span>Description</span></div><input class="obsidian-switch" type="checkbox"></div>
+   ========================================================================= */
+.obsidian-btn--dot { position: relative; }
+.obsidian-btn--dot::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--obsidian-color-danger);
+  box-shadow: 0 0 0 2px var(--obsidian-color-canvas), 0 0 8px var(--obsidian-color-danger);
+}
+.obsidian-btn--dot.is-read::after { display: none; }
+
+.obsidian-setting { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; }
+.obsidian-setting b { display: block; font-weight: var(--obsidian-font-weight-medium); color: var(--obsidian-color-ink); font-size: var(--obsidian-font-size-body); }
+.obsidian-setting span { font-size: var(--obsidian-font-size-caption); color: var(--obsidian-color-text-muted); }

@@ -31,20 +31,11 @@
     .ov { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; }
     .flat { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 10px; }
     .flat .zine-chip { justify-content: center; height: 42px; padding: 0; font-size: var(--zine-font-size-small); }
-    .people { display: grid; gap: 12px; }
-    .person { display: flex; align-items: center; gap: 12px; }
-    .person b { display: block; font-family: var(--zine-font-family-display); font-weight: 400; text-transform: uppercase; }
-    .person span { font-family: var(--zine-font-family-mono); font-size: var(--zine-font-size-caption); }
-    .person .zine-sticker { margin-left: auto; }
     .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 16px; }
     .tools .zine-search { flex: 1 1 220px; }
     .row-act { display: inline-flex; gap: 8px; }
     .empty { padding: 26px; text-align: center; font-family: var(--zine-font-family-mono); font-weight: var(--zine-font-weight-bold); text-transform: uppercase; }
     .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
-    .line { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: var(--zine-border-thin) solid var(--zine-color-ink); }
-    .line:last-child { border-bottom: 0; }
-    .line b { display: block; font-family: var(--zine-font-family-mono); text-transform: uppercase; }
-    .line span { font-size: var(--zine-font-size-small); color: var(--zine-color-text-muted); }
     .toasts { position: fixed; right: 18px; bottom: 18px; z-index: 50; display: grid; gap: 12px; width: min(340px, calc(100% - 36px)); }
 
     @media (max-width: 980px) {
@@ -130,11 +121,11 @@
             </div>
             <div class="zine-stack" style="--gap:14px">
               <span class="zine-label" style="align-self:flex-start">Contributors</span>
-              <div class="people">
-                <div class="person"><span class="zine-avatar" style="--zine-avatar:var(--zine-color-cobalt)"><svg viewBox="0 0 12 12" aria-hidden="true"><path class="zine-pixel-ink" d="M3 1h6v1H3zM2 2h8v1H2zM2 3h2v1H2zM8 3h2v1H8zM2 4h1v1H2zM9 4h1v1H9zM2 5h1v1H2zM4 5h1v1H4zM7 5h1v1H7zM9 5h1v1H9zM2 6h1v1H2zM9 6h1v1H9zM2 7h1v1H2zM5 7h2v1H5zM9 7h1v1H9zM3 8h1v1H3zM8 8h1v1H8zM4 9h1v1H4zM7 9h1v1H7zM2 10h8v1H2zM1 11h10v1H1z"/><path class="zine-pixel-face" d="M4 3h4v1H4zM3 4h6v1H3zM3 5h1v1H3zM5 5h2v1H5zM8 5h1v1H8zM3 6h6v1H3zM3 7h2v1H3zM7 7h2v1H7zM4 8h4v1H4zM5 9h2v1H5z"/></svg></span><div><b>Alex Kim</b><span>Design · layout, cover</span></div><span class="zine-sticker zine-sticker--live">Live</span></div>
-                <div class="person"><span class="zine-avatar" style="--zine-avatar:var(--zine-color-vermilion)">MR</span><div><b>Mia Rossi</b><span>Words · 6 essays</span></div><span class="zine-sticker">New</span></div>
-                <div class="person"><span class="zine-avatar" style="--zine-avatar:var(--zine-color-white)">SL</span><div><b>Sam Lee</b><span>Photo · 31 frames</span></div><span class="zine-sticker zine-sticker--beta">Beta</span></div>
-              </div>
+              <ul class="zine-list">
+                <li class="zine-list__item"><span class="zine-avatar" style="--zine-avatar:var(--zine-color-cobalt)"><svg viewBox="0 0 12 12" aria-hidden="true"><path class="zine-pixel-ink" d="M3 1h6v1H3zM2 2h8v1H2zM2 3h2v1H2zM8 3h2v1H8zM2 4h1v1H2zM9 4h1v1H9zM2 5h1v1H2zM4 5h1v1H4zM7 5h1v1H7zM9 5h1v1H9zM2 6h1v1H2zM9 6h1v1H9zM2 7h1v1H2zM5 7h2v1H5zM9 7h1v1H9zM3 8h1v1H3zM8 8h1v1H8zM4 9h1v1H4zM7 9h1v1H7zM2 10h8v1H2zM1 11h10v1H1z"/><path class="zine-pixel-face" d="M4 3h4v1H4zM3 4h6v1H3zM3 5h1v1H3zM5 5h2v1H5zM8 5h1v1H8zM3 6h6v1H3zM3 7h2v1H3zM7 7h2v1H7zM4 8h4v1H4zM5 9h2v1H5z"/></svg></span><div><b>Alex Kim</b><span>Design · layout, cover</span></div><span class="zine-sticker zine-sticker--live">Live</span></li>
+                <li class="zine-list__item"><span class="zine-avatar" style="--zine-avatar:var(--zine-color-vermilion)">MR</span><div><b>Mia Rossi</b><span>Words · 6 essays</span></div><span class="zine-sticker">New</span></li>
+                <li class="zine-list__item"><span class="zine-avatar" style="--zine-avatar:var(--zine-color-white)">SL</span><div><b>Sam Lee</b><span>Photo · 31 frames</span></div><span class="zine-sticker zine-sticker--beta">Beta</span></li>
+              </ul>
               <label class="zine-field"><span class="zine-field__label">Editor's note</span><textarea class="zine-input" rows="3">Cover goes lime on black. Page 14 needs the pull quote bigger.</textarea></label>
             </div>
           </div>
@@ -165,18 +156,18 @@
             <div class="zine-stack" style="--gap:14px">
               <span class="zine-label" style="align-self:flex-start">Invite</span>
               <form class="zine-row" style="--gap:12px" data-invite><input class="zine-input" type="email" placeholder="name@studio.com" aria-label="Email address" style="flex:1 1 200px" required><button class="zine-btn zine-btn--primary" type="submit">Invite</button></form>
-              <div class="line"><div><b>Anyone with the link</b><span>Can view proofs, not files</span></div><input class="zine-switch" type="checkbox" checked aria-label="Anyone with the link can view"></div>
-              <div class="line"><div><b>Allow comments</b><span>On proofs and the flatplan</span></div><input class="zine-switch" type="checkbox" aria-label="Allow comments"></div>
+              <div class="zine-setting"><div><b>Anyone with the link</b><span>Can view proofs, not files</span></div><input class="zine-switch" type="checkbox" checked aria-label="Anyone with the link can view"></div>
+              <div class="zine-setting"><div><b>Allow comments</b><span>On proofs and the flatplan</span></div><input class="zine-switch" type="checkbox" aria-label="Allow comments"></div>
               <button class="zine-btn" type="button" data-copy style="justify-self:start"><svg class="zine-icon" aria-hidden="true"><use href="#i-link"/></svg>Copy link</button>
             </div>
             <div class="zine-stack" style="--gap:12px">
               <span class="zine-label" style="align-self:flex-start">People <small>(4)</small></span>
-              <div class="people" data-people>
-                <div class="person"><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-cobalt);color:var(--zine-color-white)">AK</span><div><b>Alex Kim</b><span>Owner</span></div></div>
-                <div class="person"><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-vermilion)">MR</span><div><b>Mia Rossi</b><span>Can edit</span></div></div>
-                <div class="person"><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-white)">SL</span><div><b>Sam Lee</b><span>Can edit</span></div></div>
-                <div class="person"><span class="zine-avatar zine-avatar--sm">PR</span><div><b>Print Rebel</b><span>Can view · printer</span></div></div>
-              </div>
+              <ul class="zine-list" data-people>
+                <li class="zine-list__item"><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-cobalt);color:var(--zine-color-white)">AK</span><div><b>Alex Kim</b><span>Owner</span></div></li>
+                <li class="zine-list__item"><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-vermilion)">MR</span><div><b>Mia Rossi</b><span>Can edit</span></div></li>
+                <li class="zine-list__item"><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-white)">SL</span><div><b>Sam Lee</b><span>Can edit</span></div></li>
+                <li class="zine-list__item"><span class="zine-avatar zine-avatar--sm">PR</span><div><b>Print Rebel</b><span>Can view · printer</span></div></li>
+              </ul>
             </div>
           </div>
         </section>
@@ -189,9 +180,9 @@
               <div class="zine-field"><span class="zine-field__label">Stock</span><div class="zine-row" style="--gap:22px"><label class="zine-check"><input class="zine-radio" type="radio" name="stock" checked> Newsprint</label><label class="zine-check"><input class="zine-radio" type="radio" name="stock"> Riso white</label></div></div>
             </div>
             <div class="zine-stack" style="--gap:4px">
-              <div class="line"><div><b>Two-color cover</b><span>Black + acid lime</span></div><input class="zine-switch" type="checkbox" checked aria-label="Two-color cover"></div>
-              <div class="line"><div><b>Saddle stitch</b><span>Staples, not glue</span></div><input class="zine-switch" type="checkbox" checked aria-label="Saddle stitch"></div>
-              <div class="line"><div><b>Bleed check</b><span>Warn when art misses 3mm</span></div><input class="zine-switch" type="checkbox" aria-label="Bleed check"></div>
+              <div class="zine-setting"><div><b>Two-color cover</b><span>Black + acid lime</span></div><input class="zine-switch" type="checkbox" checked aria-label="Two-color cover"></div>
+              <div class="zine-setting"><div><b>Saddle stitch</b><span>Staples, not glue</span></div><input class="zine-switch" type="checkbox" checked aria-label="Saddle stitch"></div>
+              <div class="zine-setting"><div><b>Bleed check</b><span>Warn when art misses 3mm</span></div><input class="zine-switch" type="checkbox" aria-label="Bleed check"></div>
               <div class="zine-row" style="margin-top:14px"><button class="zine-btn zine-btn--primary" type="submit">Save changes</button><button class="zine-btn zine-btn--ghost" type="reset">Reset</button></div>
             </div>
           </form>
@@ -300,8 +291,8 @@
   $("[data-invite]").addEventListener("submit", function (e) {
     e.preventDefault();
     var input = this.querySelector("input"), email = input.value.trim();
-    var p = document.createElement("div");
-    p.className = "person";
+    var p = document.createElement("li");
+    p.className = "zine-list__item";
     p.innerHTML = '<span class="zine-avatar zine-avatar--sm"></span><div><b></b><span>Invited · can view</span></div>';
     p.querySelector(".zine-avatar").textContent = email.slice(0, 2).toUpperCase();
     p.querySelector("b").textContent = email.split("@")[0];

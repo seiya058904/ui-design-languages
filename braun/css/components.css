@@ -490,8 +490,9 @@ textarea.braun-input { height: auto; min-height: 96px; padding: var(--braun-spac
   width: var(--braun-size-dial);
   aspect-ratio: 1;
   border-radius: 50%;
-  transition: --braun-value var(--braun-motion-duration-detent) linear;
+  transition: --braun-value var(--braun-motion-duration-release) var(--braun-motion-easing-release);
 }
+.braun-dial.is-dragging { transition: none; }
 /* The scale: 25 ticks over 270°, every sixth a heavier major. ::before is unlit, ::after the lit ones. */
 .braun-dial::before,
 .braun-dial::after {
@@ -525,9 +526,10 @@ textarea.braun-input { height: auto; min-height: 96px; padding: var(--braun-spac
   cursor: grab;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
+  transition: transform var(--braun-motion-duration-release) var(--braun-motion-easing-release);
 }
 .braun-dial__knob:active,
-.braun-dial__knob.is-dragging { cursor: grabbing; }
+.braun-dial__knob.is-dragging { cursor: grabbing; transform: scale(0.992); transition-duration: var(--braun-motion-duration-press); }
 /* Pointer and knurling turn; the light on the crown stays where it is */
 .braun-dial__knob::before,
 .braun-dial__knob::after {
@@ -536,6 +538,7 @@ textarea.braun-input { height: auto; min-height: 96px; padding: var(--braun-spac
   inset: 0;
   border-radius: 50%;
   transform: rotate(calc(-135deg + var(--braun-value) * 2.7deg));
+  will-change: transform;
 }
 .braun-dial__knob::before { background: linear-gradient(var(--braun-color-primary), var(--braun-color-primary)) 50% 7% / 3px 21% no-repeat; z-index: 1; }
 .braun-dial__knob::after {

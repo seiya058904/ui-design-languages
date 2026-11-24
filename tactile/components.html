@@ -251,6 +251,18 @@
         <ol class="tactile-steps" aria-label="Checkout progress" style="width:min(100%,420px)"><li class="is-done">Account</li><li aria-current="step">Details</li><li>Review</li><li>Payment</li></ol>
       </div>
     </div>
+    <div class="demo" data-demo="bar-chart">
+      <h3>Bar chart in a panel</h3>
+      <div class="demo__stage">
+        <section class="tactile-panel" style="width:min(100%,420px)" aria-label="Weekly energy">
+          <header class="tactile-section" style="margin-bottom:14px"><span>Energy this week</span><span>18.4 kWh</span></header>
+          <div class="tactile-bars" role="img" aria-label="Daily energy use, highest today">
+            <span style="--h:46%"></span><span style="--h:58%"></span><span style="--h:40%"></span><span style="--h:66%"></span><span style="--h:52%"></span><span style="--h:61%"></span><span class="is-now" style="--h:78%"></span>
+          </div>
+          <div class="tactile-bars__labels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Today</span></div>
+        </section>
+      </div>
+    </div>
   </section>
 
   <section class="cat-section" id="alert" data-component="alert" aria-labelledby="h-alert">
@@ -276,10 +288,15 @@
     <div class="demo" data-demo="card">
       <h3>Card</h3>
       <div class="demo__stage">
-        <article class="tactile-card tactile-stack" style="--gap:10px;width:min(100%,260px)">
+        <article class="tactile-card tactile-stack" style="--gap:10px;width:min(100%,240px)">
           <span class="tactile-card__icon"><svg class="tactile-icon" aria-hidden="true"><use href="#i-box"/></svg></span>
           <h3 class="tactile-card__title">Product name</h3><p class="tactile-card__text">Hand-thrown stoneware, set of four.</p>
           <span><button class="tactile-btn tactile-btn--primary tactile-btn--sm" type="button">View more</button></span>
+        </article>
+        <article class="tactile-card tactile-stack is-active" style="--gap:12px;width:min(100%,240px)">
+          <div class="tactile-card__top"><span class="tactile-card__icon"><svg class="tactile-icon" aria-hidden="true"><use href="#i-bulb"/></svg></span><input type="checkbox" class="tactile-toggle" checked aria-label="Active state"></div>
+          <div><h3 class="tactile-card__title">Active card</h3><p class="tactile-card__text">Accent icon tile when on.</p></div>
+          <span><span class="tactile-badge">Active</span></span>
         </article>
       </div>
     </div>

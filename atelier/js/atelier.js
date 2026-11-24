@@ -231,6 +231,11 @@
   });
 
   /* ---------- Filter bar ---------- */
+  var FILTER_PRESETS = [
+    { field: "Cycle", ops: "is|is not", value: "Sprint 14" },
+    { field: "Label", ops: "is|is not|includes", value: "Frontend" },
+    { field: "Due", ops: "before|after|is", value: "Friday" }
+  ];
   function syncFilterbar(bar) {
     var left = bar.querySelectorAll("." + P + "-filter:not(.is-leaving)").length;
     var empty = bar.querySelector("." + P + "-filterbar__empty"), clear = bar.querySelector("." + P + "-filterbar__clear");
@@ -241,6 +246,9 @@
     var bar = filter.closest("." + P + "-filterbar");
     if (!bar || filter.classList.contains("is-leaving")) return;
     var focusNext = filter.contains(document.activeElement);
+    var saved = filter.cloneNode(true);
+    saved.classList.remove("is-leaving", "is-entering");
+    (bar.__atelierRemoved || (bar.__atelierRemoved = [])).push(saved);
     filter.classList.add("is-leaving");
     syncFilterbar(bar);
     setTimeout(function () {
@@ -251,6 +259,30 @@
         if (target) target.focus();
       }
     }, 140);
+  }
+  function makeFilter(preset) {
+    var el = document.createElement("div");
+    el.className = P + "-filter";
+    el.innerHTML =
+      '<span class="' + P + '-filter__field">' + preset.field + "</span>" +
+      '<button class="' + P + '-filter__op" type="button" data-ops="' + preset.ops + '">' + preset.ops.split("|")[0] + "</button>" +
+      '<span class="' + P + '-filter__value">' + preset.value + "</span>" +
+      '<button class="' + P + '-filter__remove" type="button" aria-label="Remove ' + preset.field + ' filter">×</button>';
+    return el;
+  }
+  function addFilter(bar) {
+    var el = bar.__atelierRemoved && bar.__atelierRemoved.length ? bar.__atelierRemoved.shift() : null;
+    if (!el) {
+      var active = Array.prototype.map.call(bar.querySelectorAll("." + P + "-filter__field"), function (f) { return f.textContent.trim(); });
+      var next = FILTER_PRESETS.filter(function (p) { return active.indexOf(p.field) < 0; })[0];
+      if (!next) return;
+      el = makeFilter(next);
+    }
+    el.classList.add("is-entering");
+    var anchor = bar.querySelector("." + P + "-filterbar__empty") || bar.querySelector("[data-" + P + "-filter-add]");
+    bar.insertBefore(el, anchor || null);
+    syncFilterbar(bar);
+    bar.dispatchEvent(new CustomEvent(P + ":filteradd", { bubbles: true, detail: { filter: el } }));
   }
 
   /* ---------- Menus ---------- */
@@ -305,6 +337,8 @@
     if (rm) removeFilter(rm.closest("." + P + "-filter"));
     var clr = e.target.closest("." + P + "-filterbar__clear");
     if (clr) { var bar = clr.closest("." + P + "-filterbar"); if (bar) bar.querySelectorAll("." + P + "-filter").forEach(removeFilter); }
+    var add = e.target.closest("[data-" + P + "-filter-add]");
+    if (add) { var fbar = add.closest("." + P + "-filterbar"); if (fbar) addFilter(fbar); }
 
     var menu = e.target.closest("." + P + "-menu");
     var trig = e.target.closest('[aria-haspopup="menu"]');

@@ -27,23 +27,10 @@
     .topbar-search .clay-field__control { height: 40px; }
     .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
-    .kpi { flex-direction: column; gap: 6px; }
-    .kpi__label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--clay-color-text-muted); }
-    .kpi__icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 12px; background: var(--clay-color-primary); color: var(--clay-color-primary-ink); box-shadow: var(--clay-shadow-raised-sm); }
-    .kpi__value { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-    .kpi__delta { font-size: 13px; color: var(--clay-color-text-muted); }
     .split { display: grid; grid-template-columns: 1.6fr 1fr; gap: 18px; }
     .panel { flex-direction: column; gap: 18px; padding: 22px; }
     .panel__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
     .panel__title { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
-    .bars { display: flex; align-items: flex-end; gap: 14px; height: 200px; padding: 16px 16px 0; border-radius: var(--clay-radius-lg); background: var(--clay-color-surface-sunken); box-shadow: var(--clay-shadow-inset); }
-    .bar { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 8px; height: 100%; font-size: 12px; color: var(--clay-color-text-muted); padding-bottom: 10px; }
-    .bar i { display: block; width: 100%; max-width: 38px; height: var(--h); border-radius: 12px 12px 8px 8px; background: linear-gradient(180deg, var(--clay-color-surface), var(--clay-color-level-2)); box-shadow: var(--clay-shadow-raised-sm); }
-    .bar.is-now i { background: linear-gradient(180deg, var(--clay-color-primary-light), var(--clay-color-primary)); }
-    .activity { display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; list-style: none; }
-    .activity li { display: flex; align-items: center; gap: 12px; font-size: 14px; }
-    .activity li div { flex: 1; min-width: 0; }
-    .activity small { display: block; color: var(--clay-color-text-muted); font-size: 12px; }
     .menu-btn { display: none; }
 
     @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(2, 1fr); } .split { grid-template-columns: 1fr; } }
@@ -56,7 +43,6 @@
     @media (max-width: 520px) {
       .kpis { grid-template-columns: 1fr; }
       .topbar-hide { display: none; }
-      .bars { gap: 6px; padding: 12px 8px 0; }
     }
   </style>
 </head>
@@ -135,25 +121,25 @@
     </div>
 
     <section class="kpis clay-enter" aria-label="Key figures">
-      <article class="clay-card kpi">
-        <span class="kpi__label"><span class="kpi__icon"><svg class="clay-icon" aria-hidden="true"><use href="#i-card"/></svg></span>Collected in November</span>
-        <span class="kpi__value">$18,420</span>
-        <span class="kpi__delta">$2,310 more than October</span>
+      <article class="clay-card clay-stat">
+        <span class="clay-stat__label"><span class="clay-stat__icon"><svg class="clay-icon" aria-hidden="true"><use href="#i-card"/></svg></span>Collected in November</span>
+        <span class="clay-stat__value">$18,420</span>
+        <span class="clay-stat__meta">$2,310 more than October</span>
       </article>
-      <article class="clay-card kpi">
-        <span class="kpi__label"><span class="kpi__icon" style="background:var(--clay-color-warning);color:var(--clay-color-warning-ink)"><svg class="clay-icon" aria-hidden="true"><use href="#i-clock"/></svg></span>Waiting on clients</span>
-        <span class="kpi__value">$6,190</span>
-        <span class="kpi__delta">5 open invoices</span>
+      <article class="clay-card clay-stat">
+        <span class="clay-stat__label"><span class="clay-stat__icon clay-stat__icon--warning"><svg class="clay-icon" aria-hidden="true"><use href="#i-clock"/></svg></span>Waiting on clients</span>
+        <span class="clay-stat__value">$6,190</span>
+        <span class="clay-stat__meta">5 open invoices</span>
       </article>
-      <article class="clay-card kpi">
-        <span class="kpi__label"><span class="kpi__icon" style="background:var(--clay-color-error);color:var(--clay-color-error-ink)"><svg class="clay-icon" aria-hidden="true"><use href="#i-warning"/></svg></span>Overdue</span>
-        <span class="kpi__value">$950</span>
-        <span class="kpi__delta">1 invoice, Harbor Labs</span>
+      <article class="clay-card clay-stat">
+        <span class="clay-stat__label"><span class="clay-stat__icon clay-stat__icon--error"><svg class="clay-icon" aria-hidden="true"><use href="#i-warning"/></svg></span>Overdue</span>
+        <span class="clay-stat__value">$950</span>
+        <span class="clay-stat__meta">1 invoice, Harbor Labs</span>
       </article>
-      <article class="clay-card kpi">
-        <span class="kpi__label"><span class="kpi__icon" style="background:var(--clay-color-info);color:var(--clay-color-info-ink)"><svg class="clay-icon" aria-hidden="true"><use href="#i-clock"/></svg></span>Average time to pay</span>
-        <span class="kpi__value">9 days</span>
-        <span class="kpi__delta">Down from 13 days</span>
+      <article class="clay-card clay-stat">
+        <span class="clay-stat__label"><span class="clay-stat__icon clay-stat__icon--info"><svg class="clay-icon" aria-hidden="true"><use href="#i-clock"/></svg></span>Average time to pay</span>
+        <span class="clay-stat__value">9 days</span>
+        <span class="clay-stat__meta">Down from 13 days</span>
       </article>
     </section>
 
@@ -167,23 +153,23 @@
             <button class="clay-segmented__item" role="tab" aria-selected="false" tabindex="-1" style="height:32px;padding:0 14px;font-size:13px">Year</button>
           </div>
         </div>
-        <div class="bars" role="img" aria-label="Monthly revenue from June to November, rising to $18,420 in November">
-          <div class="bar"><i style="--h:42%"></i>Jun</div>
-          <div class="bar"><i style="--h:55%"></i>Jul</div>
-          <div class="bar"><i style="--h:48%"></i>Aug</div>
-          <div class="bar"><i style="--h:63%"></i>Sep</div>
-          <div class="bar"><i style="--h:71%"></i>Oct</div>
-          <div class="bar is-now"><i style="--h:84%"></i>Nov</div>
+        <div class="clay-bars" role="img" aria-label="Monthly revenue from June to November, rising to $18,420 in November">
+          <div class="clay-bars__item"><i style="--h:42%"></i>Jun</div>
+          <div class="clay-bars__item"><i style="--h:55%"></i>Jul</div>
+          <div class="clay-bars__item"><i style="--h:48%"></i>Aug</div>
+          <div class="clay-bars__item"><i style="--h:63%"></i>Sep</div>
+          <div class="clay-bars__item"><i style="--h:71%"></i>Oct</div>
+          <div class="clay-bars__item is-now"><i style="--h:84%"></i>Nov</div>
         </div>
       </section>
 
       <section class="clay-card panel" aria-labelledby="act-title">
         <div class="panel__head"><h2 class="panel__title" id="act-title">Recent activity</h2></div>
-        <ul class="activity">
-          <li><span class="clay-avatar" style="--avatar-size:36px">NS</span><div>Northwind Studio paid INV-1042<small>Today, 9:14</small></div><span class="clay-badge clay-badge--success">$4,200</span></li>
-          <li><span class="clay-avatar" style="--avatar-size:36px;--avatar-bg:#F5E596">FP</span><div>Fern &amp; Pine viewed INV-1041<small>Yesterday, 16:02</small></div><span class="clay-badge clay-badge--plain">Viewed</span></li>
-          <li><span class="clay-avatar" style="--avatar-size:36px;--avatar-bg:#F2A09E">HL</span><div>Reminder sent to Harbor Labs<small>Nov 19</small></div><span class="clay-badge clay-badge--error">Overdue</span></li>
-          <li><span class="clay-avatar" style="--avatar-size:36px;--avatar-bg:#C9DDF2">QC</span><div>Draft created for Quill Coffee<small>Nov 18</small></div><span class="clay-badge clay-badge--info">Draft</span></li>
+        <ul class="clay-list">
+          <li class="clay-list__item"><span class="clay-avatar" style="--avatar-size:36px">NS</span><div>Northwind Studio paid INV-1042<small>Today, 9:14</small></div><span class="clay-badge clay-badge--success">$4,200</span></li>
+          <li class="clay-list__item"><span class="clay-avatar" style="--avatar-size:36px;--avatar-bg:#F5E596">FP</span><div>Fern &amp; Pine viewed INV-1041<small>Yesterday, 16:02</small></div><span class="clay-badge clay-badge--plain">Viewed</span></li>
+          <li class="clay-list__item"><span class="clay-avatar" style="--avatar-size:36px;--avatar-bg:#F2A09E">HL</span><div>Reminder sent to Harbor Labs<small>Nov 19</small></div><span class="clay-badge clay-badge--error">Overdue</span></li>
+          <li class="clay-list__item"><span class="clay-avatar" style="--avatar-size:36px;--avatar-bg:#C9DDF2">QC</span><div>Draft created for Quill Coffee<small>Nov 18</small></div><span class="clay-badge clay-badge--info">Draft</span></li>
         </ul>
       </section>
     </div>

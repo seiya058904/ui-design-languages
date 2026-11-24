@@ -691,7 +691,7 @@ select.sketch-input {
    Done nodes are lightly hatched with a tick; the current one is bold on a brand wash; later ones are
    dashed, and so are the arrows leading to them. js/sketch.js moves aria-current on click. Stacks below 560px.
    ========================================================================= */
-.sketch-flow { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 0; margin: 0; padding: 0; list-style: none; counter-reset: flow; }
+.sketch-flow { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 0; width: 100%; margin: 0; padding: 0; list-style: none; counter-reset: flow; container-type: inline-size; }
 .sketch-flow > li { display: flex; align-items: center; counter-increment: flow; }
 .sketch-flow > li + li::before {
   content: "";
@@ -749,14 +749,23 @@ select.sketch-input {
 .sketch-flow > li[aria-current="step"] .sketch-flow__node { border-width: var(--sketch-line-bold); background: var(--sketch-hatch-bloom), var(--sketch-color-brand-wash); box-shadow: inset 0 0 10px -3px var(--sketch-color-brand), var(--sketch-shadow-2); }
 .sketch-flow > li[aria-current="step"] .sketch-flow__mark { border-width: var(--sketch-line-bold); }
 .sketch-flow > li[aria-current="step"] ~ li .sketch-flow__node { border-style: dashed; color: var(--sketch-color-ink-soft); box-shadow: none; }
-@media (max-width: 560px) {
-  .sketch-flow { flex-direction: column; }
-  .sketch-flow > li { flex-direction: column; }
-  .sketch-flow > li + li::before { margin: 6px 0; rotate: 90deg; }
+@container (max-width: 520px) {
+  .sketch-flow > li { flex-basis: 100%; flex-direction: column; }
+  .sketch-flow > li + li::before { width: 32px; height: 18px; margin: 4px 0; rotate: 90deg; }
+  .sketch-flow__node {
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    justify-items: start;
+    gap: 0 10px;
+    width: min(100%, 240px);
+    min-width: 0;
+    padding: 9px 14px;
+  }
+  .sketch-flow__mark { margin-bottom: 0; }
 }
 
 /* =========================================================================
-   Accordion — drawn boxes that open frame by frame (steps), like a flip-book; the + turns into ×.
+   Accordion — drawn boxes that open smoothly on the spring curve; the + turns into ×.
    <div class="sketch-accordion">
      <details class="sketch-accordion__item" name="faq" open>
        <summary class="sketch-accordion__head">Can I export my sketches?</summary>
@@ -770,15 +779,19 @@ select.sketch-input {
   border-radius: var(--sketch-radius-md);
   background: var(--sketch-color-panel);
   box-shadow: var(--sketch-shadow-1);
-  transition: box-shadow var(--sketch-motion-duration-release) var(--sketch-motion-easing-release);
+  transition: box-shadow var(--sketch-motion-duration-release) var(--sketch-motion-easing-spring);
 }
 .sketch-accordion__item[open] { box-shadow: var(--sketch-shadow-2); }
 .sketch-accordion__item::details-content {
   height: 0;
+  opacity: 0;
   overflow: clip;
-  transition: height var(--sketch-motion-duration-slide) steps(6, end), content-visibility var(--sketch-motion-duration-slide) allow-discrete;
+  transition:
+    height var(--sketch-motion-duration-slide) var(--sketch-motion-easing-spring),
+    opacity var(--sketch-motion-duration) var(--sketch-motion-easing),
+    content-visibility var(--sketch-motion-duration-slide) allow-discrete;
 }
-.sketch-accordion__item[open]::details-content { height: auto; }
+.sketch-accordion__item[open]::details-content { height: auto; opacity: 1; }
 .sketch-accordion__head {
   display: flex;
   align-items: center;
@@ -791,8 +804,10 @@ select.sketch-input {
   list-style: none;
   cursor: pointer;
   user-select: none;
+  transition: background-color var(--sketch-motion-duration) var(--sketch-motion-easing);
 }
 .sketch-accordion__head::-webkit-details-marker { display: none; }
+.sketch-accordion__head:hover { background: color-mix(in srgb, var(--sketch-color-well) 55%, transparent); }
 .sketch-accordion__head::after {
   content: "+";
   display: grid;
@@ -807,9 +822,47 @@ select.sketch-input {
   font-family: var(--sketch-font-family-hand);
   font-size: 22px;
   line-height: 1;
-  transition: rotate var(--sketch-motion-duration-release) var(--sketch-motion-easing-pop);
+  transition:
+    rotate var(--sketch-motion-duration-release) var(--sketch-motion-easing-spring),
+    scale var(--sketch-motion-duration-press) var(--sketch-motion-easing-press),
+    background-color var(--sketch-motion-duration) var(--sketch-motion-easing);
 }
 .sketch-accordion__head:hover::after { background: var(--sketch-hatch-light), var(--sketch-color-panel); }
+.sketch-accordion__head:active::after { scale: 0.9; }
 .sketch-accordion__head:focus-visible { outline: 2px dashed var(--sketch-color-ink); outline-offset: -5px; }
 .sketch-accordion__item[open] .sketch-accordion__head::after { rotate: 45deg; background: var(--sketch-hatch-default), var(--sketch-color-panel); }
-.sketch-accordion__body { margin: 0 16px 14px; padding-top: 10px; border-top: 1.4px dashed var(--sketch-color-ink-faint); color: var(--sketch-color-ink-soft); line-height: 1.4; }
+.sketch-accordion__body { margin: 0 16px; padding: 10px 0 14px; border-top: 1.4px dashed var(--sketch-color-ink-faint); color: var(--sketch-color-ink-soft); line-height: 1.4; }
+
+/* =========================================================================
+   Hand-drawn task board
+   <div class="sketch-board">
+     <div class="sketch-column"><h3 class="sketch-label">To do</h3><div class="sketch-task">…</div></div>
+   </div>
+   ========================================================================= */
+.sketch-board {
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 3), minmax(150px, 1fr));
+  gap: 12px;
+  width: 100%;
+  overflow-x: auto;
+}
+.sketch-column {
+  padding: 8px;
+  border: 1.4px solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-sm);
+  background: var(--sketch-color-well);
+}
+.sketch-column > h3 { font-size: 15px; margin-bottom: 8px; }
+.sketch-task {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 1.4px solid var(--sketch-color-ink);
+  border-radius: var(--sketch-radius-sm);
+  background: var(--sketch-color-panel);
+  font-size: 14px;
+  line-height: 1.15;
+}
+.sketch-task:last-child { margin-bottom: 0; }

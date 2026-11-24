@@ -844,3 +844,50 @@ select.tactile-input {
 .tactile-dial__mode { min-width: 96px; text-align: center; font-size: var(--tactile-font-size-caption); font-weight: var(--tactile-font-weight-bold); color: var(--tactile-color-text-muted); }
 .tactile-dial.is-disabled .tactile-dial__knob { cursor: not-allowed; box-shadow: none; }
 .tactile-dial.is-disabled .tactile-dial__arc { stroke: var(--tactile-color-disabled-ink); filter: none; }
+
+/* =========================================================================
+   Card active state & neumorphic bar chart
+   <article class="tactile-card is-active">…</article>
+   <div class="tactile-bars" role="img" aria-label="…">
+     <span style="--h:46%"></span>…<span class="is-now" style="--h:78%"></span>
+   </div>
+   ========================================================================= */
+.tactile-card__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tactile-card.is-active .tactile-card__icon {
+  color: var(--tactile-color-primary-ink);
+  background: var(--tactile-color-primary);
+  box-shadow: var(--tactile-shadow-accent);
+}
+
+.tactile-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 120px;
+  padding: 14px;
+  border-radius: var(--tactile-radius-lg);
+  box-shadow: var(--tactile-shadow-inset);
+}
+.tactile-bars > span {
+  flex: 1;
+  height: var(--h, 50%);
+  border-radius: 8px 8px 4px 4px;
+  background: var(--tactile-color-surface);
+  box-shadow: -2px -2px 4px var(--tactile-color-light), 2px 2px 5px var(--tactile-color-dark-soft);
+  transition: height var(--tactile-motion-duration-slow) var(--tactile-motion-easing);
+}
+.tactile-bars > span.is-now {
+  background: var(--tactile-color-primary);
+  box-shadow: 2px 3px 8px var(--tactile-color-glow);
+}
+.tactile-bars__labels {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 10px;
+  padding: 0 14px;
+  margin-top: 8px;
+  text-align: center;
+  font-size: var(--tactile-font-size-caption);
+  color: var(--tactile-color-text-muted);
+}

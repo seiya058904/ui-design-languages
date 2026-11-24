@@ -138,6 +138,16 @@
         </div>
       </div>
     </div>
+    <div class="demo" data-demo="settings-rows">
+      <h3>Settings rows</h3>
+      <div class="demo__stage">
+        <div class="zine-card" style="width:min(100%,420px)">
+          <div class="zine-setting"><div><b>Two-color cover</b><span>Black + acid lime</span></div><input class="zine-switch" type="checkbox" checked aria-label="Two-color cover"></div>
+          <div class="zine-setting"><div><b>Saddle stitch</b><span>Staples, not glue</span></div><input class="zine-switch" type="checkbox" checked aria-label="Saddle stitch"></div>
+          <div class="zine-setting"><div><b>Bleed check</b><span>Warn when art misses 3mm</span></div><input class="zine-switch" type="checkbox" aria-label="Bleed check"></div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="cat-section" id="segmented" data-component="segmented" aria-labelledby="h-segmented">
@@ -278,7 +288,7 @@
   </section>
 
   <section class="cat-section" id="avatar" data-component="avatar" aria-labelledby="h-avatar">
-    <h2 class="zine-title" id="h-avatar">Avatars</h2>
+    <h2 class="zine-title" id="h-avatar">Avatars &amp; list</h2>
     <p>Pixel portraits or initials, framed and shadowed like everything else.</p>
     <div class="demo" data-demo="avatars">
       <h3>Pixel and initials</h3>
@@ -287,6 +297,18 @@
         <span class="zine-avatar">AK</span>
         <span class="zine-avatar" style="--zine-avatar:var(--zine-color-white)">MR</span>
         <span class="zine-avatar-stack"><span class="zine-avatar zine-avatar--sm">AK</span><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-white)">MR</span><span class="zine-avatar zine-avatar--sm" style="--zine-avatar:var(--zine-color-vermilion)">SL</span></span>
+      </div>
+    </div>
+    <div class="demo" data-demo="list">
+      <h3>List</h3>
+      <div class="demo__stage">
+        <div class="zine-card" style="width:min(100%,360px)">
+          <ul class="zine-list">
+            <li class="zine-list__item"><span class="zine-avatar" style="--zine-avatar:var(--zine-color-cobalt);color:var(--zine-color-white)">AK</span><div><b>Alex Kim</b><span>Design · layout, cover</span></div><span class="zine-sticker zine-sticker--live">Live</span></li>
+            <li class="zine-list__item"><span class="zine-avatar" style="--zine-avatar:var(--zine-color-vermilion)">MR</span><div><b>Mia Rossi</b><span>Words · 6 essays</span></div><span class="zine-sticker">New</span></li>
+            <li class="zine-list__item"><span class="zine-avatar" style="--zine-avatar:var(--zine-color-white)">SL</span><div><b>Sam Lee</b><span>Photo · 31 frames</span></div><span class="zine-sticker zine-sticker--beta">Beta</span></li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>

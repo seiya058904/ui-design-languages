@@ -914,8 +914,9 @@ select.atelier-input {
 /* The operator word swaps with a quick vertical flick. */
 .atelier-filter__op.is-flip { animation: atelier-flip var(--atelier-motion-duration-snap) var(--atelier-motion-easing-snap); }
 @keyframes atelier-flip { from { opacity: 0.2; transform: translateY(5px); } }
-/* × folds the capsule away before it leaves the DOM. */
+/* × folds the capsule away before it leaves the DOM; added capsules snap in. */
 .atelier-filter.is-leaving { opacity: 0; transform: scale(0.9); pointer-events: none; }
+.atelier-filter.is-entering { animation: atelier-pop var(--atelier-motion-duration-snap) var(--atelier-motion-easing-snap); }
 .atelier-filterbar__clear {
   margin-left: auto;
   padding: 4px 6px;

@@ -741,3 +741,34 @@ a.terrarium-list__item:focus-visible { box-shadow: var(--terrarium-shadow-focus)
   opacity: 0.72;
 }
 .terrarium-mood__label { margin-top: var(--terrarium-space-3); font-family: var(--terrarium-font-family-serif); font-variation-settings: var(--terrarium-font-soft); font-size: 22px; color: var(--terrarium-color-ink); }
+
+/* =========================================================================
+   Weekly streak row
+   <div class="terrarium-week"><span class="is-done"><i></i>Mon</span>…<span class="is-today"><i></i>Sun</span></div>
+   ========================================================================= */
+.terrarium-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  text-align: center;
+  font-size: var(--terrarium-font-size-label);
+  color: var(--terrarium-color-text-muted);
+}
+.terrarium-week i {
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto 6px;
+  border-radius: 50%;
+  background: var(--terrarium-color-track);
+  transition: background-color var(--terrarium-motion-duration) var(--terrarium-motion-easing), box-shadow var(--terrarium-motion-duration) var(--terrarium-motion-easing);
+}
+.terrarium-week .is-done i {
+  background: var(--terrarium-color-secondary);
+  box-shadow: 0 4px 10px -4px rgba(62, 92, 74, 0.6);
+}
+.terrarium-week .is-today i {
+  background: var(--terrarium-color-surface-raised);
+  box-shadow: inset 0 0 0 2.5px var(--terrarium-color-primary);
+}

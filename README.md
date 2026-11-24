@@ -19,7 +19,7 @@
   <a href="https://seiya058904.github.io/ui-design-languages/"><img src="https://img.shields.io/badge/Live-Library-6366F1?style=flat-square&amp;labelColor=121622" alt="Live library" /></a>
   <img src="https://img.shields.io/badge/Style%20Packs-9%20Complete-14B8A6?style=flat-square&amp;labelColor=121622" alt="9 complete style packs" />
   <img src="https://img.shields.io/badge/Component%20Wall-96%20Live-3B82F6?style=flat-square&amp;labelColor=121622" alt="96 live components on the wall" />
-  <img src="https://img.shields.io/badge/Demos-250-8B5CF6?style=flat-square&amp;labelColor=121622" alt="250 live demos" />
+  <img src="https://img.shields.io/badge/Demos-263-8B5CF6?style=flat-square&amp;labelColor=121622" alt="263 live demos" />
   <img src="https://img.shields.io/badge/Dependencies-Zero-F59E0B?style=flat-square&amp;labelColor=121622" alt="Zero dependencies" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-64748B?style=flat-square&amp;labelColor=121622" alt="MIT license" /></a>
 </p>

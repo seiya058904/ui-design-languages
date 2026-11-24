@@ -37,9 +37,11 @@
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
   <symbol id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h3"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 10 17 19 7"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
   <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
   <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></symbol>
@@ -227,6 +229,7 @@
         <span class="clay-badge clay-badge--error">Overdue</span>
         <span class="clay-badge clay-badge--info">Draft</span>
         <span class="clay-badge">Void</span>
+        <span class="clay-badge clay-badge--plain">Plain</span>
       </div>
     </div>
   </section>
@@ -300,6 +303,19 @@
         </div>
       </div>
     </div>
+    <div class="demo" data-demo="bar-chart">
+      <h3>Bar chart</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-bars" style="width:min(100%,420px)" role="img" aria-label="Monthly revenue from June to November, peaking in November">
+          <div class="clay-bars__item"><i style="--h:42%"></i>Jun</div>
+          <div class="clay-bars__item"><i style="--h:55%"></i>Jul</div>
+          <div class="clay-bars__item"><i style="--h:48%"></i>Aug</div>
+          <div class="clay-bars__item"><i style="--h:63%"></i>Sep</div>
+          <div class="clay-bars__item"><i style="--h:71%"></i>Oct</div>
+          <div class="clay-bars__item is-now"><i style="--h:84%"></i>Nov</div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="cat-section" id="alert" data-component="alert" aria-labelledby="h-alert">
@@ -360,6 +376,21 @@
         </article>
       </div>
     </div>
+    <div class="demo" data-demo="stat-cards">
+      <h3>Stat cards</h3>
+      <div class="demo__stage clay-board">
+        <article class="clay-card clay-stat" style="width:min(100%,230px)">
+          <span class="clay-stat__label"><span class="clay-stat__icon"><svg class="clay-icon" aria-hidden="true"><use href="#i-card"/></svg></span>Collected</span>
+          <span class="clay-stat__value">$18,420</span>
+          <span class="clay-stat__meta">$2,310 more than Oct</span>
+        </article>
+        <article class="clay-card clay-stat" style="width:min(100%,230px)">
+          <span class="clay-stat__label"><span class="clay-stat__icon clay-stat__icon--warning"><svg class="clay-icon" aria-hidden="true"><use href="#i-clock"/></svg></span>Waiting</span>
+          <span class="clay-stat__value">$6,190</span>
+          <span class="clay-stat__meta">5 open invoices</span>
+        </article>
+      </div>
+    </div>
   </section>
 
   <section class="cat-section" id="accordion" data-component="accordion" aria-labelledby="h-accordion">
@@ -400,11 +431,23 @@
         </div>
       </div>
     </div>
+    <div class="demo" data-demo="list">
+      <h3>List</h3>
+      <div class="demo__stage clay-board">
+        <div class="clay-card clay-card--column" style="width:min(100%,380px)">
+          <ul class="clay-list">
+            <li class="clay-list__item"><span class="clay-avatar" style="--avatar-size:36px">NS</span><div>Northwind paid INV-1042<small>Today, 9:14</small></div><span class="clay-badge clay-badge--success">$4,200</span></li>
+            <li class="clay-list__item"><span class="clay-avatar" style="--avatar-size:36px;--avatar-bg:#F5E596">FP</span><div>Fern &amp; Pine viewed INV-1041<small>Yesterday, 16:02</small></div><span class="clay-badge clay-badge--plain">Viewed</span></li>
+            <li class="clay-list__item"><span class="clay-avatar" style="--avatar-size:36px;--avatar-bg:#F2A09E">HL</span><div>Reminder sent to Harbor Labs<small>Nov 19</small></div><span class="clay-badge clay-badge--error">Overdue</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="cat-section" id="navigation" data-component="navigation" aria-labelledby="h-navigation">
     <h2 id="h-navigation">Navigation</h2>
-    <p>Sidebars, breadcrumbs and pagination.</p>
+    <p>Sidebars, topbars and breadcrumbs.</p>
     <div class="demo" data-demo="sidebar">
       <h3>Sidebar</h3>
       <div class="demo__stage clay-board">
@@ -415,6 +458,22 @@
           <a class="clay-nav__item" href="#"><svg class="clay-icon" aria-hidden="true"><use href="#i-card"/></svg>Payments</a>
           <a class="clay-nav__item" href="#"><svg class="clay-icon" aria-hidden="true"><use href="#i-chart"/></svg>Reports</a>
         </nav>
+      </div>
+    </div>
+    <div class="demo" data-demo="topbar">
+      <h3>Top bar</h3>
+      <div class="demo__stage clay-board">
+        <header class="clay-topbar" style="width:min(100%,560px)">
+          <span class="clay-swatch clay-swatch--primary" style="--swatch-size:30px"></span>
+          <label class="clay-field" style="flex:1;min-width:0;padding:4px;box-shadow:none;background:transparent">
+            <span class="clay-field__control" style="height:38px">
+              <svg class="clay-icon" aria-hidden="true"><use href="#i-search"/></svg>
+              <input type="search" placeholder="Search invoices…" aria-label="Search invoices">
+            </span>
+          </label>
+          <button class="clay-btn clay-btn--icon clay-btn--sm" type="button" aria-label="Notifications"><svg class="clay-icon" aria-hidden="true"><use href="#i-bell"/></svg></button>
+          <span class="clay-avatar" style="--avatar-size:38px">AM</span>
+        </header>
       </div>
     </div>
   </section>

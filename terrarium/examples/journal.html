@@ -44,10 +44,7 @@
     .cheer[aria-pressed="true"] { color: var(--terrarium-color-primary-text); }
     .cheer[aria-pressed="true"] .terrarium-icon { fill: currentColor; }
     .community .terrarium-list__item { padding-right: 10px; }
-    .week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin: 10px 0 12px; text-align: center; font-size: var(--terrarium-font-size-label); color: var(--terrarium-color-text-muted); }
-    .week i { display: block; width: 30px; height: 30px; margin: 0 auto 6px; border-radius: 50%; background: var(--terrarium-color-track); }
-    .week .done i { background: var(--terrarium-color-secondary); box-shadow: 0 4px 10px -4px rgba(62, 92, 74, 0.6); }
-    .week .today i { background: var(--terrarium-color-surface-raised); box-shadow: inset 0 0 0 2.5px var(--terrarium-color-primary); }
+    .terrarium-week { margin: 10px 0 12px; }
     .entries { display: grid; gap: 14px; }
     .entry { display: grid; gap: 6px; }
     .entry time { font-size: var(--terrarium-font-size-caption); color: var(--terrarium-color-text-muted); }
@@ -135,8 +132,8 @@
           </section>
           <section class="terrarium-card" aria-labelledby="h-week">
             <div class="card-head"><h2 class="terrarium-title" id="h-week">This week</h2><span class="terrarium-badge"><svg class="terrarium-icon" aria-hidden="true"><use href="#i-sprout"/></svg>21-day streak</span></div>
-            <div class="week" aria-label="Days journaled this week: Monday to Saturday, today pending">
-              <span class="done"><i></i>Mon</span><span class="done"><i></i>Tue</span><span class="done"><i></i>Wed</span><span class="done"><i></i>Thu</span><span class="done"><i></i>Fri</span><span class="done"><i></i>Sat</span><span class="today" data-today><i></i>Sun</span>
+            <div class="terrarium-week" aria-label="Days journaled this week: Monday to Saturday, today pending">
+              <span class="is-done"><i></i>Mon</span><span class="is-done"><i></i>Tue</span><span class="is-done"><i></i>Wed</span><span class="is-done"><i></i>Thu</span><span class="is-done"><i></i>Fri</span><span class="is-done"><i></i>Sat</span><span class="is-today" data-today><i></i>Sun</span>
             </div>
             <p class="terrarium-caption">Your calmest days were the ones you walked before 9. Keep that rhythm going.</p>
           </section>
@@ -207,9 +204,9 @@
 
   /* ---------- the week follows the calendar: earlier days kept, today open, later days waiting ---------- */
   (function () {
-    var days = $$(".week > span"), t = (now.getDay() + 6) % 7;
-    days.forEach(function (d, i) { d.className = i < t ? "done" : i === t ? "today" : ""; d.removeAttribute("data-today"); if (i === t) d.setAttribute("data-today", ""); });
-    $(".week").setAttribute("aria-label", "This week: " + t + " days journaled, today " + (t === 0 ? "is the first day" : "pending"));
+    var days = $$(".terrarium-week > span"), t = (now.getDay() + 6) % 7;
+    days.forEach(function (d, i) { d.className = i < t ? "is-done" : i === t ? "is-today" : ""; d.removeAttribute("data-today"); if (i === t) d.setAttribute("data-today", ""); });
+    $(".terrarium-week").setAttribute("aria-label", "This week: " + t + " days journaled, today " + (t === 0 ? "is the first day" : "pending"));
   })();
 
   /* ---------- journal ---------- */
@@ -222,7 +219,7 @@
   }
   function save(silent) {
     setDirty(false);
-    var today = $("[data-today]"); today.className = "done";
+    var today = $("[data-today]"); today.className = "is-done";
     if (!silent) TerrariumUI.toast("Entry saved", "Your words are kept safe.");
   }
   [body, $("[data-title]")].forEach(function (el) { el.addEventListener("input", function () { count(); setDirty(true); }); });

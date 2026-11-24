@@ -60,6 +60,9 @@
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M4.2 7.4l2.1 1.2M17.7 15.4l2.1 1.2M4.2 16.6l2.1-1.2M17.7 8.6l2.1-1.2"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16Z"/><path d="m13.5 6.5 4 4"/></symbol>
+  <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 2.5 20h19Z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></symbol>
@@ -94,6 +97,7 @@
         <button class="obsidian-btn obsidian-btn--primary" type="button"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-plus"/></svg>New project</button>
         <button class="obsidian-btn obsidian-btn--sm" type="button">Small</button>
         <button class="obsidian-btn obsidian-btn--icon" type="button" aria-label="Copy link"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-copy"/></svg></button>
+        <button class="obsidian-btn obsidian-btn--icon obsidian-btn--ghost obsidian-btn--dot" type="button" aria-label="Notifications, 2 unread"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-bell"/></svg></button>
         <button class="obsidian-btn obsidian-btn--icon obsidian-btn--pill obsidian-btn--ghost" type="button" aria-label="More"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-more"/></svg></button>
       </div>
     </div>
@@ -155,6 +159,15 @@
           <label class="obsidian-check"><input class="obsidian-radio" type="radio" name="o-plan"> Business</label>
           <label class="obsidian-check"><input class="obsidian-radio" type="radio" name="o-plan" disabled> Enterprise</label>
         </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="settings-rows">
+      <h3>Settings toggle rows</h3>
+      <div class="demo__stage">
+        <article class="obsidian-card" style="width:min(100%,420px)">
+          <div class="obsidian-setting"><div><b>Allow AI Copilot</b><span>Members can run Copilot on shared projects</span></div><input class="obsidian-switch" type="checkbox" checked aria-label="Allow AI Copilot"></div>
+          <div class="obsidian-setting"><div><b>Weekly digest</b><span>A Monday summary of sessions and runs</span></div><input class="obsidian-switch" type="checkbox" aria-label="Weekly digest"></div>
+        </article>
       </div>
     </div>
   </section>
@@ -266,6 +279,19 @@
         </div>
       </div>
     </div>
+    <div class="demo" data-demo="empty-state">
+      <h3>Empty state</h3>
+      <div class="demo__stage">
+        <article class="obsidian-card" style="width:min(100%,420px)">
+          <div class="obsidian-empty">
+            <span class="obsidian-card__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-spark"/></svg></span>
+            <h3>Start a Copilot run</h3>
+            <p>Ask for a brief, a summary or a plan; finished runs appear here with their sources.</p>
+            <button class="obsidian-btn obsidian-btn--primary obsidian-btn--sm" type="button">Browse projects</button>
+          </div>
+        </article>
+      </div>
+    </div>
   </section>
 
   <section class="cat-section" id="card" data-component="card" aria-labelledby="h-card">
@@ -277,7 +303,7 @@
         <article class="obsidian-card" style="width:min(100%,360px)">
           <div class="obsidian-card__head"><span class="obsidian-card__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-folder"/></svg></span><div><span class="obsidian-card__eyebrow">Project</span><h3 class="obsidian-card__title">AI Workspace</h3></div><button class="obsidian-btn obsidian-btn--ghost obsidian-btn--icon obsidian-btn--sm" type="button" aria-label="Project actions"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-more"/></svg></button></div>
           <div class="obsidian-stat"><span class="obsidian-stat__value">12,540 <span class="obsidian-delta">+12.6%</span></span><span class="obsidian-stat__meta">Total sessions (30d)</span></div>
-          <svg class="obsidian-chart" viewBox="0 0 160 60" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="c-spark" x1="0" y1="0" x2="0" y2="1"><stop class="obsidian-chart__stop" offset="0"/><stop class="obsidian-chart__stop obsidian-chart__stop--end" offset="1"/></linearGradient></defs><path class="obsidian-chart__area" fill="url(#c-spark)" d="M0 46 C10 44 14 36 24 38 S38 48 48 40 S62 26 72 30 S86 40 96 32 S110 22 120 24 S136 30 144 18 S154 12 160 8 V60 H0Z"/><path class="obsidian-chart__line" pathLength="1" d="M0 46 C10 44 14 36 24 38 S38 48 48 40 S62 26 72 30 S86 40 96 32 S110 22 120 24 S136 30 144 18 S154 12 160 8"/></svg>
+          <svg class="obsidian-chart" viewBox="0 0 160 60" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="c-spark" x1="0" y1="0" x2="0" y2="1"><stop class="obsidian-chart__stop" offset="0"/><stop class="obsidian-chart__stop obsidian-chart__stop--end" offset="1"/></linearGradient></defs><line class="obsidian-chart__grid" x1="0" x2="160" y1="20" y2="20"/><line class="obsidian-chart__grid" x1="0" x2="160" y1="40" y2="40"/><path class="obsidian-chart__area" fill="url(#c-spark)" d="M0 46 C10 44 14 36 24 38 S38 48 48 40 S62 26 72 30 S86 40 96 32 S110 22 120 24 S136 30 144 18 S154 12 160 8 V60 H0Z"/><path class="obsidian-chart__line" pathLength="1" d="M0 46 C10 44 14 36 24 38 S38 48 48 40 S62 26 72 30 S86 40 96 32 S110 22 120 24 S136 30 144 18 S154 12 160 8"/></svg>
         </article>
       </div>
     </div>
@@ -299,6 +325,7 @@
         <div class="obsidian-row" style="--gap:14px">
           <span class="obsidian-avatar obsidian-avatar--lg" style="--obsidian-avatar:linear-gradient(135deg,#334155,#0F172A)">MA<span class="obsidian-avatar__status"></span></span>
           <span class="obsidian-avatar-stack"><span class="obsidian-avatar" style="--obsidian-avatar:linear-gradient(135deg,#0EA5E9,#1E293B)">AK</span><span class="obsidian-avatar" style="--obsidian-avatar:linear-gradient(135deg,#8B5CF6,#1E1B4B)">NJ</span><span class="obsidian-avatar" style="--obsidian-avatar:linear-gradient(135deg,#10B981,#064E3B)">RS</span></span>
+          <span class="obsidian-avatar-stack"><span class="obsidian-avatar obsidian-avatar--sm" style="--obsidian-avatar:linear-gradient(135deg,#0EA5E9,#1E293B)">AK</span><span class="obsidian-avatar obsidian-avatar--sm" style="--obsidian-avatar:linear-gradient(135deg,#8B5CF6,#1E1B4B)">NJ</span></span>
         </div>
         <ul class="obsidian-list" style="width:min(100%,340px)">
           <li class="obsidian-list__item"><span class="obsidian-list__icon"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-doc"/></svg></span><span class="obsidian-list__title">Generated marketing brief</span><span class="obsidian-list__meta">2 min ago</span></li>
@@ -398,6 +425,20 @@
             <button class="obsidian-menu__item" role="option" aria-selected="false" type="button">Last 7 days</button>
             <button class="obsidian-menu__item" role="option" aria-selected="true" type="button">Last 30 days</button>
             <button class="obsidian-menu__item" role="option" aria-selected="false" type="button">Last 90 days</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo" data-demo="action-menu" data-min-height="280">
+      <h3>Action menu with danger</h3>
+      <div class="demo__stage" style="align-items:flex-start;min-height:280px">
+        <div class="obsidian-menu obsidian-menu--start is-open">
+          <button class="obsidian-switcher" type="button" aria-haspopup="menu" aria-expanded="true" style="width:220px"><span class="obsidian-logo obsidian-logo--sm" aria-hidden="true"></span><span>AI Workspace</span><svg class="obsidian-icon" aria-hidden="true"><use href="#i-down"/></svg></button>
+          <div class="obsidian-menu__list" role="menu" style="width:220px">
+            <button class="obsidian-menu__item" role="menuitem" type="button"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-pen"/></svg>Rename workspace</button>
+            <button class="obsidian-menu__item" role="menuitem" type="button"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-plus"/></svg>New project</button>
+            <div class="obsidian-menu__sep" role="separator"></div>
+            <button class="obsidian-menu__item obsidian-menu__item--danger" role="menuitem" type="button"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-archive"/></svg>Archive workspace…</button>
           </div>
         </div>
       </div>

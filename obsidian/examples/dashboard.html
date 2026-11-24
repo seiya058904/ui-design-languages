@@ -27,9 +27,6 @@
     .top__tools { display: flex; align-items: center; gap: 10px; margin-left: auto; }
     .search { width: 300px; }
     .search .obsidian-menu__list { left: 0; right: 0; width: auto; }
-    .bell { position: relative; }
-    .bell::after { content: ""; position: absolute; top: 9px; right: 10px; width: 7px; height: 7px; border-radius: 50%; background: var(--obsidian-color-danger); box-shadow: 0 0 0 2px var(--obsidian-color-canvas), 0 0 8px var(--obsidian-color-danger); }
-    .bell.is-read::after { display: none; }
     .avatar-btn { padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
     .avatar-btn:focus-visible { box-shadow: var(--obsidian-shadow-focus); }
     .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
@@ -56,9 +53,6 @@
     .bar-cell .obsidian-progress { flex: 1; }
     .settings { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
     .form { display: grid; gap: 18px; }
-    .line { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .line b { display: block; font-weight: var(--obsidian-font-weight-medium); color: var(--obsidian-color-ink); font-size: var(--obsidian-font-size-body); }
-    .line span { font-size: var(--obsidian-font-size-caption); color: var(--obsidian-color-text-muted); }
     .toasts { position: fixed; right: 20px; bottom: 20px; z-index: 60; display: grid; gap: 10px; width: min(360px, calc(100% - 40px)); }
     .ring-wrap { display: flex; align-items: center; gap: 18px; }
 
@@ -141,7 +135,7 @@
           <div class="obsidian-menu__list" role="listbox" id="palette-list" data-palette-list></div>
         </div>
         <div class="obsidian-menu">
-          <button class="obsidian-btn obsidian-btn--icon obsidian-btn--ghost bell" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Notifications, 2 unread" data-bell><svg class="obsidian-icon" aria-hidden="true"><use href="#i-bell"/></svg></button>
+          <button class="obsidian-btn obsidian-btn--icon obsidian-btn--ghost obsidian-btn--dot" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Notifications, 2 unread" data-bell><svg class="obsidian-icon" aria-hidden="true"><use href="#i-bell"/></svg></button>
           <div class="obsidian-menu__list" role="menu" style="min-width:280px">
             <button class="obsidian-menu__item" role="menuitem" type="button"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-spark"/></svg>Copilot finished “Q3 review deck”</button>
             <button class="obsidian-menu__item" role="menuitem" type="button"><svg class="obsidian-icon" aria-hidden="true"><use href="#i-user-plus"/></svg>Noah joined AI Workspace</button>
@@ -250,8 +244,8 @@
             <form class="form" data-settings>
               <label class="obsidian-field"><span class="obsidian-field__label">Workspace name</span><input class="obsidian-input" value="AI Workspace" data-name required></label>
               <label class="obsidian-field"><span class="obsidian-field__label">Description</span><textarea class="obsidian-input" rows="3">Research, drafts and launches for the growth team.</textarea></label>
-              <div class="line"><div><b>Allow AI Copilot</b><span>Members can run Copilot on shared projects</span></div><input class="obsidian-switch" type="checkbox" checked aria-label="Allow AI Copilot"></div>
-              <div class="line"><div><b>Weekly digest</b><span>A Monday summary of sessions and runs</span></div><input class="obsidian-switch" type="checkbox" aria-label="Weekly digest"></div>
+              <div class="obsidian-setting"><div><b>Allow AI Copilot</b><span>Members can run Copilot on shared projects</span></div><input class="obsidian-switch" type="checkbox" checked aria-label="Allow AI Copilot"></div>
+              <div class="obsidian-setting"><div><b>Weekly digest</b><span>A Monday summary of sessions and runs</span></div><input class="obsidian-switch" type="checkbox" aria-label="Weekly digest"></div>
               <div class="obsidian-field"><span class="obsidian-field__label">Copilot creativity</span><div class="obsidian-range"><input class="obsidian-slider" type="range" min="0" max="100" value="74" style="--obsidian-value:74" aria-label="Copilot creativity"><output data-suffix="%">74%</output></div></div>
               <div class="obsidian-row"><button class="obsidian-btn obsidian-btn--primary" type="submit">Save changes</button><button class="obsidian-btn obsidian-btn--tertiary" type="reset">Discard</button></div>
             </form>

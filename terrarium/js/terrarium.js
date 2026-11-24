@@ -103,12 +103,23 @@
   }
   function syncSlider(input) {
     var min = parseFloat(input.min || 0), max = parseFloat(input.max || 100), v = parseFloat(input.value);
-    input.style.setProperty("--" + P + "-value", String(Math.round((v - min) / (max - min) * 100)));
+    var pct = String(Math.round((v - min) / (max - min) * 100));
+    if (input.style.getPropertyValue("--" + P + "-value") !== pct) input.style.setProperty("--" + P + "-value", pct);
     var outs = [];
     var range = input.closest("." + P + "-range");
     if (range) outs = Array.prototype.slice.call(range.querySelectorAll("output"));
     if (input.id) outs = outs.concat(Array.prototype.slice.call(document.querySelectorAll('output[for~="' + input.id + '"]')));
-    outs.forEach(function (o) { o.textContent = input.value + (o.getAttribute("data-suffix") || ""); });
+    outs.forEach(function (o) {
+      var txt = input.value + (o.getAttribute("data-suffix") || "");
+      if (o.textContent !== txt) o.textContent = txt;
+    });
+  }
+  function initSliders(root) {
+    (root || document).querySelectorAll("." + P + "-slider").forEach(function (s) {
+      if (s.__terrariumSlider) return;
+      s.__terrariumSlider = true;
+      syncSlider(s);
+    });
   }
 
   /* ---------- toasts ---------- */
@@ -260,13 +271,13 @@
 
   function boot() {
     syncThemeControls();
-    document.querySelectorAll("." + P + "-slider").forEach(syncSlider);
+    initSliders(document);
     initIndicators(document);
     var q = false;
     new MutationObserver(function () {
       if (q) return;
       q = true;
-      requestAnimationFrame(function () { q = false; initIndicators(document); document.querySelectorAll("." + P + "-slider").forEach(syncSlider); });
+      requestAnimationFrame(function () { q = false; initIndicators(document); initSliders(document); });
     }).observe(document.body, { childList: true, subtree: true });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { document.querySelectorAll(LIST_SEL).forEach(refresh); });
   }

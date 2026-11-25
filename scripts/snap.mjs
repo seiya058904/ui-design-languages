@@ -67,7 +67,10 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
 const widths = (args.find((a) => a.startsWith("--widths="))?.slice(9) || "1280,390").split(",").map(Number);
 const only = args.filter((a) => !a.startsWith("--"));
-const thumbs = args.includes("--thumbs");
+const thumbsArg = args.find((a) => a === "--thumbs" || a.startsWith("--thumbs="));
+const thumbs = !!thumbsArg;
+const thumbsSmOnly = thumbsArg === "--thumbs=sm";
+const jobs = Math.max(1, Math.min(6, +(args.find((a) => a.startsWith("--jobs="))?.slice(7) || 4)));
 const CHROME = process.env.CHROME_PATH || [
   "C:/Program Files/Google/Chrome/Application/chrome.exe",
   "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
@@ -119,7 +122,7 @@ for (const lang of langs) {
 /* ---------- Chrome ---------- */
 async function launch(attempt) {
   const dir = mkdtempSync(join(tmpdir(), "uidl-snap-"));
-  const proc = spawn(CHROME, ["--headless=new", "--disable-gpu", "--hide-scrollbars", "--remote-debugging-port=0", `--user-data-dir=${dir}`, "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });
+  const proc = spawn(CHROME, ["--headless=new", "--disable-gpu", "--disable-background-timer-throttling", "--disable-backgrounding-occluded-windows", "--disable-renderer-backgrounding", "--hide-scrollbars", "--remote-debugging-port=0", `--user-data-dir=${dir}`, "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });
   const wsUrl = await new Promise((resolve, reject) => {
     let buf = "";
     proc.stderr.on("data", (d) => { buf += d; const m = buf.match(/DevTools listening on (ws:\/\/\S+)/); if (m) resolve(m[1]); });
@@ -134,27 +137,33 @@ async function launch(attempt) {
   return launch(attempt + 1);
 }
 const { proc: chrome, dir: profile, p: port } = await launch(1);
-const target = (await (await fetch(`http://127.0.0.1:${port}/json/list`)).json()).find((t) => t.type === "page");
-const ws = new WebSocket(target.webSocketDebuggerUrl);
-await new Promise((r) => ws.addEventListener("open", r, { once: true }));
-let id = 0;
-const pending = new Map();
-// If the DevTools connection drops, fail every waiting call instead of hanging forever.
-ws.addEventListener("close", () => { for (const r of pending.values()) r({ error: { message: "DevTools connection closed" } }); pending.clear(); });
-const listeners = new Set();
-ws.addEventListener("message", (e) => {
-  const m = JSON.parse(e.data);
-  if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); }
-  else if (m.method) listeners.forEach((fn) => fn(m));
-});
-const send = (method, params = {}) => new Promise((r) => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); })
-  .then((m) => { if (m.error) throw new Error(`${method}: ${m.error.message}`); return m.result; });
-const nextEvent = (name) => new Promise((r) => { const fn = (m) => { if (m.method === name) { listeners.delete(fn); r(m); } }; listeners.add(fn); });
-const evaluate = async (expression) => (await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true })).result.value;
+async function connectTab(wsUrl) {
+  const ws = new WebSocket(wsUrl);
+  await new Promise((r) => ws.addEventListener("open", r, { once: true }));
+  let id = 0;
+  const pending = new Map();
+  // If the DevTools connection drops, fail every waiting call instead of hanging forever.
+  ws.addEventListener("close", () => { for (const r of pending.values()) r({ error: { message: "DevTools connection closed" } }); pending.clear(); });
+  const listeners = new Set();
+  ws.addEventListener("message", (e) => {
+    const m = JSON.parse(e.data);
+    if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); }
+    else if (m.method) listeners.forEach((fn) => fn(m));
+  });
+  const send = (method, params = {}) => new Promise((r) => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); })
+    .then((m) => { if (m.error) throw new Error(`${method}: ${m.error.message}`); return m.result; });
+  const nextEvent = (name) => new Promise((r) => { const fn = (m) => { if (m.method === name) { listeners.delete(fn); r(m); } }; listeners.add(fn); });
+  const evaluate = async (expression) => (await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true })).result.value;
+  return { ws, listeners, send, nextEvent, evaluate };
+}
+
+const version = await (await fetch(`http://127.0.0.1:${port}/json/version`)).json();
+const browser = await connectTab(version.webSocketDebuggerUrl);
+const openSockets = [browser.ws];
 /* Close Chrome and wait until it has really exited before removing its temp profile (on Windows a
    profile still held by Chrome can't be deleted, and leftovers pile up in the temp folder). */
 async function shutdown() {
-  try { ws.close(); } catch { /* already closed */ }
+  for (const s of openSockets) { try { s.close(); } catch { /* already closed */ } }
   server.close();
   const exited = chrome.exitCode !== null ? Promise.resolve() : new Promise((r) => chrome.once("exit", r));
   chrome.kill();
@@ -174,35 +183,37 @@ const EAGER = "document.querySelectorAll('iframe[loading=lazy]').forEach((f) => 
 const LIVE_READY = "Promise.race([window.UISite && UISite.ready ? UISite.ready().then(() => true) : Promise.resolve(true), new Promise((r) => setTimeout(() => r(false), 15000))])";
 // A load event can stall forever (a hanging font or CDN request); never wait on it for more than 20s.
 const LOAD_TIMEOUT = 20000;
-const pageLoad = () => Promise.race([nextEvent("Page.loadEventFired"), new Promise((r) => setTimeout(r, LOAD_TIMEOUT))]);
 
-/* ---------- console / network guard ----------
+/* ---------- console / network guard (per worker tab) ----------
    While a page loads, any script error, console.error, HTTP ≥ 400 or failed request from this server fails
    the run. Outside requests (web fonts, CDNs) only warn: a slow or blocked font host is not a page bug.
    During the interaction pass (below) only script errors count: switching previews and reopening the
    drawer cancel in-flight frame loads on purpose. */
-const guard = { phase: "load", errors: [], warnings: [], urls: new Map() };
-listeners.add((m) => {
-  const p = m.params || {};
-  if (m.method === "Runtime.exceptionThrown") {
-    const d = p.exceptionDetails || {};
-    guard.errors.push(`script error: ${((d.exception && d.exception.description) || d.text || "").split("\n")[0]}${d.url ? ` (${d.url.replace(base, "")})` : ""}`);
-  } else if (m.method === "Runtime.consoleAPICalled" && p.type === "error") {
-    guard.errors.push(`console.error: ${(p.args || []).map((a) => a.value ?? a.description ?? "").join(" ").slice(0, 240)}`);
-  } else if (m.method === "Page.javascriptDialogOpening") {
-    send("Page.handleJavaScriptDialog", { accept: true }).catch(() => {});
-  } else if (guard.phase !== "load") {
-    return;
-  } else if (m.method === "Network.requestWillBeSent") {
-    guard.urls.set(p.requestId, p.request.url);
-  } else if (m.method === "Network.responseReceived" && p.response.status >= 400) {
-    (p.response.url.startsWith(base) ? guard.errors : guard.warnings).push(`HTTP ${p.response.status} ${p.response.url.replace(base, "")}`);
-  } else if (m.method === "Network.loadingFailed" && !p.canceled) {
-    const url = guard.urls.get(p.requestId) || "?";
-    (url.startsWith(base) ? guard.errors : guard.warnings).push(`${p.errorText} ${url.replace(base, "")}`);
-  }
-});
-function resetGuard() { guard.phase = "load"; guard.errors = []; guard.warnings = []; guard.urls.clear(); }
+function attachGuard(tab) {
+  const guard = { phase: "load", errors: [], warnings: [], urls: new Map() };
+  tab.listeners.add((m) => {
+    const p = m.params || {};
+    if (m.method === "Runtime.exceptionThrown") {
+      const d = p.exceptionDetails || {};
+      guard.errors.push(`script error: ${((d.exception && d.exception.description) || d.text || "").split("\n")[0]}${d.url ? ` (${d.url.replace(base, "")})` : ""}`);
+    } else if (m.method === "Runtime.consoleAPICalled" && p.type === "error") {
+      guard.errors.push(`console.error: ${(p.args || []).map((a) => a.value ?? a.description ?? "").join(" ").slice(0, 240)}`);
+    } else if (m.method === "Page.javascriptDialogOpening") {
+      tab.send("Page.handleJavaScriptDialog", { accept: true }).catch(() => {});
+    } else if (guard.phase !== "load") {
+      return;
+    } else if (m.method === "Network.requestWillBeSent") {
+      guard.urls.set(p.requestId, p.request.url);
+    } else if (m.method === "Network.responseReceived" && p.response.status >= 400) {
+      (p.response.url.startsWith(base) ? guard.errors : guard.warnings).push(`HTTP ${p.response.status} ${p.response.url.replace(base, "")}`);
+    } else if (m.method === "Network.loadingFailed" && !p.canceled) {
+      const url = guard.urls.get(p.requestId) || "?";
+      (url.startsWith(base) ? guard.errors : guard.warnings).push(`${p.errorText} ${url.replace(base, "")}`);
+    }
+  });
+  const reset = () => { guard.phase = "load"; guard.errors = []; guard.warnings = []; guard.urls.clear(); };
+  return { guard, reset };
+}
 
 /* ---------- interaction pass (1280 only, after the capture) ----------
    Pack pages: press every button, tab, switch, checkbox, radio, summary and in-page link once (forms never
@@ -269,105 +280,136 @@ function wallFlow() {
 }
 const FLOWS = { "index.html": homeFlow, "components.html": wallFlow };
 
-await send("Page.enable");
-await send("Runtime.enable");
-await send("Network.enable");
 let overflowing = 0, broken = 0;
 if (thumbs) {
   // Viewport-only captures at half density: real renders, small enough to ship with the site.
   try {
+    const target = (await (await fetch(`http://127.0.0.1:${port}/json/list`)).json()).find((t) => t.type === "page");
+    const tab = await connectTab(target.webSocketDebuggerUrl);
+    openSockets.push(tab.ws);
+    await tab.send("Page.enable");
+    const pageLoad = () => Promise.race([tab.nextEvent("Page.loadEventFired"), new Promise((r) => setTimeout(r, LOAD_TIMEOUT))]);
+    const specs = thumbsSmOnly ? [["-sm", 0.2625]] : [["", 0.5], ["-sm", 0.2625]];
     for (const page of pages) {
-      await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 800, deviceScaleFactor: 0.5, mobile: false });
+      await tab.send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 800, deviceScaleFactor: specs[0][1], mobile: false });
       const loaded = pageLoad();
-      await send("Page.navigate", { url: `${base}/${page.path}` });
+      await tab.send("Page.navigate", { url: `${base}/${page.path}` });
       await loaded;
-      await evaluate(FONTS_READY);
-      await evaluate(SETTLE);
+      await tab.evaluate(FONTS_READY);
+      await tab.evaluate(SETTLE);
       const name = page.path.replace(`${page.group}/`, "").replace(/\//g, "-").replace(/\.html$/, "");
       // 640×400 for the showcase posters, and 336×210 (-sm) for the hero wall, where a tile is 168px wide.
-      for (const [suffix, scale] of [["", 0.5], ["-sm", 0.2625]]) {
-        if (scale !== 0.5) {
-          await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 800, deviceScaleFactor: scale, mobile: false });
-          await evaluate("new Promise((r) => setTimeout(r, 200))");
+      for (let i = 0; i < specs.length; i++) {
+        const [suffix, scale] = specs[i];
+        if (i > 0) {
+          await tab.send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 800, deviceScaleFactor: scale, mobile: false });
+          await tab.evaluate("new Promise((r) => setTimeout(r, 200))");
         }
-        const { data } = await send("Page.captureScreenshot", { format: "jpeg", quality: suffix ? 70 : 82 });
+        const { data } = await tab.send("Page.captureScreenshot", { format: "jpeg", quality: suffix ? 58 : 82 });
         const out = join(root, "site", "assets", "thumbs", `${page.group}-${name}${suffix}.jpg`);
         await mkdir(dirname(out), { recursive: true });
         await writeFile(out, Buffer.from(data, "base64"));
-        console.log(`thumb	${page.path}	→ ${relative(root, out)}`);
+        console.log(`thumb\t${page.path}\t→ ${relative(root, out)}`);
       }
     }
   } finally { await shutdown(); }
   process.exit(0);
 }
+
 try {
-  for (const page of pages) {
-    for (const width of widths) {
-      const metrics = (height) => send("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: width < 600 });
-      await metrics(900);
-      resetGuard();
-      const loaded = pageLoad();
-      await send("Page.navigate", { url: `${base}/${page.path}` });
-      await loaded;
-      await evaluate(EAGER);
-      if (!(await evaluate(LIVE_READY))) guard.errors.push("live sections did not finish building within 15s");
-      const missing = await evaluate("(() => { const out = []; const cmp = document.querySelectorAll('[data-compare]').length; if (cmp && document.querySelectorAll('.same__inner').length !== cmp) out.push('Same-markup cards not built'); if (document.querySelector('[data-marquee]') && !document.querySelector('.mq-card')) out.push('marquee is empty'); const top = document.querySelector('.top'), topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')); if (top && topH && Math.abs(top.getBoundingClientRect().height - topH) > 1.5) out.push('sticky header is ' + Math.round(top.getBoundingClientRect().height) + 'px tall but --top-h is ' + topH + 'px (the sticky bar and anchors would slide under it)'); return out; })()");
-      guard.errors.push(...missing);
-      await evaluate(SETTLE);
-      await evaluate(FONTS_READY);
-      const overflow = await evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth");
-      const height = await evaluate("Math.min(document.documentElement.scrollHeight, 9000)");
-      await evaluate(SETTLE);
-      await evaluate("new Promise((r) => setTimeout(r, 1200))"); // let reveal transitions finish so slices match
-      // Capture beyond the viewport (no 100vh reflow), in slices: one full-page capture of a page with
-      // many live iframes and components exceeds headless Chrome's raster budget and never returns.
-      const slices = [];
-      for (let y = 0; y < height; y += 1800) {
-        const clip = { x: 0, y, width, height: Math.min(1800, height - y), scale: 1 };
-        slices.push(Buffer.from((await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: true, clip })).data, "base64"));
-      }
-      const png = slices.length === 1 ? slices[0] : stitch(slices);
-      const name = page.path.replace(/^[^/]+\/(?=.)/, page.group === "_site" ? "" : "").replace(/\//g, "_").replace(/\.html$/, "");
-      const out = join(root, ".snapshots", page.group, `${page.group === "_site" ? name : name.replace(`${page.group}_`, "")}@${width}.png`);
-      await mkdir(dirname(out), { recursive: true });
-      await writeFile(out, png);
-      if (overflow > 1) overflowing++;
-      console.log(`${overflow > 1 ? `OVERFLOW ${overflow}px` : "ok"}\t${page.path} @${width}\t→ ${relative(root, out)}`);
-      if (overflow > 1) {
-        // Name the innermost elements that stick out past the viewport, so the fix is obvious.
-        const culprits = await evaluate(`(() => {
-          const vw = document.documentElement.clientWidth, out = [];
-          const clipped = (el) => { for (let p = el.parentElement; p; p = p.parentElement) { const o = getComputedStyle(p).overflowX; if (o !== "visible") return p.getBoundingClientRect().right <= vw + 1; } return false; };
-          for (const el of document.body.querySelectorAll("*")) {
-            const r = el.getBoundingClientRect();
-            if (r.right <= vw + 1 || r.width === 0 || clipped(el)) continue;
-            if ([...el.children].some((c) => c.getBoundingClientRect().right > vw + 1)) continue;
-            const cls = el.getAttribute("class");
-            out.push(el.tagName.toLowerCase() + (cls ? "." + cls.trim().split(/\\s+/).join(".") : "") + " (right " + Math.round(r.right) + "px)");
-            if (out.length === 5) break;
-          }
-          return out;
-        })()`);
-        culprits.forEach((c) => console.log(`\t  ↳ ${c}`));
-      }
-      if (width === widths[0]) {
-        // Interaction pass: script errors only (see the guard above).
-        guard.phase = "interact";
-        const flow = FLOWS[page.path] || (page.group === "_site" ? null : packFuzz);
-        const did = flow ? await Promise.race([evaluate(`(${flow.toString()})()`), new Promise((r) => setTimeout(() => r("timed out after 60s"), 60000))]) : "";
-        if (did) console.log(`\t  pressed ${did}`);
-        if (/timed out/.test(did)) guard.errors.push(`interaction pass ${did}`);
-        await new Promise((r) => setTimeout(r, 300));
-      }
-      [...new Set(guard.warnings)].forEach((w) => console.log(`\t  warn  ${w}`));
-      const errs = [...new Set(guard.errors)];
-      if (errs.length) {
-        broken++;
-        console.log(`ERRORS\t${page.path} @${width}`);
-        errs.forEach((e) => console.log(`\t  ✗ ${e}`));
+  // Run worker tabs in isolated incognito browser contexts so localStorage mutations during packFuzz never bleed across pages.
+  const nWorkers = Math.min(jobs, pages.length);
+  const workers = [];
+  for (let w = 0; w < nWorkers; w++) {
+    const { browserContextId } = await browser.send("Target.createBrowserContext", { disposeOnDetach: true });
+    const { targetId } = await browser.send("Target.createTarget", { url: "about:blank", browserContextId, newWindow: true });
+    const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+    const t = targets.find((x) => x.id === targetId);
+    const tab = await connectTab(t.webSocketDebuggerUrl);
+    openSockets.push(tab.ws);
+    await tab.send("Page.enable");
+    await tab.send("Runtime.enable");
+    await tab.send("Network.enable");
+    workers.push({ tab, ...attachGuard(tab) });
+  }
+
+  let nextIdx = 0;
+  async function runWorker({ tab, guard, reset }) {
+    const pageLoad = () => Promise.race([tab.nextEvent("Page.loadEventFired"), new Promise((r) => setTimeout(r, LOAD_TIMEOUT))]);
+    for (;;) {
+      const idx = nextIdx++;
+      if (idx >= pages.length) return;
+      const page = pages[idx];
+      for (const width of widths) {
+        const logs = [];
+        const metrics = (height) => tab.send("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: width < 600 });
+        await metrics(900);
+        reset();
+        const loaded = pageLoad();
+        await tab.send("Page.navigate", { url: `${base}/${page.path}` });
+        await loaded;
+        await tab.evaluate(EAGER);
+        if (!(await tab.evaluate(LIVE_READY))) guard.errors.push("live sections did not finish building within 15s");
+        const missing = await tab.evaluate("(() => { const out = []; const cmp = document.querySelectorAll('[data-compare]').length; if (cmp && document.querySelectorAll('.same__inner').length !== cmp) out.push('Same-markup cards not built'); if (document.querySelector('[data-marquee]') && !document.querySelector('.mq-card')) out.push('marquee is empty'); const top = document.querySelector('.top'), topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')); if (top && topH && Math.abs(top.getBoundingClientRect().height - topH) > 1.5) out.push('sticky header is ' + Math.round(top.getBoundingClientRect().height) + 'px tall but --top-h is ' + topH + 'px (the sticky bar and anchors would slide under it)'); return out; })()");
+        guard.errors.push(...missing);
+        await tab.evaluate(SETTLE);
+        await tab.evaluate(FONTS_READY);
+        const overflow = await tab.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth");
+        const height = await tab.evaluate("Math.min(document.documentElement.scrollHeight, 9000)");
+        await tab.evaluate(SETTLE);
+        await tab.evaluate("new Promise((r) => setTimeout(r, 1200))"); // let reveal transitions finish so slices match
+        // Capture beyond the viewport (no 100vh reflow), in slices: one full-page capture of a page with
+        // many live iframes and components exceeds headless Chrome's raster budget and never returns.
+        const slices = [];
+        for (let y = 0; y < height; y += 1800) {
+          const clip = { x: 0, y, width, height: Math.min(1800, height - y), scale: 1 };
+          slices.push(Buffer.from((await tab.send("Page.captureScreenshot", { format: "png", captureBeyondViewport: true, clip })).data, "base64"));
+        }
+        const png = slices.length === 1 ? slices[0] : stitch(slices);
+        const name = page.path.replace(/^[^/]+\/(?=.)/, page.group === "_site" ? "" : "").replace(/\//g, "_").replace(/\.html$/, "");
+        const out = join(root, ".snapshots", page.group, `${page.group === "_site" ? name : name.replace(`${page.group}_`, "")}@${width}.png`);
+        await mkdir(dirname(out), { recursive: true });
+        await writeFile(out, png);
+        if (overflow > 1) overflowing++;
+        logs.push(`${overflow > 1 ? `OVERFLOW ${overflow}px` : "ok"}\t${page.path} @${width}\t→ ${relative(root, out)}`);
+        if (overflow > 1) {
+          // Name the innermost elements that stick out past the viewport, so the fix is obvious.
+          const culprits = await tab.evaluate(`(() => {
+            const vw = document.documentElement.clientWidth, out = [];
+            const clipped = (el) => { for (let p = el.parentElement; p; p = p.parentElement) { const o = getComputedStyle(p).overflowX; if (o !== "visible") return p.getBoundingClientRect().right <= vw + 1; } return false; };
+            for (const el of document.body.querySelectorAll("*")) {
+              const r = el.getBoundingClientRect();
+              if (r.right <= vw + 1 || r.width === 0 || clipped(el)) continue;
+              if ([...el.children].some((c) => c.getBoundingClientRect().right > vw + 1)) continue;
+              const cls = el.getAttribute("class");
+              out.push(el.tagName.toLowerCase() + (cls ? "." + cls.trim().split(/\\s+/).join(".") : "") + " (right " + Math.round(r.right) + "px)");
+              if (out.length === 5) break;
+            }
+            return out;
+          })()`);
+          culprits.forEach((c) => logs.push(`\t  ↳ ${c}`));
+        }
+        if (width === widths[0]) {
+          // Interaction pass: script errors only (see the guard above).
+          guard.phase = "interact";
+          const flow = FLOWS[page.path] || (page.group === "_site" ? null : packFuzz);
+          const did = flow ? await Promise.race([tab.evaluate(`(${flow.toString()})()`), new Promise((r) => setTimeout(() => r("timed out after 60s"), 60000))]) : "";
+          if (did) logs.push(`\t  pressed ${did}`);
+          if (/timed out/.test(did)) guard.errors.push(`interaction pass ${did}`);
+          await new Promise((r) => setTimeout(r, 300));
+        }
+        [...new Set(guard.warnings)].forEach((w) => logs.push(`\t  warn  ${w}`));
+        const errs = [...new Set(guard.errors)];
+        if (errs.length) {
+          broken++;
+          logs.push(`ERRORS\t${page.path} @${width}`);
+          errs.forEach((e) => logs.push(`\t  ✗ ${e}`));
+        }
+        console.log(logs.join("\n"));
       }
     }
   }
+  await Promise.all(workers.map(runWorker));
 } finally {
   await shutdown();
 }

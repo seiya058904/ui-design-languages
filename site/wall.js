@@ -95,9 +95,14 @@
   /* Icons are referenced as #i-name inside each pack; give them pack-scoped ids on this shared page. */
   function scopeIcons(html, packId) { return html.replace(/(<use\b[^>]*\bhref=")#/g, "$1#" + packId + "--"); }
 
+  var parseQueue = Promise.resolve();
   function load(packId) {
     return fetch(packId + "/components.html").then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (text) {
-      var doc = new DOMParser().parseFromString(text, "text/html");
+      // Serialize catalog DOMParser calls across macrotasks so 9 concurrent parses (318KB HTML) never pile into one long task.
+      var job = parseQueue.then(function () {
+        return new Promise(function (r) { setTimeout(r, 0); });
+      }).then(function () {
+        var doc = new DOMParser().parseFromString(text, "text/html");
       var items = {}, order = [];
       doc.querySelectorAll("[data-component]").forEach(function (sec) {
         var id = sec.getAttribute("data-component");
@@ -123,6 +128,9 @@
       doc.querySelectorAll("symbol[id]").forEach(function (sym) { symbols[sym.id] = sym.outerHTML; });
       data[packId] = { items: items, order: order, symbols: symbols };
       addSymbols(packId, doc);
+      });
+      parseQueue = job.catch(function () {});
+      return job;
     });
   }
 

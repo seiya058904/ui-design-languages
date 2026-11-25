@@ -29,6 +29,7 @@ const args = process.argv.slice(2);
 const only = args.filter((a) => !a.startsWith("--"));
 const lightOnly = args.includes("--light");
 const comp = args.find((a) => a.startsWith("--component="))?.slice(12);
+const jobs = Math.max(1, Math.min(8, +(args.find((a) => a.startsWith("--jobs="))?.slice(7) || 4)));
 const CHROME = process.env.CHROME_PATH || [
   "C:/Program Files/Google/Chrome/Application/chrome.exe",
   "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
@@ -72,7 +73,7 @@ const base = `http://127.0.0.1:${server.address().port}`;
 /* ---------- Chrome ---------- */
 async function launch(attempt) {
   const dir = mkdtempSync(join(tmpdir(), "uidl-source-"));
-  const proc = spawn(CHROME, ["--headless=new", "--disable-gpu", "--remote-debugging-port=0", `--user-data-dir=${dir}`, "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });
+  const proc = spawn(CHROME, ["--headless=new", "--disable-gpu", "--disable-background-timer-throttling", "--disable-backgrounding-occluded-windows", "--disable-renderer-backgrounding", "--remote-debugging-port=0", `--user-data-dir=${dir}`, "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });
   const wsUrl = await new Promise((resolve, reject) => {
     let buf = "";
     proc.stderr.on("data", (d) => { buf += d; const m = buf.match(/DevTools listening on (ws:\/\/\S+)/); if (m) resolve(m[1]); });
@@ -87,35 +88,42 @@ async function launch(attempt) {
   return launch(attempt + 1);
 }
 const { proc: chrome, dir: profile, p: port } = await launch(1);
-const target = (await (await fetch(`http://127.0.0.1:${port}/json/list`)).json()).find((t) => t.type === "page");
-const ws = new WebSocket(target.webSocketDebuggerUrl);
-await new Promise((r) => ws.addEventListener("open", r, { once: true }));
-let id = 0;
-const pending = new Map();
-// If the DevTools connection drops, fail every waiting call instead of hanging forever.
-ws.addEventListener("close", () => { for (const r of pending.values()) r({ error: { message: "DevTools connection closed" } }); pending.clear(); });
-ws.addEventListener("message", (e) => { const m = JSON.parse(e.data); if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); } });
-const send = (method, params = {}) => new Promise((r) => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); })
-  .then((m) => { if (m.error) throw new Error(`${method}: ${m.error.message}`); return m.result; });
-const evaluate = async (expression) => {
-  const r = await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true });
-  if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
-  return r.result.value;
-};
+async function connect(wsUrl) {
+  const ws = new WebSocket(wsUrl);
+  await new Promise((r) => ws.addEventListener("open", r, { once: true }));
+  let id = 0;
+  const pending = new Map();
+  ws.addEventListener("close", () => { for (const r of pending.values()) r({ error: { message: "DevTools connection closed" } }); pending.clear(); });
+  ws.addEventListener("message", (e) => { const m = JSON.parse(e.data); if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); } });
+  const send = (method, params = {}) => new Promise((r) => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); })
+    .then((m) => { if (m.error) throw new Error(`${method}: ${m.error.message}`); return m.result; });
+  const evaluate = async (expression) => {
+    const r = await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true });
+    if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
+    return r.result.value;
+  };
+  async function waitFor(expression, timeout = 10000) {
+    const t0 = Date.now();
+    while (Date.now() - t0 < timeout) { try { if (await evaluate(expression)) return true; } catch { /* page still loading */ } await sleep(35); }
+    return false;
+  }
+  async function open(url, ready) {
+    await send("Page.navigate", { url });
+    await sleep(30);
+    await waitFor(`document.readyState === "complete" && ${ready}`);
+    // never wait on fonts for more than a few seconds (they're blocked anyway; this is belt and braces)
+    await evaluate("document.fonts ? Promise.race([document.fonts.ready.then(() => true), new Promise((r) => setTimeout(() => r(false), 4000))]) : true");
+    await sleep(220); // indicators place themselves on the next frames
+  }
+  return { ws, send, evaluate, open };
+}
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-async function waitFor(expression, timeout = 10000) {
-  const t0 = Date.now();
-  while (Date.now() - t0 < timeout) { try { if (await evaluate(expression)) return true; } catch { /* page still loading */ } await sleep(100); }
-  return false;
-}
-async function open(url, ready) {
-  await send("Page.navigate", { url });
-  await sleep(150);
-  await waitFor(`document.readyState === "complete" && ${ready}`);
-  // never wait on fonts for more than a few seconds (they're blocked anyway; this is belt and braces)
-  await evaluate("document.fonts ? Promise.race([document.fonts.ready.then(() => true), new Promise((r) => setTimeout(() => r(false), 4000))]) : true");
-  await sleep(350); // indicators place themselves on the next frames
-}
+
+const version = await (await fetch(`http://127.0.0.1:${port}/json/version`)).json();
+const browser = await connect(version.webSocketDebuggerUrl);
+const initialTarget = (await (await fetch(`http://127.0.0.1:${port}/json/list`)).json()).find((t) => t.type === "page");
+const mainTab = await connect(initialTarget.webSocketDebuggerUrl);
+const workerTabs = [mainTab];
 
 /* ---------- what gets compared ---------- */
 const PROPS = ["display", "color", "background-color", "background-image", "box-shadow", "border-top-left-radius", "border-top-width", "border-top-style", "border-top-color",
@@ -157,13 +165,13 @@ function diff(a, b, dark) {
 
 let failed = 0, checked = 0;
 try {
-  await send("Network.enable");
-  await send("Network.setBlockedURLs", { urls: ["*fonts.googleapis.com*", "*fonts.gstatic.com*"] });
+  await mainTab.send("Network.enable");
+  await mainTab.send("Network.setBlockedURLs", { urls: ["*fonts.googleapis.com*", "*fonts.gstatic.com*"] });
   /* Build every single file inside the real components page. */
-  await open(`${base}/components.html`, `!!window.UISource && !!window.UIWall && document.querySelectorAll(".wcard").length > 0`);
+  await mainTab.open(`${base}/components.html`, `!!window.UISource && !!window.UIWall && document.querySelectorAll(".wcard").length > 0`);
   // The files stay in the page and come over one at a time: all of them in a single reply is several MB,
   // more than one DevTools message carries reliably.
-  const list = await evaluate(`(async () => {
+  const list = await mainTab.evaluate(`(async () => {
     const out = [];
     window.__uidlBuilt = {};
     for (const p of UIWall.packs) {
@@ -180,31 +188,69 @@ try {
   if (!demos.length) throw new Error("no demos found");
   for (const x of demos) {
     const name = `${x.p}--${x.c}--${x.d}`;
-    built.set(`${name}.html`, await evaluate(`window.__uidlBuilt[${JSON.stringify(name)}]`));
+    built.set(`${name}.html`, await mainTab.evaluate(`window.__uidlBuilt[${JSON.stringify(name)}]`));
   }
 
-  for (const x of demos) {
-    const key = `${x.p}/${x.c}/${x.d}`, file = `${base}/__source/${x.p}--${x.c}--${x.d}.html`;
-    const ref = `${base}/site/demo.html?p=${x.p}&c=${x.c}&d=${x.d}`;
-    for (const dark of lightOnly || !x.dark ? [false] : [false, true]) {
-      await open(ref, `!!document.querySelector(".demo__stage")`);
-      await evaluate(prep(dark));
-      const A = await evaluate(collect(".demo__stage"));
-      await open(file, `!!document.querySelector("main.demo")`);
-      await evaluate(prep(dark));
-      const B = await evaluate(collect("main.demo"));
-      const d = diff(A, B, dark);
+  /* Open extra worker tabs in their own headless windows (newWindow: true) so every tab is visible and fires rAF at full speed. */
+  const nWorkers = Math.min(jobs, demos.length);
+  for (let w = 1; w < nWorkers; w++) {
+    const { targetId } = await browser.send("Target.createTarget", { url: "about:blank", newWindow: true });
+    const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+    const t = targets.find((x) => x.id === targetId);
+    const tab = await connect(t.webSocketDebuggerUrl);
+    await tab.send("Network.enable");
+    await tab.send("Network.setBlockedURLs", { urls: ["*fonts.googleapis.com*", "*fonts.gstatic.com*"] });
+    workerTabs.push(tab);
+  }
+
+  let nextIdx = 0;
+  async function worker(tab) {
+    for (;;) {
+      const idx = nextIdx++;
+      if (idx >= demos.length) return;
+      const x = demos[idx];
+      const key = `${x.p}/${x.c}/${x.d}`, file = `${base}/__source/${x.p}--${x.c}--${x.d}.html`;
+      const ref = `${base}/site/demo.html?p=${x.p}&c=${x.c}&d=${x.d}`;
+      const doDark = !lightOnly && x.dark;
+
+      // Navigate once per page and capture light, then dark on the same loaded DOM.
+      await tab.open(ref, `!!document.querySelector(".demo__stage")`);
+      await tab.evaluate(prep(false));
+      const aLight = await tab.evaluate(collect(".demo__stage"));
+      let aDark = null;
+      if (doDark) {
+        await tab.evaluate(prep(true));
+        aDark = await tab.evaluate(collect(".demo__stage"));
+      }
+
+      await tab.open(file, `!!document.querySelector("main.demo")`);
+      await tab.evaluate(prep(false));
+      const bLight = await tab.evaluate(collect("main.demo"));
+      let bDark = null;
+      if (doDark) {
+        await tab.evaluate(prep(true));
+        bDark = await tab.evaluate(collect("main.demo"));
+      }
+
+      const dLight = diff(aLight, bLight, false);
       checked++;
-      if (d.length) { failed++; console.log(`DIFF  ${key}${dark ? " (dark)" : ""} — ${d.length}\n      ${d.slice(0, 6).join("\n      ")}`); }
+      if (dLight.length) { failed++; console.log(`DIFF  ${key} — ${dLight.length}\n      ${dLight.slice(0, 6).join("\n      ")}`); }
+      if (doDark) {
+        const dDark = diff(aDark, bDark, true);
+        checked++;
+        if (dDark.length) { failed++; console.log(`DIFF  ${key} (dark) — ${dDark.length}\n      ${dDark.slice(0, 6).join("\n      ")}`); }
+      }
     }
   }
+  await Promise.all(workerTabs.map(worker));
   console.log(`\n${checked - failed}/${checked} renders identical across ${demos.length} demos${lightOnly ? " (light only)" : " (light + dark)"}.`);
 } catch (e) {
   console.error("check-source failed:", e.message);
   failed = failed || 1;
 } finally {
   // Wait for Chrome to exit before removing its temp profile (Windows keeps it locked until then).
-  try { ws.close(); } catch { /* already closed */ }
+  for (const tab of workerTabs) { try { tab.ws.close(); } catch { /* already closed */ } }
+  try { browser.ws.close(); } catch { /* already closed */ }
   server.close();
   const exited = chrome.exitCode !== null ? Promise.resolve() : new Promise((r) => chrome.once("exit", r));
   chrome.kill();

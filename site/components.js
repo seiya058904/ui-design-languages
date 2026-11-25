@@ -33,18 +33,25 @@
     return out;
   }
   var CODE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7-5 5 5 5M15 7l5 5-5 5"/></svg>';
-  function buildCard(packId, compId, demoId) {
+  function createCardMeta(packId, compId, demoId) {
     var hit = W.demo(packId, compId, demoId), p = W.byId[packId];
     if (!hit) return null;
     var kind = KIND[compId] || "content";
+    var words = [p.name, p.id, hit.component.title, compId, hit.demo.label, kind].join(" ").toLowerCase();
+    return { el: null, pack: packId, comp: compId, demo: demoId, kind: kind, words: words, shown: true, vis: undefined, inDom: false, laid: false, x: 0, y: 0, h: 0 };
+  }
+  function ensureEl(c) {
+    if (c.el) return c.el;
+    var hit = W.demo(c.pack, c.comp, c.demo), p = W.byId[c.pack];
     var card = document.createElement("article");
     card.className = "wcard";
-    card.setAttribute("data-pack", packId);
-    card.setAttribute("data-kind", kind);
+    card.setAttribute("data-pack", c.pack);
+    card.setAttribute("data-kind", c.kind);
     card.style.setProperty("--glow", p.dot);
+    if (lastColW > 0) card.style.width = lastColW + "px";
     var inner = document.createElement("div");
     inner.className = "wcard__in";
-    var stage = W.stage(packId, compId, demoId);
+    var stage = W.stage(c.pack, c.comp, c.demo);
     inner.appendChild(stage);
     var bar = document.createElement("div");
     bar.className = "wcard__bar";
@@ -54,7 +61,7 @@
     bar.querySelector("b").textContent = p.name;
     bar.querySelector("span").textContent = hit.component.title;
     bar.querySelector(".wcard__code").setAttribute("aria-label", "Code for " + p.name + " " + hit.component.title);
-    bar.querySelectorAll("button").forEach(function (b) { b.addEventListener("click", function () { openDrawer(packId, compId, demoId); }); });
+    bar.querySelectorAll("button").forEach(function (b) { b.addEventListener("click", function () { openDrawer(c.pack, c.comp, c.demo); }); });
     inner.appendChild(bar);
     card.appendChild(inner);
 
@@ -65,8 +72,16 @@
     card.__spotStage = stage;
     card.__spotDot = dot;
 
-    var words = [p.name, p.id, hit.component.title, compId, hit.demo.label, kind].join(" ").toLowerCase();
-    return { el: card, pack: packId, comp: compId, demo: demoId, kind: kind, words: words, shown: true, x: 0, y: 0 };
+    if (!c.shown) {
+      card.classList.add("is-out", "is-gone");
+      card.setAttribute("aria-hidden", "true");
+      card.inert = true;
+    } else {
+      card.setAttribute("aria-hidden", "false");
+      card.inert = false;
+    }
+    c.el = card;
+    return card;
   }
 
   /* Delegated hover spotlight across all 96 cards (caches active stage rect, 1 rAF per frame). */
@@ -174,40 +189,23 @@
     for (var i = 0; i < tokens.length; i++) if (c.words.indexOf(tokens[i]) < 0) return false;
     return true;
   }
+  var colHeights = [], lastCols = 0, lastGap = 0, lastGridW = 0;
   function columns() {
     var width = grid.clientWidth;
     if (!width) return null;
     var cols = width >= 1060 ? 3 : width >= 660 ? 2 : 1, gap = width >= 660 ? 20 : 16;
-    return { cols: cols, gap: gap, colW: (width - gap * (cols - 1)) / cols };
+    return { width: width, cols: cols, gap: gap, colW: (width - gap * (cols - 1)) / cols };
   }
-  function layout() {
-    var g = columns();
-    if (!g) return;
-    var cols = g.cols, gap = g.gap, colW = g.colW;
-    var heights = [];
-    for (var i = 0; i < cols; i++) heights.push(0);
-
-    var shown = [];
-    for (var k = 0; k < cards.length; k++) if (cards[k].shown && cards[k].inDom) shown.push(cards[k]);
-
-    // Phase 1: Batch write widths only when colW changed
-    if (colW !== lastColW) {
-      var colWpx = colW + "px";
-      for (var w = 0; w < cards.length; w++) cards[w].el.style.width = colWpx;
-      lastColW = colW;
-    }
-
-    // Phase 2: Batch read all visible card heights (single layout pass)
-    var cardHeights = new Array(shown.length);
-    for (var r = 0; r < shown.length; r++) cardHeights[r] = shown[r].el.offsetHeight;
-
-    // Phase 3: Compute positions and batch write transforms only when changed
-    for (var p = 0; p < shown.length; p++) {
-      var c = shown[p];
+  function placeBatch(list, cols, gap, colW) {
+    if (!list.length) return;
+    var cardHeights = new Array(list.length);
+    for (var r = 0; r < list.length; r++) cardHeights[r] = list[r].el.offsetHeight;
+    for (var p = 0; p < list.length; p++) {
+      var c = list[p];
       var col = 0;
-      for (var j = 1; j < cols; j++) if (heights[j] < heights[col]) col = j;
-      var nx = col * (colW + gap), ny = heights[col];
-      heights[col] += cardHeights[p] + gap;
+      for (var j = 1; j < cols; j++) if (colHeights[j] < colHeights[col]) col = j;
+      var nx = col * (colW + gap), ny = colHeights[col];
+      colHeights[col] += cardHeights[p] + gap;
       if (nx !== c.x || ny !== c.y || !c.laid) {
         c.x = nx; c.y = ny; c.laid = true;
         c.el.style.transform = "translate3d(" + nx + "px," + ny + "px,0)";
@@ -215,8 +213,40 @@
       c.h = cardHeights[p];
     }
     var maxH = 0;
-    for (var m = 0; m < cols; m++) if (heights[m] > maxH) maxH = heights[m];
+    for (var m = 0; m < cols; m++) if (colHeights[m] > maxH) maxH = colHeights[m];
     grid.style.height = Math.max(0, maxH - gap) + "px";
+  }
+  function layout(appendOnly) {
+    var g = columns();
+    if (!g) return;
+    var cols = g.cols, gap = g.gap, colW = g.colW;
+    lastGridW = g.width;
+
+    // Fast path during batched boot: when column geometry hasn't changed, measure & place ONLY the new batch.
+    if (appendOnly && appendOnly.length && colW === lastColW && cols === lastCols && gap === lastGap && colHeights.length === cols) {
+      var addShown = [];
+      for (var a = 0; a < appendOnly.length; a++) if (appendOnly[a].shown && appendOnly[a].inDom) addShown.push(appendOnly[a]);
+      placeBatch(addShown, cols, gap, colW);
+      return;
+    }
+
+    colHeights = [];
+    for (var i = 0; i < cols; i++) colHeights.push(0);
+    lastCols = cols; lastGap = gap;
+
+    var shown = [];
+    for (var k = 0; k < cards.length; k++) if (cards[k].shown && cards[k].inDom) shown.push(cards[k]);
+
+    // Phase 1: Batch write widths only when colW changed
+    if (colW !== lastColW) {
+      var colWpx = colW + "px";
+      for (var w = 0; w < cards.length; w++) if (cards[w].el) cards[w].el.style.width = colWpx;
+      lastColW = colW;
+    }
+
+    // Phase 2 & 3: Batch read visible card heights and place them
+    placeBatch(shown, cols, gap, colW);
+    if (!shown.length) grid.style.height = "0px";
   }
   function apply(animate) {
     clearTimeout(animTimer);
@@ -242,6 +272,7 @@
       if (vis) n++;
       if (c.vis === vis) continue; // only touch the cards whose state changes
       c.vis = vis;
+      if (!c.el) continue; // detached cards apply their visibility when lazily mounted in ensureEl()
       if (vis) {
         c.el.classList.remove("is-gone", "is-out");
         c.el.setAttribute("aria-hidden", "false");
@@ -255,7 +286,7 @@
     layout();
     // Hide filtered-out cards from painting/compositing once their 280ms fade finishes.
     goneTimer = setTimeout(function () {
-      for (var j = 0; j < cards.length; j++) if (!cards[j].shown) cards[j].el.classList.add("is-gone");
+      for (var j = 0; j < cards.length; j++) if (!cards[j].shown && cards[j].el) cards[j].el.classList.add("is-gone");
     }, animate ? 320 : 0);
 
     var p = W.byId[state.style];
@@ -558,21 +589,18 @@
   }
 
   /* ---------- boot ---------- */
-  /* Every card's data is built at once (cheap), so counts, filters, search and deep links know the whole
-     wall from the start. The live markup enters the page a batch per frame (the cards on show first), so
-     laying out 96 live components never blocks the page in one long task. The masonry only appends, so
-     cards already placed never move. The packs' scripts load once every card is in. */
-  var BATCH = 8, wallDone = null;
+  /* Every card's metadata is built at once (cheap), so counts, filters, search and deep links know the whole
+     wall from the start. Live DOM subtrees are created and laid out lazily a small batch per frame
+     (append-only masonry measures only the newly inserted batch), so 96 live components never block the page
+     in one long task. The packs' scripts load once every card is in. */
+  var BATCH = 3, wallDone = null;
   var wallReady = new Promise(function (resolve) { wallDone = resolve; });
   if (window.UISite) UISite.ready = function () { return wallReady; }; // checks wait for the whole wall
   W.ready().then(function () {
     interleave().forEach(function (pk) {
-      var c = buildCard(pk[0], pk[1], pk[2]);
+      var c = createCardMeta(pk[0], pk[1], pk[2]);
       if (c) cards.push(c);
     });
-    // Cards enter at their column width, so laying out a batch is a single pass.
-    var g0 = columns();
-    if (g0) { cards.forEach(function (c) { c.el.style.width = g0.colW + "px"; }); lastColW = g0.colW; }
     var total = document.querySelector("[data-total]");
     if (total) total.textContent = cards.length;
     buildFilters();
@@ -585,34 +613,37 @@
       ro = new ResizeObserver(function (entries) {
         for (var i = 0; i < entries.length; i++) {
           var t = entries[i].target;
-          if (t === grid) { relayout(); return; }
+          if (t === grid) { if (Math.round(entries[i].contentRect.width) !== lastGridW) relayout(); return; }
           var cardObj = byEl.get(t);
-          if (cardObj && cardObj.shown && Math.round(t.offsetHeight) !== cardObj.h) { relayout(); return; }
+          var nh = entries[i].borderBoxSize && entries[i].borderBoxSize[0] ? Math.round(entries[i].borderBoxSize[0].blockSize) : Math.round(entries[i].contentRect.height);
+          if (cardObj && cardObj.shown && nh && nh !== cardObj.h) { relayout(); return; }
         }
       });
       ro.observe(grid);
     } else window.addEventListener("resize", relayout, { passive: true });
-    if (!io) cards.forEach(function (c) { c.el.classList.add("is-in"); });
 
-    apply(false); // decides which cards are on show
+    apply(false); // decides which cards are on show and initializes column geometry
     var pending = cards.filter(function (c) { return c.shown; }).concat(cards.filter(function (c) { return !c.shown; }));
     function insert() {
       var frag = document.createDocumentFragment(), batch = pending.splice(0, BATCH);
-      batch.forEach(function (c) { c.inDom = true; frag.appendChild(c.el); });
-      grid.appendChild(frag);
       batch.forEach(function (c) {
-        if (io) io.observe(c.el);
-        if (ro) { byEl.set(c.el.firstChild, c); ro.observe(c.el.firstChild); }
+        var el = ensureEl(c);
+        if (!io) el.classList.add("is-in");
+        c.inDom = true;
+        frag.appendChild(el);
       });
-      layout();
+      grid.appendChild(frag);
+      layout(batch);
+      if (io) batch.forEach(function (c) { io.observe(c.el); });
     }
     insert();
     glideSoon(false);
     fromHash(); // a deep-linked card opens now: its drawer doesn't wait for the rest of the wall
     (function more() {
       if (!pending.length) {
+        if (ro) cards.forEach(function (c) { if (c.el) { byEl.set(c.el.firstChild, c); ro.observe(c.el.firstChild); } });
         W.scripts().then(function () { relayout(); requestAnimationFrame(function () { wallDone(); }); });
-        if (document.fonts) document.fonts.ready.then(relayout);
+        if (!ro && document.fonts) document.fonts.ready.then(relayout);
         return;
       }
       requestAnimationFrame(function () { insert(); more(); });

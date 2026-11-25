@@ -72,7 +72,7 @@ html[data-theme="dark"] .cw.is-unified:not(.is-light-only) .cw-note,
 
 /* Cards are absolutely positioned by the masonry script; they glide when the filter changes.
    .is-animating is removed once the glide finishes, so cards never sit permanently on GPU layers. */
-.wcard { position: absolute; top: 0; left: 0; }
+.wcard { position: absolute; top: 0; left: 0; contain: layout style; }
 .cw-grid.is-animating .wcard:not(.is-gone) { transition: transform .65s var(--ease); will-change: transform; }
 .wcard__in { position: relative; contain: layout style; opacity: 0; transform: translate3d(0, 24px, 0); transition: opacity .65s var(--ease), transform .75s var(--ease); }
 .wcard.is-in .wcard__in { opacity: 1; transform: none; }

@@ -26,9 +26,20 @@
 
   fetch(base).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (text) {
     var doc = new DOMParser().parseFromString(text, "text/html");
+    // DOMParser documents run without scripting, so <noscript> fallbacks parse as real elements: skip them.
+    // Web fonts stay non-blocking (media="print" until loaded) so a stalled font host never blanks the frame;
+    // the pack's own stylesheets apply at once.
     doc.head.querySelectorAll('link[rel="stylesheet"], link[rel="preconnect"], style').forEach(function (n) {
+      if (n.closest("noscript")) return;
       var copy = document.importNode(n, true);
       if (n.getAttribute("href")) copy.setAttribute("href", new URL(n.getAttribute("href"), base).href);
+      if (copy.rel === "stylesheet") {
+        copy.removeAttribute("onload");
+        if (/fonts\.googleapis\.com/.test(copy.href)) {
+          copy.media = "print";
+          copy.onload = function () { copy.media = "all"; report(); };
+        } else copy.media = "all";
+      }
       document.head.appendChild(copy);
     });
     var frameCss = document.createElement("style");

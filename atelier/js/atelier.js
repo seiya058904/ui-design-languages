@@ -230,9 +230,18 @@
       document.dispatchEvent(new CustomEvent(P + ":appearance", { detail: Object.assign({}, state) }));
     }
     var calm = state.motion === "reduced" || patch.motion === "reduced" || (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    if (!isWallHost() && discrete && !calm && document.startViewTransition && document.visibilityState === "visible") document.startViewTransition(run);
+    if (!isWallHost() && discrete && !calm && document.startViewTransition && document.visibilityState === "visible") {
+      // A newer change (rapid clicks), a hidden tab or a lost focus skips the running cross-fade; its
+      // promises then reject with AbortError. That is expected: the state is already applied.
+      if (transition) { try { transition.skipTransition(); } catch (err) { /* already finished */ } }
+      var t = transition = document.startViewTransition(run);
+      [t.ready, t.finished, t.updateCallbackDone].forEach(function (p) { if (p && p.catch) p.catch(noop); });
+      t.finished.then(function () { if (transition === t) transition = null; }, function () { if (transition === t) transition = null; });
+    }
     else run();
   }
+  var transition = null;
+  function noop() {}
   window.addEventListener("storage", function (e) {
     if (e.key !== KEY || isWallHost()) return;
     state = read();

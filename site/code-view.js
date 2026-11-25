@@ -51,6 +51,23 @@
     return lines.map(function (l) { return l.slice(min); }).join("\n").replace(/\n{3,}/g, "\n\n");
   }
 
+  /* When the Clipboard API is missing or refuses: a hidden textarea in the light DOM (selections inside a
+     shadow root are unreliable across browsers). Returns whether the browser really copied. */
+  function legacyCopy(text, back) {
+    var ta = document.createElement("textarea"), ok = false;
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.setAttribute("aria-hidden", "true");
+    ta.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;padding:0;border:0;opacity:0;pointer-events:none";
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
+    ta.remove();
+    if (back && back.focus) back.focus({ preventScroll: true });
+    return ok;
+  }
+
   var CSS =
     ":host{display:block;font:500 12px/1.4 ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:inherit;text-transform:none;letter-spacing:0}" +
     ":host([data-code-view=toggle]){display:inline-block;vertical-align:middle;margin-left:10px;line-height:0}" +
@@ -118,21 +135,13 @@
     var copyTimer = 0;
     copy.addEventListener("click", function () {
       var text = code.textContent;
-      function done() {
-        copy.textContent = "Copied";
+      function done(ok) {
+        copy.textContent = ok ? "Copied" : "Copy failed";
         clearTimeout(copyTimer);
-        copyTimer = setTimeout(function () { copy.textContent = "Copy"; }, 1400);
+        copyTimer = setTimeout(function () { copy.textContent = "Copy"; }, 1600);
       }
-      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, done);
-      else {
-        var range = document.createRange();
-        range.selectNodeContents(code);
-        var sel = root.getSelection ? root.getSelection() : window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-        try { document.execCommand("copy"); } catch (err) { /* user can copy the selection */ }
-        done();
-      }
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(legacyCopy(text, copy)); });
+      else done(legacyCopy(text, copy));
     });
   });
 })();

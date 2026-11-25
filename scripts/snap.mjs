@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Visual check — screenshots the library homepage and every language's styleguide and example
-// pages at desktop and mobile widths in a real (headless) Chrome, and flags horizontal overflow.
+// pages at desktop and mobile widths in a real (headless) Chrome, and flags horizontal overflow,
+// script errors, console.error, failed or 404 requests from this site, and empty live sections. After the
+// desktop capture it presses every control once (a fixed walk on the two site pages) and flags script errors.
 // Zero dependencies: a tiny static server + the Chrome DevTools protocol over Node's WebSocket.
 //
 // Usage:
@@ -8,8 +10,8 @@
 //   node scripts/snap.mjs lilac atelier      # only these languages
 //   node scripts/snap.mjs --widths=1440,768,375
 //   CHROME_PATH=/path/to/chrome node scripts/snap.mjs
-//   node scripts/snap.mjs --thumbs           # 640×400 JPEG thumbnails for the homepage → site/assets/thumbs/
-// Output: .snapshots/<language>/<page>@<width>.png (git-ignored). Exit code 1 if any page overflows.
+//   node scripts/snap.mjs --thumbs           # homepage JPEG thumbnails → site/assets/thumbs/ (640×400 and 336×210 -sm)
+// Output: .snapshots/<language>/<page>@<width>.png (git-ignored). Exit code 1 if any page overflows or errors.
 import { spawn } from "node:child_process";
 import { createServer } from "node:http";
 import { readFile, mkdir, writeFile, readdir } from "node:fs/promises";
@@ -168,25 +170,132 @@ const SETTLE = "document.getAnimations().forEach((a) => { try { if (a.effect && 
 const FONTS_READY = "Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 8000))]).then(() => new Promise((r) => setTimeout(r, 900)))";
 // Lazy iframes below the fold would stay blank in a beyond-viewport capture.
 const EAGER = "document.querySelectorAll('iframe[loading=lazy]').forEach((f) => { f.loading = 'eager'; })";
+// The homepage builds its live sections on demand; build them now and wait (no-op on other pages).
+const LIVE_READY = "Promise.race([window.UISite && UISite.ready ? UISite.ready().then(() => true) : Promise.resolve(true), new Promise((r) => setTimeout(() => r(false), 15000))])";
+// A load event can stall forever (a hanging font or CDN request); never wait on it for more than 20s.
+const LOAD_TIMEOUT = 20000;
+const pageLoad = () => Promise.race([nextEvent("Page.loadEventFired"), new Promise((r) => setTimeout(r, LOAD_TIMEOUT))]);
+
+/* ---------- console / network guard ----------
+   While a page loads, any script error, console.error, HTTP ≥ 400 or failed request from this server fails
+   the run. Outside requests (web fonts, CDNs) only warn: a slow or blocked font host is not a page bug.
+   During the interaction pass (below) only script errors count: switching previews and reopening the
+   drawer cancel in-flight frame loads on purpose. */
+const guard = { phase: "load", errors: [], warnings: [], urls: new Map() };
+listeners.add((m) => {
+  const p = m.params || {};
+  if (m.method === "Runtime.exceptionThrown") {
+    const d = p.exceptionDetails || {};
+    guard.errors.push(`script error: ${((d.exception && d.exception.description) || d.text || "").split("\n")[0]}${d.url ? ` (${d.url.replace(base, "")})` : ""}`);
+  } else if (m.method === "Runtime.consoleAPICalled" && p.type === "error") {
+    guard.errors.push(`console.error: ${(p.args || []).map((a) => a.value ?? a.description ?? "").join(" ").slice(0, 240)}`);
+  } else if (m.method === "Page.javascriptDialogOpening") {
+    send("Page.handleJavaScriptDialog", { accept: true }).catch(() => {});
+  } else if (guard.phase !== "load") {
+    return;
+  } else if (m.method === "Network.requestWillBeSent") {
+    guard.urls.set(p.requestId, p.request.url);
+  } else if (m.method === "Network.responseReceived" && p.response.status >= 400) {
+    (p.response.url.startsWith(base) ? guard.errors : guard.warnings).push(`HTTP ${p.response.status} ${p.response.url.replace(base, "")}`);
+  } else if (m.method === "Network.loadingFailed" && !p.canceled) {
+    const url = guard.urls.get(p.requestId) || "?";
+    (url.startsWith(base) ? guard.errors : guard.warnings).push(`${p.errorText} ${url.replace(base, "")}`);
+  }
+});
+function resetGuard() { guard.phase = "load"; guard.errors = []; guard.warnings = []; guard.urls.clear(); }
+
+/* ---------- interaction pass (1280 only, after the capture) ----------
+   Pack pages: press every button, tab, switch, checkbox, radio, summary and in-page link once (forms never
+   submit, links never leave, downloads are skipped, dialogs are closed again), then forget anything saved.
+   Site pages: a fixed walk through their controls. */
+function packFuzz() {
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  document.addEventListener("submit", (e) => e.preventDefault(), true);
+  document.addEventListener("click", (e) => { const a = e.target.closest && e.target.closest("a[href]"); if (a && !a.getAttribute("href").startsWith("#")) e.preventDefault(); }, true);
+  const sel = 'button, [role="tab"], [role="switch"], [role="option"], [role="menuitem"], [role="menuitemradio"], input[type="checkbox"], input[type="radio"], summary, a[href^="#"]';
+  const els = [...document.querySelectorAll(sel)].filter((el) => !el.matches("[download], [data-dr-dl]"));
+  return (async () => {
+    let n = 0;
+    for (const el of els) {
+      if (!el.isConnected || el.disabled) continue;
+      try { el.click(); n++; } catch (e) { /* reported by the page if it throws */ }
+      document.querySelectorAll("dialog[open]").forEach((d) => { try { d.close(); } catch (e) { /* closing */ } });
+      if (n % 8 === 0) await sleep(16);
+    }
+    await sleep(500);
+    try { localStorage.clear(); sessionStorage.clear(); } catch (e) { /* storage blocked */ }
+    return n + " controls";
+  })();
+}
+function homeFlow() {
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  return (async () => {
+    const tabs = [...document.querySelectorAll(".frame .seg button")];
+    for (const b of tabs) { b.click(); await sleep(120); }
+    document.querySelectorAll(".frame").forEach((f) => f.querySelector(".seg button").click());
+    const copy = document.querySelector("[data-copy]");
+    if (copy) copy.click();
+    await sleep(1500);
+    return tabs.length + " preview tabs";
+  })();
+}
+function wallFlow() {
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const $ = (s) => document.querySelector(s);
+  return (async () => {
+    const seen = new Set();
+    for (const card of document.querySelectorAll(".wcard")) {
+      if (seen.has(card.dataset.pack)) continue;
+      seen.add(card.dataset.pack);
+      card.querySelector(".wcard__code").click();
+      for (let k = 0; k < 40; k++) {
+        await sleep(100);
+        const f = $(".drawer__frame");
+        if (f && f.classList.contains("is-ready") && !/Collecting/.test($("[data-src-code]").textContent)) break;
+      }
+      for (const t of document.querySelectorAll("[data-dr-tabs] button")) { t.click(); await sleep(250); }
+      for (const s of document.querySelectorAll("[data-src-tabs] [data-src]")) if (!s.disabled) { s.click(); await sleep(30); }
+      $("[data-src-copy]").click();
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+      await sleep(450);
+    }
+    $('[data-wtheme="dark"]').click(); await sleep(200);
+    $('[data-wtheme="light"]').click(); await sleep(200);
+    const search = $("[data-search]");
+    for (const q of ["slider", "zzzz"]) { search.value = q; search.dispatchEvent(new Event("input", { bubbles: true })); await sleep(300); }
+    $("[data-reset]").click(); await sleep(400);
+    return seen.size + " drawers";
+  })();
+}
+const FLOWS = { "index.html": homeFlow, "components.html": wallFlow };
 
 await send("Page.enable");
-let overflowing = 0;
+await send("Runtime.enable");
+await send("Network.enable");
+let overflowing = 0, broken = 0;
 if (thumbs) {
   // Viewport-only captures at half density: real renders, small enough to ship with the site.
   try {
     for (const page of pages) {
       await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 800, deviceScaleFactor: 0.5, mobile: false });
-      const loaded = nextEvent("Page.loadEventFired");
+      const loaded = pageLoad();
       await send("Page.navigate", { url: `${base}/${page.path}` });
       await loaded;
       await evaluate(FONTS_READY);
       await evaluate(SETTLE);
-      const { data } = await send("Page.captureScreenshot", { format: "jpeg", quality: 82 });
       const name = page.path.replace(`${page.group}/`, "").replace(/\//g, "-").replace(/\.html$/, "");
-      const out = join(root, "site", "assets", "thumbs", `${page.group}-${name}.jpg`);
-      await mkdir(dirname(out), { recursive: true });
-      await writeFile(out, Buffer.from(data, "base64"));
-      console.log(`thumb	${page.path}	→ ${relative(root, out)}`);
+      // 640×400 for the showcase posters, and 336×210 (-sm) for the hero wall, where a tile is 168px wide.
+      for (const [suffix, scale] of [["", 0.5], ["-sm", 0.2625]]) {
+        if (scale !== 0.5) {
+          await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 800, deviceScaleFactor: scale, mobile: false });
+          await evaluate("new Promise((r) => setTimeout(r, 200))");
+        }
+        const { data } = await send("Page.captureScreenshot", { format: "jpeg", quality: suffix ? 70 : 82 });
+        const out = join(root, "site", "assets", "thumbs", `${page.group}-${name}${suffix}.jpg`);
+        await mkdir(dirname(out), { recursive: true });
+        await writeFile(out, Buffer.from(data, "base64"));
+        console.log(`thumb	${page.path}	→ ${relative(root, out)}`);
+      }
     }
   } finally { await shutdown(); }
   process.exit(0);
@@ -196,10 +305,14 @@ try {
     for (const width of widths) {
       const metrics = (height) => send("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: width < 600 });
       await metrics(900);
-      const loaded = nextEvent("Page.loadEventFired");
+      resetGuard();
+      const loaded = pageLoad();
       await send("Page.navigate", { url: `${base}/${page.path}` });
       await loaded;
       await evaluate(EAGER);
+      if (!(await evaluate(LIVE_READY))) guard.errors.push("live sections did not finish building within 15s");
+      const missing = await evaluate("(() => { const out = []; const cmp = document.querySelectorAll('[data-compare]').length; if (cmp && document.querySelectorAll('.same__inner').length !== cmp) out.push('Same-markup cards not built'); if (document.querySelector('[data-marquee]') && !document.querySelector('.mq-card')) out.push('marquee is empty'); const top = document.querySelector('.top'), topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')); if (top && topH && Math.abs(top.getBoundingClientRect().height - topH) > 1.5) out.push('sticky header is ' + Math.round(top.getBoundingClientRect().height) + 'px tall but --top-h is ' + topH + 'px (the sticky bar and anchors would slide under it)'); return out; })()");
+      guard.errors.push(...missing);
       await evaluate(SETTLE);
       await evaluate(FONTS_READY);
       const overflow = await evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth");
@@ -237,10 +350,27 @@ try {
         })()`);
         culprits.forEach((c) => console.log(`\t  ↳ ${c}`));
       }
+      if (width === widths[0]) {
+        // Interaction pass: script errors only (see the guard above).
+        guard.phase = "interact";
+        const flow = FLOWS[page.path] || (page.group === "_site" ? null : packFuzz);
+        const did = flow ? await Promise.race([evaluate(`(${flow.toString()})()`), new Promise((r) => setTimeout(() => r("timed out after 60s"), 60000))]) : "";
+        if (did) console.log(`\t  pressed ${did}`);
+        if (/timed out/.test(did)) guard.errors.push(`interaction pass ${did}`);
+        await new Promise((r) => setTimeout(r, 300));
+      }
+      [...new Set(guard.warnings)].forEach((w) => console.log(`\t  warn  ${w}`));
+      const errs = [...new Set(guard.errors)];
+      if (errs.length) {
+        broken++;
+        console.log(`ERRORS\t${page.path} @${width}`);
+        errs.forEach((e) => console.log(`\t  ✗ ${e}`));
+      }
     }
   }
 } finally {
   await shutdown();
 }
 console.log(overflowing ? `\n${overflowing} page/width combination(s) overflow horizontally.` : "\nNo horizontal overflow.");
-process.exitCode = overflowing ? 1 : 0;
+console.log(broken ? `${broken} page/width combination(s) logged script errors, failed requests or empty live sections.` : "No script errors, failed requests or 404s.");
+process.exitCode = overflowing || broken ? 1 : 0;

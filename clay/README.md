@@ -96,4 +96,4 @@ Current Chrome, Edge, Firefox and Safari. Uses CSS custom properties, `:focus-vi
 
 ## License
 
-[MIT](LICENSE).
+[MIT](../LICENSE).

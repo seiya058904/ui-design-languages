@@ -39,7 +39,8 @@ Finish the `packs.json` entry: `summary` (used on the site and in AI prompts), `
 `node scripts/check.mjs <id>` runs, in order:
 
 - **tokens** — generated `tokens.css` matches the JSON.
-- **pages** — real-browser screenshots at 1280 and 390 into `.snapshots/`; fails and names the elements on horizontal overflow. Put the screenshots next to the reference and compare layout, type, color, spacing, shadows and states; fix and re-run.
+- **static** — every local link resolves (HTML, CSS and Markdown), and every page loads its web fonts without blocking rendering: `<link rel="stylesheet" href="…" media="print" onload="this.media='all'">` plus `<noscript><link rel="stylesheet" href="…"></noscript>`, so a slow or blocked font host never leaves the page blank.
+- **pages** — real-browser screenshots at 1280 and 390 into `.snapshots/`; fails and names the elements on horizontal overflow, and fails on any script error, `console.error` or failed / 404 request from the site. After the desktop capture it presses every control once (forms never submit, links never leave) and fails on script errors. Put the screenshots next to the reference and compare layout, type, color, spacing, shadows and states; fix and re-run.
 - **source** — every demo's single-file export renders exactly like the original, light and dark (proves the component wall hands over complete code).
 
 `--quick` skips the dark pass, `--skip=pages` skips a step; with no id it checks everything. For motion, sample positions over real time through the DevTools protocol (headless screenshots freeze transitions). When it passes: commit and push.

@@ -275,7 +275,7 @@ Requires **Node 18+** and a local Chrome or Edge (`CHROME_PATH` to override). **
 ```bash
 node scripts/new-pack.mjs <id> [Name]   # scaffold a new design language (see docs/WORKFLOW.md)
 node scripts/build-tokens.mjs [pack]    # rebuild tokens.css after editing tokens/*.json
-node scripts/check.mjs [pack]           # full pre-commit gate: tokens, 1280/390 screenshots, component source parity
+node scripts/check.mjs [pack]           # full pre-commit gate: tokens, links & fonts, 1280/390 screenshots + errors, source parity
 ```
 
 <details>
@@ -299,9 +299,11 @@ site/                      Website chrome only (wall.js, source.js, smooth-scrol
 scripts/
   new-pack.mjs             Scaffold a new language that already passes checks
   build-tokens.mjs         Compile tokens/*.json → tokens.css (--check to verify sync)
-  snap.mjs                 Real-browser captures into .snapshots/ (fails on horizontal overflow)
+  check-static.mjs         Every local link resolves; no render-blocking web fonts (no browser, seconds)
+  snap.mjs                 Real-browser captures into .snapshots/ (fails on overflow, script errors, 404s;
+                           presses every control once)
   check-source.mjs         Verifies every demo's single-file export renders identically (light + dark)
-  check.mjs                Runs build-tokens --check, snap, and check-source together
+  check.mjs                Runs build-tokens --check, check-static, snap, and check-source together
 docs/
   WORKFLOW.md              Reference image → scaffold → spec → tokens → components → check
 ```

@@ -14,7 +14,7 @@
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var grid = $("[data-grid]"), stylesEl = $("[data-styles]"), catsEl = $("[data-cats]"), backdrops = $("[data-backdrops]"), note = $("[data-note]"), search = $("[data-search]"), searchClear = $("[data-search-clear]"), emptyBox = $("[data-empty]"), emptyText = $("[data-empty-text]"), resetBtn = $("[data-reset]");
-  var cwSection = $(".cw");
+  var cwSection = $(".cw"), statusEl = $("[data-status]");
   var state = { style: "all", kind: "all", theme: "light", query: "" };
   var cards = [];
   var lastColW = -1;
@@ -129,6 +129,14 @@
       backdrops.appendChild(layer);
     });
   }
+  /* The language filter's glider. Reads layout, so it runs after the masonry writes (next frame), never
+     between them: reading here first used to force a full layout of all 96 live cards. */
+  var glideRaf = 0, glideScroll = false;
+  function glideSoon(scrollIntoView) {
+    glideScroll = glideScroll || !!scrollIntoView;
+    if (glideRaf) return;
+    glideRaf = requestAnimationFrame(function () { glideRaf = 0; var s = glideScroll; glideScroll = false; glide(s); });
+  }
   function glide(scrollIntoView) {
     var on = stylesEl.querySelector('[aria-pressed="true"]'), g = stylesEl.querySelector(".cw-filter__glider");
     if (!on || !g) return;
@@ -148,7 +156,7 @@
       b.setAttribute("aria-pressed", String(k === state.kind));
       b.disabled = n === 0 && k !== "all";
     });
-    glide(scrollActive);
+    glideSoon(scrollActive);
   }
   function setStyle(id) {
     state.style = id;
@@ -166,16 +174,21 @@
     for (var i = 0; i < tokens.length; i++) if (c.words.indexOf(tokens[i]) < 0) return false;
     return true;
   }
-  function layout() {
+  function columns() {
     var width = grid.clientWidth;
-    if (!width) return;
+    if (!width) return null;
     var cols = width >= 1060 ? 3 : width >= 660 ? 2 : 1, gap = width >= 660 ? 20 : 16;
-    var colW = (width - gap * (cols - 1)) / cols;
+    return { cols: cols, gap: gap, colW: (width - gap * (cols - 1)) / cols };
+  }
+  function layout() {
+    var g = columns();
+    if (!g) return;
+    var cols = g.cols, gap = g.gap, colW = g.colW;
     var heights = [];
     for (var i = 0; i < cols; i++) heights.push(0);
 
     var shown = [];
-    for (var k = 0; k < cards.length; k++) if (cards[k].shown) shown.push(cards[k]);
+    for (var k = 0; k < cards.length; k++) if (cards[k].shown && cards[k].inDom) shown.push(cards[k]);
 
     // Phase 1: Batch write widths only when colW changed
     if (colW !== lastColW) {
@@ -226,8 +239,10 @@
       var c = cards[i];
       var vis = (state.style === "all" || c.pack === state.style) && (state.kind === "all" || c.kind === state.kind) && matchesTokens(c, tokens);
       c.shown = vis;
+      if (vis) n++;
+      if (c.vis === vis) continue; // only touch the cards whose state changes
+      c.vis = vis;
       if (vis) {
-        n++;
         c.el.classList.remove("is-gone", "is-out");
         c.el.setAttribute("aria-hidden", "false");
         c.el.inert = false;
@@ -256,15 +271,20 @@
     if (n === 0) note.textContent = "";
     else if (state.query) note.textContent = n + (n === 1 ? " component matches" : " components match") + " “" + state.query + "”" + (p ? " in " + p.name : "") + ".";
     else note.textContent = p ? n + " " + p.name + " components, on " + p.name + "'s own canvas. Open any of them for its complete source." : n + " components from " + W.packs.length + " languages, all live. Open any card for its complete source.";
+    /* One always-present live region announces the result (or the empty state), not the 96 live cards. */
+    if (statusEl) {
+      var msg = n === 0 && emptyText ? emptyText.textContent : note.textContent;
+      if (statusEl.textContent !== msg) statusEl.textContent = msg;
+    }
   }
   var raf = 0;
-  function relayout() { if (raf) return; raf = requestAnimationFrame(function () { raf = 0; layout(); glide(false); }); }
+  function relayout() { if (raf) return; raf = requestAnimationFrame(function () { raf = 0; layout(); glideSoon(false); }); }
 
-  /* ---------- reveal & offscreen pause ---------- */
+  /* ---------- reveal & offscreen pause (cards are observed as they enter the page) ---------- */
   function reveal() {
-    if (!("IntersectionObserver" in window)) { cards.forEach(function (c) { c.el.classList.add("is-in"); }); return; }
+    if (!("IntersectionObserver" in window)) return null;
     var queue = 0;
-    var io = new IntersectionObserver(function (entries) {
+    return new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         var el = e.target;
         el.classList.toggle("is-offscreen", !e.isIntersecting);
@@ -274,29 +294,12 @@
         setTimeout(function () { queue = Math.max(0, queue - 1); }, 500);
       });
     }, { rootMargin: "160px 0px 160px 0px" });
-    cards.forEach(function (c) { io.observe(c.el); });
   }
 
   /* ---------- drawer ---------- */
   var drawer = $("[data-drawer]"), frame = null, lastFocus = null, current = null, closeTimer = 0;
-  function copy(btn, text) {
-    var label = btn.querySelector("span") || btn;
-    if (!btn.__origCopyLabel) btn.__origCopyLabel = label.textContent;
-    clearTimeout(btn.__copyTimer);
-    function done(ok) {
-      label.textContent = ok ? "Copied" : "Copy failed";
-      btn.classList.toggle("is-copied", ok);
-      btn.__copyTimer = setTimeout(function () { label.textContent = btn.__origCopyLabel; btn.classList.remove("is-copied"); }, 1500);
-    }
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
-    else {
-      var ta = document.createElement("textarea");
-      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
-      document.body.appendChild(ta); ta.select();
-      var ok = false; try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
-      ta.remove(); done(ok);
-    }
-  }
+  /* Copy with the shared helper (site/home.js): Clipboard API first, a textarea when it refuses. */
+  function copy(btn, text) { UISite.feedback(btn, UISite.copy(text)); }
   /* Source panel: HTML / CSS / JS / single file for the demo on show (site/source.js builds it). */
   var S = window.UISource, src = { data: null, tab: "html", key: "" };
   var srcTabs = $("[data-src-tabs]"), srcCode = $("[data-src-code]"), srcMeta = $("[data-src-meta]"), srcPre = $(".src__code");
@@ -446,11 +449,8 @@
       a.href = url; a.download = d.info.fileName;
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-      var label = b.querySelector("span");
-      if (!b.__origDlLabel) b.__origDlLabel = label.textContent;
-      clearTimeout(b.__dlTimer);
-      label.textContent = "Saved " + d.info.fileName;
-      b.__dlTimer = setTimeout(function () { label.textContent = b.__origDlLabel; }, 1800);
+      b.title = d.info.fileName;
+      UISite.feedback(b, true, "Saved");
     });
   });
 
@@ -532,44 +532,57 @@
 
   /* ---------- sticky bar gets a frosted background once it sticks (sentinel IO, zero scroll read) ---------- */
   var bar = $("[data-bar]");
+  /* The bar sticks under the header, whose height is --top-h (64px, or two rows on phones). */
+  var topH = function () { return parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--top-h")) || 64; };
   if (bar) {
     if ("IntersectionObserver" in window) {
-      var barSent = document.createElement("div");
+      var barSent = document.createElement("div"), barIo = null;
       barSent.setAttribute("aria-hidden", "true");
       barSent.style.cssText = "position:relative;height:1px;margin-bottom:-1px;pointer-events:none";
       bar.parentNode.insertBefore(barSent, bar);
-      new IntersectionObserver(function (es) {
-        bar.classList.toggle("is-stuck", !es[0].isIntersecting);
-      }, { rootMargin: "-65px 0px 0px 0px" }).observe(barSent);
+      var watchBar = function () {
+        if (barIo) barIo.disconnect();
+        barIo = new IntersectionObserver(function (es) {
+          bar.classList.toggle("is-stuck", !es[0].isIntersecting);
+        }, { rootMargin: "-" + (topH() + 1) + "px 0px 0px 0px" });
+        barIo.observe(barSent);
+      };
+      watchBar();
+      var phone = window.matchMedia && window.matchMedia("(max-width: 720px)");
+      if (phone && phone.addEventListener) phone.addEventListener("change", watchBar);
     } else {
-      var stuck = function () { bar.classList.toggle("is-stuck", bar.getBoundingClientRect().top <= 65); };
+      var stuck = function () { bar.classList.toggle("is-stuck", bar.getBoundingClientRect().top <= topH() + 1); };
       window.addEventListener("scroll", stuck, { passive: true });
       stuck();
     }
   }
 
   /* ---------- boot ---------- */
+  /* Every card's data is built at once (cheap), so counts, filters, search and deep links know the whole
+     wall from the start. The live markup enters the page a batch per frame (the cards on show first), so
+     laying out 96 live components never blocks the page in one long task. The masonry only appends, so
+     cards already placed never move. The packs' scripts load once every card is in. */
+  var BATCH = 8, wallDone = null;
+  var wallReady = new Promise(function (resolve) { wallDone = resolve; });
+  if (window.UISite) UISite.ready = function () { return wallReady; }; // checks wait for the whole wall
   W.ready().then(function () {
-    var frag = document.createDocumentFragment();
     interleave().forEach(function (pk) {
       var c = buildCard(pk[0], pk[1], pk[2]);
-      if (c) { cards.push(c); frag.appendChild(c.el); }
+      if (c) cards.push(c);
     });
-    grid.appendChild(frag);
+    // Cards enter at their column width, so laying out a batch is a single pass.
+    var g0 = columns();
+    if (g0) { cards.forEach(function (c) { c.el.style.width = g0.colW + "px"; }); lastColW = g0.colW; }
     var total = document.querySelector("[data-total]");
     if (total) total.textContent = cards.length;
     buildFilters();
     var start = location.hash.replace(/^#\/?/, "").split("/")[0];
     if (W.byId[start]) state.style = start;
     syncFilters(false);
-    apply(false);
-    reveal();
-    W.scripts().then(function () { relayout(); fromHash(); });
-    if (document.fonts) document.fonts.ready.then(relayout);
+
+    var io = reveal(), ro = null, byEl = new WeakMap();
     if ("ResizeObserver" in window) {
-      var byEl = new WeakMap();
-      cards.forEach(function (c) { byEl.set(c.el.firstChild, c); });
-      var ro = new ResizeObserver(function (entries) {
+      ro = new ResizeObserver(function (entries) {
         for (var i = 0; i < entries.length; i++) {
           var t = entries[i].target;
           if (t === grid) { relayout(); return; }
@@ -578,10 +591,36 @@
         }
       });
       ro.observe(grid);
-      cards.forEach(function (c) { ro.observe(c.el.firstChild); });
     } else window.addEventListener("resize", relayout, { passive: true });
+    if (!io) cards.forEach(function (c) { c.el.classList.add("is-in"); });
+
+    apply(false); // decides which cards are on show
+    var pending = cards.filter(function (c) { return c.shown; }).concat(cards.filter(function (c) { return !c.shown; }));
+    function insert() {
+      var frag = document.createDocumentFragment(), batch = pending.splice(0, BATCH);
+      batch.forEach(function (c) { c.inDom = true; frag.appendChild(c.el); });
+      grid.appendChild(frag);
+      batch.forEach(function (c) {
+        if (io) io.observe(c.el);
+        if (ro) { byEl.set(c.el.firstChild, c); ro.observe(c.el.firstChild); }
+      });
+      layout();
+    }
+    insert();
+    glideSoon(false);
+    fromHash(); // a deep-linked card opens now: its drawer doesn't wait for the rest of the wall
+    (function more() {
+      if (!pending.length) {
+        W.scripts().then(function () { relayout(); requestAnimationFrame(function () { wallDone(); }); });
+        if (document.fonts) document.fonts.ready.then(relayout);
+        return;
+      }
+      requestAnimationFrame(function () { insert(); more(); });
+    })();
     window.addEventListener("hashchange", fromHash);
   }).catch(function () {
+    wallDone();
     note.textContent = "The component catalogs could not be loaded. Open this page over http (GitHub Pages or a local server), not file://.";
+    if (statusEl) statusEl.textContent = note.textContent;
   });
 })();

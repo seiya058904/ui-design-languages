@@ -1,11 +1,13 @@
 /* Site chrome — live component engine shared by the homepage marquee and the component wall.
    It reads the registry (packs.json) and each pack's own catalog (<pack>/components.html), and renders
-   real demos straight into this page: every pack's CSS is linked in <head> (all classes are prefixed,
-   so they coexist; a pack the page doesn't link yet is linked automatically), their icon sprites are
-   merged with per-pack ids, and their JS is loaded once in parallel. No screenshots, no iframes.
-   Not part of any pack.
+   real demos straight into this page: every pack's CSS applies to the page (all classes are prefixed, so
+   they coexist). A page may link them in <head> up front (the component wall does); any it doesn't is
+   linked here on demand, before site/site.css, and its fonts are added without blocking rendering. Icon
+   sprites are merged with per-pack ids, and the packs' JS is loaded once in parallel. No screenshots,
+   no iframes. Not part of any pack.
 
-   UIWall.ready()            → Promise: reads packs.json, then every pack's catalog and icon sprite
+   UIWall.ready()            → Promise: reads packs.json, links what is missing and waits for every pack's
+                               stylesheet (never for fonts), then reads every pack's catalog and icon sprite
    UIWall.demo(pack, c, d)   → { component, demo } data or null
    UIWall.stage(pack, c, d)  → a live element (.wstage) for that demo (with collision-free ids/names)
    UIWall.packs / .byId      → the registry from packs.json (after ready)
@@ -16,6 +18,7 @@
 
   var PACKS = [];
   var byId = {};
+  var styled = []; // one promise per pack: its entry stylesheet has applied (or failed, or 5s passed)
   function register(list) {
     list.forEach(function (pk) {
       if (!pk.site || byId[pk.id]) return;
@@ -29,24 +32,37 @@
       };
       PACKS.push(p);
       byId[p.id] = p;
-      linkAssets(pk);
+      styled.push(linkAssets(pk));
+    });
+  }
+  /* Resolves once the stylesheet has applied — or failed, or 5s passed: a missing sheet never hangs the wall. */
+  function applied(link) {
+    if (link.sheet) return Promise.resolve();
+    return new Promise(function (resolve) {
+      var t = setTimeout(resolve, 5000);
+      function done() { clearTimeout(t); resolve(); }
+      link.addEventListener("load", done, { once: true });
+      link.addEventListener("error", done, { once: true });
     });
   }
   function linkAssets(pk) {
     var head = document.head, chrome = head.querySelector('link[href$="site/site.css"]');
-    var css = pk.entry && pk.entry.css;
-    if (css && !head.querySelector('link[href$="' + css + '"]')) {
-      var l = document.createElement("link");
-      l.rel = "stylesheet"; l.href = css;
-      head.insertBefore(l, chrome);
+    var css = pk.entry && pk.entry.css, sheet = css ? head.querySelector('link[href$="' + css + '"]') : null;
+    if (css && !sheet) {
+      sheet = document.createElement("link");
+      sheet.rel = "stylesheet"; sheet.href = css;
+      head.insertBefore(sheet, chrome);
     }
     var loaded = Array.prototype.map.call(head.querySelectorAll('link[href*="fonts.googleapis.com/css"]'), function (x) { return x.href; }).join(" ");
     (pk.fonts || []).forEach(function (f) {
       if (!f.url || loaded.indexOf("family=" + String(f.family || "").replace(/ /g, "+")) >= 0) return;
+      // Fonts never block: the link applies once it has loaded, and nothing waits for it.
       var l = document.createElement("link");
-      l.rel = "stylesheet"; l.href = f.url;
+      l.rel = "stylesheet"; l.href = f.url; l.media = "print";
+      l.onload = function () { l.media = "all"; };
       head.insertBefore(l, chrome);
     });
+    return sheet ? applied(sheet) : Promise.resolve();
   }
   var data = {};
 
@@ -134,7 +150,7 @@
     if (readyPromise) return readyPromise;
     readyPromise = fetch("packs.json").then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (reg) {
       register(reg.packs || []);
-      return Promise.all(PACKS.map(function (p) { return load(p.id).catch(function () {}); }));
+      return Promise.all([Promise.all(styled)].concat(PACKS.map(function (p) { return load(p.id).catch(function () {}); })));
     });
     return readyPromise;
   }

@@ -1,4 +1,51 @@
 /* Homepage behaviour (site chrome only). */
+
+/* UISite — shared by the homepage and the component wall (both load this file first).
+   UISite.copy(text)                   → Promise<boolean>: Clipboard API, or a hidden textarea when the API is
+                                          missing or refuses (unfocused document, permissions policy, http)
+   UISite.feedback(btn, result, okText) → shows "Copied" / "Copy failed" (or okText) on the button for 1.6s
+   UISite.ready()                       → Promise: builds the homepage's live sections now and resolves once
+                                          the marquee and the "Same markup" cards are on the page */
+window.UISite = window.UISite || {};
+(function (S) {
+  function legacyCopy(text) {
+    var ta = document.createElement("textarea"), active = document.activeElement, ok = false;
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.setAttribute("aria-hidden", "true");
+    ta.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;padding:0;border:0;opacity:0;pointer-events:none";
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
+    ta.remove();
+    if (active && active.focus) active.focus({ preventScroll: true });
+    return ok;
+  }
+  S.copy = function (text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return legacyCopy(text); });
+    }
+    return Promise.resolve(legacyCopy(text));
+  };
+  S.feedback = function (btn, result, okText) {
+    var label = btn.querySelector("span") || btn;
+    if (btn.__label == null) btn.__label = label.textContent;
+    clearTimeout(btn.__feedbackTimer);
+    return Promise.resolve(result).then(function (ok) {
+      label.textContent = ok ? okText || "Copied" : "Copy failed";
+      btn.classList.toggle("is-copied", !!ok);
+      btn.classList.toggle("is-failed", !ok);
+      btn.__feedbackTimer = setTimeout(function () {
+        label.textContent = btn.__label;
+        btn.classList.remove("is-copied", "is-failed");
+      }, 1600);
+      return ok;
+    });
+  };
+  if (!S.ready) S.ready = function () { return Promise.resolve(); };
+})(window.UISite);
+
 (function () {
   /* Header gains a frosted background once the page scrolls (sentinel IntersectionObserver, zero scroll read). */
   var top = document.querySelector(".top");
@@ -80,16 +127,23 @@
     }
     pruneFrames(view);
   }
+  /* A live page parses on this page's main thread (same-origin frames share the renderer), which drops
+     frames if it happens mid-scroll. So a frame in view goes live only once scrolling has settled; the
+     crisp static poster is visible meanwhile, and hovering or pressing a frame still makes it live at once. */
+  var lastScroll = 0, SETTLE_MS = 450;
+  window.addEventListener("scroll", function () { lastScroll = performance.now(); }, { passive: true });
   function scheduleActivate(view) {
     cancelActivate(view);
     var iframe = view.querySelector("iframe");
     if (iframe && iframe.getAttribute("src") === iframe.getAttribute("data-src")) { activateFrame(view); return; }
-    // Wait briefly so rapid scrolling past showcases doesn't load 7 iframes mid-scroll;
-    // the crisp static poster is already visible immediately.
-    view.__activateTimer = setTimeout(function () {
+    var tick = function () {
       view.__activateTimer = 0;
-      if (inViewSet.has(view)) activateFrame(view);
-    }, 240);
+      if (!inViewSet.has(view)) return;
+      var still = performance.now() - lastScroll;
+      if (still < SETTLE_MS) { view.__activateTimer = setTimeout(tick, SETTLE_MS - still + 20); return; }
+      activateFrame(view);
+    };
+    view.__activateTimer = setTimeout(tick, 240);
   }
 
   if (views.length && "IntersectionObserver" in window) {
@@ -135,22 +189,7 @@
     var b = e.target.closest("[data-copy], [data-copy-from]");
     if (!b) return;
     var text = b.getAttribute("data-copy") || (document.querySelector(b.getAttribute("data-copy-from")) || {}).textContent || "";
-    var label = b.querySelector("span") || b;
-    if (!b.__origCopyLabel) b.__origCopyLabel = label.textContent;
-    clearTimeout(b.__copyTimer);
-    function done(ok) {
-      b.classList.toggle("is-copied", ok);
-      label.textContent = ok ? "Copied" : "Copy failed";
-      b.__copyTimer = setTimeout(function () { label.textContent = b.__origCopyLabel; b.classList.remove("is-copied"); }, 1600);
-    }
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
-    else {
-      var ta = document.createElement("textarea");
-      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
-      document.body.appendChild(ta); ta.select();
-      var ok = false; try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
-      ta.remove(); done(ok);
-    }
+    UISite.feedback(b, UISite.copy(text));
   });
 })();
 
@@ -220,18 +259,25 @@
      the pack's own CSS and JS (no iframe), scaled from its 360px design width to the column.
      Always built regardless of prefers-reduced-motion. */
   var compares = Array.prototype.slice.call(document.querySelectorAll("[data-compare]"));
-  if (compares.length && window.UIWall) {
-    var fitCompare = function (view) {
-      var inner = view.firstElementChild;
-      if (!inner) return;
-      var s = view.clientWidth / 360;
-      inner.style.transform = "scale(" + s + ")";
-      view.style.height = Math.ceil(inner.offsetHeight * s) + "px";
-    };
+  /* Scale every card to its column in three batched passes (read widths, write scales, read heights, write
+     heights): one layout for all nine instead of a forced reflow per card. */
+  function fitCompare(views) {
+    var items = [];
+    views.forEach(function (v) { if (v.firstElementChild && items.indexOf(v) < 0) items.push(v); });
+    var scales = items.map(function (v) { return v.clientWidth / 360; });
+    items.forEach(function (v, i) { v.firstElementChild.style.transform = "scale(" + scales[i] + ")"; });
+    var heights = items.map(function (v) { return v.firstElementChild.offsetHeight; });
+    items.forEach(function (v, i) {
+      var h = Math.ceil(heights[i] * scales[i]) + "px";
+      if (v.style.height !== h) v.style.height = h;
+    });
+  }
+  function buildCompare() {
+    if (!compares.length || !window.UIWall) return Promise.resolve();
     var cro = "ResizeObserver" in window ? new ResizeObserver(function (es) {
-      es.forEach(function (e) { fitCompare(e.target.closest ? e.target.closest("[data-compare]") || e.target : e.target); });
+      fitCompare(es.map(function (e) { return e.target.closest ? e.target.closest("[data-compare]") || e.target : e.target; }));
     }) : null;
-    UIWall.ready().then(function () {
+    return UIWall.ready().then(function () {
       return Promise.all(compares.map(function (view) {
         var id = view.getAttribute("data-compare"), p = UIWall.byId[id];
         if (!p) return Promise.resolve();
@@ -239,28 +285,29 @@
           var doc = new DOMParser().parseFromString(text, "text/html");
           var wrap = doc.querySelector(".wrap");
           var pad = (doc.querySelector("style") || {}).textContent || "";
-          var m = pad.match(/\.wrap\s*\{\s*padding:\s*([^;]+);/);
+          var m = pad.match(/.wraps*{s*padding:s*([^;]+);/);
           var inner = document.createElement("div");
           inner.className = "same__inner";
           inner.setAttribute("style", p.root + ";" + (p.page || "") + ";padding:" + (m ? m[1] : "22px"));
-          inner.innerHTML = wrap.innerHTML.replace(/min-height:\s*100vh;?/g, "");
+          inner.innerHTML = wrap.innerHTML.replace(/min-height:s*100vh;?/g, "");
           inner.addEventListener("click", UIWall.inertLinks);
           view.appendChild(inner);
-          fitCompare(view);
-          if (cro) { cro.observe(view); cro.observe(inner); }
         }).catch(function () {});
-      }));
-    }).then(function () { UIWall.scripts(); });
+      })).then(function () {
+        fitCompare(compares);
+        if (cro) compares.forEach(function (view) { if (view.firstElementChild) { cro.observe(view); cro.observe(view.firstElementChild); } });
+      });
+    });
   }
 
   /* Live marquee: real components from every language (site/wall.js). Always built; under reduced
      motion renders one scrollable strip without duplicated track or continuous animation. */
   var rows = Array.prototype.slice.call(document.querySelectorAll("[data-marquee]"));
-  if (rows.length && window.UIWall) {
-    var ROWS = [
-      [["clay", "stepper", "stepper"], ["braun", "slider", "rotary-dial"], ["lilac", "timer", "focus-timer"], ["zine", "ticket", "tear-off-ticket"], ["atelier", "card", "project-card"], ["obsidian", "dock", "floating-dock"], ["tactile", "dial", "thermostat"], ["terrarium", "garden", "habit-garden"], ["sketch", "notes", "doodle-pad"], ["clay", "button", "variants"], ["zine", "tabs", "folder-tabs"], ["obsidian", "card", "kpi-card"], ["atelier", "tabs", "pill-tabs"]],
-      [["braun", "progress", "peak-meters"], ["lilac", "progress", "ring-and-steps"], ["obsidian", "media", "now-playing"], ["sketch", "flow", "flow-card"], ["terrarium", "mood", "mood-dial"], ["tactile", "chips", "filter-chips"], ["atelier", "filter", "filter-capsules"], ["zine", "board", "sticker-board"], ["clay", "slider", "slider"], ["lilac", "card", "profile-card"], ["braun", "progress", "led-meter"], ["terrarium", "progress", "ring"], ["tactile", "selection", "switch"], ["sketch", "tabs", "folder-tabs"]]
-    ];
+  var ROWS = [
+    [["clay", "stepper", "stepper"], ["braun", "slider", "rotary-dial"], ["lilac", "timer", "focus-timer"], ["zine", "ticket", "tear-off-ticket"], ["atelier", "card", "project-card"], ["obsidian", "dock", "floating-dock"], ["tactile", "dial", "thermostat"], ["terrarium", "garden", "habit-garden"], ["sketch", "notes", "doodle-pad"], ["clay", "button", "variants"], ["zine", "tabs", "folder-tabs"], ["obsidian", "card", "kpi-card"], ["atelier", "tabs", "pill-tabs"]],
+    [["braun", "progress", "peak-meters"], ["lilac", "progress", "ring-and-steps"], ["obsidian", "media", "now-playing"], ["sketch", "flow", "flow-card"], ["terrarium", "mood", "mood-dial"], ["tactile", "chips", "filter-chips"], ["atelier", "filter", "filter-capsules"], ["zine", "board", "sticker-board"], ["clay", "slider", "slider"], ["lilac", "card", "profile-card"], ["braun", "progress", "led-meter"], ["terrarium", "progress", "ring"], ["tactile", "selection", "switch"], ["sketch", "tabs", "folder-tabs"]]
+  ];
+  if (rows.length) {
     // Hold the marquee still while dragging a dial, slider or sticker even if the pointer leaves the row.
     var dragRow = null;
     rows.forEach(function (row) {
@@ -269,43 +316,87 @@
     var endMarqueeDrag = function () { if (dragRow) { dragRow.classList.remove("is-dragging"); dragRow = null; } };
     window.addEventListener("pointerup", endMarqueeDrag);
     window.addEventListener("pointercancel", endMarqueeDrag);
-
-    UIWall.ready().then(function () {
-      rows.forEach(function (row) {
-        var track = row.querySelector(".marquee__track"), set = document.createDocumentFragment();
-        ROWS[+row.getAttribute("data-marquee")].forEach(function (pk) {
-          var st = UIWall.stage(pk[0], pk[1], pk[2]), p = UIWall.byId[pk[0]], hit = UIWall.demo(pk[0], pk[1], pk[2]);
-          if (!st) return;
-          var card = document.createElement("div");
-          card.className = "mq-card";
-          card.appendChild(st);
-          var tag = document.createElement("a");
-          tag.className = "mq-tag";
-          tag.href = "components.html#" + pk[0] + "/" + pk[1];
-          tag.innerHTML = '<i style="background:' + p.dot + '"></i><b style="' + p.font + '"></b><span></span>';
-          tag.querySelector("b").textContent = p.name;
-          tag.querySelector("span").textContent = hit.component.title;
-          card.appendChild(tag);
-          set.appendChild(card);
-        });
-        track.appendChild(set);
-        if (!reduce) {
-          // A second, identical copy makes the loop seamless; it is hidden from assistive tech and has no ids.
-          Array.prototype.slice.call(track.children).forEach(function (card) {
-            var clone = card.cloneNode(true);
-            clone.setAttribute("aria-hidden", "true");
-            clone.querySelectorAll("[id]").forEach(function (n) { n.removeAttribute("id"); });
-            clone.querySelectorAll("[for]").forEach(function (n) { n.removeAttribute("for"); });
-            clone.querySelectorAll("input[type=radio]").forEach(function (n) { n.name += "-copy"; });
-            clone.querySelectorAll("a, button, input, select, textarea").forEach(function (n) { n.tabIndex = -1; });
-            clone.querySelectorAll(".wstage").forEach(function (st) { st.addEventListener("click", UIWall.inertLinks); }); // cloneNode drops listeners
-            track.appendChild(clone);
-          });
-          requestAnimationFrame(function () { row.style.setProperty("--mq-dur", Math.max(40, track.scrollWidth / 2 / 45) + "s"); });
-        }
+  }
+  /* Yield to the browser between building blocks, so building never holds the page in one long task. */
+  function nextTask() { return new Promise(function (r) { setTimeout(r, 0); }); }
+  function buildMarquee() {
+    if (!rows.length || !window.UIWall) return Promise.resolve();
+    return UIWall.ready().then(function () {
+      return rows.reduce(function (chain, row) { return chain.then(function () { buildRow(row); return nextTask(); }); }, Promise.resolve());
+    }).then(function () {
+      // Only a few cards per row are in view at a time: the rest pause their own loops (site.css).
+      if (!("IntersectionObserver" in window)) return;
+      var off = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { e.target.classList.toggle("is-offscreen", !e.isIntersecting); });
       });
-      UIWall.scripts();
+      rows.forEach(function (row) { row.querySelectorAll(".mq-card").forEach(function (c) { off.observe(c); }); });
     });
+  }
+  function buildRow(row) {
+    var track = row.querySelector(".marquee__track"), set = document.createDocumentFragment();
+    ROWS[+row.getAttribute("data-marquee")].forEach(function (pk) {
+      var st = UIWall.stage(pk[0], pk[1], pk[2]), p = UIWall.byId[pk[0]], hit = UIWall.demo(pk[0], pk[1], pk[2]);
+      if (!st) return;
+      var card = document.createElement("div");
+      card.className = "mq-card";
+      card.appendChild(st);
+      var tag = document.createElement("a");
+      tag.className = "mq-tag";
+      tag.href = "components.html#" + pk[0] + "/" + pk[1];
+      tag.innerHTML = '<i style="background:' + p.dot + '"></i><b style="' + p.font + '"></b><span></span>';
+      tag.querySelector("b").textContent = p.name;
+      tag.querySelector("span").textContent = hit.component.title;
+      card.appendChild(tag);
+      set.appendChild(card);
+    });
+    track.appendChild(set);
+    if (!reduce) {
+      // A second, identical copy makes the loop seamless; it is hidden from assistive tech and has no ids.
+      Array.prototype.slice.call(track.children).forEach(function (card) {
+        var clone = card.cloneNode(true);
+        clone.setAttribute("aria-hidden", "true");
+        clone.querySelectorAll("[id]").forEach(function (n) { n.removeAttribute("id"); });
+        clone.querySelectorAll("[for]").forEach(function (n) { n.removeAttribute("for"); });
+        clone.querySelectorAll("input[type=radio]").forEach(function (n) { n.name += "-copy"; });
+        clone.querySelectorAll("a, button, input, select, textarea").forEach(function (n) { n.tabIndex = -1; });
+        clone.querySelectorAll(".wstage").forEach(function (st) { st.addEventListener("click", UIWall.inertLinks); }); // cloneNode drops listeners
+        track.appendChild(clone);
+      });
+      requestAnimationFrame(function () { row.style.setProperty("--mq-dur", Math.max(40, track.scrollWidth / 2 / 45) + "s"); });
+    }
+  }
+
+  /* Both live sections, then each pack's script once (it wires up the components it finds). */
+  var livePromise = null;
+  function buildLive() {
+    if (!livePromise) {
+      livePromise = buildMarquee().then(nextTask).then(buildCompare).then(nextTask).then(function () {
+        if (window.UIWall && (rows.length || compares.length)) return UIWall.scripts();
+      }).catch(function () {});
+    }
+    return livePromise;
+  }
+  UISite.ready = buildLive;
+  /* Built on demand, so the first screen (the hero) loads nothing it doesn't show: whichever comes first of
+     the first scroll / key / touch (then as a section comes within a screen), a deep link below the hero,
+     an idle moment after load, or 4s after the DOM is ready (load may never fire when a font host stalls). */
+  if (rows.length || compares.length) {
+    var kick = function () { buildLive(); };
+    var near = "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
+      if (es.some(function (e) { return e.isIntersecting; })) { near.disconnect(); kick(); }
+    }, { rootMargin: "100% 0px" }) : null;
+    var INTENT = ["scroll", "wheel", "touchstart", "keydown"];
+    var arm = function () {
+      INTENT.forEach(function (type) { window.removeEventListener(type, arm, true); });
+      if (!near) { kick(); return; }
+      [document.querySelector(".live"), document.getElementById("same")].forEach(function (el) { if (el) near.observe(el); });
+    };
+    INTENT.forEach(function (type) { window.addEventListener(type, arm, { capture: true, passive: true }); });
+    if (location.hash.length > 1) kick();
+    var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 300); };
+    window.addEventListener("load", function () { idle(kick, { timeout: 2000 }); });
+    var fallback = function () { setTimeout(kick, 4000); };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fallback); else fallback();
   }
 
   if (reduce) return;

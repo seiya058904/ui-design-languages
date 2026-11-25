@@ -314,7 +314,10 @@
           ? "\n     Dark theme: " + pack.darkHint + "."
           : "\n     Dark theme: add data-theme=\"dark\" (or \"auto\") to <html>.") + " -->\n" +
         "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n" +
-        pack.fonts.map(function (u) { return "<link href=\"" + u + "\" rel=\"stylesheet\">\n"; }).join("") +
+        pack.fonts.map(function (u) {
+          return "<link rel=\"stylesheet\" href=\"" + u + "\" media=\"print\" onload=\"this.media='all'\">\n" +
+            "<noscript><link rel=\"stylesheet\" href=\"" + u + "\"></noscript>\n";
+        }).join("") +
         "<style>\n" + css + "\n" + banner("Preview layout only — centres the demo; not part of " + pack.name) + "\n" +
         "body { min-height: 100vh; display: grid; place-items: center; padding: 48px 20px; }\n" +
         ".demo { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 22px; width: min(100%, 760px); padding: 40px 28px; }\n" +

@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 // Every check, one command — run it before each commit.
 //   1. tokens  — node scripts/build-tokens.mjs --check   generated tokens.css match tokens/*.json
-//   2. pages   — node scripts/snap.mjs                   real-browser screenshots at 1280 and 390, no horizontal overflow
-//   3. source  — node scripts/check-source.mjs           every demo's single-file export renders like the original
+//   2. static  — node scripts/check-static.mjs           every local link resolves; no render-blocking web fonts
+//   3. pages   — node scripts/snap.mjs                   real-browser screenshots at 1280 and 390: no horizontal overflow,
+//                                                        no script errors or 404s, every control pressed once
+//   4. source  — node scripts/check-source.mjs           every demo's single-file export renders like the original
 // Zero dependencies; each step is a plain script you can also run on its own.
 //
 // Usage:
 //   node scripts/check.mjs                 # everything (all languages + the site pages)
 //   node scripts/check.mjs clay sketch     # only these languages
 //   node scripts/check.mjs --quick         # source check in light only (skips the dark pass)
-//   node scripts/check.mjs --skip=pages    # skip a step (tokens | pages | source)
+//   node scripts/check.mjs --skip=pages    # skip a step (tokens | static | pages | source)
 // Exit code 1 if any step fails.
 import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
@@ -23,6 +25,7 @@ const quick = args.includes("--quick");
 
 const steps = [
   { id: "tokens", script: "build-tokens.mjs", args: ["--check", ...packs] },
+  { id: "static", script: "check-static.mjs", args: [] },
   { id: "pages", script: "snap.mjs", args: packs },
   { id: "source", script: "check-source.mjs", args: [...packs, ...(quick ? ["--light"] : [])] },
 ].filter((s) => !skip.includes(s.id));

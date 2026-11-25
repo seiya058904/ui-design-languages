@@ -11,7 +11,8 @@
   <meta name="description" content="A wall of real, working components from nine design languages. Mix them all, or filter to one language to see it as a complete system. Every card hands over its complete source and an AI prompt.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&display=swap"></noscript>
   <!-- The nine languages, live on one page (every class and token is prefixed, so they coexist) -->
   <link rel="stylesheet" href="clay/css/clay.css">
   <link rel="stylesheet" href="lilac/css/lilac.css">
@@ -64,12 +65,13 @@
 
   <section class="wrap cw" aria-label="Component wall">
     <div class="cw-backdrops" aria-hidden="true" data-backdrops></div>
-    <div class="cw-grid" data-grid aria-live="polite"></div>
+    <div class="cw-grid" data-grid></div>
     <div class="cw-empty" data-empty hidden>
       <p data-empty-text></p>
       <button class="pill pill--sm" type="button" data-reset>Reset filters</button>
     </div>
     <p class="cw-note" data-note></p>
+    <p class="sr-only" role="status" data-status></p>
   </section>
 </main>
 

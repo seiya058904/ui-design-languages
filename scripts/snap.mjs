@@ -116,7 +116,7 @@ const langs = (await readdir(root, { withFileTypes: true }))
   .filter((d) => d.isDirectory() && existsSync(join(root, d.name, "tokens", "tokens.json")))
   .map((d) => d.name)
   .filter((n) => !only.length || only.includes(n));
-const sitePages = [{ group: "_site", path: "index.html" }, { group: "_site", path: "components.html" }];
+const sitePages = [{ group: "_site", path: "index.html" }, { group: "_site", path: "components.html" }, { group: "_site", path: "component.html" }];
 const pages = thumbs ? [] : !only.length || only.includes("site") ? sitePages : [];
 for (const lang of langs) {
   pages.push({ group: lang, path: `${lang}/index.html` });
@@ -275,32 +275,50 @@ function wallFlow() {
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const $ = (s) => document.querySelector(s);
   return (async () => {
-    const seen = new Set();
-    for (const card of document.querySelectorAll(".wcard")) {
-      if (seen.has(card.dataset.pack)) continue;
-      seen.add(card.dataset.pack);
-      card.querySelector(".wcard__code").click();
-      for (let k = 0; k < 40; k++) {
-        await sleep(100);
-        const f = $(".drawer__frame");
-        if (f && f.classList.contains("is-ready") && !/Collecting/.test($("[data-src-code]").textContent)) break;
-      }
-      for (const t of document.querySelectorAll("[data-dr-tabs] button")) { t.click(); await sleep(250); }
-      for (const s of document.querySelectorAll("[data-src-tabs] [data-src]")) if (!s.disabled) { s.click(); await sleep(30); }
-      $("[data-src-copy]").click();
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
-      await sleep(450);
-    }
-    for (let i = 0; i < 2; i++) { $("[data-site-theme-toggle]")?.click(); await sleep(400); }
-    $('[data-wtheme="dark"]').click(); await sleep(200);
-    $('[data-wtheme="light"]').click(); await sleep(200);
+    const cards = [...document.querySelectorAll(".wcard")];
+    if (cards.length < 90) throw new Error("expected >= 90 wall cards, saw " + cards.length);
+    const bad = cards.filter((c) => !c.querySelector(".wcard__code[href^='component.html?']"));
+    if (bad.length) throw new Error(bad.length + " wall cards missing component.html link");
+    $('[data-style="braun"]')?.click(); await sleep(200);
+    $('[data-kind="patterns"]')?.click(); await sleep(200);
+    $('[data-style="all"]')?.click(); await sleep(200);
+    for (let i = 0; i < 2; i++) { $("[data-site-theme-toggle]")?.click(); await sleep(350); }
+    $('[data-wtheme="dark"]')?.click(); await sleep(200);
+    $('[data-wtheme="light"]')?.click(); await sleep(200);
     const search = $("[data-search]");
-    for (const q of ["slider", "zzzz"]) { search.value = q; search.dispatchEvent(new Event("input", { bubbles: true })); await sleep(300); }
-    $("[data-reset]").click(); await sleep(400);
-    return seen.size + " drawers";
+    for (const q of ["slider", "compare", "zzzz"]) { search.value = q; search.dispatchEvent(new Event("input", { bubbles: true })); await sleep(250); }
+    $("[data-reset]")?.click(); await sleep(350);
+    return cards.length + " cards";
   })();
 }
-const FLOWS = { "index.html": homeFlow, "components.html": wallFlow };
+function componentFlow() {
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const $ = (s) => document.querySelector(s);
+  return (async () => {
+    const waitReady = async () => {
+      for (let k = 0; k < 40; k++) {
+        await sleep(100);
+        const f = $("[data-cp-view] iframe");
+        if (f && f.classList.contains("is-ready") && !/Collecting/.test($("[data-src-code]")?.textContent || "")) break;
+      }
+    };
+    await waitReady();
+    const sib = $("[data-cp-siblings] a:not([aria-current])");
+    if (sib) { sib.click(); await waitReady(); }
+    for (const b of document.querySelectorAll("[data-cp-demos] button")) { b.click(); await sleep(200); }
+    $('[data-cp-wtheme="dark"]')?.click(); await sleep(200);
+    $('[data-cp-wtheme="light"]')?.click(); await sleep(200);
+    for (const v of document.querySelectorAll("[data-vp]")) { v.click(); await sleep(120); }
+    $('[data-vp="full"]')?.click();
+    for (const s of document.querySelectorAll("[data-src-tabs] [data-src]")) if (!s.disabled) { s.click(); await sleep(40); }
+    $("[data-src-copy]")?.click();
+    $("[data-cp-replay]")?.click(); await sleep(250);
+    $("[data-cp-next]")?.click(); await waitReady();
+    if (!$("[data-src-code]")?.textContent.trim()) throw new Error("component source panel stayed empty");
+    return ($("[data-cp-title]")?.textContent || "").trim();
+  })();
+}
+const FLOWS = { "index.html": homeFlow, "components.html": wallFlow, "component.html": componentFlow };
 
 let overflowing = 0, broken = 0;
 if (thumbsHome) {
@@ -405,7 +423,7 @@ try {
         await loaded;
         await tab.evaluate(EAGER);
         if (!(await tab.evaluate(LIVE_READY))) guard.errors.push("live sections did not finish building within 15s");
-        const missing = await tab.evaluate("(() => { const out = []; const cmp = document.querySelectorAll('[data-compare]').length; if (cmp && document.querySelectorAll('[data-compare] img').length !== cmp) out.push('a Same-markup card has no still'); const tray = document.querySelector('[data-tray]'); if (tray && tray.querySelectorAll('img').length !== tray.children.length) out.push('a tray tile has no still'); if (document.querySelector('[data-hero]')) { const live = document.querySelectorAll('iframe').length + [...document.querySelectorAll('link[rel=stylesheet]')].filter((l) => (l.getAttribute('href') || '').includes('/css/')).length; if (live) out.push('the homepage must stay static (stills and links only): it loads ' + live + ' iframe(s) or pack stylesheet(s)'); } const shelf = document.querySelector('[data-shelf]'); if (shelf && !shelf.classList.contains('is-set')) out.push('shelf books were never set'); const top = document.querySelector('.top'), topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')); if (top && topH && Math.abs(top.getBoundingClientRect().height - topH) > 1.5) out.push('sticky header is ' + Math.round(top.getBoundingClientRect().height) + 'px tall but --top-h is ' + topH + 'px (the sticky bar and anchors would slide under it)'); return out; })()");
+        const missing = await tab.evaluate("(() => { const out = []; const cmp = document.querySelectorAll('[data-compare]').length; if (cmp && document.querySelectorAll('[data-compare] .wstage').length !== cmp) out.push('a Same-markup card did not hydrate live'); const tray = document.querySelector('[data-tray]'); if (tray && tray.querySelectorAll('.wstage').length !== tray.children.length) out.push('a tray tile did not hydrate live'); if (document.querySelector('[data-hero]') && document.querySelectorAll('iframe').length) out.push('the homepage must load zero iframes'); const shelf = document.querySelector('[data-shelf]'); if (shelf && !shelf.classList.contains('is-set')) out.push('shelf books were never set'); const top = document.querySelector('.top'), topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')); if (top && topH && Math.abs(top.getBoundingClientRect().height - topH) > 1.5) out.push('sticky header is ' + Math.round(top.getBoundingClientRect().height) + 'px tall but --top-h is ' + topH + 'px (the sticky bar and anchors would slide under it)'); return out; })()");
         guard.errors.push(...missing);
         // Pointing at something must never move the page: every hover handler is run and the layout compared.
         const hoverShift = await tab.evaluate(`(() => {

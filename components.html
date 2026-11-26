@@ -41,7 +41,7 @@
   <section class="wrap cw-hero" aria-labelledby="cw-title">
     <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <h1 id="cw-title">Every component, <span>in every language.</span></h1>
-    <p class="cw-hero__lede"><span data-total>96</span> real, working components. Mix all nine languages on one wall, or pick one and watch it gather into a complete system. Open any card for its markup, exactly the CSS and JS it needs, one runnable file and a prompt for your AI.</p>
+    <p class="cw-hero__lede"><span data-total>105</span> real, working components. Mix all nine languages on one wall, or pick one and watch it gather into a complete system. Open any card for its dedicated page with live controls, full minimal source and an AI prompt.</p>
   </section>
 
   <div class="cw-bar" data-bar>
@@ -82,61 +82,6 @@
   </section>
   <button class="cw-top" type="button" data-back-top hidden aria-label="Back to top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg><span>Top</span></button>
 </main>
-
-<aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title" data-drawer hidden>
-  <div class="drawer__scrim" data-close></div>
-  <div class="drawer__panel">
-    <header class="drawer__head">
-      <div class="drawer__head-start">
-        <span class="drawer__tag" data-dr-tag></span>
-        <span class="drawer__pos" data-dr-pos></span>
-      </div>
-      <div class="drawer__head-end">
-        <button class="drawer__nav" type="button" data-dr-prev aria-label="Previous component" title="Previous component"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 6-6 6 6 6"/></svg></button>
-        <button class="drawer__nav" type="button" data-dr-next aria-label="Next component" title="Next component"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 6 6 6-6 6"/></svg></button>
-        <button class="drawer__share" type="button" data-dr-share aria-label="Copy share link"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>Share</span></button>
-        <button class="drawer__close" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-      </div>
-    </header>
-    <h2 id="dr-title" data-dr-title></h2>
-    <p class="drawer__sub" data-dr-sub></p>
-    <div class="drawer__stage-bar">
-      <div class="seg drawer__tabs" role="group" aria-label="Demo" data-dr-tabs></div>
-      <div class="drawer__tools">
-        <div class="drawer__variants" data-dr-variants hidden></div>
-        <div class="seg drawer__theme" role="group" aria-label="Preview theme" data-dr-theme>
-          <button type="button" aria-pressed="true" data-dr-wtheme="light">Light</button>
-          <button type="button" aria-pressed="false" data-dr-wtheme="dark">Dark</button>
-        </div>
-        <div class="seg drawer__viewport" role="group" aria-label="Preview width" data-dr-vp>
-          <button type="button" aria-pressed="true" data-vp="full">Full</button>
-          <button type="button" aria-pressed="false" data-vp="mobile">375px</button>
-        </div>
-        <button class="drawer__replay" type="button" data-dr-replay aria-label="Replay demo" title="Reset &amp; replay demo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.3-5.4"/><path d="M4.5 4.5v4h4"/></svg></button>
-      </div>
-    </div>
-    <div class="drawer__view" data-dr-view></div>
-    <section class="src" aria-label="Source code">
-      <div class="src__bar">
-        <div class="src__tabs" role="tablist" aria-label="Source" data-src-tabs>
-          <button type="button" role="tab" data-src="html">HTML</button>
-          <button type="button" role="tab" data-src="css">CSS</button>
-          <button type="button" role="tab" data-src="js">JS</button>
-          <button type="button" role="tab" data-src="file">Single file</button>
-        </div>
-        <button class="src__copy" type="button" data-src-copy><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="3"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy</span></button>
-      </div>
-      <pre class="src__code" role="tabpanel" tabindex="0"><code data-src-code></code></pre>
-      <p class="src__meta" data-src-meta></p>
-    </section>
-    <div class="drawer__actions">
-      <button class="pill pill--solid pill--sm" type="button" data-dr-ai><span>Copy prompt for AI</span></button>
-      <button class="pill pill--sm" type="button" data-dr-file><span>Copy single file</span></button>
-      <button class="pill pill--sm" type="button" data-dr-dl><span>Download .html</span></button>
-      <a class="drawer__link" href="#" data-dr-open>Full catalog</a>
-    </div>
-  </div>
-</aside>
 
 <footer class="wrap foot">
   <span>UI Design Languages. MIT licensed.</span>

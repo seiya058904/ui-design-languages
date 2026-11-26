@@ -97,37 +97,60 @@
 
   var parseQueue = Promise.resolve();
   function load(packId) {
-    return fetch(packId + "/components.html").then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (text) {
-      // Serialize catalog DOMParser calls across macrotasks so 9 concurrent parses (318KB HTML) never pile into one long task.
+    return Promise.all([
+      fetch(packId + "/components.html").then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }),
+      fetch("site/compare/" + packId + ".html").then(function (r) { return r.ok ? r.text() : ""; }).catch(function () { return ""; })
+    ]).then(function (pair) {
+      var text = pair[0], cmpText = pair[1];
+      // Serialize catalog DOMParser calls across macrotasks so 9 concurrent parses never pile into one long task.
       var job = parseQueue.then(function () {
         return new Promise(function (r) { setTimeout(r, 0); });
       }).then(function () {
         var doc = new DOMParser().parseFromString(text, "text/html");
-      var items = {}, order = [];
-      doc.querySelectorAll("[data-component]").forEach(function (sec) {
-        var id = sec.getAttribute("data-component");
-        var h = sec.querySelector("h2"), p = sec.querySelector(":scope > p");
-        order.push(id);
-        items[id] = {
-          id: id,
-          title: h ? h.textContent.trim() : id,
-          summary: p ? p.textContent.trim() : "",
-          demos: Array.prototype.map.call(sec.querySelectorAll("[data-demo]"), function (dm) {
-            var st = dm.querySelector(".demo__stage"), label = dm.querySelector("h3");
-            return {
-              id: dm.getAttribute("data-demo"),
-              label: label ? label.textContent.trim() : "",
-              html: dedent(st.innerHTML),
-              classes: Array.prototype.filter.call(st.classList, function (c) { return c !== "demo__stage"; }),
-              dialog: dm.hasAttribute("data-open-dialog")
+        var items = {}, order = [];
+        doc.querySelectorAll("[data-component]").forEach(function (sec) {
+          var id = sec.getAttribute("data-component");
+          var h = sec.querySelector("h2"), p = sec.querySelector(":scope > p");
+          order.push(id);
+          items[id] = {
+            id: id,
+            title: h ? h.textContent.trim() : id,
+            summary: p ? p.textContent.trim() : "",
+            demos: Array.prototype.map.call(sec.querySelectorAll("[data-demo]"), function (dm) {
+              var st = dm.querySelector(".demo__stage"), label = dm.querySelector("h3");
+              return {
+                id: dm.getAttribute("data-demo"),
+                label: label ? label.textContent.trim() : "",
+                html: dedent(st.innerHTML),
+                classes: Array.prototype.filter.call(st.classList, function (c) { return c !== "demo__stage"; }),
+                dialog: dm.hasAttribute("data-open-dialog")
+              };
+            })
+          };
+        });
+        if (cmpText) {
+          var cmpDoc = new DOMParser().parseFromString(cmpText, "text/html");
+          var art = cmpDoc.querySelector("article");
+          if (art) {
+            order.push("compare");
+            items["compare"] = {
+              id: "compare",
+              title: "Weekly report",
+              summary: "Same composite card markup across all nine design languages: status badge, segmented frequency control, input, toggle switch and actions.",
+              demos: [{
+                id: "weekly-report",
+                label: "Weekly report",
+                html: dedent(art.outerHTML),
+                classes: packId === "clay" ? ["clay-board"] : [],
+                dialog: false
+              }]
             };
-          })
-        };
-      });
-      var symbols = {};
-      doc.querySelectorAll("symbol[id]").forEach(function (sym) { symbols[sym.id] = sym.outerHTML; });
-      data[packId] = { items: items, order: order, symbols: symbols };
-      addSymbols(packId, doc);
+          }
+        }
+        var symbols = {};
+        doc.querySelectorAll("symbol[id]").forEach(function (sym) { symbols[sym.id] = sym.outerHTML; });
+        data[packId] = { items: items, order: order, symbols: symbols };
+        addSymbols(packId, doc);
       });
       parseQueue = job.catch(function () {});
       return job;
@@ -235,6 +258,7 @@
     var el = document.createElement("div");
     el.className = ["wstage"].concat(hit.demo.classes).join(" ");
     el.setAttribute("data-pack-stage", packId);
+    el.setAttribute("data-comp", compId);
     el.setAttribute("style", p.root + (p.canvas ? ";" + p.canvas : ""));
     el.innerHTML = scopeIcons(hit.demo.html, packId);
     scopeStageDom(el, packId);

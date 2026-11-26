@@ -1,6 +1,6 @@
-/* Homepage and component-wall chrome (site only, never a pack).
-   The homepage shows the languages as stills and links to the live pages: nothing on it loads a pack's CSS
-   or JS, so nothing live competes with scrolling. The component wall (site/components.js) is the live place.
+/* Homepage, component-wall and component-page chrome (site only, never a pack).
+   #styles on the homepage shows full-page stills; #live and #same hydrate live interactive stages
+   using site/wall.js once UISite.ready() waits for them.
 
    UISite — shared by the homepage and the component wall (both load this file first).
    UISite.copy(text)                   → Promise<boolean>: Clipboard API, or a hidden textarea when the API is
@@ -121,15 +121,11 @@ window.UISite = window.UISite || {};
     if (!title) return;
     fitAllTitles();
   }
-  var typeShown = null, swapTimer = 0;
+  var typeShown = null;
   function setType(css) {
     if (!title || css === typeShown) return;
     typeShown = css;
-    var apply = function () { applyFittedTitle(css); title.classList.remove("is-swapping"); };
-    clearTimeout(swapTimer);
-    if (reduce) { apply(); return; }
-    title.classList.add("is-swapping");
-    swapTimer = setTimeout(apply, 95);
+    applyFittedTitle(css);
   }
   if (title) {
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
@@ -137,8 +133,9 @@ window.UISite = window.UISite || {};
     window.addEventListener("resize", function () { requestAnimationFrame(refit); }, { passive: true });
   }
 
+  var shelfSet, shelfReady = new Promise(function (r) { shelfSet = r; });
   if (shelf) {
-    var slots = $$(":scope > li", shelf), covers = $$("img[data-src]", shelf), open = null, closeTimer = 0, intentTimer = 0;
+    var slots = $$(":scope > li", shelf), covers = $$("img[data-src]", shelf), openIdx = -1, closeTimer = 0, intentTimer = 0;
     var coversLoaded = false;
     var loadCovers = function () {
       if (coversLoaded) return;
@@ -149,47 +146,89 @@ window.UISite = window.UISite || {};
         if (img.decode) img.decode().catch(function () {});
       });
     };
+    function layoutShelf() {
+      if (mobile.matches) return;
+      var W = shelf.clientWidth;
+      if (!W) return;
+      var N = slots.length, gap = 8;
+      var openW = Math.min(556, Math.max(300, Math.round(W * 0.42)));
+      var spineStep = (W - openW) / (N - 1);
+      var spineW = spineStep - gap;
+      var closedW = (W - (N - 1) * gap) / N;
+      shelf.style.setProperty("--open-w", openW + "px");
+      shelf.style.setProperty("--spine-w", spineW.toFixed(2) + "px");
+      for (var i = 0; i < N; i++) {
+        var li = slots[i];
+        var x, clipR, y = 0, spineShift = 0;
+        if (openIdx < 0) {
+          x = i * (closedW + gap);
+          clipR = openW - closedW;
+          spineShift = (closedW - spineW) / 2;
+        } else {
+          x = i <= openIdx ? i * (spineW + gap) : openW + gap + (i - 1) * (spineW + gap);
+          clipR = i === openIdx ? -12 : (openW - spineW);
+          y = i === openIdx ? -10 : 0;
+        }
+        li.style.zIndex = String(i === openIdx ? N + 3 : i + 1);
+        li.style.setProperty("--x", x.toFixed(2) + "px");
+        li.style.setProperty("--y", y + "px");
+        var book = li.firstElementChild;
+        if (book) book.style.clipPath = "inset(-12px " + clipR.toFixed(2) + "px -18px -12px)";
+        var spine = book && book.querySelector(".book__spine");
+        if (spine) spine.style.transform = "translate3d(" + spineShift.toFixed(2) + "px,0,0)";
+        li.classList.toggle("is-open", i === openIdx);
+      }
+    }
     var openSlot = function (li) {
       clearTimeout(closeTimer);
-      if (li === open) return;
-      loadCovers();
-      open = li;
-      slots.forEach(function (s) { s.classList.toggle("is-open", s === li); });
+      var idx = li ? slots.indexOf(li) : -1;
+      if (idx === openIdx) return;
+      if (idx >= 0) loadCovers();
+      openIdx = idx;
+      layoutShelf();
       setType(li ? li.firstElementChild.getAttribute("data-type") : null);
     };
-    // The books are set on the shelf one after another, once the type has arrived (or 400ms passed).
-    var shelfSet, shelfReady = new Promise(function (r) { shelfSet = r; });
-    UISite.ready = function () { return shelfReady; };
     var settle = function () {
+      layoutShelf();
       if (shelf.classList.contains("is-set")) return;
       shelf.classList.add("is-set");
       shelfSet();
       setTimeout(function () { shelf.classList.add("is-settled"); }, 900);
     };
+    layoutShelf();
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(function () { layoutShelf(); }).observe(shelf);
+    } else {
+      window.addEventListener("resize", layoutShelf, { passive: true });
+    }
     if (reduce) settle();
     else Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(function (r) { setTimeout(r, 400); })]).then(function () { requestAnimationFrame(settle); });
 
-    // Scrolling past the shelf with the pointer on it is not pointing at a book: a book opens only once
-    // the page is still (opening re-lays out the hero and re-sets the headline, never mid-scroll).
+    // Scrolling past the shelf with the pointer on it is not pointing at a book: pause only briefly right after scroll.
     var lastScroll = -1e4;
     window.addEventListener("scroll", function () { lastScroll = performance.now(); }, { passive: true });
     var tryOpen = function (li) {
       if (mobile.matches) return;
       var still = performance.now() - lastScroll;
-      if (still < 140) { intentTimer = setTimeout(function () { tryOpen(li); }, 150 - still); return; }
-      if (li.matches(":hover")) openSlot(li);
+      if (still < 90) { intentTimer = setTimeout(function () { tryOpen(li); }, 100 - still); return; }
+      openSlot(li);
     };
     slots.forEach(function (li) {
       li.addEventListener("pointerenter", function (e) {
         if (mobile.matches || e.pointerType === "touch") return;
         clearTimeout(intentTimer);
-        intentTimer = setTimeout(function () { tryOpen(li); }, open ? 45 : 25);
+        clearTimeout(closeTimer);
+        if (performance.now() - lastScroll < 90) {
+          intentTimer = setTimeout(function () { tryOpen(li); }, 95);
+        } else {
+          openSlot(li);
+        }
       });
     });
     shelf.addEventListener("pointerleave", function () {
       if (mobile.matches) return;
       clearTimeout(intentTimer);
-      closeTimer = setTimeout(function () { openSlot(null); }, 200);
+      closeTimer = setTimeout(function () { openSlot(null); }, 160);
     });
     shelf.addEventListener("focusin", function (e) { var li = e.target.closest("li"); if (li && !mobile.matches) openSlot(li); });
     shelf.addEventListener("focusout", function (e) { if (!shelf.contains(e.relatedTarget)) openSlot(null); });
@@ -201,10 +240,12 @@ window.UISite = window.UISite || {};
     themeHooks.push(function () {
       if (!shelfShown()) return;
       loadCovers();
+      layoutShelf();
       if (!reduce) {
         shelf.classList.remove("is-set", "is-settled");
         void shelf.offsetWidth;
         requestAnimationFrame(function () {
+          layoutShelf();
           shelf.classList.add("is-set");
           setTimeout(function () { shelf.classList.add("is-settled"); }, 900);
         });
@@ -214,7 +255,11 @@ window.UISite = window.UISite || {};
 
     var ioMobile = null;
     var setupMobileShelf = function () {
-      if (!mobile.matches) { if (ioMobile) { ioMobile.disconnect(); ioMobile = null; } return; }
+      if (!mobile.matches) {
+        if (ioMobile) { ioMobile.disconnect(); ioMobile = null; }
+        layoutShelf();
+        return;
+      }
       if (shelfShown()) loadCovers();
       if ("IntersectionObserver" in window && !ioMobile) {
         ioMobile = new IntersectionObserver(function (es) {
@@ -226,6 +271,8 @@ window.UISite = window.UISite || {};
     };
     setupMobileShelf();
     if (mobile.addEventListener) mobile.addEventListener("change", function () { openSlot(null); setupMobileShelf(); });
+  } else {
+    shelfSet();
   }
 
   /* ---------- Gallery hero: the moving wall ----------
@@ -388,13 +435,52 @@ window.UISite = window.UISite || {};
     });
   });
 
-  /* Stills further down are fetched and decoded while the page is idle, one per idle slot, so none of them is
-     decoded for the first time in the middle of a scroll (skipped when the reader asked to save data). */
-  if (viewer || document.querySelector("[data-tray]")) {
+  /* Hydrate #live (#tray) and #same ([data-compare]) into live interactive stages when UIWall is present */
+  var trayItems = $$("[data-tray] > li[data-pick]");
+  var cmpViews = $$("[data-compare]");
+  var liveHomeReady = Promise.resolve();
+  if ((trayItems.length || cmpViews.length) && window.UIWall) {
+    liveHomeReady = UIWall.ready().then(function () {
+      var offscreenTargets = [];
+      trayItems.forEach(function (li) {
+        var pick = (li.getAttribute("data-pick") || "").split("/");
+        var stageHost = li.querySelector(".tray__stage");
+        if (pick.length !== 3 || !stageHost) return;
+        var st = UIWall.stage(pick[0], pick[1], pick[2]);
+        if (!st) return;
+        stageHost.innerHTML = "";
+        stageHost.appendChild(st);
+        offscreenTargets.push(li);
+      });
+      cmpViews.forEach(function (view) {
+        var packId = view.getAttribute("data-compare");
+        var st = UIWall.stage(packId, "compare", "weekly-report");
+        if (!st) return;
+        var badge = view.querySelector(".same__badge");
+        view.innerHTML = "";
+        view.appendChild(st);
+        if (badge) view.appendChild(badge);
+        offscreenTargets.push(view);
+      });
+      if ("IntersectionObserver" in window && offscreenTargets.length) {
+        var offIo = new IntersectionObserver(function (es) {
+          es.forEach(function (e) { e.target.classList.toggle("is-offscreen", !e.isIntersecting); });
+        }, { rootMargin: "200px 0px" });
+        offscreenTargets.forEach(function (el) { offIo.observe(el); });
+      }
+      return UIWall.scripts();
+    });
+  }
+  if (shelf || trayItems.length || cmpViews.length) {
+    UISite.ready = function () { return Promise.all([shelfReady, liveHomeReady]); };
+  }
+
+  /* Stills further up (#styles) are fetched and decoded while the page is idle. */
+  if (viewer) {
     var saveData = navigator.connection && navigator.connection.saveData;
     var idleSlot = window.requestIdleCallback || function (fn) { return setTimeout(fn, 200); };
     var warm = function () {
-      var queue = $$(".show.is-active .frame__shot, .tray img, .same__view img").filter(function (img) { return img.loading === "lazy"; });
+      var queue = $$(".show.is-active .frame__shot").filter(function (img) { return img.loading === "lazy"; });
       (function next() {
         var img = queue.shift();
         if (!img) return;
@@ -429,13 +515,14 @@ window.UISite = window.UISite || {};
       });
     }
   }
-  /* Light / dark swaps every card's still; languages without a dark theme keep theirs. */
+  /* Light / dark toggles live pack themes on the stages (or swaps fallback stills if unhydrated). */
   var sameGrid = document.querySelector(".same");
   $$("[data-theme-pick]").forEach(function (b) {
     b.addEventListener("click", function () {
       var dark = b.getAttribute("data-theme-pick") === "dark";
       $$("[data-theme-pick]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
       if (sameGrid) sameGrid.classList.toggle("is-dark", dark);
+      if (window.UIWall && UIWall.setTheme) UIWall.setTheme(dark ? "dark" : "light");
       $$(".same__view img[data-dark]").forEach(function (img) {
         if (!img.__light) img.__light = img.getAttribute("src");
         img.loading = "eager";

@@ -6,7 +6,7 @@
    so light paper, cream ceramic, aluminium and black glass all read true side by side. The chrome has
    no accent of its own: every colour on the page belongs to a Style Pack. Type is Funnel Display /
    Funnel Sans, a face none of the nine languages uses, so it reads as the neutral control. */
-:root {
+:root, :root[data-site-theme="booth"] {
   --bg: #E6E5E0;          /* architectural studio grey */
   --bg-raise: #F1F0EC;    /* a sheet laid on the booth */
   --bg-sunk: #D8D6CF;     /* a well */
@@ -125,26 +125,26 @@ main { overflow-x: clip; }
 .hero__lede { max-width: 40ch; color: var(--muted); font-size: 17px; line-height: 1.5; }
 .hero__cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
 
-.shelf { position: relative; display: flex; height: 440px; margin: 52px -4px 0; }
-/* The plank the books stand on */
-.shelf::after { content: ""; position: absolute; left: -12px; right: -12px; top: 100%; height: 12px; border-radius: 2px; background: var(--plank); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 18px 26px -16px rgba(0, 0, 0, 0.35); pointer-events: none; }
-.shelf > li { position: relative; display: flex; flex: 1 1 0; min-width: 0; padding: 0 4px; transition: flex-grow .46s cubic-bezier(0.22, 1, 0.36, 1); }
-.shelf > li.is-open { flex-grow: 6; }
-.book { --b: #eee; --i: #111; --a: #888; position: relative; display: flex; flex: 1; min-width: 0; overflow: hidden; contain: layout paint; border-radius: 4px 4px 1px 1px; background: var(--b); color: var(--i); box-shadow: inset 2px 0 0 rgba(255, 255, 255, 0.34), inset -2px 0 0 rgba(0, 0, 0, 0.06), var(--book-drop); transform-origin: 50% 100%; }
-.js .book { transition: transform .42s cubic-bezier(0.22, 1, 0.36, 1), opacity .35s ease; }
-.book:hover { transform: translate3d(0, -6px, 0); }
-.is-open > .book { transform: translate3d(0, -10px, 0); }
-html.is-wheel-scrolling .book:hover { transform: none; }
-.book:active, .is-open > .book:active { transform: translate3d(0, -4px, 0) scale(0.99); transition-duration: .1s; }
+/* Booth shelf: GPU-composited book deck — each book has constant CSS width (--open-w) and slides only via
+   transform: translate3d + rectangular clip-path, so sweeping across books triggers zero sibling reflow. */
+.shelf-wrap { position: relative; margin: 52px 0 0; }
+.shelf-wrap::after { content: ""; position: absolute; left: -12px; right: -12px; top: 100%; height: 12px; border-radius: 2px; background: var(--plank); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 18px 26px -16px rgba(0, 0, 0, 0.35); pointer-events: none; }
+.shelf { position: relative; display: block; height: 440px; --open-w: 540px; --spine-w: 88px; }
+.shelf > li { position: absolute; left: 0; top: 0; width: var(--open-w); height: 100%; pointer-events: none; transform: translate3d(var(--x, 0px), var(--y, 0px), 0); will-change: transform; transition: transform .36s cubic-bezier(0.22, 1, 0.36, 1); }
+.shelf > li.is-open { z-index: 12 !important; }
+.book { --b: #eee; --i: #111; --a: #888; position: relative; display: flex; width: 100%; height: 100%; pointer-events: auto; overflow: hidden; contain: layout style paint; border-radius: 4px 4px 1px 1px; background: var(--b); color: var(--i); box-shadow: inset 2px 0 0 rgba(255, 255, 255, 0.34), inset -2px 0 0 rgba(0, 0, 0, 0.06), var(--book-drop); clip-path: inset(-12px 0px -18px -12px); transform-origin: 50% 100%; }
+.js .book { transition: transform .36s cubic-bezier(0.22, 1, 0.36, 1), opacity .32s ease, clip-path .36s cubic-bezier(0.22, 1, 0.36, 1); }
+.shelf > li:not(.is-open) .book:hover { transform: translate3d(0, -6px, 0); }
+html.is-wheel-scrolling .shelf > li:not(.is-open) .book:hover { transform: none; }
+.book:active { transform: translate3d(0, 2px, 0) scale(0.992); transition-duration: .1s; }
 .book:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
-.book__spine { position: relative; display: flex; flex: 1 1 0; flex-direction: column; align-items: center; justify-content: space-between; min-width: 0; padding: 26px 0 24px; }
+.book__spine { position: relative; display: flex; flex: 0 0 var(--spine-w); flex-direction: column; align-items: center; justify-content: space-between; min-width: 0; padding: 26px 0 24px; transform: translate3d(var(--spine-shift, 0px), 0, 0); transition: transform .36s cubic-bezier(0.22, 1, 0.36, 1); }
 .book__name { writing-mode: vertical-rl; font-size: 36px; line-height: 1; white-space: nowrap; }
 .book__by { margin-top: auto; margin-bottom: 18px; writing-mode: vertical-rl; font-size: 12.5px; line-height: 1; white-space: nowrap; opacity: .66; }
 .book__mark { flex: none; width: 14px; height: 14px; border-radius: 50%; background: var(--a); }
-.book__cover { position: relative; display: block; flex: 0 1 0; min-width: 0; overflow: hidden; transition: flex-grow .46s cubic-bezier(0.22, 1, 0.36, 1); }
-.is-open .book__cover { flex-grow: 5; }
-.cover { position: absolute; top: 0; bottom: 0; left: 0; display: flex; flex-direction: column; gap: 12px; width: min(44vw, 440px); padding: 18px 20px 20px 2px; opacity: 0; transform: translate3d(-18px, 0, 0); transition: opacity .26s ease, transform .46s cubic-bezier(0.22, 1, 0.36, 1); }
-.is-open .cover { opacity: 1; transform: none; transition-delay: .06s; }
+.book__cover { position: relative; display: block; flex: 1 1 0; min-width: 0; overflow: hidden; }
+.cover { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 12px; width: calc(var(--open-w) - var(--spine-w)); padding: 18px 20px 20px 2px; opacity: 0; transform: translate3d(-12px, 0, 0); transition: opacity .22s ease, transform .36s cubic-bezier(0.22, 1, 0.36, 1); }
+.is-open .cover { opacity: 1; transform: none; }
 .cover img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top left; border-radius: 5px; background: rgba(0, 0, 0, 0.06); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08); }
 .cover__text { margin-top: auto; max-width: 34ch; font-size: 14.5px; line-height: 1.45; }
 .cover__cta { display: inline-flex; align-items: center; gap: 6px; font: 500 12.5px/1 var(--text); letter-spacing: 0.01em; opacity: .72; transition: opacity .2s, transform .25s var(--ease); }
@@ -170,7 +170,7 @@ html.is-wheel-scrolling .book:hover { transform: none; }
 .book--terrarium .book__mark { width: 18px; height: 14px; border-radius: 50% 46% 52% 48% / 60% 55% 45% 40%; box-shadow: inset -2px -3px 4px rgba(0, 0, 0, 0.2); }
 /* The one orchestrated moment: the books are set on the shelf one after another. */
 .js .shelf:not(.is-set) .book { opacity: 0; transform: translate3d(0, 36px, 0); }
-.shelf.is-set .book { transition-delay: calc(var(--n, 0) * 45ms), calc(var(--n, 0) * 45ms); }
+.shelf.is-set .book { transition-delay: calc(var(--n, 0) * 45ms), calc(var(--n, 0) * 45ms), 0s; }
 .shelf.is-settled .book { transition-delay: 0s; }
 
 /* ---------- Sections ---------- */
@@ -251,22 +251,30 @@ html.is-wheel-scrolling .book:hover { transform: none; }
 :where(.wstage) { border-radius: 10px; }
 .wstage { position: relative; display: flex; flex-wrap: wrap; align-items: center; align-content: center; justify-content: center; gap: 16px 20px; min-height: 220px; margin: 0; padding: 44px 28px 74px; overflow: hidden; }
 .wstage > * { position: relative; z-index: 1; }
-/* Stills of the live components (site/assets/home, made by scripts/snap.mjs --thumbs=home); each opens its card on the wall */
+.wstage[data-comp="compare"] { flex-direction: column; align-items: stretch; }
+.wstage[data-comp="compare"] > article { width: min(100%, 360px); margin: 0 auto; }
+.wstage .spec { display: flex; flex-direction: column; gap: 16px; }
+.wstage .line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wstage .line--start { justify-content: flex-start; flex-wrap: wrap; }
+.is-offscreen *, .is-offscreen *::before, .is-offscreen *::after { animation-play-state: paused !important; }
 .tray { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-.tray__item { position: relative; min-width: 0; border-radius: 10px; box-shadow: var(--edge), var(--lift); transition: transform .42s var(--ease), box-shadow .42s var(--ease); }
+.tray__item { position: relative; display: flex; flex-direction: column; min-width: 0; border-radius: 10px; box-shadow: var(--edge), var(--lift); transition: box-shadow .32s var(--ease); }
 .tray__item--wide { grid-column: span 2; }
-.tray__item:hover { transform: translate3d(0, -4px, 0); }
-.tray__link { position: relative; display: block; overflow: hidden; border-radius: inherit; }
-.tray__link img { width: 100%; height: auto; }
-.tray__link:focus-visible { outline-offset: 3px; }
-.tray__cue { position: absolute; top: 10px; right: 10px; z-index: 3; display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--tag-bg); color: #EDEDE9; font: 500 12px/1 var(--text); opacity: 0; transform: translate3d(0, 4px, 0); transition: opacity .22s, transform .3s var(--ease); pointer-events: none; }
-.tray__link:hover .tray__cue, .tray__link:focus-visible .tray__cue { opacity: 1; transform: none; }
-.tag { position: absolute; left: 10px; bottom: 10px; z-index: 3; display: inline-flex; align-items: center; gap: 8px; max-width: calc(100% - 20px); height: 30px; padding: 0 12px 0 10px; border-radius: 999px; background: var(--tag-bg); color: #EDEDE9; font: 500 12.5px/1 var(--text); letter-spacing: 0; text-transform: none; transition: background-color .2s; }
+.tray__item:hover { box-shadow: 0 0 0 1px var(--line-hover), var(--lift); }
+.tray__stage { position: relative; flex: 1; min-width: 0; overflow: hidden; border-radius: inherit; }
+.tray__stage img { width: 100%; height: auto; }
+.tray__stage .wstage { width: 100%; height: 100%; min-height: 310px; }
+.tray__bar { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; }
+.tray__bar a { pointer-events: auto; }
+.tag { display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: calc(100% - 92px); height: 30px; padding: 0 12px 0 10px; border-radius: 999px; background: var(--tag-bg); color: #EDEDE9; font: 500 12.5px/1 var(--text); letter-spacing: 0; text-transform: none; transition: background-color .2s; }
 .tag i { width: 7px; height: 7px; flex: none; border-radius: 50%; }
 .tag b { font-size: 13.5px; }
 .tag span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #B9B8B2; }
-.tray__link:hover .tag { background: var(--tag-hover); }
-.tray__link:active .tag { transform: scale(0.97); }
+.tag:hover, .tray__code:hover { background: var(--tag-hover); }
+.tag:active, .tray__code:active { transform: scale(0.97); }
+.tray__code { display: inline-flex; align-items: center; justify-content: center; flex: none; height: 30px; padding: 0 11px; border-radius: 999px; background: var(--tag-bg); color: #EDEDE9; font: 500 12px/1 var(--mono); opacity: .86; transition: opacity .22s, background-color .2s; }
+.tray__item:hover .tray__code, .tray__item:focus-within .tray__code { opacity: 1; }
+.tray__bar a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .tray-foot { display: flex; justify-content: flex-end; margin-top: 22px; }
 
 /* ---------- Same markup ---------- */
@@ -279,17 +287,13 @@ html.is-wheel-scrolling .book:hover { transform: none; }
 .same-code__copy:active { transform: scale(0.95); }
 .same-code__copy svg { width: 13px; height: 13px; }
 .same-code__copy.is-copied { border-color: rgba(168, 230, 207, 0.5); color: #A8E6CF; }
-.same { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 14px; }
-.same figure { display: flex; flex-direction: column; flex: 0 1 calc((100% - 4 * 14px) / 5); min-width: 0; }
-.same__card { display: flex; flex-direction: column; gap: 10px; border-radius: 10px; transition: transform .38s var(--ease); }
-.same__card:hover { transform: translate3d(0, -4px, 0); }
-.same__card:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
-.same__view { position: relative; display: block; overflow: hidden; border-radius: 10px; background: var(--bg-sunk); box-shadow: var(--edge); transition: box-shadow .35s var(--ease); }
-.same__card:hover .same__view { box-shadow: 0 0 0 1px color-mix(in srgb, var(--pc) 55%, transparent), var(--lift); }
+.same { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 16px; }
+.same figure { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.same__view { position: relative; display: flex; flex: 1; flex-direction: column; overflow: hidden; border-radius: 10px; background: var(--bg-sunk); box-shadow: var(--edge); transition: box-shadow .35s var(--ease); }
+.same figure:hover .same__view { box-shadow: 0 0 0 1px color-mix(in srgb, var(--pc) 55%, transparent), var(--lift); }
 .same__view img { width: 100%; height: auto; }
-.same__cue { position: absolute; right: 10px; bottom: 10px; z-index: 2; display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--tag-bg); color: #EDEDE9; font: 500 12px/1 var(--text); opacity: 0; transform: translate3d(0, 4px, 0); transition: opacity .22s, transform .28s var(--ease); pointer-events: none; }
-.same__card:hover .same__cue, .same__card:focus-visible .same__cue { opacity: 1; transform: none; }
-.same__badge { position: absolute; top: 10px; right: 10px; z-index: 2; display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; background: rgba(15, 15, 17, 0.78); color: #E4E4E7; font: 500 11px/1 var(--text); opacity: 0; transform: translate3d(0, -4px, 0); transition: opacity .22s, transform .28s var(--ease); pointer-events: none; }
+.same__view .wstage { width: 100%; flex: 1; min-height: 410px; padding: 26px 20px; }
+.same__badge { position: absolute; top: 10px; right: 10px; z-index: 3; display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; background: rgba(15, 15, 17, 0.78); color: #E4E4E7; font: 500 11px/1 var(--text); opacity: 0; transform: translate3d(0, -4px, 0); transition: opacity .22s, transform .28s var(--ease); pointer-events: none; }
 .same.is-dark .same__badge { opacity: 1; transform: none; }
 /* Live versions of the cards, rendered on site/capture.html for the stills */
 .same__inner { display: flex; flex-direction: column; justify-content: center; width: 360px; min-height: 456px; transform-origin: 0 0; }
@@ -297,8 +301,12 @@ html.is-wheel-scrolling .book:hover { transform: none; }
 .same__inner .spec { display: flex; flex-direction: column; gap: 16px; }
 .same__inner .line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .same__inner .line--start { justify-content: flex-start; flex-wrap: wrap; }
-.same figcaption { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 0 2px; font-size: 14px; }
+.same figcaption { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 2px; font-size: 14px; }
+.same__id { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
 .same figcaption code { font-size: 11.5px; color: var(--faint); }
+.same__open { display: inline-flex; align-items: center; flex: none; height: 26px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 999px; font: 500 12px/1 var(--mono); color: var(--muted); transition: color .2s, border-color .2s, background-color .2s; }
+.same__open:hover { color: var(--ink); border-color: color-mix(in srgb, var(--pc, var(--ink)) 55%, var(--line-hover)); background: var(--hover); }
+.same__open:active { transform: scale(0.96); }
 
 /* ---------- Use ---------- */
 .ways { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; }
@@ -333,7 +341,7 @@ html.is-wheel-scrolling .book:hover { transform: none; }
   .viewer__index a::before, .vi__note { display: none; }
   .vi__name { font-size: 18px; }
   .tray { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .same figure { flex-basis: calc((100% - 2 * 14px) / 3); }
+  .same { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .section__head { grid-template-columns: minmax(0, 1fr); }
   .colophon { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -352,16 +360,17 @@ html.is-wheel-scrolling .book:hover { transform: none; }
   .hero__title { --title-size: clamp(36px, 10.4vw, 64px); }
   .hero__lede { font-size: 16px; }
   /* Shelf → a row of open books you swipe through */
-  .shelf { height: auto; margin: 40px -16px 0; padding: 0 12px 30px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .shelf-wrap { margin-top: 40px; }
+  .shelf-wrap::after { display: none; }
+  .shelf { display: flex; height: auto; margin: 0 -16px; padding: 0 12px 30px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
   .shelf::-webkit-scrollbar { display: none; }
-  .shelf::after { display: none; }
-  .shelf > li, .shelf > li.is-open { flex: none; width: min(82vw, 330px); height: 340px; padding: 0 5px; scroll-snap-align: center; }
-  .book, .book:hover, .is-open > .book { transform: none; }
-  .book__spine { flex: 0 0 64px; padding: 20px 0 18px; }
+  .shelf > li, .shelf > li.is-open { position: relative; left: auto; top: auto; flex: none; width: min(82vw, 330px); height: 340px; padding: 0 5px; pointer-events: auto; transform: none !important; will-change: auto; scroll-snap-align: center; }
+  .book, .shelf > li:not(.is-open) .book:hover, .is-open > .book { transform: none; clip-path: none !important; }
+  .book__spine { flex: 0 0 64px; padding: 20px 0 18px; transform: none !important; }
   .book__name { font-size: 28px; }
   .book__by { display: none; }
   .book__cover, .is-open .book__cover { flex: 1 1 0; }
-  .cover, .is-open .cover { position: relative; width: auto; height: 100%; padding: 14px 14px 18px 0; opacity: 1; transform: none; }
+  .cover, .is-open .cover { position: relative; inset: auto; width: auto; height: 100%; padding: 14px 14px 18px 0; opacity: 1 !important; transform: none; }
   .cover__text { font-size: 14px; }
   .section { padding: 80px 0; }
   .section__head { margin-bottom: 36px; }
@@ -372,10 +381,9 @@ html.is-wheel-scrolling .book:hover { transform: none; }
   /* The tray becomes a row you swipe, like the shelf */
   .tray { display: flex; gap: 12px; margin: 0 -16px; padding: 0 16px 6px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; scrollbar-width: none; }
   .tray::-webkit-scrollbar { display: none; }
-  .tray__item, .tray__item--wide { flex: 0 0 min(78%, 300px); scroll-snap-align: start; }
+  .tray__item, .tray__item--wide { flex: 0 0 min(82%, 310px); scroll-snap-align: start; }
   .tray__item--wide { flex-basis: min(92%, 560px); }
-  .tray__item:hover, .same__card:hover { transform: none; }
-  .same figure { flex-basis: calc((100% - 14px) / 2); }
+  .same { grid-template-columns: minmax(0, 1fr); }
   .same-code { display: none; }
   .ways, .colophon { grid-template-columns: minmax(0, 1fr); }
   .ways { gap: 48px; }
@@ -461,8 +469,8 @@ html.is-wheel-scrolling .book:hover { transform: none; }
 [data-site-theme="gallery"] .frame { background: #151518; box-shadow: 0 0 0 1px var(--line-strong), 0 0 0 1px rgba(0, 0, 0, 0.4), 0 50px 140px -60px color-mix(in srgb, var(--c) 55%, transparent), 0 38px 72px -32px rgba(0, 0, 0, 0.78); }
 [data-site-theme="gallery"] .frame__bar { border-bottom: 1px solid var(--line); }
 /* The shelf under a gallery spotlight, on a graphite plank */
-[data-site-theme="gallery"] .shelf::before { content: ""; position: absolute; left: 6%; right: 6%; top: -90px; bottom: -10px; z-index: -1; background: radial-gradient(60% 75% at 50% 0%, rgba(255, 255, 255, 0.09), transparent 72%); pointer-events: none; }
-[data-site-theme="gallery"] .shelf::after { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 26px 40px -18px rgba(0, 0, 0, 0.9); }
+[data-site-theme="gallery"] .shelf-wrap::before { content: ""; position: absolute; left: 6%; right: 6%; top: -90px; bottom: -10px; z-index: -1; background: radial-gradient(60% 75% at 50% 0%, rgba(255, 255, 255, 0.09), transparent 72%); pointer-events: none; }
+[data-site-theme="gallery"] .shelf-wrap::after { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 26px 40px -18px rgba(0, 0, 0, 0.9); }
 [data-site-theme="gallery"] .book--obsidian { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.12), var(--book-drop); }
 [data-site-theme="gallery"] .book--zine, [data-site-theme="gallery"] .book--sketch { box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.16), var(--book-drop); }
 [data-site-theme="gallery"] .book--zine { border-color: #111; }

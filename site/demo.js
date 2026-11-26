@@ -24,7 +24,13 @@
   // Placeholder links in demos (href="#") would jump this frame to its top.
   document.addEventListener("click", function (e) { var a = e.target.closest && e.target.closest('a[href="#"]'); if (a) e.preventDefault(); });
 
-  fetch(base).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (text) {
+  var isCompare = c === "compare" && (!d || d === "weekly-report");
+  var cmpUrl = new URL("../site/compare/" + p + ".html", location.href);
+  Promise.all([
+    fetch(base).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }),
+    isCompare ? fetch(cmpUrl).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }) : Promise.resolve("")
+  ]).then(function (pair) {
+    var text = pair[0], cmpText = pair[1];
     var doc = new DOMParser().parseFromString(text, "text/html");
     // DOMParser documents run without scripting, so <noscript> fallbacks parse as real elements: skip them.
     // Web fonts stay non-blocking (media="print" until loaded) so a stalled font host never blanks the frame;
@@ -43,23 +49,35 @@
       document.head.appendChild(copy);
     });
     var frameCss = document.createElement("style");
-    frameCss.textContent = "html,body{margin:0;min-height:0!important}body{padding:16px!important;overflow:hidden}.demo__stage{margin:0}";
+    frameCss.textContent = isCompare
+      ? "html,body{margin:0;min-height:0!important}body{display:grid;place-items:center;padding:16px!important;overflow:hidden}.demo__stage{margin:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:18px 22px;width:min(100%,760px);padding:40px 28px}.spec{display:flex;flex-direction:column;gap:16px}.line{display:flex;align-items:center;justify-content:space-between;gap:12px}.line--start{justify-content:flex-start;flex-wrap:wrap}.demo__stage>article{width:min(100%,360px)}"
+      : "html,body{margin:0;min-height:0!important}body{padding:16px!important;overflow:hidden}.demo__stage{margin:0}";
     document.head.appendChild(frameCss);
 
     var symbol = doc.body.querySelector("svg symbol");
     if (symbol) document.body.appendChild(document.importNode(symbol.closest("svg"), true));
 
-    var safeId = /^[a-z0-9_-]+$/i;
-    var demo = (safeId.test(c || "") && safeId.test(d || ""))
-      ? doc.querySelector('[data-component="' + c + '"] [data-demo="' + d + '"]')
-      : null;
-    if (!demo) { document.body.textContent = "Demo not found."; report(); return; }
-    var stage = document.importNode(demo.querySelector(".demo__stage"), true);
-    if (demo.getAttribute("data-min-height")) stage.style.minHeight = demo.getAttribute("data-min-height") + "px";
+    var stage = null, demo = null;
+    if (isCompare) {
+      var cmpDoc = new DOMParser().parseFromString(cmpText, "text/html");
+      var art = cmpDoc.querySelector("article");
+      if (!art) { document.body.textContent = "Demo not found."; report(); return; }
+      stage = document.createElement("div");
+      stage.className = p === "clay" ? "demo__stage clay-board" : "demo__stage";
+      stage.appendChild(document.importNode(art, true));
+    } else {
+      var safeId = /^[a-z0-9_-]+$/i;
+      demo = (safeId.test(c || "") && safeId.test(d || ""))
+        ? doc.querySelector('[data-component="' + c + '"] [data-demo="' + d + '"]')
+        : null;
+      if (!demo) { document.body.textContent = "Demo not found."; report(); return; }
+      stage = document.importNode(demo.querySelector(".demo__stage"), true);
+      if (demo.getAttribute("data-min-height")) stage.style.minHeight = demo.getAttribute("data-min-height") + "px";
+    }
     document.body.appendChild(stage);
 
     // Show dialogs open without stealing focus from the parent page; the button reopens them.
-    if (demo.hasAttribute("data-open-dialog")) stage.querySelectorAll("dialog").forEach(function (dl) { dl.setAttribute("open", ""); });
+    if (demo && demo.hasAttribute("data-open-dialog")) stage.querySelectorAll("dialog").forEach(function (dl) { dl.setAttribute("open", ""); });
 
     var src = doc.querySelector('script[src$="js/' + p + '.js"]');
     if (src) {

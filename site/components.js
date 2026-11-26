@@ -4,13 +4,13 @@
 (function () {
   var W = window.UIWall;
   /* Which demos each language puts on the wall: packs.json → site.wall. */
-  var KIND = { button: "actions", input: "inputs", slider: "inputs", stepper: "inputs", dial: "inputs", calendar: "inputs",
+  var KIND = { compare: "patterns", button: "actions", input: "inputs", slider: "inputs", stepper: "inputs", dial: "inputs", calendar: "inputs",
     selection: "choices", segmented: "choices", tabs: "choices", chips: "choices", appearance: "choices", menu: "choices", filter: "choices", widget: "choices", mood: "choices",
     alert: "feedback", progress: "feedback", dialog: "feedback", tooltip: "feedback", timer: "feedback", scope: "feedback", garden: "feedback",
     card: "content", avatar: "content", table: "content", elevation: "content", material: "content", glass: "content", board: "content", accordion: "content",
     deck: "content", notes: "content", media: "content", ticket: "content",
     navigation: "navigation", command: "navigation", dock: "navigation", flow: "navigation" };
-  var KINDS = [["all", "All"], ["actions", "Actions"], ["inputs", "Inputs"], ["choices", "Choices"], ["feedback", "Feedback"], ["content", "Content"], ["navigation", "Navigation"]];
+  var KINDS = [["all", "All"], ["patterns", "Patterns"], ["actions", "Actions"], ["inputs", "Inputs"], ["choices", "Choices"], ["feedback", "Feedback"], ["content", "Content"], ["navigation", "Navigation"]];
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var grid = $("[data-grid]"), stylesEl = $("[data-styles]"), catsEl = $("[data-cats]"), backdrops = $("[data-backdrops]"), note = $("[data-note]"), search = $("[data-search]"), searchClear = $("[data-search-clear]"), emptyBox = $("[data-empty]"), emptyText = $("[data-empty-text]"), resetBtn = $("[data-reset]");
@@ -24,7 +24,7 @@
 
   /* ---------- build ---------- */
   function interleave() {
-    var lists = W.packs.map(function (p) { return p.wall.map(function (pk) { return [p.id].concat(pk); }); });
+    var lists = W.packs.map(function (p) { return p.wall.concat([["compare", "weekly-report"]]).map(function (pk) { return [p.id].concat(pk); }); });
     var out = [], i = 0, more = true;
     while (more) {
       more = false;
@@ -54,15 +54,15 @@
     inner.className = "wcard__in";
     var stage = W.stage(c.pack, c.comp, c.demo);
     inner.appendChild(stage);
+    var href = "component.html?p=" + encodeURIComponent(c.pack) + "&c=" + encodeURIComponent(c.comp) + "&d=" + encodeURIComponent(c.demo);
     var bar = document.createElement("div");
     bar.className = "wcard__bar";
-    bar.innerHTML = '<button class="wcard__tag" type="button"><i></i><b></b><span></span></button><button class="wcard__code" type="button">' + CODE_ICON + "</button>";
+    bar.innerHTML = '<a class="wcard__tag" href="' + href + '"><i></i><b></b><span></span></a><a class="wcard__code" href="' + href + '">' + CODE_ICON + "<span>Code</span></a>";
     bar.querySelector("i").style.background = p.dot;
     bar.querySelector("b").setAttribute("style", p.font);
     bar.querySelector("b").textContent = p.name;
-    bar.querySelector("span").textContent = hit.component.title;
-    bar.querySelector(".wcard__code").setAttribute("aria-label", "Code for " + p.name + " " + hit.component.title);
-    bar.querySelectorAll("button").forEach(function (b) { b.addEventListener("click", function () { openDrawer(c.pack, c.comp, c.demo); }); });
+    bar.querySelector(".wcard__tag span").textContent = hit.component.title;
+    bar.querySelector(".wcard__code").setAttribute("aria-label", "Open " + p.name + " " + hit.component.title + " page and code");
     inner.appendChild(bar);
     card.appendChild(inner);
 
@@ -340,357 +340,39 @@
     }, { rootMargin: "160px 0px 160px 0px" });
   }
 
-  /* ---------- drawer ---------- */
-  var drawer = $("[data-drawer]"), frame = null, lastFocus = null, current = null, closeTimer = 0;
-  var drawerState = { theme: "light", vp: "full", attrs: {} };
-  var SWATCH_COLORS = { violet: "#7C55FF", cobalt: "#2F7BF5", cyan: "#38BDF8", green: "#10B981", emerald: "#10B981", orange: "#FF4F00", sand: "#EEE6D9", stone: "#D5D7DC" };
-  /* Copy with the shared helper (site/home.js): Clipboard API first, a textarea when it refuses. */
-  function copy(btn, text) { UISite.feedback(btn, UISite.copy(text)); }
-  /* Source panel: HTML / CSS / JS / single file for the demo on show (site/source.js builds it). */
-  var S = window.UISource, src = { data: null, tab: "html", key: "" };
-  var srcTabs = $("[data-src-tabs]"), srcCode = $("[data-src-code]"), srcMeta = $("[data-src-meta]"), srcPre = $(".src__code");
-  function renderSource() {
-    var d = src.data;
-    srcTabs.querySelectorAll("[data-src]").forEach(function (b) {
-      var t = b.getAttribute("data-src"), on = t === src.tab;
-      b.setAttribute("aria-selected", String(on));
-      b.tabIndex = on ? 0 : -1;
-      b.disabled = !!d && t === "js" && !d.js;
-      b.title = b.disabled ? "This demo needs no JavaScript" : "";
-    });
-    if (!d) { srcCode.textContent = "Collecting the source…"; srcMeta.textContent = ""; return; }
-    var i = d.info, t = src.tab;
-    srcCode.innerHTML = S.highlight(d[t] || "", t);
-    srcPre.scrollTop = 0; srcPre.scrollLeft = 0;
-    srcMeta.textContent = t === "html" ? "The demo markup from " + i.htmlFrom + " · " + i.lines.html + " lines"
-      : t === "css" ? i.tokenCount + " tokens, the base layer and the rules from " + i.cssFrom.join(", ") + " · " + i.lines.css + " lines · " + i.size.css
-      : t === "js" ? i.jsFrom + ", the behaviour this markup relies on · " + i.lines.js + " lines · " + i.size.js
-      : "Runs on its own: tokens, base, component CSS" + (d.js ? ", script" : "") + " and icons, all inlined · " + i.size.file;
-  }
-  function setSrcTab(t) {
-    if (src.data && t === "js" && !src.data.js) return;
-    src.tab = t;
-    renderSource();
-  }
-  srcTabs.addEventListener("click", function (e) { var b = e.target.closest("[data-src]"); if (b && !b.disabled) setSrcTab(b.getAttribute("data-src")); });
-  srcTabs.addEventListener("keydown", function (e) {
-    var list = Array.prototype.filter.call(srcTabs.querySelectorAll("[data-src]"), function (b) { return !b.disabled; });
-    if (!list.length) return;
-    var i = list.indexOf(document.activeElement), n = i;
-    if (e.key === "ArrowRight") n = (i + 1) % list.length;
-    else if (e.key === "ArrowLeft") n = (i - 1 + list.length) % list.length;
-    else if (e.key === "Home") n = 0;
-    else if (e.key === "End") n = list.length - 1;
-    else return;
-    e.preventDefault();
-    list[n].focus();
-    setSrcTab(list[n].getAttribute("data-src"));
-  });
-  function loadSource(packId, comp, dm) {
-    var key = packId + "/" + comp.id + "/" + dm.id;
-    src.key = key; src.data = null;
-    if (src.tab === "js") src.tab = "html";
-    renderSource();
-    S.build(packId, comp.id, dm.id).then(function (d) {
-      if (src.key !== key) return;
-      src.data = d;
-      if (src.tab === "js" && !d.js) src.tab = "html";
-      renderSource();
-    }, function () {
-      if (src.key !== key) return;
-      srcCode.textContent = "The source files could not be loaded. Open this page over http (GitHub Pages or a local server).";
-    });
-  }
-
-  function syncDrawerTools(p) {
-    var darkBtn = $('[data-dr-wtheme="dark"]'), lightBtn = $('[data-dr-wtheme="light"]');
-    if (lightBtn && darkBtn) {
-      lightBtn.disabled = p.tone === "dark";
-      lightBtn.title = p.tone === "dark" ? p.name + " is dark-only" : "";
-      darkBtn.disabled = !p.dark;
-      darkBtn.title = !p.dark ? p.name + " is light-only" : "";
-      lightBtn.setAttribute("aria-pressed", String(drawerState.theme !== "dark"));
-      darkBtn.setAttribute("aria-pressed", String(drawerState.theme === "dark"));
-    }
-    document.querySelectorAll("[data-dr-vp] button").forEach(function (b) {
-      b.setAttribute("aria-pressed", String(b.getAttribute("data-vp") === drawerState.vp));
-    });
-    var wrap = $(".drawer__frame-wrap");
-    if (wrap) wrap.classList.toggle("is-mobile", drawerState.vp === "mobile");
-  }
-
-  function renderDrawerVariants(p) {
-    var box = $("[data-dr-variants]");
-    if (!box) return;
-    box.innerHTML = "";
-    var attr = p.variants && p.variants.accent ? "accent" : p.variants && p.variants.tone ? "tone" : "";
-    var list = attr ? p.variants[attr] : [];
-    if (!list || list.length < 2) { box.hidden = true; return; }
-    box.hidden = false;
-    var defVal = list[0];
-    list.forEach(function (val) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.className = "drawer__variant";
-      b.style.background = SWATCH_COLORS[val] || p.dot;
-      b.setAttribute("aria-label", attr + ": " + val);
-      b.title = val.charAt(0).toUpperCase() + val.slice(1);
-      var cur = drawerState.attrs[attr] || defVal;
-      b.setAttribute("aria-pressed", String(cur === val));
-      b.addEventListener("click", function () {
-        drawerState.attrs[attr] = val === defVal ? "" : val;
-        box.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-        if (frame && frame.contentWindow) {
-          var payload = {};
-          payload[attr] = drawerState.attrs[attr];
-          frame.contentWindow.postMessage({ type: "demo-attrs", attrs: payload }, "*");
-        }
-      });
-      box.appendChild(b);
-    });
-  }
-
-  function showDemo(packId, comp, dm) {
-    current = { pack: packId, comp: comp, demo: dm };
-    $("[data-dr-tabs]").querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-demo") === dm.id)); });
-    var view = $("[data-dr-view]");
-    view.innerHTML = "";
-    var wrap = document.createElement("div");
-    wrap.className = "drawer__frame-wrap" + (drawerState.vp === "mobile" ? " is-mobile" : "");
-    frame = document.createElement("iframe");
-    frame.className = "drawer__frame";
-    frame.title = W.byId[packId].name + " " + comp.title + ": " + dm.label;
-    var qs = new URLSearchParams({ p: packId, c: comp.id, d: dm.id });
-    if (drawerState.theme === "dark" && W.byId[packId].dark) qs.set("theme", "dark");
-    Object.keys(drawerState.attrs).forEach(function (k) { if (drawerState.attrs[k]) qs.set(k, drawerState.attrs[k]); });
-    frame.onload = function () { frame.classList.add("is-ready"); };
-    frame.src = "site/demo.html?" + qs.toString();
-    wrap.appendChild(frame);
-    view.appendChild(wrap);
-    loadSource(packId, comp, dm);
-  }
-
-  function drawerList() {
-    var list = cards.filter(function (c) { return c.shown; });
-    return list.length ? list : cards;
-  }
-
-  function openDrawer(packId, compId, demoId, navMode) {
-    var hit = W.demo(packId, compId, demoId);
-    if (!hit) return;
-    clearTimeout(closeTimer); // prevent a pending close timer from hiding a freshly reopened drawer
-    var p = W.byId[packId], comp = hit.component;
-    if (drawer.hidden) lastFocus = document.activeElement;
-    if (!current || current.pack !== packId || drawer.hidden) {
-      drawerState.attrs = {};
-      drawerState.theme = (p.tone === "dark" || (state.theme === "dark" && p.dark)) ? "dark" : "light";
-    }
-    $("[data-dr-tag]").innerHTML = '<i style="background:' + p.dot + '"></i><b style="' + p.font + '"></b>';
-    $("[data-dr-tag] b").textContent = p.name;
-    $("[data-dr-title]").textContent = comp.title;
-    $("[data-dr-sub]").textContent = comp.summary;
-    $("[data-dr-open]").href = p.id + "/components.html#" + comp.id;
-    var list = drawerList(), idx = -1;
-    for (var i = 0; i < list.length; i++) {
-      if (list[i].pack === packId && list[i].comp === compId && (!demoId || list[i].demo === hit.demo.id)) { idx = i; break; }
-    }
-    if (idx < 0) {
-      for (var j = 0; j < list.length; j++) if (list[j].pack === packId && list[j].comp === compId) { idx = j; break; }
-    }
-    var posEl = $("[data-dr-pos]");
-    if (posEl) posEl.textContent = idx >= 0 ? (idx + 1) + " / " + list.length : "";
-    var prevBtn = $("[data-dr-prev]"), nextBtn = $("[data-dr-next]");
-    if (prevBtn) prevBtn.disabled = list.length < 2;
-    if (nextBtn) nextBtn.disabled = list.length < 2;
-
-    var tabs = $("[data-dr-tabs]");
-    tabs.innerHTML = "";
-    comp.demos.forEach(function (dm) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.textContent = dm.label;
-      b.setAttribute("data-demo", dm.id);
-      b.addEventListener("click", function () { showDemo(packId, comp, dm); });
-      tabs.appendChild(b);
-    });
-    tabs.hidden = comp.demos.length < 2;
-    renderDrawerVariants(p);
-    syncDrawerTools(p);
-    showDemo(packId, comp, hit.demo);
-    drawer.hidden = false;
-    document.documentElement.classList.add("has-drawer");
-    requestAnimationFrame(function () { drawer.classList.add("is-open"); });
-    if (navMode !== "replace") $(".drawer__close").focus({ preventScroll: true });
-    var targetHash = "#" + packId + "/" + compId + "/" + hit.demo.id;
-    if (navMode === "replace") history.replaceState(null, "", targetHash);
-    else if (!navMode && location.hash !== targetHash) history.pushState({ drawer: true }, "", targetHash);
-  }
-  function closeDrawer(fromHash) {
-    if (drawer.hidden) return;
-    drawer.classList.remove("is-open");
-    document.documentElement.classList.remove("has-drawer");
-    clearTimeout(closeTimer);
-    closeTimer = setTimeout(function () {
-      drawer.hidden = true;
-      $("[data-dr-view]").innerHTML = "";
-      frame = null;
-    }, 380);
-    if (!fromHash) history.replaceState(null, "", state.style === "all" ? location.pathname + location.search : "#" + state.style);
-    if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
-  }
-  function stepDrawer(dir) {
-    if (!current) return;
-    var list = drawerList();
-    if (list.length < 2) return;
-    var idx = -1;
-    for (var i = 0; i < list.length; i++) {
-      if (list[i].pack === current.pack && list[i].comp === current.comp.id && list[i].demo === current.demo.id) { idx = i; break; }
-    }
-    if (idx < 0) for (var j = 0; j < list.length; j++) if (list[j].pack === current.pack && list[j].comp === current.comp.id) { idx = j; break; }
-    var next = list[(idx + dir + list.length) % list.length];
-    if (next) openDrawer(next.pack, next.comp, next.demo, "replace");
-  }
-  if ($("[data-dr-prev]")) $("[data-dr-prev]").addEventListener("click", function () { stepDrawer(-1); });
-  if ($("[data-dr-next]")) $("[data-dr-next]").addEventListener("click", function () { stepDrawer(1); });
-  if ($("[data-dr-replay]")) $("[data-dr-replay]").addEventListener("click", function () { if (current) showDemo(current.pack, current.comp, current.demo); });
-  if ($("[data-dr-share]")) {
-    $("[data-dr-share]").addEventListener("click", function () {
-      if (!current) return;
-      var url = location.origin + location.pathname + "#" + current.pack + "/" + current.comp.id + "/" + current.demo.id;
-      UISite.feedback(this, UISite.copy(url), "Copied");
-    });
-  }
-  document.querySelectorAll("[data-dr-wtheme]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      if (!current || b.disabled) return;
-      drawerState.theme = b.getAttribute("data-dr-wtheme");
-      syncDrawerTools(W.byId[current.pack]);
-      if (frame && frame.contentWindow && W.byId[current.pack].dark) {
-        frame.contentWindow.postMessage({ type: "demo-attrs", attrs: { theme: drawerState.theme === "dark" ? "dark" : "" } }, "*");
-      }
-    });
-  });
-  document.querySelectorAll("[data-dr-vp] button").forEach(function (b) {
-    b.addEventListener("click", function () {
-      if (!current) return;
-      drawerState.vp = b.getAttribute("data-vp");
-      syncDrawerTools(W.byId[current.pack]);
-    });
-  });
-
-  drawer.addEventListener("click", function (e) { if (e.target.closest("[data-close]")) closeDrawer(); });
-  document.addEventListener("keydown", function (e) {
-    if (drawer.hidden) return;
-    if (e.key === "Escape") { closeDrawer(); return; }
-    if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && !e.metaKey && !e.ctrlKey && !e.altKey) {
-      var act = document.activeElement;
-      if (!act || (!act.closest("[data-src-tabs]") && !act.closest(".src__code") && !/^(INPUT|TEXTAREA|SELECT)$/.test(act.tagName))) {
-        e.preventDefault();
-        stepDrawer(e.key === "ArrowRight" ? 1 : -1);
-        return;
-      }
-    }
-    if (e.key === "Tab") {
-      var panel = drawer.querySelector(".drawer__panel");
-      var focusables = Array.prototype.filter.call(
-        panel.querySelectorAll('a[href], button:not(:disabled), input:not(:disabled), [tabindex]:not([tabindex="-1"])'),
-        function (el) { return el.offsetParent !== null; }
-      );
-      if (!focusables.length) return;
-      var first = focusables[0], last = focusables[focusables.length - 1];
-      if (e.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
-  });
-  window.addEventListener("message", function (e) {
-    if (!frame || e.source !== frame.contentWindow || !e.data || e.data.type !== "demo-size") return;
-    frame.style.height = Math.max(160, e.data.h) + "px";
-    frame.classList.add("is-ready");
-  });
-  function withSource(fn) {
-    if (!current) return;
-    S.build(current.pack, current.comp.id, current.demo.id).then(fn, function () {});
-  }
-  $("[data-src-copy]").addEventListener("click", function () { var b = this; withSource(function (d) { copy(b, d[src.tab] || ""); }); });
-  $("[data-dr-ai]").addEventListener("click", function () { var b = this; withSource(function (d) { copy(b, d.prompt); }); });
-  $("[data-dr-file]").addEventListener("click", function () { var b = this; withSource(function (d) { copy(b, d.file); }); });
-  $("[data-dr-dl]").addEventListener("click", function () {
-    var b = this;
-    withSource(function (d) {
-      var url = URL.createObjectURL(new Blob([d.file], { type: "text/html" }));
-      var a = document.createElement("a");
-      a.href = url; a.download = d.info.fileName;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-      b.title = d.info.fileName;
-      UISite.feedback(b, true, "Saved");
-    });
-  });
-
   /* ---------- theme ---------- */
   document.querySelectorAll("[data-wtheme]").forEach(function (b) {
     b.addEventListener("click", function () {
       state.theme = b.getAttribute("data-wtheme");
       document.querySelectorAll("[data-wtheme]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
       W.setTheme(state.theme);
-      if (!drawer.hidden && current) {
-        var pk = W.byId[current.pack];
-        drawerState.theme = (pk.tone === "dark" || (state.theme === "dark" && pk.dark)) ? "dark" : "light";
-        syncDrawerTools(pk);
-        if (frame && frame.contentWindow && pk.dark) frame.contentWindow.postMessage({ type: "demo-attrs", attrs: { theme: drawerState.theme === "dark" ? "dark" : "" } }, "*");
-      }
       setTimeout(relayout, 60);
     });
   });
 
   /* ---------- hash ----------
      #clay                    filters the wall to one language
-     #clay/button[/demo]      opens that card's source drawer over the wall as it is
-     #all/clay/button[/demo]  shows the whole wall and points at that card */
+     #clay/button[/demo]      redirects to dedicated component.html page
+     #all/clay/button[/demo]  redirects to dedicated component.html page */
+  function openComponentPage(packId, compId, demoId) {
+    var pick = demoId ? null : W.byId[packId].wall.filter(function (pk) { return pk[0] === compId; })[0];
+    var d = demoId || (pick ? pick[1] : "");
+    location.replace("component.html?p=" + encodeURIComponent(packId) + "&c=" + encodeURIComponent(compId) + (d ? "&d=" + encodeURIComponent(d) : ""));
+  }
   function fromHash() {
     var parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
-    if (!parts.length) {
-      if (!drawer.hidden) closeDrawer(true);
-      return;
-    }
+    if (!parts.length) return;
     if (parts[0] === "all" && W.byId[parts[1]] && parts[2]) {
-      if (!drawer.hidden) closeDrawer(true);
-      pointAt(parts[1], parts[2], parts[3]);
+      openComponentPage(parts[1], parts[2], parts[3]);
       return;
     }
     if (W.byId[parts[0]]) {
       if (parts[1]) {
-        var pick = parts[2] ? null : W.byId[parts[0]].wall.filter(function (pk) { return pk[0] === parts[1]; })[0];
-        openDrawer(parts[0], parts[1], parts[2] || (pick ? pick[1] : null), true);
-      } else {
-        if (!drawer.hidden) closeDrawer(true);
-        if (state.style !== parts[0]) { state.style = parts[0]; syncFilters(true); apply(true); }
+        openComponentPage(parts[0], parts[1], parts[2]);
+      } else if (state.style !== parts[0]) {
+        state.style = parts[0]; syncFilters(true); apply(true);
       }
     }
-  }
-  var spotTimer = 0;
-  function pointAt(packId, compId, demoId) {
-    if (state.style !== "all" || state.kind !== "all" || state.query) {
-      state.style = "all"; state.kind = "all"; state.query = "";
-      if (search) { search.value = ""; syncSearchUi(); }
-      syncFilters(false); apply(false);
-    }
-    // After the whole wall is in (its final masonry), bring the card to the middle of the screen.
-    wallReady.then(function () {
-      var c = cards.filter(function (x) { return x.pack === packId && x.comp === compId && (!demoId || x.demo === demoId); })[0]
-        || cards.filter(function (x) { return x.pack === packId && x.comp === compId; })[0];
-      if (!c || !c.el) return;
-      requestAnimationFrame(function () { requestAnimationFrame(function () {
-        var r = c.el.getBoundingClientRect(), y = Math.max(0, window.scrollY + r.top - Math.max(16, (window.innerHeight - r.height) / 2));
-        var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (!still && window.UIScroll) UIScroll.to(y);
-        else window.scrollTo({ top: y, behavior: still ? "auto" : "smooth" });
-        cards.forEach(function (x) { if (x.el) x.el.classList.remove("is-spot"); });
-        c.el.classList.add("is-spot");
-        clearTimeout(spotTimer);
-        spotTimer = setTimeout(function () { c.el.classList.remove("is-spot"); }, 3200);
-      }); });
-    });
   }
 
   /* ---------- search: type to narrow the wall; "/" or ⌘K focuses it, Esc clears ---------- */
@@ -726,7 +408,6 @@
       if (e.key === "Escape" && search.value) { search.value = ""; state.query = ""; syncSearchUi(); syncFilters(false); apply(true); e.stopPropagation(); }
     });
     document.addEventListener("keydown", function (e) {
-      if (!drawer.hidden) return;
       var t = e.target;
       var isCmdK = (e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K");
       var isSlash = e.key === "/" && !e.metaKey && !e.ctrlKey && !e.altKey && !(t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));

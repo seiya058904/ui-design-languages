@@ -321,6 +321,7 @@
         "<style>\n" + css + "\n" + banner("Preview layout only — centres the demo; not part of " + pack.name) + "\n" +
         "body { min-height: 100vh; display: grid; place-items: center; padding: 48px 20px; }\n" +
         ".demo { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 22px; width: min(100%, 760px); padding: 40px 28px; }\n" +
+        (c === "compare" ? ".spec { display: flex; flex-direction: column; gap: 16px; }\n.line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }\n.line--start { justify-content: flex-start; flex-wrap: wrap; }\n.demo > article { width: min(100%, 360px); }\n" : "") +
         "</style>\n</head>\n<body>\n" + sprite +
         "<main class=\"" + ["demo"].concat(dm.classes).join(" ") + "\">\n" + indented + "\n</main>\n" +
         (needsJs ? "<script>\n" + pk.js.replace(/<\/script/gi, "<\\/script") + "\n</script>\n" : "") +
@@ -355,7 +356,7 @@
         html: html, css: css, js: needsJs ? pk.js : "", file: file, prompt: prompt,
         info: {
           title: title, fileName: p + "-" + comp.id + (comp.demos.length > 1 ? "-" + dm.id : "") + ".html",
-          htmlFrom: p + "/components.html",
+          htmlFrom: c === "compare" ? "site/compare/" + p + ".html" : p + "/components.html",
           cssFrom: sections.map(function (s) { return s.title.split(" — from ")[1]; }).filter(function (v, i, a) { return a.indexOf(v) === i; }),
           tokenCount: tokens.count, jsFrom: needsJs ? p + "/js/" + p + ".js" : "",
           size: { html: kb(html), css: kb(css), js: needsJs ? kb(pk.js) : "", file: kb(file) },

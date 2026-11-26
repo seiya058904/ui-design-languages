@@ -45,7 +45,7 @@ Finish the `packs.json` entry: `summary` (used on the site and in AI prompts), `
 
 `--quick` skips the dark pass, `--skip=pages` skips a step; with no id it checks everything. For motion, sample positions over real time through the DevTools protocol (headless screenshots freeze transitions). When it passes: commit and push.
 
-Optional, for the homepage (`index.html`): a book on the shelf (`.shelf > li` with a `.book--<id>` binding in `site/site.css`, colours taken from the pack's tokens), an entry in the language viewer (`[data-pick]` plus its `.show` panel), and a "Same markup" card from `site/compare/<id>.html`.
+Optional, for the homepage (`index.html`): a book on the shelf (`.shelf > li` with a `.book--<id>` binding in `site/site.css`, colours taken from the pack's tokens), an entry in the language viewer (`[data-pick]` plus its `.show` panel), and a "Same markup" card from `site/compare/<id>.html`. The homepage shows stills only (it loads no pack CSS or JS, so it scrolls smoothly): run `node scripts/snap.mjs --thumbs=lg` (viewer posters) and `--thumbs=home` (tray tiles and Same-markup cards, light and dark, photographed from the live render on `site/capture.html`).
 
 ## Isolation rules
 

@@ -1,11 +1,15 @@
-/* Homepage behaviour (site chrome only). */
+/* Homepage and component-wall chrome (site only, never a pack).
+   The homepage shows the languages as stills and links to the live pages: nothing on it loads a pack's CSS
+   or JS, so nothing live competes with scrolling. The component wall (site/components.js) is the live place.
 
-/* UISite — shared by the homepage and the component wall (both load this file first).
+   UISite — shared by the homepage and the component wall (both load this file first).
    UISite.copy(text)                   → Promise<boolean>: Clipboard API, or a hidden textarea when the API is
                                           missing or refuses (unfocused document, permissions policy, http)
    UISite.feedback(btn, result, okText) → shows "Copied" / "Copy failed" (or okText) on the button for 1.6s
-   UISite.ready()                       → Promise: builds the homepage's live sections now and resolves once
-                                          the live tray and the "Same markup" cards are on the page */
+   UISite.ready()                       → Promise: resolves once the page's own content is in place (the wall
+                                          replaces it with its own); scripts/snap.mjs waits on it
+   UISite.theme(name?)                  → the site theme, "booth" (grey) or "gallery" (dark); with a name, switches
+                                          and remembers it. <html data-site-theme> is set before first paint. */
 window.UISite = window.UISite || {};
 (function (S) {
   function legacyCopy(text) {
@@ -48,6 +52,7 @@ window.UISite = window.UISite || {};
 
 (function () {
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var root = document.documentElement;
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
   /* Header gains a frosted background once the page scrolls (sentinel IntersectionObserver, zero scroll read). */
@@ -58,9 +63,7 @@ window.UISite = window.UISite || {};
       sent.setAttribute("aria-hidden", "true");
       sent.style.cssText = "position:absolute;top:0;left:0;width:1px;height:8px;pointer-events:none";
       document.body.insertBefore(sent, document.body.firstChild);
-      new IntersectionObserver(function (es) {
-        top.classList.toggle("is-scrolled", !es[0].isIntersecting);
-      }).observe(sent);
+      new IntersectionObserver(function (es) { top.classList.toggle("is-scrolled", !es[0].isIntersecting); }).observe(sent);
     } else {
       var onTopScroll = function () { top.classList.toggle("is-scrolled", window.scrollY > 8); };
       onTopScroll();
@@ -89,6 +92,11 @@ window.UISite = window.UISite || {};
     $$(":scope > span", title).forEach(function (line) { if (line.scrollWidth > 0) ratio = Math.min(ratio, w / line.scrollWidth); });
     if (ratio < 1) title.style.fontSize = (base * ratio * 0.995).toFixed(2) + "px";
   }
+  function refit() {
+    if (!title) return;
+    title.setAttribute("style", title.style.cssText.replace(/font-size:[^;]+;?/g, ""));
+    fitTitle();
+  }
   var typeShown = null, swapTimer = 0;
   function setType(css) {
     if (!title || css === typeShown) return;
@@ -100,7 +108,6 @@ window.UISite = window.UISite || {};
     swapTimer = setTimeout(apply, 110);
   }
   if (title) {
-    var refit = function () { var keep = title.style.cssText.replace(/font-size:[^;]+;?/g, ""); title.setAttribute("style", keep); fitTitle(); };
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
     refit();
     window.addEventListener("resize", function () { requestAnimationFrame(refit); }, { passive: true });
@@ -123,21 +130,33 @@ window.UISite = window.UISite || {};
       setType(li ? li.firstElementChild.getAttribute("data-type") : null);
     };
     // The books are set on the shelf one after another, once the type has arrived (or 400ms passed).
+    var shelfSet, shelfReady = new Promise(function (r) { shelfSet = r; });
+    UISite.ready = function () { return shelfReady; };
     var settle = function () {
       if (shelf.classList.contains("is-set")) return;
       shelf.classList.add("is-set");
+      shelfSet();
       setTimeout(function () { shelf.classList.add("is-settled"); }, 1100);
     };
     if (reduce) settle();
     else Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(function (r) { setTimeout(r, 400); })]).then(function () { requestAnimationFrame(settle); });
 
     if (!mobile.matches) {
+      // Scrolling past the shelf with the pointer on it is not pointing at a book: a book opens only once
+      // the page is still (opening re-lays out the hero and re-sets the headline, never mid-scroll).
+      var lastScroll = -1e4;
+      window.addEventListener("scroll", function () { lastScroll = performance.now(); }, { passive: true });
+      var tryOpen = function (li) {
+        var still = performance.now() - lastScroll;
+        if (still < 200) { intentTimer = setTimeout(function () { tryOpen(li); }, 210 - still); return; }
+        if (li.matches(":hover")) openSlot(li);
+      };
       slots.forEach(function (li) {
         li.addEventListener("pointerenter", function (e) {
           if (e.pointerType === "touch") return;
           clearTimeout(intentTimer);
           // A short intent delay: sweeping across the shelf doesn't fan every book open on the way.
-          intentTimer = setTimeout(function () { openSlot(li); }, open ? 70 : 40);
+          intentTimer = setTimeout(function () { tryOpen(li); }, open ? 70 : 40);
         });
       });
       shelf.addEventListener("pointerleave", function () {
@@ -163,7 +182,7 @@ window.UISite = window.UISite || {};
     }
   }
 
-  /* ---------- Languages: one live viewer, nine entries ----------
+  /* ---------- Languages: one viewer, nine entries ----------
      Without script every language is a section of its own; with it the index becomes a tab list and only
      the selected language is shown. Books and #<id> links select a language before the page scrolls to it. */
   var viewer = document.querySelector("[data-viewer]");
@@ -227,184 +246,45 @@ window.UISite = window.UISite || {};
     });
   }
 
-  /* ---------- Browser frames: live pages scaled to fit, at most two resident at a time ---------- */
-  function fit(view) {
-    var iframe = view.querySelector("iframe");
-    if (!iframe || !view.clientWidth) return;
-    var base = parseFloat(iframe.getAttribute("width")) || 1280;
-    iframe.style.transform = "scale(" + view.clientWidth / base + ")";
-  }
-  var views = $$(".frame__view");
-  views.forEach(fit);
-  if (views.length && "ResizeObserver" in window) {
-    var ro = new ResizeObserver(function (entries) { entries.forEach(function (e) { fit(e.target); }); });
-    views.forEach(function (v) { ro.observe(v); });
-  }
-  var MAX_LIVE = 2, liveQueue = [], inViewSet = new Set();
-  function cancelActivate(view) { if (view.__activateTimer) { clearTimeout(view.__activateTimer); view.__activateTimer = 0; } }
-  function unloadFrame(view) {
-    cancelActivate(view);
-    var iframe = view.querySelector("iframe");
-    if (!iframe) return;
-    view.classList.remove("is-live");
-    if (iframe.getAttribute("src")) iframe.removeAttribute("src");
-    var idx = liveQueue.indexOf(view);
-    if (idx >= 0) liveQueue.splice(idx, 1);
-  }
-  function pruneFrames(keep) {
-    while (liveQueue.length > MAX_LIVE) {
-      var victim = null;
-      for (var i = 0; i < liveQueue.length; i++) if (liveQueue[i] !== keep && !inViewSet.has(liveQueue[i])) { victim = liveQueue[i]; break; }
-      if (!victim) break;
-      unloadFrame(victim);
-    }
-  }
-  function activateFrame(view, forceSrc) {
-    cancelActivate(view);
-    if (document.documentElement.hasAttribute("data-static") && !forceSrc) return;
-    var iframe = view.querySelector("iframe");
-    if (!iframe) return;
-    var want = forceSrc || iframe.getAttribute("data-src");
-    if (!want) return;
-    var idx = liveQueue.indexOf(view);
-    if (idx >= 0) liveQueue.splice(idx, 1);
-    liveQueue.push(view);
-    if (iframe.getAttribute("src") !== want) {
-      view.classList.remove("is-live");
-      iframe.onload = function () { if (iframe.getAttribute("src") === want) view.classList.add("is-live"); };
-      iframe.setAttribute("src", want);
-    } else if (iframe.contentDocument && iframe.contentDocument.readyState === "complete") {
-      view.classList.add("is-live");
-    }
-    pruneFrames(view);
-  }
-  /* A live page parses on this page's main thread (same-origin frames share the renderer), which drops
-     frames if it happens mid-scroll. So a frame in view goes live only once scrolling has settled; the
-     static poster is visible meanwhile, and hovering or pressing a frame makes it live at once. */
-  var lastScroll = 0, SETTLE_MS = 450;
-  window.addEventListener("scroll", function () { lastScroll = performance.now(); }, { passive: true });
-  function scheduleActivate(view) {
-    cancelActivate(view);
-    var iframe = view.querySelector("iframe");
-    if (iframe && iframe.getAttribute("src") === iframe.getAttribute("data-src")) { activateFrame(view); return; }
-    var tick = function () {
-      view.__activateTimer = 0;
-      if (!inViewSet.has(view)) return;
-      var still = performance.now() - lastScroll;
-      if (still < SETTLE_MS) { view.__activateTimer = setTimeout(tick, SETTLE_MS - still + 20); return; }
-      activateFrame(view);
-    };
-    view.__activateTimer = setTimeout(tick, 240);
-  }
-  if (views.length && "IntersectionObserver" in window) {
-    var fio = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) { inViewSet.add(e.target); fit(e.target); scheduleActivate(e.target); }
-        else { inViewSet.delete(e.target); cancelActivate(e.target); pruneFrames(null); }
-      });
-    }, { rootMargin: "40px 0px" });
-    views.forEach(function (v) {
-      fio.observe(v);
-      v.addEventListener("pointerenter", function () { activateFrame(v); }, { passive: true });
-      v.addEventListener("pointerdown", function () { activateFrame(v); }, { passive: true });
-    });
-  } else {
-    views.forEach(function (v) { activateFrame(v); });
-  }
-  /* Example / Styleguide / Components switch in each browser frame. */
+  /* Each frame is a still of a live page and a link to it: Example / Styleguide swap the still. */
   $$(".frame").forEach(function (frame) {
-    var view = frame.querySelector(".frame__view");
-    var iframe = frame.querySelector("iframe"), url = frame.querySelector(".frame__url"), openLink = frame.querySelector(".frame__open");
+    var view = frame.querySelector(".frame__view"), shot = frame.querySelector(".frame__shot");
+    var url = frame.querySelector(".frame__url"), openLink = frame.querySelector(".frame__open");
     $$(".seg button", frame).forEach(function (b) {
       b.addEventListener("click", function () {
         $$(".seg button", frame).forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-        var src = b.getAttribute("data-src");
-        // The poster follows the tab: styleguides and examples have one; a catalog shows the bare frame until it is live.
-        var poster = view.querySelector(".frame__poster"), name = src.replace(/\//g, "-").replace(/\.html$/, "");
-        if (poster) {
-          poster.hidden = /components\.html$/.test(src);
-          if (!poster.hidden) {
-            poster.srcset = /\/examples\//.test(src) ? "site/assets/thumbs/" + name + ".jpg 640w, site/assets/thumbs/" + name + "-lg.jpg 1280w" : "";
-            poster.src = "site/assets/thumbs/" + name + ".jpg";
-          }
-        }
-        iframe.setAttribute("data-src", src);
-        activateFrame(view, src);
+        var src = b.getAttribute("data-src"), name = "site/assets/thumbs/" + src.replace(/\//g, "-").replace(/\.html$/, "");
+        shot.srcset = name + ".jpg 640w, " + name + "-lg.jpg 1280w";
+        shot.src = name + ".jpg";
+        view.href = openLink.href = src;
         url.textContent = src;
-        openLink.href = src;
       });
     });
   });
 
-  /* ---------- Live sections: the tray of real components and the "Same markup" cards ---------- */
-  function nextTask() { return new Promise(function (r) { setTimeout(r, 0); }); }
-
-  /* Tray: each tile names its demo (pack/component/demo) and is rendered by site/wall.js — real markup,
-     the pack's own CSS and JS, no iframes. Built only when the section comes near. */
-  var tray = document.querySelector("[data-tray]");
-  function buildTray() {
-    if (!tray || !window.UIWall) return Promise.resolve();
-    return UIWall.ready().then(function () {
-      $$("[data-pick]", tray).forEach(function (item) {
-        var pk = item.getAttribute("data-pick").split("/"), st = UIWall.stage(pk[0], pk[1], pk[2]), p = UIWall.byId[pk[0]], hit = UIWall.demo(pk[0], pk[1], pk[2]);
-        if (!st) { item.hidden = true; return; } // a demo that no longer exists: hidden here, reported by scripts/snap.mjs
-        item.appendChild(st);
-        var tag = document.createElement("a");
-        tag.className = "tag";
-        tag.href = "components.html#" + pk[0] + "/" + pk[1];
-        tag.innerHTML = '<i style="background:' + p.dot + '"></i><b style="' + p.font + '"></b><span></span>';
-        tag.querySelector("b").textContent = p.name;
-        tag.querySelector("span").textContent = hit.component.title;
-        tag.setAttribute("aria-label", p.name + " " + hit.component.title + " on the component wall");
-        item.appendChild(tag);
-      });
-    });
+  /* Stills further down are fetched and decoded while the page is idle, one per idle slot, so none of them is
+     decoded for the first time in the middle of a scroll (skipped when the reader asked to save data). */
+  if (viewer || document.querySelector("[data-tray]")) {
+    var saveData = navigator.connection && navigator.connection.saveData;
+    var idleSlot = window.requestIdleCallback || function (fn) { return setTimeout(fn, 200); };
+    var warm = function () {
+      var queue = $$(".show.is-active .frame__shot, .tray img, .same__view img").filter(function (img) { return img.loading === "lazy"; });
+      (function next() {
+        var img = queue.shift();
+        if (!img) return;
+        img.loading = "eager";
+        (img.decode ? img.decode() : Promise.resolve()).catch(function () {}).then(function () { idleSlot(next, { timeout: 1500 }); });
+      })();
+    };
+    if (!saveData) window.addEventListener("load", function () { idleSlot(warm, { timeout: 3000 }); });
   }
 
-  /* "Same markup": each card is the identical HTML from site/compare/<pack>.html, rendered inline with
-     the pack's own CSS and JS (no iframe), scaled from its 360px design width to the column. */
-  var compares = $$("[data-compare]");
-  function fitCompare(list) {
-    var items = [];
-    list.forEach(function (v) { if (v.firstElementChild && items.indexOf(v) < 0) items.push(v); });
-    var scales = items.map(function (v) { return v.clientWidth / 360; });
-    items.forEach(function (v, i) { v.firstElementChild.style.transform = "scale(" + scales[i] + ")"; });
-    var heights = items.map(function (v) { return v.firstElementChild.offsetHeight; });
-    items.forEach(function (v, i) { var h = Math.ceil(heights[i] * scales[i]) + "px"; if (v.style.height !== h) v.style.height = h; });
-  }
-  function buildCompare() {
-    if (!compares.length || !window.UIWall) return Promise.resolve();
-    var cro = "ResizeObserver" in window ? new ResizeObserver(function (es) {
-      fitCompare(es.map(function (e) { return e.target.closest ? e.target.closest("[data-compare]") || e.target : e.target; }));
-    }) : null;
-    return UIWall.ready().then(function () {
-      return Promise.all(compares.map(function (view) {
-        var id = view.getAttribute("data-compare"), p = UIWall.byId[id];
-        if (!p) return Promise.resolve();
-        return fetch("site/compare/" + id + ".html").then(function (r) { return r.text(); }).then(function (text) {
-          var doc = new DOMParser().parseFromString(text, "text/html");
-          var wrap = doc.querySelector(".wrap");
-          var pad = (doc.querySelector("style") || {}).textContent || "";
-          var m = pad.match(/\.wrap\s*\{\s*padding:\s*([^;]+);/);
-          var inner = document.createElement("div");
-          inner.className = "same__inner";
-          inner.setAttribute("style", p.root + ";" + (p.page || "") + ";padding:" + (m ? m[1] : "22px"));
-          inner.innerHTML = wrap.innerHTML.replace(/min-height:\s*100vh;?/g, "");
-          inner.addEventListener("click", UIWall.inertLinks);
-          view.appendChild(inner);
-        }).catch(function () {});
-      })).then(function () {
-        fitCompare(compares);
-        if (cro) compares.forEach(function (view) { if (view.firstElementChild) { cro.observe(view); cro.observe(view.firstElementChild); } });
-      });
-    });
-  }
+  /* ---------- "Same markup" ---------- */
   /* The code line above the cards follows the card you point at: same markup, another prefix. */
   var code = document.querySelector(".same-code");
   if (code) {
     var showPrefix = function (fig) {
-      var id = fig.getAttribute("data-prefix");
-      $$("[data-prefix]", code).forEach(function (b) { b.textContent = id; });
+      $$("[data-prefix]", code).forEach(function (b) { b.textContent = fig.getAttribute("data-prefix"); });
       code.style.setProperty("--pc", "color-mix(in srgb, " + fig.style.getPropertyValue("--pc") + " 72%, #fff)");
     };
     $$(".same figure").forEach(function (fig) {
@@ -413,46 +293,79 @@ window.UISite = window.UISite || {};
     });
     showPrefix(document.querySelector(".same figure"));
   }
-  /* Light / dark for every live component on the page: the packs answer <html data-theme>. */
+  /* Light / dark swaps every card's still; languages without a dark theme keep theirs. */
   $$("[data-theme-pick]").forEach(function (b) {
     b.addEventListener("click", function () {
-      var t = b.getAttribute("data-theme-pick");
+      var dark = b.getAttribute("data-theme-pick") === "dark";
       $$("[data-theme-pick]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-      if (window.UIWall) UIWall.setTheme(t);
-      requestAnimationFrame(function () { fitCompare(compares); });
+      $$(".same__view img[data-dark]").forEach(function (img) {
+        if (!img.__light) img.__light = img.getAttribute("src");
+        img.loading = "eager";
+        img.src = dark ? img.getAttribute("data-dark") : img.__light;
+      });
     });
   });
 
-  /* Both live sections, then each pack's script once (it wires up the components it finds). */
-  var livePromise = null;
-  function buildLive() {
-    if (!livePromise) {
-      livePromise = buildTray().then(nextTask).then(buildCompare).then(nextTask).then(function () {
-        if (window.UIWall && (tray || compares.length)) return UIWall.scripts();
-      }).catch(function () {});
-    }
-    return livePromise;
+  /* ---------- Site theme: booth ⇄ gallery ---------- */
+  var KEY = "uidl-site-theme", meta = document.querySelector('meta[name="theme-color"]');
+  var system = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  function themeNow() { return root.getAttribute("data-site-theme") === "gallery" ? "gallery" : "booth"; }
+  function syncTheme() {
+    var dark = themeNow() === "gallery";
+    $$("[data-site-theme-toggle]").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(dark));
+      b.title = dark ? "Grey booth theme" : "Dark gallery theme";
+    });
+    if (meta) meta.setAttribute("content", dark ? "#0F0F11" : "#C9C9C6");
   }
-  UISite.ready = buildLive;
-  /* Built on demand, so the first screen loads nothing it doesn't show: whichever comes first of the first
-     scroll / key / touch (then as a section comes within a screen), a deep link below the hero, an idle
-     moment after load, or 4s after the DOM is ready (load may never fire when a font host stalls). */
-  if (tray || compares.length) {
-    var kick = function () { buildLive(); };
-    var near = "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
-      if (es.some(function (e) { return e.isIntersecting; })) { near.disconnect(); kick(); }
-    }, { rootMargin: "100% 0px" }) : null;
-    var INTENT = ["scroll", "wheel", "touchstart", "keydown"];
-    var arm = function () {
-      INTENT.forEach(function (type) { window.removeEventListener(type, arm, true); });
-      if (!near) { kick(); return; }
-      [document.getElementById("live"), document.getElementById("same")].forEach(function (el) { if (el) near.observe(el); });
+  function setTheme(name, save) {
+    if (save) { try { localStorage.setItem(KEY, name); } catch (e) { /* storage blocked: this visit only */ } }
+    if (name === themeNow()) return;
+    var go = function () {
+      root.setAttribute("data-site-theme", name);
+      syncTheme();
+      refit();
+      // The two themes set type in different faces: measure again once the new one has arrived.
+      if (document.fonts && document.fonts.ready) requestAnimationFrame(function () { document.fonts.ready.then(function () { refit(); window.dispatchEvent(new Event("resize")); }); });
     };
-    INTENT.forEach(function (type) { window.addEventListener(type, arm, { capture: true, passive: true }); });
-    if (location.hash.length > 1) kick();
-    var idleKick = window.requestIdleCallback || function (fn) { return setTimeout(fn, 300); };
-    window.addEventListener("load", function () { idleKick(kick, { timeout: 2000 }); });
-    var fallback = function () { setTimeout(kick, 4000); };
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fallback); else fallback();
+    if (document.startViewTransition && !reduce) document.startViewTransition(go); else go();
+  }
+  UISite.theme = function (name) { if (name === "booth" || name === "gallery") setTheme(name, true); return themeNow(); };
+  syncTheme();
+  $$("[data-site-theme-toggle]").forEach(function (b) {
+    b.addEventListener("click", function () { setTheme(themeNow() === "gallery" ? "booth" : "gallery", true); });
+  });
+  if (system && system.addEventListener) system.addEventListener("change", function (e) {
+    var saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (err) { /* blocked */ }
+    if (!saved) setTheme(e.matches ? "gallery" : "booth", false);
+  });
+
+  /* ---------- Gallery lighting: aurora pauses out of view; a soft light follows the pointer ---------- */
+  if (reduce) return;
+  if ("IntersectionObserver" in window) {
+    var pio = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { e.target.classList.toggle("is-paused", !e.isIntersecting); });
+    }, { rootMargin: "120px 0px" });
+    $$("[data-hero], .cw-hero").forEach(function (el) { pio.observe(el); });
+  }
+  var hero = document.querySelector("[data-hero]");
+  if (hero && window.matchMedia("(hover: hover)").matches) {
+    var glow = document.createElement("div"), light = document.createElement("i");
+    glow.className = "hero__glow"; glow.setAttribute("aria-hidden", "true");
+    glow.appendChild(light);
+    hero.insertBefore(glow, hero.firstChild);
+    var gr = null, lx = 0, ly = 0, raf = 0;
+    var clear = function () { gr = null; };
+    window.addEventListener("resize", clear, { passive: true });
+    window.addEventListener("scroll", clear, { passive: true });
+    hero.addEventListener("pointermove", function (e) {
+      if (themeNow() !== "gallery") return;
+      if (!gr) gr = glow.getBoundingClientRect();
+      lx = Math.round(e.clientX - gr.left); ly = Math.round(e.clientY - gr.top);
+      glow.classList.add("is-on");
+      if (!raf) raf = requestAnimationFrame(function () { raf = 0; light.style.transform = "translate3d(" + lx + "px," + ly + "px,0)"; });
+    }, { passive: true });
+    hero.addEventListener("pointerleave", function () { glow.classList.remove("is-on"); });
   }
 })();

@@ -11,8 +11,11 @@
 //   node scripts/snap.mjs --widths=1440,768,375
 //   CHROME_PATH=/path/to/chrome node scripts/snap.mjs
 //   node scripts/snap.mjs --thumbs           # homepage JPEG thumbnails → site/assets/thumbs/ (640×400 and 336×210 -sm;
-//                                              example pages also 1280×800 -lg for the live viewer's poster;
+//                                              examples and styleguides also 1280×800 -lg for the viewer;
 //                                              --thumbs=sm or --thumbs=lg makes only that size)
+//   node scripts/snap.mjs --thumbs=home      # the homepage's stills → site/assets/home/ (tray tiles and
+//                                              "Same markup" cards, light and dark), photographed from the
+//                                              live render on site/capture.html
 // Output: .snapshots/<language>/<page>@<width>.png (git-ignored). Exit code 1 if any page overflows or errors.
 import { spawn } from "node:child_process";
 import { createServer } from "node:http";
@@ -72,7 +75,8 @@ const only = args.filter((a) => !a.startsWith("--"));
 const thumbsArg = args.find((a) => a === "--thumbs" || a.startsWith("--thumbs="));
 const thumbs = !!thumbsArg;
 const thumbsSmOnly = thumbsArg === "--thumbs=sm";
-const thumbsLgOnly = thumbsArg === "--thumbs=lg"; // only the example pages' 1280×800 -lg posters
+const thumbsLgOnly = thumbsArg === "--thumbs=lg"; // only the 1280×800 -lg posters
+const thumbsHome = thumbsArg === "--thumbs=home"; // only the homepage stills
 const jobs = Math.max(1, Math.min(6, +(args.find((a) => a.startsWith("--jobs="))?.slice(7) || 4)));
 const CHROME = process.env.CHROME_PATH || [
   "C:/Program Files/Google/Chrome/Application/chrome.exe",
@@ -257,9 +261,10 @@ function homeFlow() {
     for (const b of tabs) { b.click(); await sleep(120); }
     document.querySelectorAll(".frame").forEach((f) => f.querySelector(".seg button").click());
     picks[0]?.click();
-    // Same markup: dark, then light again.
+    // Same markup: dark, then light again; then the site theme, there and back.
     for (const t of document.querySelectorAll("[data-theme-pick]")) { t.click(); await sleep(200); }
     document.querySelector('[data-theme-pick="light"]')?.click();
+    for (let i = 0; i < 2; i++) { document.querySelector("[data-site-theme-toggle]")?.click(); await sleep(400); }
     const copy = document.querySelector("[data-copy]");
     if (copy) copy.click();
     await sleep(1500);
@@ -286,6 +291,7 @@ function wallFlow() {
       document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
       await sleep(450);
     }
+    for (let i = 0; i < 2; i++) { $("[data-site-theme-toggle]")?.click(); await sleep(400); }
     $('[data-wtheme="dark"]').click(); await sleep(200);
     $('[data-wtheme="light"]').click(); await sleep(200);
     const search = $("[data-search]");
@@ -297,6 +303,34 @@ function wallFlow() {
 const FLOWS = { "index.html": homeFlow, "components.html": wallFlow };
 
 let overflowing = 0, broken = 0;
+if (thumbsHome) {
+  // Every tile and card rendered live on site/capture.html, photographed one by one (2x tiles, 1.5x cards).
+  try {
+    const target = (await (await fetch(`http://127.0.0.1:${port}/json/list`)).json()).find((t) => t.type === "page");
+    const tab = await connectTab(target.webSocketDebuggerUrl);
+    openSockets.push(tab.ws);
+    await tab.send("Page.enable");
+    await tab.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+    const loaded = Promise.race([tab.nextEvent("Page.loadEventFired"), new Promise((r) => setTimeout(r, LOAD_TIMEOUT))]);
+    await tab.send("Page.navigate", { url: `${base}/site/capture.html` });
+    await loaded;
+    const shots = await tab.evaluate("window.CAPTURE.then((list) => list.map((s, i) => { s.el.id = 'cap' + i; return { name: s.name, id: s.el.id, dark: s.dark }; }))");
+    if (!Array.isArray(shots)) throw new Error("site/capture.html did not render (" + shots + ")");
+    const shoot = async (shot, suffix) => {
+      const r = await tab.evaluate(`(() => { const b = document.getElementById("${shot.id}").getBoundingClientRect(); return { x: b.left + scrollX, y: b.top + scrollY, width: b.width, height: b.height }; })()`);
+      const scale = shot.name.startsWith("tray-") ? 2 : 1.5;
+      const { data } = await tab.send("Page.captureScreenshot", { format: "jpeg", quality: 80, captureBeyondViewport: true, clip: { ...r, scale } });
+      const out = join(root, "site", "assets", "home", `${shot.name}${suffix}.jpg`);
+      await mkdir(dirname(out), { recursive: true });
+      await writeFile(out, Buffer.from(data, "base64"));
+      console.log(`still	${shot.name}${suffix}	${Math.round(r.width * scale)}×${Math.round(r.height * scale)}	→ ${relative(root, out)}`);
+    };
+    for (const shot of shots) await shoot(shot, "");
+    await tab.evaluate("window.CAPTURE_THEME('dark')");
+    for (const shot of shots.filter((s) => s.dark)) await shoot(shot, "-dark");
+  } finally { await shutdown(); }
+  process.exit(0);
+}
 if (thumbs) {
   // Viewport-only captures at half density: real renders, small enough to ship with the site.
   try {
@@ -307,7 +341,7 @@ if (thumbs) {
     const pageLoad = () => Promise.race([tab.nextEvent("Page.loadEventFired"), new Promise((r) => setTimeout(r, LOAD_TIMEOUT))]);
     const specs = thumbsSmOnly ? [["-sm", 0.2625]] : [["", 0.5], ["-sm", 0.2625]];
     for (const page of pages) {
-      const isExample = page.path.includes("/examples/");
+      const isExample = page.path.includes("/examples/") || /^[a-z]+\/index\.html$/.test(page.path);
       const list = thumbsLgOnly ? (isExample ? [["-lg", 1]] : []) : !thumbsSmOnly && isExample ? [["-lg", 1], ...specs] : specs;
       if (!list.length) continue;
       await tab.send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 800, deviceScaleFactor: list[0][1], mobile: false });
@@ -371,7 +405,7 @@ try {
         await loaded;
         await tab.evaluate(EAGER);
         if (!(await tab.evaluate(LIVE_READY))) guard.errors.push("live sections did not finish building within 15s");
-        const missing = await tab.evaluate("(() => { const out = []; const cmp = document.querySelectorAll('[data-compare]').length; if (cmp && document.querySelectorAll('.same__inner').length !== cmp) out.push('Same-markup cards not built'); const tray = document.querySelector('[data-tray]'); if (tray && tray.querySelectorAll('.wstage').length !== tray.children.length) out.push('live tray is incomplete (' + tray.querySelectorAll('.wstage').length + ' of ' + tray.children.length + ' tiles)'); const shelf = document.querySelector('[data-shelf]'); if (shelf && !shelf.classList.contains('is-set')) out.push('shelf books were never set'); const top = document.querySelector('.top'), topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')); if (top && topH && Math.abs(top.getBoundingClientRect().height - topH) > 1.5) out.push('sticky header is ' + Math.round(top.getBoundingClientRect().height) + 'px tall but --top-h is ' + topH + 'px (the sticky bar and anchors would slide under it)'); return out; })()");
+        const missing = await tab.evaluate("(() => { const out = []; const cmp = document.querySelectorAll('[data-compare]').length; if (cmp && document.querySelectorAll('[data-compare] img').length !== cmp) out.push('a Same-markup card has no still'); const tray = document.querySelector('[data-tray]'); if (tray && tray.querySelectorAll('img').length !== tray.children.length) out.push('a tray tile has no still'); if (document.querySelector('[data-hero]')) { const live = document.querySelectorAll('iframe').length + [...document.querySelectorAll('link[rel=stylesheet]')].filter((l) => (l.getAttribute('href') || '').includes('/css/')).length; if (live) out.push('the homepage must stay static (stills and links only): it loads ' + live + ' iframe(s) or pack stylesheet(s)'); } const shelf = document.querySelector('[data-shelf]'); if (shelf && !shelf.classList.contains('is-set')) out.push('shelf books were never set'); const top = document.querySelector('.top'), topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')); if (top && topH && Math.abs(top.getBoundingClientRect().height - topH) > 1.5) out.push('sticky header is ' + Math.round(top.getBoundingClientRect().height) + 'px tall but --top-h is ' + topH + 'px (the sticky bar and anchors would slide under it)'); return out; })()");
         guard.errors.push(...missing);
         await tab.evaluate(SETTLE);
         await tab.evaluate(FONTS_READY);

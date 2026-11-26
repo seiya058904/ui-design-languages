@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <script>document.documentElement.classList.add("js")</script>
+  <script>/* Site theme before first paint: a saved choice, else the system's (booth = light grey, gallery = dark) */(function(d){d.classList.add("js");var t;try{t=localStorage.getItem("uidl-site-theme")}catch(e){}if(t!=="booth"&&t!=="gallery")t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"gallery":"booth";d.setAttribute("data-site-theme",t)})(document.documentElement)</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>UI Design Languages</title>
   <link rel="icon" href="site/assets/favicon-32.png" sizes="32x32" type="image/png">
@@ -12,10 +12,10 @@
   <meta name="theme-color" content="#C9C9C6">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600&family=Funnel+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600&family=Funnel+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&display=swap"></noscript>
-  <!-- Site chrome only. The nine languages' CSS is linked on demand by site/wall.js when the live sections
-       are built (the hero needs none of it), always before site.css so the chrome keeps the last word. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600&family=Funnel+Sans:wght@400;500;600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600&family=Funnel+Sans:wght@400;500;600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&display=swap"></noscript>
+  <!-- Site chrome only. The homepage shows the languages as stills and links to the live pages: it loads none of
+       their CSS or JS, so nothing live competes with scrolling. Stills: node scripts/snap.mjs --thumbs=home / =lg -->
   <link rel="stylesheet" href="site/site.css">
 </head>
 <body>
@@ -23,19 +23,20 @@
   <div class="wrap top__in">
     <a class="brand" href="./"><span class="brand__dots" aria-hidden="true"><i style="background:#A8E6CF"></i><i style="background:#7C55FF"></i><i style="background:#2F7BF5"></i><i style="background:#2C8C8F"></i><i style="background:#A9C7EC"></i><i style="background:#FF4F00"></i><i style="background:#38BDF8"></i><i style="background:#C8FF00"></i><i style="background:#C85A32"></i></span>UI Design Languages</a>
     <nav aria-label="Page"><a href="#styles">Languages</a><a href="components.html">Components</a><a href="#same">Compare</a><a href="#use">Use</a></nav>
-    <a class="pill pill--sm" href="https://github.com/seiya058904/ui-design-languages">GitHub</a>
+    <div class="top__end"><button class="theme-toggle" type="button" aria-pressed="false" aria-label="Dark theme" title="Dark gallery theme" data-site-theme-toggle><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg></button><a class="pill pill--sm" href="https://github.com/seiya058904/ui-design-languages">GitHub</a></div>
   </div>
 </header>
 
 <main>
   <section class="hero" aria-labelledby="hero-t" data-hero>
+    <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="wrap">
       <div class="hero__head">
         <h1 id="hero-t" class="hero__title" data-specimen><span>See the style.</span> <span>Take the whole system.</span></h1>
         <div class="hero__side">
           <p class="hero__lede">Nine design languages, each built as a working website: tokens, components and real pages. Compare them live, then hand the spec and the code to your team or your AI.</p>
           <div class="hero__cta">
-            <a class="pill pill--solid pill--lg" href="components.html">Browse components</a>
+            <a class="pill pill--solid pill--lg pill--beam" href="components.html"><span class="pill__beam" aria-hidden="true"><i></i></span>Browse components</a>
             <button class="pill pill--lg" type="button" data-copy="Use the UI Design Languages library (https://github.com/seiya058904/ui-design-languages). Pick a style from packs.json, read its DESIGN.md and AGENTS.md, link its entry CSS and fonts, and build only with that style&#x27;s prefixed classes and tokens."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy AI prompt</span></button>
           </div>
         </div>
@@ -105,24 +106,25 @@
           <div class="frame__bar">
             <span class="frame__dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="frame__url">clay/examples/dashboard.html</span>
-            <div class="seg" role="group" aria-label="Clay preview"><button type="button" aria-pressed="true" data-src="clay/examples/dashboard.html">Example</button><button type="button" aria-pressed="false" data-src="clay/index.html">Styleguide</button><button type="button" aria-pressed="false" data-src="clay/components.html">Components</button></div>
+            <div class="seg" role="group" aria-label="Clay preview"><button type="button" aria-pressed="true" data-src="clay/examples/dashboard.html">Example</button><button type="button" aria-pressed="false" data-src="clay/index.html">Styleguide</button></div>
             <a class="frame__open" href="clay/examples/dashboard.html" aria-label="Open Clay live page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
           </div>
-          <div class="frame__view"><img class="frame__poster" loading="lazy" src="site/assets/thumbs/clay-examples-dashboard.jpg" srcset="site/assets/thumbs/clay-examples-dashboard.jpg 640w, site/assets/thumbs/clay-examples-dashboard-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="" width="640" height="400" decoding="async"><iframe data-src="clay/examples/dashboard.html" width="1280" height="800" title="Clay live preview" loading="lazy" tabindex="-1"></iframe></div>
+          <a class="frame__view" href="clay/examples/dashboard.html" aria-label="Open the Clay example page"><img class="frame__shot" loading="lazy" src="site/assets/thumbs/clay-examples-dashboard.jpg" srcset="site/assets/thumbs/clay-examples-dashboard.jpg 640w, site/assets/thumbs/clay-examples-dashboard-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="Clay example page" width="1280" height="800" decoding="async"><span class="frame__hint" aria-hidden="true">Open live page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span></a>
         </div>
         <div class="show__body">
           <div>
             <h3 class="show__name" style='font-family:Inter,sans-serif;font-weight:700;letter-spacing:-0.045em'>Clay</h3>
             <p class="show__lede">Soft extruded clay pressed onto a matte grid board. Height carries meaning: raised to press, carved to fill. Friendly, physical and calm, in light and dark.</p>
             <div class="swatches" aria-label="Key colors"><span style="background:#A8E6CF" data-hex="#A8E6CF" title="Mint #A8E6CF"></span><span style="background:#F8F7F4" data-hex="#F8F7F4" title="Surface #F8F7F4"></span><span style="background:#D6D3CD" data-hex="#D6D3CD" title="Clay #D6D3CD"></span><span style="background:#7CF2C6" data-hex="#7CF2C6" title="Glow #7CF2C6"></span><span style="background:#2C2C2A" data-hex="#2C2C2A" title="Ink #2C2C2A"></span></div>
+          </div>
+          <dl class="meta"><dt>Material</dt><dd>Extruded clay, carved wells, warm shadows</dd><dt>Type</dt><dd>Inter, bold and tight</dd><dt>Variants</dt><dd>Light, dark, auto</dd><dt>Best for</dt><dd>Friendly dashboards, billing, onboarding</dd></dl>
           <div class="show__actions">
             <a class="pill pill--solid" href="clay/examples/dashboard.html">Open live page</a>
             <a class="pill" href="clay/index.html">Styleguide</a>
+            <a class="pill" href="clay/components.html">Components</a>
             <a class="pill" href="https://github.com/seiya058904/ui-design-languages/blob/main/clay/DESIGN.md">DESIGN.md</a>
             <button class="pill" type="button" data-copy="Build my screen with the Clay design language from https://github.com/seiya058904/ui-design-languages. Read clay/DESIGN.md (spec) and clay/AGENTS.md (rules) first. Link https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/clay/css/clay.css and its fonts, compose only from .clay-* classes, take every color, radius, shadow and duration from var(--clay-*) tokens, and keep page CSS to layout."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy AI prompt</span></button>
           </div>
-          </div>
-          <dl class="meta"><dt>Material</dt><dd>Extruded clay, carved wells, warm shadows</dd><dt>Type</dt><dd>Inter, bold and tight</dd><dt>Variants</dt><dd>Light, dark, auto</dd><dt>Best for</dt><dd>Friendly dashboards, billing, onboarding</dd></dl>
         </div>
       </article>
       <article class="show" id="lilac" style="--c:#7C55FF" aria-label="Lilac">
@@ -130,24 +132,25 @@
           <div class="frame__bar">
             <span class="frame__dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="frame__url">lilac/examples/app.html</span>
-            <div class="seg" role="group" aria-label="Lilac preview"><button type="button" aria-pressed="true" data-src="lilac/examples/app.html">Example</button><button type="button" aria-pressed="false" data-src="lilac/index.html">Styleguide</button><button type="button" aria-pressed="false" data-src="lilac/components.html">Components</button></div>
+            <div class="seg" role="group" aria-label="Lilac preview"><button type="button" aria-pressed="true" data-src="lilac/examples/app.html">Example</button><button type="button" aria-pressed="false" data-src="lilac/index.html">Styleguide</button></div>
             <a class="frame__open" href="lilac/examples/app.html" aria-label="Open Lilac live page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
           </div>
-          <div class="frame__view"><img class="frame__poster" loading="lazy" src="site/assets/thumbs/lilac-examples-app.jpg" srcset="site/assets/thumbs/lilac-examples-app.jpg 640w, site/assets/thumbs/lilac-examples-app-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="" width="640" height="400" decoding="async"><iframe data-src="lilac/examples/app.html" width="1280" height="800" title="Lilac live preview" loading="lazy" tabindex="-1"></iframe></div>
+          <a class="frame__view" href="lilac/examples/app.html" aria-label="Open the Lilac example page"><img class="frame__shot" loading="lazy" src="site/assets/thumbs/lilac-examples-app.jpg" srcset="site/assets/thumbs/lilac-examples-app.jpg 640w, site/assets/thumbs/lilac-examples-app-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="Lilac example page" width="1280" height="800" decoding="async"><span class="frame__hint" aria-hidden="true">Open live page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span></a>
         </div>
         <div class="show__body">
           <div>
             <h3 class="show__name" style='font-family:"Cormorant Garamond",serif;font-weight:500;letter-spacing:0.02em;text-transform:uppercase'>Lilac</h3>
             <p class="show__lede">An ivory component study: quiet tiles, one accent that glows, editorial serif headlines. Selection is a gentle lilac wash rather than a solid fill.</p>
             <div class="swatches" aria-label="Key colors"><span style="background:#5B2DFF" data-hex="#5B2DFF" title="Violet #5B2DFF"></span><span style="background:#C8B4FF" data-hex="#C8B4FF" title="Lilac #C8B4FF"></span><span style="background:#FCFAF6" data-hex="#FCFAF6" title="Ivory #FCFAF6"></span><span style="background:#1F1F28" data-hex="#1F1F28" title="Ink #1F1F28"></span><span style="background:#1556E8" data-hex="#1556E8" title="Cobalt #1556E8"></span></div>
+          </div>
+          <dl class="meta"><dt>Material</dt><dd>Ivory tiles, bright edges, wide faint shadows</dd><dt>Type</dt><dd>Cormorant Garamond + Manrope</dd><dt>Variants</dt><dd>Light, dark, auto · violet, cobalt</dd><dt>Best for</dt><dd>Wellness, planning, personal productivity</dd></dl>
           <div class="show__actions">
             <a class="pill pill--solid" href="lilac/examples/app.html">Open live page</a>
             <a class="pill" href="lilac/index.html">Styleguide</a>
+            <a class="pill" href="lilac/components.html">Components</a>
             <a class="pill" href="https://github.com/seiya058904/ui-design-languages/blob/main/lilac/DESIGN.md">DESIGN.md</a>
             <button class="pill" type="button" data-copy="Build my screen with the Lilac design language from https://github.com/seiya058904/ui-design-languages. Read lilac/DESIGN.md (spec) and lilac/AGENTS.md (rules) first. Link https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/lilac/css/lilac.css and its fonts, compose only from .lilac-* classes, take every color, radius, shadow and duration from var(--lilac-*) tokens, and keep page CSS to layout."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy AI prompt</span></button>
           </div>
-          </div>
-          <dl class="meta"><dt>Material</dt><dd>Ivory tiles, bright edges, wide faint shadows</dd><dt>Type</dt><dd>Cormorant Garamond + Manrope</dd><dt>Variants</dt><dd>Light, dark, auto · violet, cobalt</dd><dt>Best for</dt><dd>Wellness, planning, personal productivity</dd></dl>
         </div>
       </article>
       <article class="show" id="atelier" style="--c:#2F7BF5" aria-label="Atelier">
@@ -155,24 +158,25 @@
           <div class="frame__bar">
             <span class="frame__dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="frame__url">atelier/examples/workspace.html</span>
-            <div class="seg" role="group" aria-label="Atelier preview"><button type="button" aria-pressed="true" data-src="atelier/examples/workspace.html">Example</button><button type="button" aria-pressed="false" data-src="atelier/index.html">Styleguide</button><button type="button" aria-pressed="false" data-src="atelier/components.html">Components</button></div>
+            <div class="seg" role="group" aria-label="Atelier preview"><button type="button" aria-pressed="true" data-src="atelier/examples/workspace.html">Example</button><button type="button" aria-pressed="false" data-src="atelier/index.html">Styleguide</button></div>
             <a class="frame__open" href="atelier/examples/workspace.html" aria-label="Open Atelier live page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
           </div>
-          <div class="frame__view"><img class="frame__poster" loading="lazy" src="site/assets/thumbs/atelier-examples-workspace.jpg" srcset="site/assets/thumbs/atelier-examples-workspace.jpg 640w, site/assets/thumbs/atelier-examples-workspace-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="" width="640" height="400" decoding="async"><iframe data-src="atelier/examples/workspace.html" width="1280" height="800" title="Atelier live preview" loading="lazy" tabindex="-1"></iframe></div>
+          <a class="frame__view" href="atelier/examples/workspace.html" aria-label="Open the Atelier example page"><img class="frame__shot" loading="lazy" src="site/assets/thumbs/atelier-examples-workspace.jpg" srcset="site/assets/thumbs/atelier-examples-workspace.jpg 640w, site/assets/thumbs/atelier-examples-workspace-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="Atelier example page" width="1280" height="800" decoding="async"><span class="frame__hint" aria-hidden="true">Open live page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span></a>
         </div>
         <div class="show__body">
           <div>
             <h3 class="show__name" style='font-family:Archivo,sans-serif;font-weight:800;font-stretch:112%;letter-spacing:0;text-transform:uppercase'>Atelier</h3>
             <p class="show__lede">A tactile, precise product UI: frosted panels on a cool canvas, numbered uppercase sections — and an appearance panel whose theme, accent, density, radius, motion and contrast really work.</p>
             <div class="swatches" aria-label="Key colors"><span style="background:#2F7BF5" data-hex="#2F7BF5" title="Cobalt #2F7BF5"></span><span style="background:#1FB196" data-hex="#1FB196" title="Teal #1FB196"></span><span style="background:#F4A23A" data-hex="#F4A23A" title="Amber #F4A23A"></span><span style="background:#EA5B5B" data-hex="#EA5B5B" title="Danger #EA5B5B"></span><span style="background:#1B2232" data-hex="#1B2232" title="Ink #1B2232"></span></div>
+          </div>
+          <dl class="meta"><dt>Material</dt><dd>Frosted glass, 1px borders, cool shadows</dd><dt>Type</dt><dd>Archivo, semi-expanded caps</dd><dt>Variants</dt><dd>Light/dark, 5 accents, 3 densities, radius</dd><dt>Best for</dt><dd>B2B SaaS, project tools, admin consoles</dd></dl>
           <div class="show__actions">
             <a class="pill pill--solid" href="atelier/examples/workspace.html">Open live page</a>
             <a class="pill" href="atelier/index.html">Styleguide</a>
+            <a class="pill" href="atelier/components.html">Components</a>
             <a class="pill" href="https://github.com/seiya058904/ui-design-languages/blob/main/atelier/DESIGN.md">DESIGN.md</a>
             <button class="pill" type="button" data-copy="Build my screen with the Atelier design language from https://github.com/seiya058904/ui-design-languages. Read atelier/DESIGN.md (spec) and atelier/AGENTS.md (rules) first. Link https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/atelier/css/atelier.css and its fonts, compose only from .atelier-* classes, take every color, radius, shadow and duration from var(--atelier-*) tokens, and keep page CSS to layout."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy AI prompt</span></button>
           </div>
-          </div>
-          <dl class="meta"><dt>Material</dt><dd>Frosted glass, 1px borders, cool shadows</dd><dt>Type</dt><dd>Archivo, semi-expanded caps</dd><dt>Variants</dt><dd>Light/dark, 5 accents, 3 densities, radius</dd><dt>Best for</dt><dd>B2B SaaS, project tools, admin consoles</dd></dl>
         </div>
       </article>
       <article class="show" id="tactile" style="--c:#2C8C8F" aria-label="Tactile">
@@ -180,24 +184,25 @@
           <div class="frame__bar">
             <span class="frame__dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="frame__url">tactile/examples/home.html</span>
-            <div class="seg" role="group" aria-label="Tactile preview"><button type="button" aria-pressed="true" data-src="tactile/examples/home.html">Example</button><button type="button" aria-pressed="false" data-src="tactile/index.html">Styleguide</button><button type="button" aria-pressed="false" data-src="tactile/components.html">Components</button></div>
+            <div class="seg" role="group" aria-label="Tactile preview"><button type="button" aria-pressed="true" data-src="tactile/examples/home.html">Example</button><button type="button" aria-pressed="false" data-src="tactile/index.html">Styleguide</button></div>
             <a class="frame__open" href="tactile/examples/home.html" aria-label="Open Tactile live page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
           </div>
-          <div class="frame__view"><img class="frame__poster" loading="lazy" src="site/assets/thumbs/tactile-examples-home.jpg" srcset="site/assets/thumbs/tactile-examples-home.jpg 640w, site/assets/thumbs/tactile-examples-home-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="" width="640" height="400" decoding="async"><iframe data-src="tactile/examples/home.html" width="1280" height="800" title="Tactile live preview" loading="lazy" tabindex="-1"></iframe></div>
+          <a class="frame__view" href="tactile/examples/home.html" aria-label="Open the Tactile example page"><img class="frame__shot" loading="lazy" src="site/assets/thumbs/tactile-examples-home.jpg" srcset="site/assets/thumbs/tactile-examples-home.jpg 640w, site/assets/thumbs/tactile-examples-home-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="Tactile example page" width="1280" height="800" decoding="async"><span class="frame__hint" aria-hidden="true">Open live page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span></a>
         </div>
         <div class="show__body">
           <div>
             <h3 class="show__name" style='font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;letter-spacing:-0.04em'>Tactile</h3>
             <p class="show__lede">Warm sand neumorphism. Every surface is the page itself; depth comes only from light. Base, raised, inset and pressed — one material, four states — with a deep teal accent.</p>
             <div class="swatches" aria-label="Key colors"><span style="background:#EEE6D9" data-hex="#EEE6D9" title="Sand #EEE6D9"></span><span style="background:#E5DACA" data-hex="#E5DACA" title="Pressed #E5DACA"></span><span style="background:#0E5357" data-hex="#0E5357" title="Teal #0E5357"></span><span style="background:#1C2828" data-hex="#1C2828" title="Ink #1C2828"></span><span style="background:#E7E8EB" data-hex="#E7E8EB" title="Stone #E7E8EB"></span></div>
+          </div>
+          <dl class="meta"><dt>Material</dt><dd>Same-color surfaces, paired light and shade</dd><dt>Type</dt><dd>Plus Jakarta Sans, bold caps labels</dd><dt>Variants</dt><dd>Light, dark, auto · sand, stone</dd><dt>Best for</dt><dd>Smart home, devices, audio, settings</dd></dl>
           <div class="show__actions">
             <a class="pill pill--solid" href="tactile/examples/home.html">Open live page</a>
             <a class="pill" href="tactile/index.html">Styleguide</a>
+            <a class="pill" href="tactile/components.html">Components</a>
             <a class="pill" href="https://github.com/seiya058904/ui-design-languages/blob/main/tactile/DESIGN.md">DESIGN.md</a>
             <button class="pill" type="button" data-copy="Build my screen with the Tactile design language from https://github.com/seiya058904/ui-design-languages. Read tactile/DESIGN.md (spec) and tactile/AGENTS.md (rules) first. Link https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/tactile/css/tactile.css and its fonts, compose only from .tactile-* classes, take every color, radius, shadow and duration from var(--tactile-*) tokens, and keep page CSS to layout."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy AI prompt</span></button>
           </div>
-          </div>
-          <dl class="meta"><dt>Material</dt><dd>Same-color surfaces, paired light and shade</dd><dt>Type</dt><dd>Plus Jakarta Sans, bold caps labels</dd><dt>Variants</dt><dd>Light, dark, auto · sand, stone</dd><dt>Best for</dt><dd>Smart home, devices, audio, settings</dd></dl>
         </div>
       </article>
       <article class="show" id="sketch" style="--c:#A9C7EC" aria-label="Sketch">
@@ -205,24 +210,25 @@
           <div class="frame__bar">
             <span class="frame__dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="frame__url">sketch/examples/settings.html</span>
-            <div class="seg" role="group" aria-label="Sketch preview"><button type="button" aria-pressed="true" data-src="sketch/examples/settings.html">Example</button><button type="button" aria-pressed="false" data-src="sketch/index.html">Styleguide</button><button type="button" aria-pressed="false" data-src="sketch/components.html">Components</button></div>
+            <div class="seg" role="group" aria-label="Sketch preview"><button type="button" aria-pressed="true" data-src="sketch/examples/settings.html">Example</button><button type="button" aria-pressed="false" data-src="sketch/index.html">Styleguide</button></div>
             <a class="frame__open" href="sketch/examples/settings.html" aria-label="Open Sketch live page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
           </div>
-          <div class="frame__view"><img class="frame__poster" loading="lazy" src="site/assets/thumbs/sketch-examples-settings.jpg" srcset="site/assets/thumbs/sketch-examples-settings.jpg 640w, site/assets/thumbs/sketch-examples-settings-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="" width="640" height="400" decoding="async"><iframe data-src="sketch/examples/settings.html" width="1280" height="800" title="Sketch live preview" loading="lazy" tabindex="-1"></iframe></div>
+          <a class="frame__view" href="sketch/examples/settings.html" aria-label="Open the Sketch example page"><img class="frame__shot" loading="lazy" src="site/assets/thumbs/sketch-examples-settings.jpg" srcset="site/assets/thumbs/sketch-examples-settings.jpg 640w, site/assets/thumbs/sketch-examples-settings-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="Sketch example page" width="1280" height="800" decoding="async"><span class="frame__hint" aria-hidden="true">Open live page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span></a>
         </div>
         <div class="show__body">
           <div>
             <h3 class="show__name" style='font-family:Itim,sans-serif;font-weight:400;letter-spacing:0'>Sketch</h3>
             <p class="show__lede">Hand-drawn ink on cream paper: uneven outlines, drawn offset shadows, hatching for emphasis and watercolor tints for meaning. A careful wireframe that works like a real UI.</p>
             <div class="swatches" aria-label="Key colors"><span style="background:#F6F1E6" data-hex="#F6F1E6" title="Paper #F6F1E6"></span><span style="background:#2B2A27" data-hex="#2B2A27" title="Ink #2B2A27"></span><span style="background:#A9C7EC" data-hex="#A9C7EC" title="Brand #A9C7EC"></span><span style="background:#B4DBAF" data-hex="#B4DBAF" title="Success #B4DBAF"></span><span style="background:#F0AEAB" data-hex="#F0AEAB" title="Danger #F0AEAB"></span></div>
+          </div>
+          <dl class="meta"><dt>Material</dt><dd>Paper, ink outlines, hatching</dd><dt>Type</dt><dd>Itim + Patrick Hand</dd><dt>Variants</dt><dd>Paper only, by intent</dd><dt>Best for</dt><dd>Prototypes, design tools, docs, workshops</dd></dl>
           <div class="show__actions">
             <a class="pill pill--solid" href="sketch/examples/settings.html">Open live page</a>
             <a class="pill" href="sketch/index.html">Styleguide</a>
+            <a class="pill" href="sketch/components.html">Components</a>
             <a class="pill" href="https://github.com/seiya058904/ui-design-languages/blob/main/sketch/DESIGN.md">DESIGN.md</a>
             <button class="pill" type="button" data-copy="Build my screen with the Sketch design language from https://github.com/seiya058904/ui-design-languages. Read sketch/DESIGN.md (spec) and sketch/AGENTS.md (rules) first. Link https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/sketch/css/sketch.css and its fonts, compose only from .sketch-* classes, take every color, radius, shadow and duration from var(--sketch-*) tokens, and keep page CSS to layout."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy AI prompt</span></button>
           </div>
-          </div>
-          <dl class="meta"><dt>Material</dt><dd>Paper, ink outlines, hatching</dd><dt>Type</dt><dd>Itim + Patrick Hand</dd><dt>Variants</dt><dd>Paper only, by intent</dd><dt>Best for</dt><dd>Prototypes, design tools, docs, workshops</dd></dl>
         </div>
       </article>
       <article class="show" id="braun" style="--c:#FF4F00" aria-label="Braun">
@@ -230,24 +236,25 @@
           <div class="frame__bar">
             <span class="frame__dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="frame__url">braun/examples/console.html</span>
-            <div class="seg" role="group" aria-label="Braun preview"><button type="button" aria-pressed="true" data-src="braun/examples/console.html">Example</button><button type="button" aria-pressed="false" data-src="braun/index.html">Styleguide</button><button type="button" aria-pressed="false" data-src="braun/components.html">Components</button></div>
+            <div class="seg" role="group" aria-label="Braun preview"><button type="button" aria-pressed="true" data-src="braun/examples/console.html">Example</button><button type="button" aria-pressed="false" data-src="braun/index.html">Styleguide</button></div>
             <a class="frame__open" href="braun/examples/console.html" aria-label="Open Braun live page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
           </div>
-          <div class="frame__view"><img class="frame__poster" loading="lazy" src="site/assets/thumbs/braun-examples-console.jpg" srcset="site/assets/thumbs/braun-examples-console.jpg 640w, site/assets/thumbs/braun-examples-console-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="" width="640" height="400" decoding="async"><iframe data-src="braun/examples/console.html" width="1280" height="800" title="Braun live preview" loading="lazy" tabindex="-1"></iframe></div>
+          <a class="frame__view" href="braun/examples/console.html" aria-label="Open the Braun example page"><img class="frame__shot" loading="lazy" src="site/assets/thumbs/braun-examples-console.jpg" srcset="site/assets/thumbs/braun-examples-console.jpg 640w, site/assets/thumbs/braun-examples-console-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="Braun example page" width="1280" height="800" decoding="async"><span class="frame__hint" aria-hidden="true">Open live page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span></a>
         </div>
         <div class="show__body">
           <div>
             <h3 class="show__name" style='font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-0.03em;text-transform:uppercase'>Braun</h3>
             <p class="show__lede">A precision instrument panel in anodized aluminium: POM keycaps that travel into a detent, a rotary dial you can really turn, LED meters that light up segment by segment — and one International Orange.</p>
             <div class="swatches" aria-label="Key colors"><span style="background:#FF4F00" data-hex="#FF4F00" title="Orange #FF4F00"></span><span style="background:#E5E5E0" data-hex="#E5E5E0" title="Aluminium #E5E5E0"></span><span style="background:#C9C9C6" data-hex="#C9C9C6" title="Chassis #C9C9C6"></span><span style="background:#1B1B1B" data-hex="#1B1B1B" title="Obsidian #1B1B1B"></span><span style="background:#18D259" data-hex="#18D259" title="Signal #18D259"></span></div>
+          </div>
+          <dl class="meta"><dt>Material</dt><dd>Anodized aluminium, POM keys, a perforated grille</dd><dt>Type</dt><dd>Space Grotesk + IBM Plex Mono</dd><dt>Variants</dt><dd>Aluminium, black edition, auto</dd><dt>Best for</dt><dd>Hardware companions, lab and device consoles</dd></dl>
           <div class="show__actions">
             <a class="pill pill--solid" href="braun/examples/console.html">Open live page</a>
             <a class="pill" href="braun/index.html">Styleguide</a>
+            <a class="pill" href="braun/components.html">Components</a>
             <a class="pill" href="https://github.com/seiya058904/ui-design-languages/blob/main/braun/DESIGN.md">DESIGN.md</a>
             <button class="pill" type="button" data-copy="Build my screen with the Braun design language from https://github.com/seiya058904/ui-design-languages. Read braun/DESIGN.md (spec) and braun/AGENTS.md (rules) first. Link https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/braun/css/braun.css and its fonts, compose only from .braun-* classes, take every color, radius, shadow and duration from var(--braun-*) tokens, and keep page CSS to layout."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy AI prompt</span></button>
           </div>
-          </div>
-          <dl class="meta"><dt>Material</dt><dd>Anodized aluminium, POM keys, a perforated grille</dd><dt>Type</dt><dd>Space Grotesk + IBM Plex Mono</dd><dt>Variants</dt><dd>Aluminium, black edition, auto</dd><dt>Best for</dt><dd>Hardware companions, lab and device consoles</dd></dl>
         </div>
       </article>
       <article class="show" id="obsidian" style="--c:#38BDF8" aria-label="Obsidian">
@@ -255,24 +262,25 @@
           <div class="frame__bar">
             <span class="frame__dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="frame__url">obsidian/examples/dashboard.html</span>
-            <div class="seg" role="group" aria-label="Obsidian preview"><button type="button" aria-pressed="true" data-src="obsidian/examples/dashboard.html">Example</button><button type="button" aria-pressed="false" data-src="obsidian/index.html">Styleguide</button><button type="button" aria-pressed="false" data-src="obsidian/components.html">Components</button></div>
+            <div class="seg" role="group" aria-label="Obsidian preview"><button type="button" aria-pressed="true" data-src="obsidian/examples/dashboard.html">Example</button><button type="button" aria-pressed="false" data-src="obsidian/index.html">Styleguide</button></div>
             <a class="frame__open" href="obsidian/examples/dashboard.html" aria-label="Open Obsidian live page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
           </div>
-          <div class="frame__view"><img class="frame__poster" loading="lazy" src="site/assets/thumbs/obsidian-examples-dashboard.jpg" srcset="site/assets/thumbs/obsidian-examples-dashboard.jpg 640w, site/assets/thumbs/obsidian-examples-dashboard-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="" width="640" height="400" decoding="async"><iframe data-src="obsidian/examples/dashboard.html" width="1280" height="800" title="Obsidian live preview" loading="lazy" tabindex="-1"></iframe></div>
+          <a class="frame__view" href="obsidian/examples/dashboard.html" aria-label="Open the Obsidian example page"><img class="frame__shot" loading="lazy" src="site/assets/thumbs/obsidian-examples-dashboard.jpg" srcset="site/assets/thumbs/obsidian-examples-dashboard.jpg 640w, site/assets/thumbs/obsidian-examples-dashboard-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="Obsidian example page" width="1280" height="800" decoding="async"><span class="frame__hint" aria-hidden="true">Open live page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span></a>
         </div>
         <div class="show__body">
           <div>
             <h3 class="show__name" style='font-family:Inter,sans-serif;font-weight:800;letter-spacing:0.02em;text-transform:uppercase'>Obsidian</h3>
             <p class="show__lede">Dark first. Four layers of frosted glass over a deep obsidian air, 1px specular edges that catch the light where your pointer is, one luminous accent and liquid motion.</p>
             <div class="swatches" aria-label="Key colors"><span style="background:#0B0D12" data-hex="#0B0D12" title="Obsidian #0B0D12"></span><span style="background:#151922" data-hex="#151922" title="Surface #151922"></span><span style="background:#38BDF8" data-hex="#38BDF8" title="Glacier #38BDF8"></span><span style="background:#10B981" data-hex="#10B981" title="Emerald #10B981"></span><span style="background:#A78BFA" data-hex="#A78BFA" title="Violet #A78BFA"></span></div>
+          </div>
+          <dl class="meta"><dt>Material</dt><dd>Frosted glass layers, specular edges, glow</dd><dt>Type</dt><dd>Inter + JetBrains Mono</dd><dt>Variants</dt><dd>Dark · glacier, emerald, violet</dd><dt>Best for</dt><dd>AI tools, analytics, developer products</dd></dl>
           <div class="show__actions">
             <a class="pill pill--solid" href="obsidian/examples/dashboard.html">Open live page</a>
             <a class="pill" href="obsidian/index.html">Styleguide</a>
+            <a class="pill" href="obsidian/components.html">Components</a>
             <a class="pill" href="https://github.com/seiya058904/ui-design-languages/blob/main/obsidian/DESIGN.md">DESIGN.md</a>
             <button class="pill" type="button" data-copy="Build my screen with the Obsidian design language from https://github.com/seiya058904/ui-design-languages. Read obsidian/DESIGN.md (spec) and obsidian/AGENTS.md (rules) first. Link https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/obsidian/css/obsidian.css and its fonts, compose only from .obsidian-* classes, take every color, radius, shadow and duration from var(--obsidian-*) tokens, and keep page CSS to layout."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy AI prompt</span></button>
           </div>
-          </div>
-          <dl class="meta"><dt>Material</dt><dd>Frosted glass layers, specular edges, glow</dd><dt>Type</dt><dd>Inter + JetBrains Mono</dd><dt>Variants</dt><dd>Dark · glacier, emerald, violet</dd><dt>Best for</dt><dd>AI tools, analytics, developer products</dd></dl>
         </div>
       </article>
       <article class="show" id="zine" style="--c:#C8FF00" aria-label="Zine">
@@ -280,24 +288,25 @@
           <div class="frame__bar">
             <span class="frame__dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="frame__url">zine/examples/studio.html</span>
-            <div class="seg" role="group" aria-label="Zine preview"><button type="button" aria-pressed="true" data-src="zine/examples/studio.html">Example</button><button type="button" aria-pressed="false" data-src="zine/index.html">Styleguide</button><button type="button" aria-pressed="false" data-src="zine/components.html">Components</button></div>
+            <div class="seg" role="group" aria-label="Zine preview"><button type="button" aria-pressed="true" data-src="zine/examples/studio.html">Example</button><button type="button" aria-pressed="false" data-src="zine/index.html">Styleguide</button></div>
             <a class="frame__open" href="zine/examples/studio.html" aria-label="Open Zine live page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
           </div>
-          <div class="frame__view"><img class="frame__poster" loading="lazy" src="site/assets/thumbs/zine-examples-studio.jpg" srcset="site/assets/thumbs/zine-examples-studio.jpg 640w, site/assets/thumbs/zine-examples-studio-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="" width="640" height="400" decoding="async"><iframe data-src="zine/examples/studio.html" width="1280" height="800" title="Zine live preview" loading="lazy" tabindex="-1"></iframe></div>
+          <a class="frame__view" href="zine/examples/studio.html" aria-label="Open the Zine example page"><img class="frame__shot" loading="lazy" src="site/assets/thumbs/zine-examples-studio.jpg" srcset="site/assets/thumbs/zine-examples-studio.jpg 640w, site/assets/thumbs/zine-examples-studio-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="Zine example page" width="1280" height="800" decoding="async"><span class="frame__hint" aria-hidden="true">Open live page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span></a>
         </div>
         <div class="show__body">
           <div>
             <h3 class="show__name" style='font-family:'Archivo Black',sans-serif;font-weight:400;letter-spacing:-0.01em;text-transform:uppercase'>Zine</h3>
             <p class="show__lede">Neo-brutalist print: newsprint, 2px black rules and zero-blur hard shadows. Buttons lift off the page and slam flat, checks are stamped on, folder tabs run straight into their sheets.</p>
             <div class="swatches" aria-label="Key colors"><span style="background:#F4F1EA" data-hex="#F4F1EA" title="Newsprint #F4F1EA"></span><span style="background:#111111" data-hex="#111111" title="Black #111111"></span><span style="background:#C8FF00" data-hex="#C8FF00" title="Acid lime #C8FF00"></span><span style="background:#FF3B1F" data-hex="#FF3B1F" title="Vermilion #FF3B1F"></span><span style="background:#0057FF" data-hex="#0057FF" title="Cobalt #0057FF"></span></div>
+          </div>
+          <dl class="meta"><dt>Material</dt><dd>Newsprint, ink rules, hard shadows</dd><dt>Type</dt><dd>Archivo Black + Space Grotesk + Space Mono</dd><dt>Variants</dt><dd>Newsprint, inverted print, auto</dd><dt>Best for</dt><dd>Studios, publishing, portfolios, launches</dd></dl>
           <div class="show__actions">
             <a class="pill pill--solid" href="zine/examples/studio.html">Open live page</a>
             <a class="pill" href="zine/index.html">Styleguide</a>
+            <a class="pill" href="zine/components.html">Components</a>
             <a class="pill" href="https://github.com/seiya058904/ui-design-languages/blob/main/zine/DESIGN.md">DESIGN.md</a>
             <button class="pill" type="button" data-copy="Build my screen with the Zine design language from https://github.com/seiya058904/ui-design-languages. Read zine/DESIGN.md (spec) and zine/AGENTS.md (rules) first. Link https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/zine/css/zine.css and its fonts, compose only from .zine-* classes, take every color, radius, shadow and duration from var(--zine-*) tokens, and keep page CSS to layout."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy AI prompt</span></button>
           </div>
-          </div>
-          <dl class="meta"><dt>Material</dt><dd>Newsprint, ink rules, hard shadows</dd><dt>Type</dt><dd>Archivo Black + Space Grotesk + Space Mono</dd><dt>Variants</dt><dd>Newsprint, inverted print, auto</dd><dt>Best for</dt><dd>Studios, publishing, portfolios, launches</dd></dl>
         </div>
       </article>
       <article class="show" id="terrarium" style="--c:#C85A32" aria-label="Terrarium">
@@ -305,24 +314,25 @@
           <div class="frame__bar">
             <span class="frame__dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="frame__url">terrarium/examples/journal.html</span>
-            <div class="seg" role="group" aria-label="Terrarium preview"><button type="button" aria-pressed="true" data-src="terrarium/examples/journal.html">Example</button><button type="button" aria-pressed="false" data-src="terrarium/index.html">Styleguide</button><button type="button" aria-pressed="false" data-src="terrarium/components.html">Components</button></div>
+            <div class="seg" role="group" aria-label="Terrarium preview"><button type="button" aria-pressed="true" data-src="terrarium/examples/journal.html">Example</button><button type="button" aria-pressed="false" data-src="terrarium/index.html">Styleguide</button></div>
             <a class="frame__open" href="terrarium/examples/journal.html" aria-label="Open Terrarium live page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
           </div>
-          <div class="frame__view"><img class="frame__poster" loading="lazy" src="site/assets/thumbs/terrarium-examples-journal.jpg" srcset="site/assets/thumbs/terrarium-examples-journal.jpg 640w, site/assets/thumbs/terrarium-examples-journal-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="" width="640" height="400" decoding="async"><iframe data-src="terrarium/examples/journal.html" width="1280" height="800" title="Terrarium live preview" loading="lazy" tabindex="-1"></iframe></div>
+          <a class="frame__view" href="terrarium/examples/journal.html" aria-label="Open the Terrarium example page"><img class="frame__shot" loading="lazy" src="site/assets/thumbs/terrarium-examples-journal.jpg" srcset="site/assets/thumbs/terrarium-examples-journal.jpg 640w, site/assets/thumbs/terrarium-examples-journal-lg.jpg 1280w" sizes="(max-width: 1100px) 100vw, 1020px" alt="Terrarium example page" width="1280" height="800" decoding="async"><span class="frame__hint" aria-hidden="true">Open live page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span></a>
         </div>
         <div class="show__body">
           <div>
             <h3 class="show__name" style='font-family:Fraunces,serif;font-weight:600;font-variation-settings:'SOFT' 100;letter-spacing:0.01em;text-transform:uppercase'>Terrarium</h3>
             <p class="show__lede">Warm botanical ceramics: oat linen, glazed cream cards, pebbles and a windowsill palette of terracotta, moss and ochre. A soft serif, and motion that settles like a leaf.</p>
             <div class="swatches" aria-label="Key colors"><span style="background:#C85A32" data-hex="#C85A32" title="Terracotta #C85A32"></span><span style="background:#3E5C4A" data-hex="#3E5C4A" title="Moss #3E5C4A"></span><span style="background:#D49A3A" data-hex="#D49A3A" title="Ochre #D49A3A"></span><span style="background:#E9DFD0" data-hex="#E9DFD0" title="Linen #E9DFD0"></span><span style="background:#26221E" data-hex="#26221E" title="Espresso #26221E"></span></div>
+          </div>
+          <dl class="meta"><dt>Material</dt><dd>Glazed ceramic, linen, pebbles</dd><dt>Type</dt><dd>Fraunces + Plus Jakarta Sans</dd><dt>Variants</dt><dd>Daylight, evening, auto</dd><dt>Best for</dt><dd>Journaling, wellbeing, habits, care</dd></dl>
           <div class="show__actions">
             <a class="pill pill--solid" href="terrarium/examples/journal.html">Open live page</a>
             <a class="pill" href="terrarium/index.html">Styleguide</a>
+            <a class="pill" href="terrarium/components.html">Components</a>
             <a class="pill" href="https://github.com/seiya058904/ui-design-languages/blob/main/terrarium/DESIGN.md">DESIGN.md</a>
             <button class="pill" type="button" data-copy="Build my screen with the Terrarium design language from https://github.com/seiya058904/ui-design-languages. Read terrarium/DESIGN.md (spec) and terrarium/AGENTS.md (rules) first. Link https://cdn.jsdelivr.net/gh/seiya058904/ui-design-languages@main/terrarium/css/terrarium.css and its fonts, compose only from .terrarium-* classes, take every color, radius, shadow and duration from var(--terrarium-*) tokens, and keep page CSS to layout."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy AI prompt</span></button>
           </div>
-          </div>
-          <dl class="meta"><dt>Material</dt><dd>Glazed ceramic, linen, pebbles</dd><dt>Type</dt><dd>Fraunces + Plus Jakarta Sans</dd><dt>Variants</dt><dd>Daylight, evening, auto</dd><dt>Best for</dt><dd>Journaling, wellbeing, habits, care</dd></dl>
         </div>
       </article>
         </div>
@@ -333,11 +343,11 @@
   <section class="section live" id="live" aria-labelledby="live-t">
     <div class="wrap">
       <div class="section__head">
-        <h2 id="live-t">Not pictures. Press them.</h2>
-        <p>Every tile is a real component, styled by its own language's CSS and running its own script. Drag the dial, start the timer, tear the ticket.</p>
+        <h2 id="live-t">Made to be pressed.</h2>
+        <p>A dial that clicks at each detent, a timer whose halo breathes, a ticket you can tear. Pick a tile to try it live on the component wall, with its full source.</p>
       </div>
-      <ul class="tray" aria-label="Live components" data-tray><li class="tray__item" data-pick="braun/slider/rotary-dial"></li><li class="tray__item" data-pick="lilac/timer/focus-timer"></li><li class="tray__item" data-pick="zine/ticket/tear-off-ticket"></li><li class="tray__item" data-pick="tactile/dial/thermostat"></li><li class="tray__item tray__item--wide" data-pick="sketch/flow/flow-card"></li><li class="tray__item" data-pick="obsidian/media/now-playing"></li><li class="tray__item" data-pick="terrarium/mood/mood-dial"></li><li class="tray__item" data-pick="atelier/filter/filter-capsules"></li><li class="tray__item" data-pick="clay/stepper/stepper"></li><li class="tray__item" data-pick="obsidian/dock/floating-dock"></li><li class="tray__item" data-pick="braun/progress/peak-meters"></li></ul>
-      <div class="tray-foot"><a class="pill" href="components.html">See all 96 on the component wall</a></div>
+      <ul class="tray" aria-label="Live components" data-tray><li class="tray__item" data-pick="braun/slider/rotary-dial"><a class="tray__link" href="components.html#braun/slider"><img src="site/assets/home/tray-braun-rotary-dial.jpg" alt="Braun Dial &amp; fader" width="660" height="800" loading="lazy" decoding="async"><span class="tag"><i style="background:#FF4F00"></i><b style="font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-0.03em;text-transform:uppercase">Braun</b><span>Dial &amp; fader</span></span></a></li><li class="tray__item" data-pick="lilac/timer/focus-timer"><a class="tray__link" href="components.html#lilac/timer"><img src="site/assets/home/tray-lilac-focus-timer.jpg" alt="Lilac Focus timer" width="660" height="800" loading="lazy" decoding="async"><span class="tag"><i style="background:#7C55FF"></i><b style="font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:0.04em;text-transform:uppercase">Lilac</b><span>Focus timer</span></span></a></li><li class="tray__item" data-pick="zine/ticket/tear-off-ticket"><a class="tray__link" href="components.html#zine/ticket"><img src="site/assets/home/tray-zine-tear-off-ticket.jpg" alt="Zine Ticket" width="660" height="800" loading="lazy" decoding="async"><span class="tag"><i style="background:#C8FF00"></i><b style="font-family:'Archivo Black',sans-serif;font-weight:400;letter-spacing:-0.01em;text-transform:uppercase">Zine</b><span>Ticket</span></span></a></li><li class="tray__item" data-pick="tactile/dial/thermostat"><a class="tray__link" href="components.html#tactile/dial"><img src="site/assets/home/tray-tactile-thermostat.jpg" alt="Tactile Thermostat dial" width="660" height="800" loading="lazy" decoding="async"><span class="tag"><i style="background:#2C8C8F"></i><b style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;letter-spacing:-0.04em">Tactile</b><span>Thermostat dial</span></span></a></li><li class="tray__item tray__item--wide" data-pick="sketch/flow/flow-card"><a class="tray__link" href="components.html#sketch/flow"><img src="site/assets/home/tray-sketch-flow-card.jpg" alt="Sketch Flow" width="1348" height="800" loading="lazy" decoding="async"><span class="tag"><i style="background:#A9C7EC"></i><b style="font-family:Itim,sans-serif;font-weight:400;letter-spacing:0">Sketch</b><span>Flow</span></span></a></li><li class="tray__item" data-pick="obsidian/media/now-playing"><a class="tray__link" href="components.html#obsidian/media"><img src="site/assets/home/tray-obsidian-now-playing.jpg" alt="Obsidian Media card" width="660" height="800" loading="lazy" decoding="async"><span class="tag"><i style="background:#38BDF8"></i><b style="font-family:Inter,sans-serif;font-weight:800;letter-spacing:0.02em;text-transform:uppercase">Obsidian</b><span>Media card</span></span></a></li><li class="tray__item" data-pick="terrarium/mood/mood-dial"><a class="tray__link" href="components.html#terrarium/mood"><img src="site/assets/home/tray-terrarium-mood-dial.jpg" alt="Terrarium Mood dial" width="660" height="800" loading="lazy" decoding="async"><span class="tag"><i style="background:#C85A32"></i><b style="font-family:Fraunces,serif;font-weight:600;font-variation-settings:'SOFT' 100;letter-spacing:0.01em;text-transform:uppercase">Terrarium</b><span>Mood dial</span></span></a></li><li class="tray__item" data-pick="atelier/filter/filter-capsules"><a class="tray__link" href="components.html#atelier/filter"><img src="site/assets/home/tray-atelier-filter-capsules.jpg" alt="Atelier Filter bar" width="660" height="800" loading="lazy" decoding="async"><span class="tag"><i style="background:#2F7BF5"></i><b style="font-family:Archivo,sans-serif;font-weight:800;font-stretch:112%;text-transform:uppercase;letter-spacing:0">Atelier</b><span>Filter bar</span></span></a></li><li class="tray__item" data-pick="clay/stepper/stepper"><a class="tray__link" href="components.html#clay/stepper"><img src="site/assets/home/tray-clay-stepper.jpg" alt="Clay Stepper" width="660" height="800" loading="lazy" decoding="async"><span class="tag"><i style="background:#A8E6CF"></i><b style="font-family:Inter,sans-serif;font-weight:700;letter-spacing:-0.045em">Clay</b><span>Stepper</span></span></a></li><li class="tray__item" data-pick="obsidian/dock/floating-dock"><a class="tray__link" href="components.html#obsidian/dock"><img src="site/assets/home/tray-obsidian-floating-dock.jpg" alt="Obsidian Dock" width="660" height="800" loading="lazy" decoding="async"><span class="tag"><i style="background:#38BDF8"></i><b style="font-family:Inter,sans-serif;font-weight:800;letter-spacing:0.02em;text-transform:uppercase">Obsidian</b><span>Dock</span></span></a></li><li class="tray__item" data-pick="braun/progress/peak-meters"><a class="tray__link" href="components.html#braun/progress"><img src="site/assets/home/tray-braun-peak-meters.jpg" alt="Braun Meters" width="660" height="800" loading="lazy" decoding="async"><span class="tag"><i style="background:#FF4F00"></i><b style="font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-0.03em;text-transform:uppercase">Braun</b><span>Meters</span></span></a></li></ul>
+      <div class="tray-foot"><a class="pill" href="components.html">Open the component wall</a></div>
     </div>
   </section>
 
@@ -348,14 +358,14 @@
           <h2 id="same-t">Same markup. Nine languages.</h2>
         </div>
         <div>
-          <p>Every card is the identical HTML; only the class prefix changes. Switch the theme and seven of them turn dark. Sketch stays on paper and Obsidian was dark already.</p>
+          <p>Every card is the identical HTML; only the class prefix changes. Switch the theme and seven of them turn dark. Sketch stays on paper and Obsidian was dark already. Open any card to try it live.</p>
           <div class="section__tools">
             <div class="seg" role="group" aria-label="Theme" data-same-theme><button type="button" aria-pressed="true" data-theme-pick="light">Light</button><button type="button" aria-pressed="false" data-theme-pick="dark">Dark</button></div>
             <code class="same-code" aria-hidden="true"><span>&lt;button class="<b data-prefix>clay</b>-btn <b data-prefix>clay</b>-btn--primary"&gt;</span></code>
           </div>
         </div>
       </div>
-      <div class="same"><figure data-prefix="clay" style="--pc:#A8E6CF"><div class="same__view" data-compare="clay"></div><figcaption><span>Clay</span><code>.clay-btn</code></figcaption></figure><figure data-prefix="lilac" style="--pc:#7C55FF"><div class="same__view" data-compare="lilac"></div><figcaption><span>Lilac</span><code>.lilac-btn</code></figcaption></figure><figure data-prefix="atelier" style="--pc:#2F7BF5"><div class="same__view" data-compare="atelier"></div><figcaption><span>Atelier</span><code>.atelier-btn</code></figcaption></figure><figure data-prefix="tactile" style="--pc:#2C8C8F"><div class="same__view" data-compare="tactile"></div><figcaption><span>Tactile</span><code>.tactile-btn</code></figcaption></figure><figure data-prefix="sketch" style="--pc:#A9C7EC"><div class="same__view" data-compare="sketch"></div><figcaption><span>Sketch</span><code>.sketch-btn</code></figcaption></figure><figure data-prefix="braun" style="--pc:#FF4F00"><div class="same__view" data-compare="braun"></div><figcaption><span>Braun</span><code>.braun-btn</code></figcaption></figure><figure data-prefix="obsidian" style="--pc:#38BDF8"><div class="same__view" data-compare="obsidian"></div><figcaption><span>Obsidian</span><code>.obsidian-btn</code></figcaption></figure><figure data-prefix="zine" style="--pc:#C8FF00"><div class="same__view" data-compare="zine"></div><figcaption><span>Zine</span><code>.zine-btn</code></figcaption></figure><figure data-prefix="terrarium" style="--pc:#C85A32"><div class="same__view" data-compare="terrarium"></div><figcaption><span>Terrarium</span><code>.terrarium-btn</code></figcaption></figure></div>
+      <div class="same"><figure data-prefix="clay" style="--pc:#A8E6CF"><a class="same__view" data-compare="clay" href="site/compare/clay.html" aria-label="The Clay card, live"><img src="site/assets/home/same-clay.jpg" data-dark="site/assets/home/same-clay-dark.jpg" alt="" width="540" height="684" loading="lazy" decoding="async"></a><figcaption><span>Clay</span><code>.clay-btn</code></figcaption></figure><figure data-prefix="lilac" style="--pc:#7C55FF"><a class="same__view" data-compare="lilac" href="site/compare/lilac.html" aria-label="The Lilac card, live"><img src="site/assets/home/same-lilac.jpg" data-dark="site/assets/home/same-lilac-dark.jpg" alt="" width="540" height="684" loading="lazy" decoding="async"></a><figcaption><span>Lilac</span><code>.lilac-btn</code></figcaption></figure><figure data-prefix="atelier" style="--pc:#2F7BF5"><a class="same__view" data-compare="atelier" href="site/compare/atelier.html" aria-label="The Atelier card, live"><img src="site/assets/home/same-atelier.jpg" data-dark="site/assets/home/same-atelier-dark.jpg" alt="" width="540" height="684" loading="lazy" decoding="async"></a><figcaption><span>Atelier</span><code>.atelier-btn</code></figcaption></figure><figure data-prefix="tactile" style="--pc:#2C8C8F"><a class="same__view" data-compare="tactile" href="site/compare/tactile.html" aria-label="The Tactile card, live"><img src="site/assets/home/same-tactile.jpg" data-dark="site/assets/home/same-tactile-dark.jpg" alt="" width="540" height="684" loading="lazy" decoding="async"></a><figcaption><span>Tactile</span><code>.tactile-btn</code></figcaption></figure><figure data-prefix="sketch" style="--pc:#A9C7EC"><a class="same__view" data-compare="sketch" href="site/compare/sketch.html" aria-label="The Sketch card, live"><img src="site/assets/home/same-sketch.jpg" alt="" width="540" height="684" loading="lazy" decoding="async"></a><figcaption><span>Sketch</span><code>.sketch-btn</code></figcaption></figure><figure data-prefix="braun" style="--pc:#FF4F00"><a class="same__view" data-compare="braun" href="site/compare/braun.html" aria-label="The Braun card, live"><img src="site/assets/home/same-braun.jpg" data-dark="site/assets/home/same-braun-dark.jpg" alt="" width="540" height="684" loading="lazy" decoding="async"></a><figcaption><span>Braun</span><code>.braun-btn</code></figcaption></figure><figure data-prefix="obsidian" style="--pc:#38BDF8"><a class="same__view" data-compare="obsidian" href="site/compare/obsidian.html" aria-label="The Obsidian card, live"><img src="site/assets/home/same-obsidian.jpg" alt="" width="540" height="684" loading="lazy" decoding="async"></a><figcaption><span>Obsidian</span><code>.obsidian-btn</code></figcaption></figure><figure data-prefix="zine" style="--pc:#C8FF00"><a class="same__view" data-compare="zine" href="site/compare/zine.html" aria-label="The Zine card, live"><img src="site/assets/home/same-zine.jpg" data-dark="site/assets/home/same-zine-dark.jpg" alt="" width="540" height="684" loading="lazy" decoding="async"></a><figcaption><span>Zine</span><code>.zine-btn</code></figcaption></figure><figure data-prefix="terrarium" style="--pc:#C85A32"><a class="same__view" data-compare="terrarium" href="site/compare/terrarium.html" aria-label="The Terrarium card, live"><img src="site/assets/home/same-terrarium.jpg" data-dark="site/assets/home/same-terrarium-dark.jpg" alt="" width="540" height="684" loading="lazy" decoding="async"></a><figcaption><span>Terrarium</span><code>.terrarium-btn</code></figcaption></figure></div>
     </div>
   </section>
 
@@ -389,7 +399,7 @@ and compose only with .atelier-* classes.</pre><button class="pill" type="button
       <h2 class="sr-only" id="legal-t">Colophon</h2>
       <div class="colophon">
         <p><strong>Code and docs</strong>MIT. Use, change and ship them in commercial work.</p>
-        <p><strong>Type</strong>Funnel Display and Funnel Sans for the library; Inter, Cormorant Garamond, Manrope, Archivo, Plus Jakarta Sans, Itim, Patrick Hand, Space Grotesk, IBM Plex Mono, JetBrains Mono, Archivo Black, Space Mono and Fraunces for the languages. All via Google Fonts, SIL Open Font License.</p>
+        <p><strong>Type</strong>Funnel Display and Funnel Sans for the library's grey theme, Geist and Geist Mono for its dark one; Inter, Cormorant Garamond, Manrope, Archivo, Plus Jakarta Sans, Itim, Patrick Hand, Space Grotesk, IBM Plex Mono, JetBrains Mono, Archivo Black, Space Mono and Fraunces for the languages. All via Google Fonts, SIL Open Font License.</p>
         <p><strong>Icons</strong>Drawn for this repository as inline SVG, MIT.</p>
         <p><strong>References</strong>The images that inspired each language are not redistributed; every language is an original implementation. <a href="https://github.com/seiya058904/ui-design-languages/blob/main/docs/WORKFLOW.md">How a language is made</a></p>
       </div>
@@ -401,7 +411,6 @@ and compose only with .atelier-* classes.</pre><button class="pill" type="button
   <span>UI Design Languages. Nine complete languages, real pages, spec and code.</span>
   <nav aria-label="Footer"><a href="components.html">Component wall</a><a href="https://github.com/seiya058904/ui-design-languages/blob/main/docs/WORKFLOW.md">Workflow</a><a href="https://github.com/seiya058904/ui-design-languages">GitHub</a></nav>
 </footer>
-<script src="site/wall.js"></script>
 <script src="site/home.js"></script>
 <script src="site/smooth-scroll.js" defer></script>
 </body>

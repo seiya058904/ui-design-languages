@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" data-site-theme="booth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Homepage stills</title>
+  <meta name="robots" content="noindex">
+  <!-- Site chrome: renders the homepage's tray tiles and "Same markup" cards live, so that
+       `node scripts/snap.mjs --thumbs=home` can photograph them into site/assets/home/. The homepage
+       itself shows only those stills: it loads no pack CSS or JS, so it scrolls with nothing live in it.
+       The picks are read from index.html (.tray__item[data-pick], [data-compare]).
+       site/wall.js resolves packs.json and every pack from the site root, so this page sets a root
+       <base> first and adds its own stylesheet and scripts after it. -->
+  <script>
+    (function () {
+      var base = document.createElement("base");
+      base.href = new URL("../", location.href).href;
+      document.head.appendChild(base);
+      var css = document.createElement("link");
+      css.rel = "stylesheet"; css.setAttribute("href", "site/site.css"); // resolved against the root <base>
+      document.head.appendChild(css);
+      ["site/wall.js", "site/capture.js"].forEach(function (src) {
+        var s = document.createElement("script");
+        s.src = src; s.async = false;
+        document.head.appendChild(s);
+      });
+    })();
+  </script>
+  <style>
+    body { padding: 24px; background: #C9C9C6; }
+    .cap { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px; }
+    .cap-tile { display: flex; width: 330px; height: 400px; }
+    .cap-tile--wide { width: 674px; }
+    .cap-tile .wstage { flex: 1; min-height: 0; padding: 28px 24px 64px; border-radius: 0; }
+    .cap-same { width: 360px; }
+  </style>
+</head>
+<body>
+<div class="cap" data-cap></div>
+</body>
+</html>

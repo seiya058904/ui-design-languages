@@ -282,7 +282,7 @@ node scripts/check.mjs [pack]           # full pre-commit gate: tokens, links & 
 <summary><strong>📁 Repository layout &amp; verification scripts</strong></summary>
 
 ```text
-index.html                 Library homepage (live previews & comparison)
+index.html                 Library homepage: the shelf, previews and comparison (grey and dark themes)
 components.html            Component Wall: all 9 languages, 96 live components, search + source drawer
 packs.json                 Machine-readable registry of packs, tokens, fonts, variants & wall picks
 site/                      Website chrome only (wall.js, source.js, smooth-scroll.js — never part of a pack)
@@ -312,7 +312,7 @@ docs/
 
 ## 📄 Licenses
 
-Code and documentation: **[MIT](LICENSE)**. Fonts are loaded from Google Fonts under the **SIL Open Font License** (`Inter`, `Cormorant Garamond`, `Manrope`, `Archivo`, `Plus Jakarta Sans`, `Itim`, `Patrick Hand`, `Space Grotesk`, `IBM Plex Mono`, `JetBrains Mono`, `Archivo Black`, `Space Mono`, `Fraunces`, and `Funnel Display` / `Funnel Sans` for the library site). Icons are drawn for this repository. Reference images that inspired the packs are not redistributed.
+Code and documentation: **[MIT](LICENSE)**. Fonts are loaded from Google Fonts under the **SIL Open Font License** (`Inter`, `Cormorant Garamond`, `Manrope`, `Archivo`, `Plus Jakarta Sans`, `Itim`, `Patrick Hand`, `Space Grotesk`, `IBM Plex Mono`, `JetBrains Mono`, `Archivo Black`, `Space Mono`, `Fraunces`, and `Funnel Display` / `Funnel Sans` and `Geist` / `Geist Mono` for the library site's grey and dark themes). Icons are drawn for this repository. Reference images that inspired the packs are not redistributed.
 
 ---
 

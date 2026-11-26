@@ -937,6 +937,11 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
   .obsidian-dock__item { width: 36px; height: 36px; }
   .obsidian-dock__item .obsidian-icon { width: 17px; height: 17px; }
 }
+@container (max-width: 390px) {
+  .obsidian-dock { gap: 6px; padding: 8px 10px 12px; max-width: 100%; }
+  .obsidian-dock__item { width: 36px; height: 36px; }
+  .obsidian-dock__item .obsidian-icon { width: 17px; height: 17px; }
+}
 
 /* =========================================================================
    Media card — now playing: artwork that glows into the glass, a lit scrubber and transport keys.
@@ -1031,6 +1036,10 @@ textarea.obsidian-input { height: auto; min-height: 96px; padding: var(--obsidia
 @media (max-width: 480px) {
   .obsidian-media { grid-template-columns: minmax(0, 1fr); }
   .obsidian-media__art { width: min(100%, 220px); justify-self: center; }
+}
+@container (max-width: 380px) {
+  .obsidian-media { grid-template-columns: minmax(0, 1fr); }
+  .obsidian-media__art { width: min(100%, 160px); justify-self: center; }
 }
 
 /* =========================================================================

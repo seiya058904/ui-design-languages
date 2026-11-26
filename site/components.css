@@ -81,7 +81,7 @@ html[data-theme="dark"] .cw.is-unified:not(.is-light-only) .cw-note,
    .is-animating is removed once the glide finishes, so cards never sit permanently on GPU layers. */
 .wcard { position: absolute; top: 0; left: 0; contain: layout style; }
 .cw-grid.is-animating .wcard:not(.is-gone) { transition: transform .65s var(--ease); will-change: transform; }
-.wcard__in { position: relative; contain: layout style; opacity: 0; transform: translate3d(0, 24px, 0); transition: opacity .65s var(--ease), transform .75s var(--ease); }
+.wcard__in { position: relative; contain: layout style; container-type: inline-size; opacity: 0; transform: translate3d(0, 24px, 0); transition: opacity .65s var(--ease), transform .75s var(--ease); }
 .wcard.is-in .wcard__in { opacity: 1; transform: none; }
 .wcard.is-out .wcard__in { opacity: 0; transform: scale(0.96); transition-duration: .28s; }
 .wcard.is-out { pointer-events: none; }
@@ -94,6 +94,7 @@ body[data-wall-style="all"] .wcard__in::after { content: ""; position: absolute;
 body:not([data-wall-style="all"]) .wcard__in::before { opacity: 0; }
 .wcard:hover .wcard__in::before { opacity: 1; }
 .wcard.is-in:hover .wcard__in { transform: translate3d(0, -3px, 0); transition-duration: .45s; }
+html.is-wheel-scrolling .wcard.is-in:hover .wcard__in { transform: none; }
 /* A card the homepage pointed at (#all/<pack>/<component>/<demo>): ringed in its accent, then settles. */
 .wcard.is-spot .wcard__in { border-radius: 12px; outline: 2px solid color-mix(in srgb, var(--glow, var(--ink)) 82%, var(--ink)); outline-offset: 6px; animation: wcard-spot 3.2s var(--ease) both; }
 @keyframes wcard-spot { 0% { outline-offset: 20px; outline-color: transparent; } 16%, 75% { outline-offset: 6px; outline-color: color-mix(in srgb, var(--glow, var(--ink)) 82%, var(--ink)); } 100% { outline-offset: 6px; outline-color: transparent; } }

@@ -261,11 +261,11 @@ html[data-theme="dark"] .stage-spot i, [data-pack-stage="obsidian"] .stage-spot 
 .wstage .line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .wstage .line--start { justify-content: flex-start; flex-wrap: wrap; }
 .is-offscreen *, .is-offscreen *::before, .is-offscreen *::after { animation-play-state: paused !important; }
-.tray { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.tray { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .tray__item { position: relative; display: flex; flex-direction: column; min-width: 0; border-radius: 10px; box-shadow: var(--edge), var(--lift); transition: transform .36s var(--ease), box-shadow .36s var(--ease); }
 .tray__item--wide { grid-column: span 2; }
 .tray__item:hover { transform: translate3d(0, -4px, 0); box-shadow: 0 0 0 1px color-mix(in srgb, var(--pc, var(--ink)) 58%, var(--line-hover)), 0 28px 48px -28px rgba(0, 0, 0, 0.5), 0 0 32px -12px color-mix(in srgb, var(--pc, transparent) 44%, transparent); }
-.tray__stage { position: relative; flex: 1; min-width: 0; overflow: hidden; border-radius: inherit; }
+.tray__stage { position: relative; flex: 1; min-width: 0; overflow: hidden; border-radius: inherit; container-type: inline-size; }
 .tray__stage img { width: 100%; height: auto; }
 .tray__stage .wstage { width: 100%; height: 100%; min-height: 310px; }
 .tray__bar { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; }

@@ -36,16 +36,17 @@
   if (window.UISite) UISite.ready = function () { return pageReady; };
 
   /* ---------- Sidebar mobile toggle ---------- */
-  function setSidebarOpen(open) {
+  function setSidebarOpen(open, restoreFocus) {
     if (!side) return;
     side.classList.toggle("is-open", open);
     if (scrim) scrim.hidden = !open;
     if (menuBtn) menuBtn.setAttribute("aria-expanded", String(open));
     document.documentElement.classList.toggle("has-drawer", open);
+    if (!open && restoreFocus && menuBtn) menuBtn.focus();
   }
   if (menuBtn) menuBtn.addEventListener("click", function () { setSidebarOpen(!side.classList.contains("is-open")); });
-  if (scrim) scrim.addEventListener("click", function () { setSidebarOpen(false); });
-  if ($("[data-cp-side-close]")) $("[data-cp-side-close]").addEventListener("click", function () { setSidebarOpen(false); });
+  if (scrim) scrim.addEventListener("click", function () { setSidebarOpen(false, true); });
+  if ($("[data-cp-side-close]")) $("[data-cp-side-close]").addEventListener("click", function () { setSidebarOpen(false, true); });
 
   /* ---------- Directory index ---------- */
   function buildIndex() {
@@ -146,31 +147,45 @@
     updatePager();
   }
 
+  function scrollActiveIntoView() {
+    if (!navEl) return;
+    var active = navEl.querySelector('.cp-nav__item[aria-current="page"]');
+    if (!active) return;
+    var top = active.offsetTop - navEl.offsetTop;
+    var bottom = top + active.offsetHeight;
+    if (top < navEl.scrollTop || bottom > navEl.scrollTop + navEl.clientHeight) {
+      navEl.scrollTop = Math.max(0, top - Math.round((navEl.clientHeight - active.offsetHeight) / 2));
+    }
+  }
+
   function syncNavCurrent() {
     if (!navEl) return;
     $$(".cp-nav__item", navEl).forEach(function (a) {
       var on = a.getAttribute("data-nav-pack") === state.pack && a.getAttribute("data-nav-comp") === state.comp;
       if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
     });
+    scrollActiveIntoView();
   }
 
   function updatePager() {
     var list = filteredItems.length ? filteredItems : allItems;
-    var prevEl = $("[data-cp-prev]"), nextEl = $("[data-cp-next]");
-    if (!list.length || !prevEl || !nextEl) return;
+    var pager = $(".cp-pager"), prevEl = $("[data-cp-prev]"), nextEl = $("[data-cp-next]");
+    if (!prevEl || !nextEl) return;
+    if (pager) pager.hidden = list.length <= 1;
+    if (list.length <= 1) return;
     var idx = -1;
     for (var i = 0; i < list.length; i++) if (list[i].pack === state.pack && list[i].comp === state.comp) { idx = i; break; }
     if (idx < 0) idx = 0;
     var prev = list[(idx - 1 + list.length) % list.length];
     var next = list[(idx + 1) % list.length];
-    prevEl.href = "?p=" + prev.pack + "&c=" + prev.comp;
+    prevEl.href = "?p=" + encodeURIComponent(prev.pack) + "&c=" + encodeURIComponent(prev.comp);
     $("[data-cp-prev-title]").textContent = prev.packName + " · " + prev.title;
     prevEl.onclick = function (e) {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault(); selectComponent(prev.pack, prev.comp, null, "push");
       if (window.UIScroll) UIScroll.to(0); else window.scrollTo({ top: 0, behavior: "smooth" });
     };
-    nextEl.href = "?p=" + next.pack + "&c=" + next.comp;
+    nextEl.href = "?p=" + encodeURIComponent(next.pack) + "&c=" + encodeURIComponent(next.comp);
     $("[data-cp-next-title]").textContent = next.packName + " · " + next.title;
     nextEl.onclick = function (e) {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
@@ -335,7 +350,7 @@
     peers.forEach(function (p) {
       var a = document.createElement("a");
       a.className = "cp-sib";
-      a.href = "?p=" + p.id + "&c=" + compId;
+      a.href = "?p=" + encodeURIComponent(p.id) + "&c=" + encodeURIComponent(compId);
       if (p.id === state.pack) a.setAttribute("aria-current", "page");
       a.innerHTML = '<i style="background:' + p.dot + '"></i><span></span>';
       a.querySelector("span").textContent = p.name;
@@ -478,12 +493,13 @@
       }
     });
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && side && side.classList.contains("is-open")) { setSidebarOpen(false); return; }
+      if (e.key === "Escape" && side && side.classList.contains("is-open")) { setSidebarOpen(false, true); return; }
       var t = e.target;
       var isCmdK = (e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K");
       var isSlash = e.key === "/" && !e.metaKey && !e.ctrlKey && !e.altKey && !(t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
       if (!isCmdK && !isSlash) return;
       e.preventDefault();
+      if (window.matchMedia && window.matchMedia("(max-width: 960px)").matches) setSidebarOpen(true);
       searchEl.focus();
       searchEl.select();
     });

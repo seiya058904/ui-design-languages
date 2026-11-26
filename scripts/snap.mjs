@@ -351,8 +351,8 @@ if (thumbs) {
       await tab.evaluate(FONTS_READY);
       await tab.evaluate(SETTLE);
       const name = page.path.replace(`${page.group}/`, "").replace(/\//g, "-").replace(/\.html$/, "");
-      // 640×400 for the shelf covers and frame posters, 1280×800 (-lg) for the live viewer at full width;
-      // 336×210 (-sm) is no longer used by the homepage and only kept for anyone linking it.
+      // 640×400 for the shelf covers and frame posters, 1280×800 (-lg) for the viewer at full width,
+      // 336×210 (-sm) for the dark theme's moving wall, where a tile is 168px wide.
       for (let i = 0; i < list.length; i++) {
         const [suffix, scale] = list[i];
         if (i > 0) {

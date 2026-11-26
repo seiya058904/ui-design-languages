@@ -1,7 +1,7 @@
 /* Site chrome for the library homepage and the component wall — not part of any pack.
    Two themes share one structure (<html data-site-theme>, set before first paint; never data-theme,
-   which belongs to the packs). "booth", the default on a light system, is below; "gallery", the dark
-   default, is at the end of this file and only swaps tokens and adds its own lighting.
+   which belongs to the packs). "booth" is below; "gallery", the dark default, is at the end of this file:
+   it swaps tokens, adds its own lighting and has its own hero (the moving wall).
    Booth — a colour-viewing booth: one neutral grey, like the grey surround used to judge colour and material,
    so light paper, cream ceramic, aluminium and black glass all read true side by side. The chrome has
    no accent of its own: every colour on the page belongs to a Style Pack. Type is Funnel Display /
@@ -449,7 +449,7 @@ main { overflow-x: clip; }
 /* Gallery lighting (absent in the booth) */
 .aurora, .hero__glow, .pill__beam { display: none; }
 .hero, .cw-hero { position: relative; isolation: isolate; }
-[data-site-theme="gallery"] .aurora { position: absolute; inset: -80px -140px 30% -140px; z-index: -1; display: block; overflow: hidden; pointer-events: none; opacity: 0.62; -webkit-mask-image: radial-gradient(closest-side at 40% 40%, #000 20%, transparent 100%); mask-image: radial-gradient(closest-side at 40% 40%, #000 20%, transparent 100%); }
+[data-site-theme="gallery"] .aurora { position: absolute; inset: -120px -140px -100px; z-index: -1; display: block; overflow: hidden; pointer-events: none; opacity: 0.62; -webkit-mask-image: radial-gradient(closest-side at 50% 48%, #000 20%, transparent 100%); mask-image: radial-gradient(closest-side at 50% 48%, #000 20%, transparent 100%); }
 [data-site-theme="gallery"] .cw-hero .aurora { inset: -60px -80px -80px; }
 /* Each light is a soft radial gradient moved on the compositor: no blur filter, no blend mode. */
 .aurora i { position: absolute; width: 58%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--c) 78%, transparent), color-mix(in srgb, var(--c) 26%, transparent) 55%, transparent); will-change: transform; animation: aurora 26s ease-in-out infinite alternate; }
@@ -464,7 +464,7 @@ main { overflow-x: clip; }
 .aurora i:nth-child(9) { --c: #C85A32; width: 42%; right: -8%; top: 62%; opacity: .6; animation-duration: 30s; animation-delay: -12s; }
 @keyframes aurora { 0% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(14%, -10%, 0) scale(1.18); } 100% { transform: translate3d(-12%, 12%, 0) scale(0.88); } }
 /* A light that follows the pointer over the hero, full-bleed so it never clips at the gutter */
-[data-site-theme="gallery"] .hero__glow { position: absolute; top: -120px; bottom: 0; left: 50%; z-index: -1; display: block; width: 100vw; overflow: hidden; transform: translateX(-50%); pointer-events: none; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent); mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent); }
+[data-site-theme="gallery"] .hero__glow { position: absolute; top: -120px; bottom: -120px; left: 50%; z-index: -1; display: block; width: 100vw; overflow: hidden; transform: translateX(-50%); pointer-events: none; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent); mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent); }
 .hero__glow i { position: absolute; left: 0; top: 0; width: 960px; height: 960px; margin: -480px 0 0 -480px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.06), transparent); opacity: 0; transition: opacity .6s; }
 .hero__glow.is-on i { opacity: 1; will-change: transform; }
 /* A slow ring of the nine colours round the main call to action (one GPU rotation, no repaint) */
@@ -477,4 +477,74 @@ main { overflow-x: clip; }
 .is-paused .aurora i, .is-paused .pill__beam i { animation-play-state: paused; will-change: auto; }
 @media (prefers-reduced-motion: reduce) {
   .aurora i, .pill__beam i { animation: none; }
+}
+
+/* ================= Gallery hero: the moving wall (the library's original hero) =================
+   Each theme has its own hero: the booth stands the languages on a shelf; the gallery shows a tilted,
+   slowly moving wall of real page renders beside the headline, under the aurora. Only one is in the
+   page at a time; the wall's 96 renders live in a <template> and are made only when the gallery is on. */
+.hero-wall { display: none; }
+[data-site-theme="gallery"] .hero { display: none; }
+[data-site-theme="gallery"] .hero-wall { display: block; }
+.hero-wall__in { position: relative; display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 32px; align-items: center; min-height: 680px; padding: 36px 0 56px; }
+.hero-wall__copy { position: relative; isolation: isolate; }
+.wall-slot { min-width: 0; }
+.chip { display: inline-flex; align-items: center; gap: 10px; height: 30px; padding: 0 12px 0 6px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: 13px; color: var(--muted); }
+.chip b { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; background: var(--ink); color: var(--on-ink); font-size: 11.5px; font-weight: 600; }
+.hero-wall h1 { margin: 22px 0 20px; font-size: clamp(46px, 6.6vw, 88px); line-height: 0.96; letter-spacing: -0.05em; font-weight: 600; }
+.hero-wall h1 > span:not(.w) { display: block; color: var(--muted); }
+.hero-wall__lede { max-width: 50ch; color: var(--muted); font-size: 17px; line-height: 1.55; }
+.hero-wall__cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+.hero-wall__cta .pill { height: 44px; padding: 0 20px; font-size: 15px; }
+.names { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--line); }
+.names a { display: inline-flex; align-items: center; gap: 8px; border-radius: 4px; font-size: 19px; color: var(--muted); transition: color .2s; }
+.names a:hover { color: var(--ink); }
+.names a:active { opacity: .7; }
+.names i { width: 8px; height: 8px; border-radius: 50%; }
+/* Perspective wall of real page renders: flat 2D columns on a tilted plane with a single radial
+   feather mask (no preserve-3d, no mask-composite intersect, no opaque box edge over the aurora). */
+.wall {
+  position: relative;
+  pointer-events: none;
+  height: 700px;
+  margin: -40px 0;
+  overflow: hidden;
+  contain: layout style paint;
+  -webkit-mask-image: radial-gradient(ellipse 68% 66% at 54% 50%, #000 50%, rgba(0, 0, 0, 0.72) 70%, transparent 98%);
+  mask-image: radial-gradient(ellipse 68% 66% at 54% 50%, #000 50%, rgba(0, 0, 0, 0.72) 70%, transparent 98%);
+}
+/* Each column holds two identical 8-card sets and translates by -50% for a mathematically seamless loop. */
+.wall__plane { position: absolute; left: 50%; top: -120px; display: grid; grid-template-columns: repeat(6, 168px); gap: 12px; transform-origin: 50% 470px; transform: translate3d(-48%, 0, 0) perspective(1800px) rotateX(16deg) rotateZ(14deg); will-change: transform; }
+.wall__col { display: flex; flex-direction: column; gap: 12px; contain: layout style paint; animation: wall-up 74s linear infinite; will-change: transform; }
+.wall__col:nth-child(2) { animation-name: wall-down; animation-duration: 60s; margin-top: -60px; }
+.wall__col:nth-child(3) { animation-duration: 54s; margin-top: -30px; }
+.wall__col:nth-child(4) { animation-name: wall-down; animation-duration: 66s; margin-top: -80px; }
+.wall__col:nth-child(5) { animation-duration: 78s; margin-top: -20px; }
+.wall__col:nth-child(6) { animation-name: wall-down; animation-duration: 68s; margin-top: -50px; }
+.wall figure { position: relative; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 10px; background: #222; box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.58); }
+.wall img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+.wall figcaption { position: absolute; left: 8px; bottom: 8px; padding: 2px 8px; font-size: 11px !important; border-radius: 999px; background: rgba(15, 15, 17, 0.86); color: var(--ink); }
+@keyframes wall-up { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, -50%, 0); } }
+@keyframes wall-down { from { transform: translate3d(0, -50%, 0); } to { transform: translate3d(0, 0, 0); } }
+.is-paused .wall__col { animation-play-state: paused; }
+.is-paused .wall__plane, .is-paused .wall__col { will-change: auto; }
+/* Words rise out of a mask, one after another; blocks follow (compositor-only transform + opacity) */
+.reveal-words .w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.06em 0.02em 0.1em; margin: -0.06em -0.02em -0.1em; }
+.reveal-words .w > span { display: inline-block; transform: translate3d(0, 108%, 0) rotate(3deg); opacity: 0; transition: transform .85s cubic-bezier(0.16, 1, 0.3, 1), opacity .65s ease; transition-delay: calc(var(--i, 0) * 55ms); }
+.reveal-words.is-revealed .w > span { transform: none; opacity: 1; }
+.js .hero-wall .rise { opacity: 0; transform: translate3d(0, 20px, 0); transition: opacity .75s ease, transform .85s cubic-bezier(0.16, 1, 0.3, 1); transition-delay: calc(var(--d, 0) * 70ms); }
+.js .hero-wall .rise.is-in { opacity: 1; transform: none; }
+@media (max-width: 1100px) {
+  .hero-wall__in { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .wall { height: 460px; margin: 0 -20px; }
+  .hero-wall .aurora { inset: -80px -40px -60px; }
+}
+@media (max-width: 760px) {
+  .hero-wall__in { padding-top: 28px; }
+  .wall { height: 360px; }
+  .wall__plane { grid-template-columns: repeat(6, 120px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wall__col { animation: none; }
+  .reveal-words .w > span, .js .hero-wall .rise { opacity: 1; transform: none; }
 }

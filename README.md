@@ -44,7 +44,7 @@
 
 <p align="center">
   <a href="https://seiya058904.github.io/ui-design-languages/">
-    <img src="docs/media/library-home.jpg" width="100%" alt="UI Design Languages live library homepage: nine design languages as book spines on a grey shelf; the Lilac volume is open and the headline is set in its own typeface" />
+    <img src="docs/media/library-home.jpg" width="100%" alt="UI Design Languages live library homepage in its dark theme: the headline, the nine language names in their own typefaces and a tilted, moving wall of real page renders under nine coloured lights" />
   </a>
   <br>
   <sub>REAL BROWSER CAPTURE · EVERY PACK IS A WORKING SITE WITH TOKENS, COMPONENTS, EXAMPLES AND DESIGN.MD</sub>

@@ -8,8 +8,9 @@
    UISite.feedback(btn, result, okText) → shows "Copied" / "Copy failed" (or okText) on the button for 1.6s
    UISite.ready()                       → Promise: resolves once the page's own content is in place (the wall
                                           replaces it with its own); scripts/snap.mjs waits on it
-   UISite.theme(name?)                  → the site theme, "booth" (grey) or "gallery" (dark); with a name, switches
-                                          and remembers it. <html data-site-theme> is set before first paint. */
+   UISite.theme(name?)                  → the site theme, "gallery" (dark, the default) or "booth" (grey); with a
+                                          name, switches and remembers it. <html data-site-theme> is set before first
+                                          paint. Each theme has its own hero: the gallery's moving wall, the booth's shelf. */
 window.UISite = window.UISite || {};
 (function (S) {
   function legacyCopy(text) {
@@ -53,6 +54,7 @@ window.UISite = window.UISite || {};
 (function () {
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var root = document.documentElement;
+  var themeHooks = []; // called after the site theme changes
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
   /* Header gains a frosted background once the page scrolls (sentinel IntersectionObserver, zero scroll read). */
@@ -166,11 +168,14 @@ window.UISite = window.UISite || {};
     }
     shelf.addEventListener("focusin", function (e) { var li = e.target.closest("li"); if (li) openSlot(li); });
     shelf.addEventListener("focusout", function (e) { if (!shelf.contains(e.relatedTarget)) openSlot(null); });
-    // Covers arrive early when the page goes idle (they are small posters), or as soon as the shelf is used.
+    // Covers arrive early when the page goes idle (they are small posters), or as soon as the shelf is used;
+    // never while the gallery theme hides the shelf.
+    var shelfShown = function () { return root.getAttribute("data-site-theme") !== "gallery"; };
     var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 1200); };
-    window.addEventListener("load", function () { idle(loadCovers, { timeout: 2500 }); });
+    window.addEventListener("load", function () { idle(function () { if (shelfShown()) loadCovers(); }, { timeout: 2500 }); });
+    themeHooks.push(function () { if (shelfShown() && mobile.matches) loadCovers(); });
     if (mobile.matches) {
-      loadCovers();
+      if (shelfShown()) loadCovers();
       // On a phone the shelf is a row you swipe: the book in the middle sets the headline.
       if ("IntersectionObserver" in window) {
         var seen = new IntersectionObserver(function (es) {
@@ -180,6 +185,44 @@ window.UISite = window.UISite || {};
         shelf.addEventListener("scroll", function () { if (armed) return; armed = true; slots.forEach(function (li) { seen.observe(li); }); }, { passive: true });
       }
     }
+  }
+
+  /* ---------- Gallery hero: the moving wall ----------
+     The headline's words rise one after another, the copy follows, and the wall of real page renders is
+     made from its template — only while the gallery theme is on (the booth never downloads it). */
+  var wallHero = document.querySelector("[data-hero-wall]");
+  if (wallHero) {
+    var wallSlot = wallHero.querySelector("[data-wall]"), wallTpl = document.getElementById("wall-tpl");
+    var wallHeads = $$(".reveal-words", wallHero), wallRises = $$(".rise", wallHero);
+    if (!reduce) wallHeads.forEach(function (el) {
+      var i = 0;
+      (function walk(node) {
+        Array.prototype.slice.call(node.childNodes).forEach(function (n) {
+          if (n.nodeType === 3) {
+            var frag = document.createDocumentFragment();
+            n.textContent.split(/(\s+)/).forEach(function (part) {
+              if (!part) return;
+              if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+              var w = document.createElement("span"), inner = document.createElement("span");
+              w.className = "w"; inner.textContent = part; inner.style.setProperty("--i", i++);
+              w.appendChild(inner); frag.appendChild(w);
+            });
+            n.parentNode.replaceChild(frag, n);
+          } else if (n.nodeType === 1) walk(n);
+        });
+      })(el);
+    });
+    var showWall = function (replay) {
+      if (root.getAttribute("data-site-theme") !== "gallery") return;
+      if (wallTpl && !wallSlot.firstElementChild) wallSlot.appendChild(wallTpl.content.cloneNode(true));
+      var els = wallHeads.concat(wallRises);
+      if (replay) { els.forEach(function (el) { el.classList.remove("is-revealed", "is-in"); }); void wallHero.offsetWidth; }
+      wallHeads.forEach(function (el) { el.classList.add("is-revealed"); });
+      wallRises.forEach(function (el) { el.classList.add("is-in"); });
+    };
+    if (reduce) showWall(false);
+    else Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(function (r) { setTimeout(r, 260); })]).then(function () { showWall(false); });
+    themeHooks.push(function () { showWall(true); });
   }
 
   /* ---------- Languages: one viewer, nine entries ----------
@@ -308,7 +351,6 @@ window.UISite = window.UISite || {};
 
   /* ---------- Site theme: booth ⇄ gallery ---------- */
   var KEY = "uidl-site-theme", meta = document.querySelector('meta[name="theme-color"]');
-  var system = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
   function themeNow() { return root.getAttribute("data-site-theme") === "gallery" ? "gallery" : "booth"; }
   function syncTheme() {
     var dark = themeNow() === "gallery";
@@ -325,6 +367,7 @@ window.UISite = window.UISite || {};
       root.setAttribute("data-site-theme", name);
       syncTheme();
       refit();
+      themeHooks.forEach(function (fn) { fn(name); });
       // The two themes set type in different faces: measure again once the new one has arrived.
       if (document.fonts && document.fonts.ready) requestAnimationFrame(function () { document.fonts.ready.then(function () { refit(); window.dispatchEvent(new Event("resize")); }); });
     };
@@ -335,11 +378,6 @@ window.UISite = window.UISite || {};
   $$("[data-site-theme-toggle]").forEach(function (b) {
     b.addEventListener("click", function () { setTheme(themeNow() === "gallery" ? "booth" : "gallery", true); });
   });
-  if (system && system.addEventListener) system.addEventListener("change", function (e) {
-    var saved = null;
-    try { saved = localStorage.getItem(KEY); } catch (err) { /* blocked */ }
-    if (!saved) setTheme(e.matches ? "gallery" : "booth", false);
-  });
 
   /* ---------- Gallery lighting: aurora pauses out of view; a soft light follows the pointer ---------- */
   if (reduce) return;
@@ -349,23 +387,42 @@ window.UISite = window.UISite || {};
     }, { rootMargin: "120px 0px" });
     $$("[data-hero], .cw-hero").forEach(function (el) { pio.observe(el); });
   }
-  var hero = document.querySelector("[data-hero]");
-  if (hero && window.matchMedia("(hover: hover)").matches) {
+  /* The gallery hero's wall leans toward the pointer under a soft light (rAF-damped, self-stopping, cached
+     rects: no getBoundingClientRect() per pointermove, no CSS transition fighting the inline transform). */
+  if (wallHero && window.matchMedia("(hover: hover)").matches) {
     var glow = document.createElement("div"), light = document.createElement("i");
     glow.className = "hero__glow"; glow.setAttribute("aria-hidden", "true");
     glow.appendChild(light);
-    hero.insertBefore(glow, hero.firstChild);
-    var gr = null, lx = 0, ly = 0, raf = 0;
-    var clear = function () { gr = null; };
-    window.addEventListener("resize", clear, { passive: true });
-    window.addEventListener("scroll", clear, { passive: true });
-    hero.addEventListener("pointermove", function (e) {
-      if (themeNow() !== "gallery") return;
-      if (!gr) gr = glow.getBoundingClientRect();
-      lx = Math.round(e.clientX - gr.left); ly = Math.round(e.clientY - gr.top);
+    wallHero.insertBefore(glow, wallHero.firstChild);
+    var hr = null, gr = null, tx = 0, ty = 0, cx = 0, cy = 0, lx = 0, ly = 0, rafId = 0, lightDirty = false;
+    var clearRects = function () { hr = null; gr = null; };
+    window.addEventListener("resize", clearRects, { passive: true });
+    window.addEventListener("scroll", clearRects, { passive: true });
+    var stepHero = function () {
+      rafId = 0;
+      cx += (tx - cx) * 0.1;
+      cy += (ty - cy) * 0.1;
+      var moving = Math.abs(tx - cx) > 0.002 || Math.abs(ty - cy) > 0.002;
+      if (!moving) { cx = tx; cy = ty; }
+      var plane = wallSlot.querySelector(".wall__plane");
+      if (plane) plane.style.transform = "translate3d(calc(-48% + " + (cx * -18).toFixed(1) + "px)," + (cy * -12).toFixed(1) + "px,0) perspective(1800px) rotateX(" + (16 - cy * 5).toFixed(2) + "deg) rotateZ(" + (14 + cx * 4).toFixed(2) + "deg)";
+      if (lightDirty) { lightDirty = false; light.style.transform = "translate3d(" + lx + "px," + ly + "px,0)"; }
+      if (moving) rafId = requestAnimationFrame(stepHero);
+    };
+    wallHero.addEventListener("pointermove", function (e) {
+      if (!hr) { hr = wallHero.getBoundingClientRect(); gr = glow.getBoundingClientRect(); }
+      tx = Math.max(-1, Math.min(1, ((e.clientX - hr.left) / hr.width) * 2 - 1));
+      ty = Math.max(-1, Math.min(1, ((e.clientY - hr.top) / hr.height) * 2 - 1));
+      lx = Math.round(e.clientX - gr.left);
+      ly = Math.round(e.clientY - gr.top);
+      lightDirty = true;
       glow.classList.add("is-on");
-      if (!raf) raf = requestAnimationFrame(function () { raf = 0; light.style.transform = "translate3d(" + lx + "px," + ly + "px,0)"; });
+      if (!rafId) rafId = requestAnimationFrame(stepHero);
     }, { passive: true });
-    hero.addEventListener("pointerleave", function () { glow.classList.remove("is-on"); });
+    wallHero.addEventListener("pointerleave", function () {
+      tx = 0; ty = 0;
+      glow.classList.remove("is-on");
+      if (!rafId) rafId = requestAnimationFrame(stepHero);
+    });
   }
 })();

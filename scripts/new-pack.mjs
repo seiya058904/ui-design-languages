@@ -444,4 +444,4 @@ Next:
      ${p}/components.html (shared ids). Behaviour, if any: ${p}/js/${p}.js + entry.js and site.hooks in packs.json.
   4. Fill summary, fonts and site (dot, label, wall picks) in packs.json; status → "stable" when done.
   5. node scripts/check.mjs ${p}
-It is already on the component wall (components.html). Homepage showcase: add a .show section to index.html.`);
+It is already on the component wall (components.html). Homepage: add a shelf book, a viewer entry with its .show panel and a Same-markup card to index.html (docs/WORKFLOW.md, step 5).`);

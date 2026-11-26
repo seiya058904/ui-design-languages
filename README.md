@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://seiya058904.github.io/ui-design-languages/">
-    <img src="docs/readme-cover.svg" width="100%" alt="UI Design Languages — illustrated editorial cover with nine interface specimens, one per design language: Clay, Lilac, Atelier, Tactile, Sketch, Braun, Obsidian, Zine and Terrarium" />
+    <img src="docs/media/readme-cover.jpg" width="100%" alt="UI Design Languages — nine design languages as book spines on a grey shelf, each spine set in its own typeface and material: Clay, Lilac, Atelier, Tactile, Sketch, Braun, Obsidian, Zine and Terrarium" />
   </a>
 </p>
 
@@ -44,7 +44,7 @@
 
 <p align="center">
   <a href="https://seiya058904.github.io/ui-design-languages/">
-    <img src="docs/media/library-home.jpg" width="100%" alt="UI Design Languages live library homepage showing all nine design languages side by side" />
+    <img src="docs/media/library-home.jpg" width="100%" alt="UI Design Languages live library homepage: nine design languages as book spines on a grey shelf; the Lilac volume is open and the headline is set in its own typeface" />
   </a>
   <br>
   <sub>REAL BROWSER CAPTURE · EVERY PACK IS A WORKING SITE WITH TOKENS, COMPONENTS, EXAMPLES AND DESIGN.MD</sub>
@@ -312,7 +312,7 @@ docs/
 
 ## 📄 Licenses
 
-Code and documentation: **[MIT](LICENSE)**. Fonts are loaded from Google Fonts under the **SIL Open Font License** (`Inter`, `Cormorant Garamond`, `Manrope`, `Archivo`, `Plus Jakarta Sans`, `Itim`, `Patrick Hand`, `Space Grotesk`, `IBM Plex Mono`, `JetBrains Mono`, `Archivo Black`, `Space Mono`, `Fraunces`, and `Geist` / `Geist Mono` for the library site). Icons are drawn for this repository. Reference images that inspired the packs are not redistributed.
+Code and documentation: **[MIT](LICENSE)**. Fonts are loaded from Google Fonts under the **SIL Open Font License** (`Inter`, `Cormorant Garamond`, `Manrope`, `Archivo`, `Plus Jakarta Sans`, `Itim`, `Patrick Hand`, `Space Grotesk`, `IBM Plex Mono`, `JetBrains Mono`, `Archivo Black`, `Space Mono`, `Fraunces`, and `Funnel Display` / `Funnel Sans` for the library site). Icons are drawn for this repository. Reference images that inspired the packs are not redistributed.
 
 ---
 

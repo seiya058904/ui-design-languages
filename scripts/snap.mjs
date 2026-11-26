@@ -10,7 +10,9 @@
 //   node scripts/snap.mjs lilac atelier      # only these languages
 //   node scripts/snap.mjs --widths=1440,768,375
 //   CHROME_PATH=/path/to/chrome node scripts/snap.mjs
-//   node scripts/snap.mjs --thumbs           # homepage JPEG thumbnails → site/assets/thumbs/ (640×400 and 336×210 -sm)
+//   node scripts/snap.mjs --thumbs           # homepage JPEG thumbnails → site/assets/thumbs/ (640×400 and 336×210 -sm;
+//                                              example pages also 1280×800 -lg for the live viewer's poster;
+//                                              --thumbs=sm or --thumbs=lg makes only that size)
 // Output: .snapshots/<language>/<page>@<width>.png (git-ignored). Exit code 1 if any page overflows or errors.
 import { spawn } from "node:child_process";
 import { createServer } from "node:http";
@@ -70,6 +72,7 @@ const only = args.filter((a) => !a.startsWith("--"));
 const thumbsArg = args.find((a) => a === "--thumbs" || a.startsWith("--thumbs="));
 const thumbs = !!thumbsArg;
 const thumbsSmOnly = thumbsArg === "--thumbs=sm";
+const thumbsLgOnly = thumbsArg === "--thumbs=lg"; // only the example pages' 1280×800 -lg posters
 const jobs = Math.max(1, Math.min(6, +(args.find((a) => a.startsWith("--jobs="))?.slice(7) || 4)));
 const CHROME = process.env.CHROME_PATH || [
   "C:/Program Files/Google/Chrome/Application/chrome.exe",
@@ -241,13 +244,26 @@ function packFuzz() {
 function homeFlow() {
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   return (async () => {
+    // Shelf: open every book (pointer and keyboard paths) and put them back.
+    const books = [...document.querySelectorAll("[data-shelf] > li")];
+    for (const li of books) { li.dispatchEvent(new PointerEvent("pointerenter", { pointerType: "mouse" })); await sleep(140); }
+    document.querySelector("[data-shelf]")?.dispatchEvent(new PointerEvent("pointerleave", { pointerType: "mouse" }));
+    for (const li of books) li.firstElementChild.focus();
+    document.activeElement?.blur();
+    // Viewer: every language, then every preview tab inside each.
+    const picks = [...document.querySelectorAll("[data-pick]")].filter((a) => a.closest("[data-viewer]"));
+    for (const a of picks) { a.click(); await sleep(60); }
     const tabs = [...document.querySelectorAll(".frame .seg button")];
     for (const b of tabs) { b.click(); await sleep(120); }
     document.querySelectorAll(".frame").forEach((f) => f.querySelector(".seg button").click());
+    picks[0]?.click();
+    // Same markup: dark, then light again.
+    for (const t of document.querySelectorAll("[data-theme-pick]")) { t.click(); await sleep(200); }
+    document.querySelector('[data-theme-pick="light"]')?.click();
     const copy = document.querySelector("[data-copy]");
     if (copy) copy.click();
     await sleep(1500);
-    return tabs.length + " preview tabs";
+    return books.length + " books, " + picks.length + " languages, " + tabs.length + " preview tabs";
   })();
 }
 function wallFlow() {
@@ -291,21 +307,25 @@ if (thumbs) {
     const pageLoad = () => Promise.race([tab.nextEvent("Page.loadEventFired"), new Promise((r) => setTimeout(r, LOAD_TIMEOUT))]);
     const specs = thumbsSmOnly ? [["-sm", 0.2625]] : [["", 0.5], ["-sm", 0.2625]];
     for (const page of pages) {
-      await tab.send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 800, deviceScaleFactor: specs[0][1], mobile: false });
+      const isExample = page.path.includes("/examples/");
+      const list = thumbsLgOnly ? (isExample ? [["-lg", 1]] : []) : !thumbsSmOnly && isExample ? [["-lg", 1], ...specs] : specs;
+      if (!list.length) continue;
+      await tab.send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 800, deviceScaleFactor: list[0][1], mobile: false });
       const loaded = pageLoad();
       await tab.send("Page.navigate", { url: `${base}/${page.path}` });
       await loaded;
       await tab.evaluate(FONTS_READY);
       await tab.evaluate(SETTLE);
       const name = page.path.replace(`${page.group}/`, "").replace(/\//g, "-").replace(/\.html$/, "");
-      // 640×400 for the showcase posters, and 336×210 (-sm) for the hero wall, where a tile is 168px wide.
-      for (let i = 0; i < specs.length; i++) {
-        const [suffix, scale] = specs[i];
+      // 640×400 for the shelf covers and frame posters, 1280×800 (-lg) for the live viewer at full width;
+      // 336×210 (-sm) is no longer used by the homepage and only kept for anyone linking it.
+      for (let i = 0; i < list.length; i++) {
+        const [suffix, scale] = list[i];
         if (i > 0) {
           await tab.send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 800, deviceScaleFactor: scale, mobile: false });
           await tab.evaluate("new Promise((r) => setTimeout(r, 200))");
         }
-        const { data } = await tab.send("Page.captureScreenshot", { format: "jpeg", quality: suffix ? 58 : 82 });
+        const { data } = await tab.send("Page.captureScreenshot", { format: "jpeg", quality: suffix === "-lg" ? 72 : suffix ? 58 : 82 });
         const out = join(root, "site", "assets", "thumbs", `${page.group}-${name}${suffix}.jpg`);
         await mkdir(dirname(out), { recursive: true });
         await writeFile(out, Buffer.from(data, "base64"));
@@ -330,6 +350,7 @@ try {
     await tab.send("Page.enable");
     await tab.send("Runtime.enable");
     await tab.send("Network.enable");
+    await tab.send("Emulation.setFocusEmulationEnabled", { enabled: true }); // focus events fire as in a focused window
     workers.push({ tab, ...attachGuard(tab) });
   }
 
@@ -350,7 +371,7 @@ try {
         await loaded;
         await tab.evaluate(EAGER);
         if (!(await tab.evaluate(LIVE_READY))) guard.errors.push("live sections did not finish building within 15s");
-        const missing = await tab.evaluate("(() => { const out = []; const cmp = document.querySelectorAll('[data-compare]').length; if (cmp && document.querySelectorAll('.same__inner').length !== cmp) out.push('Same-markup cards not built'); if (document.querySelector('[data-marquee]') && !document.querySelector('.mq-card')) out.push('marquee is empty'); const top = document.querySelector('.top'), topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')); if (top && topH && Math.abs(top.getBoundingClientRect().height - topH) > 1.5) out.push('sticky header is ' + Math.round(top.getBoundingClientRect().height) + 'px tall but --top-h is ' + topH + 'px (the sticky bar and anchors would slide under it)'); return out; })()");
+        const missing = await tab.evaluate("(() => { const out = []; const cmp = document.querySelectorAll('[data-compare]').length; if (cmp && document.querySelectorAll('.same__inner').length !== cmp) out.push('Same-markup cards not built'); const tray = document.querySelector('[data-tray]'); if (tray && tray.querySelectorAll('.wstage').length !== tray.children.length) out.push('live tray is incomplete (' + tray.querySelectorAll('.wstage').length + ' of ' + tray.children.length + ' tiles)'); const shelf = document.querySelector('[data-shelf]'); if (shelf && !shelf.classList.contains('is-set')) out.push('shelf books were never set'); const top = document.querySelector('.top'), topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')); if (top && topH && Math.abs(top.getBoundingClientRect().height - topH) > 1.5) out.push('sticky header is ' + Math.round(top.getBoundingClientRect().height) + 'px tall but --top-h is ' + topH + 'px (the sticky bar and anchors would slide under it)'); return out; })()");
         guard.errors.push(...missing);
         await tab.evaluate(SETTLE);
         await tab.evaluate(FONTS_READY);

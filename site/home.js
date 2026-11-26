@@ -5,7 +5,7 @@
                                           missing or refuses (unfocused document, permissions policy, http)
    UISite.feedback(btn, result, okText) → shows "Copied" / "Copy failed" (or okText) on the button for 1.6s
    UISite.ready()                       → Promise: builds the homepage's live sections now and resolves once
-                                          the marquee and the "Same markup" cards are on the page */
+                                          the live tray and the "Same markup" cards are on the page */
 window.UISite = window.UISite || {};
 (function (S) {
   function legacyCopy(text) {
@@ -47,6 +47,9 @@ window.UISite = window.UISite || {};
 })(window.UISite);
 
 (function () {
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
   /* Header gains a frosted background once the page scrolls (sentinel IntersectionObserver, zero scroll read). */
   var top = document.querySelector(".top");
   if (top) {
@@ -65,28 +68,180 @@ window.UISite = window.UISite || {};
     }
   }
 
-  /* Scale fixed-size live pages (1280×800 frames) to their containers, and activate/hibernate iframes
-     on demand so at most MAX_LIVE iframes stay resident in memory while scrolling the homepage. */
+  /* Copy buttons: data-copy holds the text, or data-copy-from points at an element. */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-copy], [data-copy-from]");
+    if (!b) return;
+    var text = b.getAttribute("data-copy") || (document.querySelector(b.getAttribute("data-copy-from")) || {}).textContent || "";
+    UISite.feedback(b, UISite.copy(text));
+  });
+
+  /* ---------- Hero: the shelf and the specimen headline ----------
+     Pointing at (or focusing) a book opens its cover and sets the headline in that language's own type,
+     taken from packs.json (site.label) via the book's data-type. Leaving the shelf puts the books back. */
+  var title = document.querySelector("[data-specimen]");
+  var shelf = document.querySelector("[data-shelf]");
+  var mobile = window.matchMedia ? window.matchMedia("(max-width: 760px)") : { matches: false };
+  function fitTitle() {
+    if (!title) return;
+    title.style.fontSize = "";
+    var base = parseFloat(getComputedStyle(title).fontSize), w = title.clientWidth, ratio = 1;
+    $$(":scope > span", title).forEach(function (line) { if (line.scrollWidth > 0) ratio = Math.min(ratio, w / line.scrollWidth); });
+    if (ratio < 1) title.style.fontSize = (base * ratio * 0.995).toFixed(2) + "px";
+  }
+  var typeShown = null, swapTimer = 0;
+  function setType(css) {
+    if (!title || css === typeShown) return;
+    typeShown = css;
+    var apply = function () { title.setAttribute("style", css || ""); fitTitle(); title.classList.remove("is-swapping"); };
+    clearTimeout(swapTimer);
+    if (reduce) { apply(); return; }
+    title.classList.add("is-swapping");
+    swapTimer = setTimeout(apply, 110);
+  }
+  if (title) {
+    var refit = function () { var keep = title.style.cssText.replace(/font-size:[^;]+;?/g, ""); title.setAttribute("style", keep); fitTitle(); };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
+    refit();
+    window.addEventListener("resize", function () { requestAnimationFrame(refit); }, { passive: true });
+  }
+
+  if (shelf) {
+    var slots = $$(":scope > li", shelf), covers = $$("img[data-src]", shelf), open = null, closeTimer = 0, intentTimer = 0;
+    var coversLoaded = false;
+    var loadCovers = function () {
+      if (coversLoaded) return;
+      coversLoaded = true;
+      covers.forEach(function (img) { img.src = img.getAttribute("data-src"); img.removeAttribute("data-src"); });
+    };
+    var openSlot = function (li) {
+      clearTimeout(closeTimer);
+      if (li === open) return;
+      loadCovers();
+      open = li;
+      slots.forEach(function (s) { s.classList.toggle("is-open", s === li); });
+      setType(li ? li.firstElementChild.getAttribute("data-type") : null);
+    };
+    // The books are set on the shelf one after another, once the type has arrived (or 400ms passed).
+    var settle = function () {
+      if (shelf.classList.contains("is-set")) return;
+      shelf.classList.add("is-set");
+      setTimeout(function () { shelf.classList.add("is-settled"); }, 1100);
+    };
+    if (reduce) settle();
+    else Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(function (r) { setTimeout(r, 400); })]).then(function () { requestAnimationFrame(settle); });
+
+    if (!mobile.matches) {
+      slots.forEach(function (li) {
+        li.addEventListener("pointerenter", function (e) {
+          if (e.pointerType === "touch") return;
+          clearTimeout(intentTimer);
+          // A short intent delay: sweeping across the shelf doesn't fan every book open on the way.
+          intentTimer = setTimeout(function () { openSlot(li); }, open ? 70 : 40);
+        });
+      });
+      shelf.addEventListener("pointerleave", function () {
+        clearTimeout(intentTimer);
+        closeTimer = setTimeout(function () { openSlot(null); }, 260);
+      });
+    }
+    shelf.addEventListener("focusin", function (e) { var li = e.target.closest("li"); if (li) openSlot(li); });
+    shelf.addEventListener("focusout", function (e) { if (!shelf.contains(e.relatedTarget)) openSlot(null); });
+    // Covers arrive early when the page goes idle (they are small posters), or as soon as the shelf is used.
+    var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 1200); };
+    window.addEventListener("load", function () { idle(loadCovers, { timeout: 2500 }); });
+    if (mobile.matches) {
+      loadCovers();
+      // On a phone the shelf is a row you swipe: the book in the middle sets the headline.
+      if ("IntersectionObserver" in window) {
+        var seen = new IntersectionObserver(function (es) {
+          es.forEach(function (e) { if (e.isIntersecting) setType(e.target.firstElementChild.getAttribute("data-type")); });
+        }, { root: shelf, rootMargin: "0px -45% 0px -45%" });
+        var armed = false;
+        shelf.addEventListener("scroll", function () { if (armed) return; armed = true; slots.forEach(function (li) { seen.observe(li); }); }, { passive: true });
+      }
+    }
+  }
+
+  /* ---------- Languages: one live viewer, nine entries ----------
+     Without script every language is a section of its own; with it the index becomes a tab list and only
+     the selected language is shown. Books and #<id> links select a language before the page scrolls to it. */
+  var viewer = document.querySelector("[data-viewer]");
+  var picks = viewer ? $$("[data-pick]", viewer) : [];
+  var panels = viewer ? $$(".show", viewer) : [];
+  var current = null;
+  function select(id, focus) {
+    var panel = document.getElementById(id);
+    if (!panel || panels.indexOf(panel) < 0) return false;
+    current = id;
+    picks.forEach(function (a) {
+      var on = a.getAttribute("data-pick") === id;
+      a.setAttribute("aria-selected", String(on));
+      a.tabIndex = on ? 0 : -1;
+      if (on && focus) a.focus();
+      if (on && a.parentNode.scrollWidth > a.parentNode.clientWidth) {
+        var p = a.parentNode, l = a.offsetLeft - (p.clientWidth - a.offsetWidth) / 2;
+        p.scrollTo({ left: l, behavior: reduce ? "auto" : "smooth" });
+      }
+    });
+    panels.forEach(function (s) { s.classList.toggle("is-active", s === panel); });
+    return true;
+  }
+  if (viewer && picks.length) {
+    var list = viewer.querySelector("[data-viewer-index]");
+    list.setAttribute("role", "tablist");
+    list.setAttribute("aria-orientation", "vertical");
+    picks.forEach(function (a) {
+      var id = a.getAttribute("data-pick");
+      a.id = "tab-" + id;
+      a.setAttribute("role", "tab");
+      a.setAttribute("aria-controls", id);
+      var panel = document.getElementById(id);
+      if (panel) { panel.setAttribute("role", "tabpanel"); panel.setAttribute("aria-labelledby", a.id); panel.removeAttribute("aria-label"); }
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        select(id);
+        if (history.replaceState) history.replaceState(null, "", "#" + id);
+      });
+    });
+    list.addEventListener("keydown", function (e) {
+      var i = picks.indexOf(document.activeElement);
+      if (i < 0) return;
+      var n = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key], j = -1;
+      if (n) j = (i + n + picks.length) % picks.length;
+      else if (e.key === "Home") j = 0;
+      else if (e.key === "End") j = picks.length - 1;
+      if (j < 0) return;
+      e.preventDefault();
+      select(picks[j].getAttribute("data-pick"), true);
+    });
+    viewer.classList.add("is-ready");
+    var fromHash = function () { var h = decodeURIComponent(location.hash.slice(1)); return h && select(h); };
+    if (!fromHash()) select(picks[0].getAttribute("data-pick"));
+    else requestAnimationFrame(function () { document.getElementById(current).scrollIntoView(); });
+    window.addEventListener("hashchange", fromHash);
+    // A book (or any #<id> link) selects its language first, so the page can scroll to a visible panel.
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (a && !a.hasAttribute("data-pick")) select(decodeURIComponent(a.getAttribute("href").slice(1)));
+    });
+  }
+
+  /* ---------- Browser frames: live pages scaled to fit, at most two resident at a time ---------- */
   function fit(view) {
     var iframe = view.querySelector("iframe");
-    if (!iframe) return;
+    if (!iframe || !view.clientWidth) return;
     var base = parseFloat(iframe.getAttribute("width")) || 1280;
     iframe.style.transform = "scale(" + view.clientWidth / base + ")";
   }
-  var views = Array.prototype.slice.call(document.querySelectorAll(".frame__view"));
+  var views = $$(".frame__view");
   views.forEach(fit);
   if (views.length && "ResizeObserver" in window) {
     var ro = new ResizeObserver(function (entries) { entries.forEach(function (e) { fit(e.target); }); });
     views.forEach(function (v) { ro.observe(v); });
   }
-
-  var MAX_LIVE = 2;
-  var liveQueue = [];
-  var inViewSet = new Set();
-
-  function cancelActivate(view) {
-    if (view.__activateTimer) { clearTimeout(view.__activateTimer); view.__activateTimer = 0; }
-  }
+  var MAX_LIVE = 2, liveQueue = [], inViewSet = new Set();
+  function cancelActivate(view) { if (view.__activateTimer) { clearTimeout(view.__activateTimer); view.__activateTimer = 0; } }
   function unloadFrame(view) {
     cancelActivate(view);
     var iframe = view.querySelector("iframe");
@@ -99,9 +254,7 @@ window.UISite = window.UISite || {};
   function pruneFrames(keep) {
     while (liveQueue.length > MAX_LIVE) {
       var victim = null;
-      for (var i = 0; i < liveQueue.length; i++) {
-        if (liveQueue[i] !== keep && !inViewSet.has(liveQueue[i])) { victim = liveQueue[i]; break; }
-      }
+      for (var i = 0; i < liveQueue.length; i++) if (liveQueue[i] !== keep && !inViewSet.has(liveQueue[i])) { victim = liveQueue[i]; break; }
       if (!victim) break;
       unloadFrame(victim);
     }
@@ -118,9 +271,7 @@ window.UISite = window.UISite || {};
     liveQueue.push(view);
     if (iframe.getAttribute("src") !== want) {
       view.classList.remove("is-live");
-      iframe.onload = function () {
-        if (iframe.getAttribute("src") === want) view.classList.add("is-live");
-      };
+      iframe.onload = function () { if (iframe.getAttribute("src") === want) view.classList.add("is-live"); };
       iframe.setAttribute("src", want);
     } else if (iframe.contentDocument && iframe.contentDocument.readyState === "complete") {
       view.classList.add("is-live");
@@ -129,7 +280,7 @@ window.UISite = window.UISite || {};
   }
   /* A live page parses on this page's main thread (same-origin frames share the renderer), which drops
      frames if it happens mid-scroll. So a frame in view goes live only once scrolling has settled; the
-     crisp static poster is visible meanwhile, and hovering or pressing a frame still makes it live at once. */
+     static poster is visible meanwhile, and hovering or pressing a frame makes it live at once. */
   var lastScroll = 0, SETTLE_MS = 450;
   window.addEventListener("scroll", function () { lastScroll = performance.now(); }, { passive: true });
   function scheduleActivate(view) {
@@ -145,18 +296,11 @@ window.UISite = window.UISite || {};
     };
     view.__activateTimer = setTimeout(tick, 240);
   }
-
   if (views.length && "IntersectionObserver" in window) {
     var fio = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
-        if (e.isIntersecting) {
-          inViewSet.add(e.target);
-          scheduleActivate(e.target);
-        } else {
-          inViewSet.delete(e.target);
-          cancelActivate(e.target);
-          pruneFrames(null);
-        }
+        if (e.isIntersecting) { inViewSet.add(e.target); fit(e.target); scheduleActivate(e.target); }
+        else { inViewSet.delete(e.target); cancelActivate(e.target); pruneFrames(null); }
       });
     }, { rootMargin: "40px 0px" });
     views.forEach(function (v) {
@@ -167,110 +311,66 @@ window.UISite = window.UISite || {};
   } else {
     views.forEach(function (v) { activateFrame(v); });
   }
-
   /* Example / Styleguide / Components switch in each browser frame. */
-  document.querySelectorAll(".frame").forEach(function (frame) {
+  $$(".frame").forEach(function (frame) {
     var view = frame.querySelector(".frame__view");
-    var iframe = frame.querySelector("iframe"), url = frame.querySelector(".frame__url"), open = frame.querySelector(".frame__open");
-    frame.querySelectorAll(".seg button").forEach(function (b) {
+    var iframe = frame.querySelector("iframe"), url = frame.querySelector(".frame__url"), openLink = frame.querySelector(".frame__open");
+    $$(".seg button", frame).forEach(function (b) {
       b.addEventListener("click", function () {
-        frame.querySelectorAll(".seg button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        $$(".seg button", frame).forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
         var src = b.getAttribute("data-src");
+        // The poster follows the tab: styleguides and examples have one; a catalog shows the bare frame until it is live.
+        var poster = view.querySelector(".frame__poster"), name = src.replace(/\//g, "-").replace(/\.html$/, "");
+        if (poster) {
+          poster.hidden = /components\.html$/.test(src);
+          if (!poster.hidden) {
+            poster.srcset = /\/examples\//.test(src) ? "site/assets/thumbs/" + name + ".jpg 640w, site/assets/thumbs/" + name + "-lg.jpg 1280w" : "";
+            poster.src = "site/assets/thumbs/" + name + ".jpg";
+          }
+        }
         iframe.setAttribute("data-src", src);
         activateFrame(view, src);
         url.textContent = src;
-        open.href = src;
+        openLink.href = src;
       });
     });
   });
 
-  /* Copy buttons: data-copy holds the text, or data-copy-from points at an element. */
-  document.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-copy], [data-copy-from]");
-    if (!b) return;
-    var text = b.getAttribute("data-copy") || (document.querySelector(b.getAttribute("data-copy-from")) || {}).textContent || "";
-    UISite.feedback(b, UISite.copy(text));
-  });
-})();
+  /* ---------- Live sections: the tray of real components and the "Same markup" cards ---------- */
+  function nextTask() { return new Promise(function (r) { setTimeout(r, 0); }); }
 
-/* ---------- Motion & live showcase sections (homepage + component wall): word reveals, rising blocks,
-   "Same markup" cards, live marquee, hero parallax and scroll-linked frames.
-   Content always renders even at prefers-reduced-motion; only continuous motion stops. ---------- */
-(function () {
-  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  /* Split headings into words that rise out of a mask. */
-  function split(el) {
-    var i = 0;
-    (function walk(node) {
-      Array.prototype.slice.call(node.childNodes).forEach(function (n) {
-        if (n.nodeType === 3) {
-          var frag = document.createDocumentFragment();
-          n.textContent.split(/(\s+)/).forEach(function (part) {
-            if (!part) return;
-            if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
-            var w = document.createElement("span"), inner = document.createElement("span");
-            w.className = "w"; inner.textContent = part; inner.style.setProperty("--i", i++);
-            w.appendChild(inner); frag.appendChild(w);
-          });
-          n.parentNode.replaceChild(frag, n);
-        } else if (n.nodeType === 1) walk(n);
+  /* Tray: each tile names its demo (pack/component/demo) and is rendered by site/wall.js — real markup,
+     the pack's own CSS and JS, no iframes. Built only when the section comes near. */
+  var tray = document.querySelector("[data-tray]");
+  function buildTray() {
+    if (!tray || !window.UIWall) return Promise.resolve();
+    return UIWall.ready().then(function () {
+      $$("[data-pick]", tray).forEach(function (item) {
+        var pk = item.getAttribute("data-pick").split("/"), st = UIWall.stage(pk[0], pk[1], pk[2]), p = UIWall.byId[pk[0]], hit = UIWall.demo(pk[0], pk[1], pk[2]);
+        if (!st) { item.hidden = true; return; } // a demo that no longer exists: hidden here, reported by scripts/snap.mjs
+        item.appendChild(st);
+        var tag = document.createElement("a");
+        tag.className = "tag";
+        tag.href = "components.html#" + pk[0] + "/" + pk[1];
+        tag.innerHTML = '<i style="background:' + p.dot + '"></i><b style="' + p.font + '"></b><span></span>';
+        tag.querySelector("b").textContent = p.name;
+        tag.querySelector("span").textContent = hit.component.title;
+        tag.setAttribute("aria-label", p.name + " " + hit.component.title + " on the component wall");
+        item.appendChild(tag);
       });
-    })(el);
-  }
-  var heads = Array.prototype.slice.call(document.querySelectorAll(".reveal-words"));
-  if (!reduce) heads.forEach(split);
-
-  var io = "IntersectionObserver" in window ? new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (!e.isIntersecting) return;
-      io.unobserve(e.target);
-      e.target.classList.add(e.target.classList.contains("reveal-words") ? "is-revealed" : "is-in");
-      if (e.target.hasAttribute("data-count")) countUp(e.target);
     });
-  }, { rootMargin: "0px 0px -8% 0px" }) : null;
-
-  /* Grid items rise in with a small stagger. */
-  [".same figure", ".way", ".legal > p"].forEach(function (sel) {
-    document.querySelectorAll(sel).forEach(function (el, n) { el.classList.add("rise"); el.style.setProperty("--d", n); });
-  });
-  function start() {
-    heads.forEach(function (h) { if (reduce || !h.hasAttribute("data-reveal-on-scroll") || !io) h.classList.add("is-revealed"); else io.observe(h); });
-    document.querySelectorAll(".rise").forEach(function (el) {
-      if (reduce || el.closest("[data-hero], .cw-hero") || !io) el.classList.add("is-in");
-      else io.observe(el);
-    });
-    if (!reduce) document.querySelectorAll("[data-count]").forEach(function (el) { if (io) io.observe(el); });
-  }
-  if (!reduce && document.fonts && document.fonts.ready) Promise.race([document.fonts.ready, new Promise(function (r) { setTimeout(r, 260); })]).then(start);
-  else start();
-
-  function countUp(el) {
-    var to = +el.getAttribute("data-count"), t0 = performance.now(), dur = 1200;
-    if (reduce || !to) { el.textContent = to; return; }
-    (function tick(t) {
-      var k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 4);
-      el.textContent = Math.round(to * e);
-      if (k < 1) requestAnimationFrame(tick);
-    })(t0);
   }
 
   /* "Same markup": each card is the identical HTML from site/compare/<pack>.html, rendered inline with
-     the pack's own CSS and JS (no iframe), scaled from its 360px design width to the column.
-     Always built regardless of prefers-reduced-motion. */
-  var compares = Array.prototype.slice.call(document.querySelectorAll("[data-compare]"));
-  /* Scale every card to its column in three batched passes (read widths, write scales, read heights, write
-     heights): one layout for all nine instead of a forced reflow per card. */
-  function fitCompare(views) {
+     the pack's own CSS and JS (no iframe), scaled from its 360px design width to the column. */
+  var compares = $$("[data-compare]");
+  function fitCompare(list) {
     var items = [];
-    views.forEach(function (v) { if (v.firstElementChild && items.indexOf(v) < 0) items.push(v); });
+    list.forEach(function (v) { if (v.firstElementChild && items.indexOf(v) < 0) items.push(v); });
     var scales = items.map(function (v) { return v.clientWidth / 360; });
     items.forEach(function (v, i) { v.firstElementChild.style.transform = "scale(" + scales[i] + ")"; });
     var heights = items.map(function (v) { return v.firstElementChild.offsetHeight; });
-    items.forEach(function (v, i) {
-      var h = Math.ceil(heights[i] * scales[i]) + "px";
-      if (v.style.height !== h) v.style.height = h;
-    });
+    items.forEach(function (v, i) { var h = Math.ceil(heights[i] * scales[i]) + "px"; if (v.style.height !== h) v.style.height = h; });
   }
   function buildCompare() {
     if (!compares.length || !window.UIWall) return Promise.resolve();
@@ -299,88 +399,45 @@ window.UISite = window.UISite || {};
       });
     });
   }
-
-  /* Live marquee: real components from every language (site/wall.js). Always built; under reduced
-     motion renders one scrollable strip without duplicated track or continuous animation. */
-  var rows = Array.prototype.slice.call(document.querySelectorAll("[data-marquee]"));
-  var ROWS = [
-    [["clay", "stepper", "stepper"], ["braun", "slider", "rotary-dial"], ["lilac", "timer", "focus-timer"], ["zine", "ticket", "tear-off-ticket"], ["atelier", "card", "project-card"], ["obsidian", "dock", "floating-dock"], ["tactile", "dial", "thermostat"], ["terrarium", "garden", "habit-garden"], ["sketch", "notes", "doodle-pad"], ["clay", "button", "variants"], ["zine", "tabs", "folder-tabs"], ["obsidian", "card", "kpi-card"], ["atelier", "tabs", "pill-tabs"]],
-    [["braun", "progress", "peak-meters"], ["lilac", "progress", "ring-and-steps"], ["obsidian", "media", "now-playing"], ["sketch", "flow", "flow-card"], ["terrarium", "mood", "mood-dial"], ["tactile", "chips", "filter-chips"], ["atelier", "filter", "filter-capsules"], ["zine", "board", "sticker-board"], ["clay", "slider", "slider"], ["lilac", "card", "profile-card"], ["braun", "progress", "led-meter"], ["terrarium", "progress", "ring"], ["tactile", "selection", "switch"], ["sketch", "tabs", "folder-tabs"]]
-  ];
-  if (rows.length) {
-    // Hold the marquee still while dragging a dial, slider or sticker even if the pointer leaves the row.
-    var dragRow = null;
-    rows.forEach(function (row) {
-      row.addEventListener("pointerdown", function () { dragRow = row; row.classList.add("is-dragging"); });
+  /* The code line above the cards follows the card you point at: same markup, another prefix. */
+  var code = document.querySelector(".same-code");
+  if (code) {
+    var showPrefix = function (fig) {
+      var id = fig.getAttribute("data-prefix");
+      $$("[data-prefix]", code).forEach(function (b) { b.textContent = id; });
+      code.style.setProperty("--pc", "color-mix(in srgb, " + fig.style.getPropertyValue("--pc") + " 72%, #fff)");
+    };
+    $$(".same figure").forEach(function (fig) {
+      fig.addEventListener("pointerenter", function () { showPrefix(fig); });
+      fig.addEventListener("focusin", function () { showPrefix(fig); });
     });
-    var endMarqueeDrag = function () { if (dragRow) { dragRow.classList.remove("is-dragging"); dragRow = null; } };
-    window.addEventListener("pointerup", endMarqueeDrag);
-    window.addEventListener("pointercancel", endMarqueeDrag);
+    showPrefix(document.querySelector(".same figure"));
   }
-  /* Yield to the browser between building blocks, so building never holds the page in one long task. */
-  function nextTask() { return new Promise(function (r) { setTimeout(r, 0); }); }
-  function buildMarquee() {
-    if (!rows.length || !window.UIWall) return Promise.resolve();
-    return UIWall.ready().then(function () {
-      return rows.reduce(function (chain, row) { return chain.then(function () { buildRow(row); return nextTask(); }); }, Promise.resolve());
-    }).then(function () {
-      // Only a few cards per row are in view at a time: the rest pause their own loops (site.css).
-      if (!("IntersectionObserver" in window)) return;
-      var off = new IntersectionObserver(function (es) {
-        es.forEach(function (e) { e.target.classList.toggle("is-offscreen", !e.isIntersecting); });
-      });
-      rows.forEach(function (row) { row.querySelectorAll(".mq-card").forEach(function (c) { off.observe(c); }); });
+  /* Light / dark for every live component on the page: the packs answer <html data-theme>. */
+  $$("[data-theme-pick]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var t = b.getAttribute("data-theme-pick");
+      $$("[data-theme-pick]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      if (window.UIWall) UIWall.setTheme(t);
+      requestAnimationFrame(function () { fitCompare(compares); });
     });
-  }
-  function buildRow(row) {
-    var track = row.querySelector(".marquee__track"), set = document.createDocumentFragment();
-    ROWS[+row.getAttribute("data-marquee")].forEach(function (pk) {
-      var st = UIWall.stage(pk[0], pk[1], pk[2]), p = UIWall.byId[pk[0]], hit = UIWall.demo(pk[0], pk[1], pk[2]);
-      if (!st) return;
-      var card = document.createElement("div");
-      card.className = "mq-card";
-      card.appendChild(st);
-      var tag = document.createElement("a");
-      tag.className = "mq-tag";
-      tag.href = "components.html#" + pk[0] + "/" + pk[1];
-      tag.innerHTML = '<i style="background:' + p.dot + '"></i><b style="' + p.font + '"></b><span></span>';
-      tag.querySelector("b").textContent = p.name;
-      tag.querySelector("span").textContent = hit.component.title;
-      card.appendChild(tag);
-      set.appendChild(card);
-    });
-    track.appendChild(set);
-    if (!reduce) {
-      // A second, identical copy makes the loop seamless; it is hidden from assistive tech and has no ids.
-      Array.prototype.slice.call(track.children).forEach(function (card) {
-        var clone = card.cloneNode(true);
-        clone.setAttribute("aria-hidden", "true");
-        clone.querySelectorAll("[id]").forEach(function (n) { n.removeAttribute("id"); });
-        clone.querySelectorAll("[for]").forEach(function (n) { n.removeAttribute("for"); });
-        clone.querySelectorAll("input[type=radio]").forEach(function (n) { n.name += "-copy"; });
-        clone.querySelectorAll("a, button, input, select, textarea").forEach(function (n) { n.tabIndex = -1; });
-        clone.querySelectorAll(".wstage").forEach(function (st) { st.addEventListener("click", UIWall.inertLinks); }); // cloneNode drops listeners
-        track.appendChild(clone);
-      });
-      requestAnimationFrame(function () { row.style.setProperty("--mq-dur", Math.max(40, track.scrollWidth / 2 / 45) + "s"); });
-    }
-  }
+  });
 
   /* Both live sections, then each pack's script once (it wires up the components it finds). */
   var livePromise = null;
   function buildLive() {
     if (!livePromise) {
-      livePromise = buildMarquee().then(nextTask).then(buildCompare).then(nextTask).then(function () {
-        if (window.UIWall && (rows.length || compares.length)) return UIWall.scripts();
+      livePromise = buildTray().then(nextTask).then(buildCompare).then(nextTask).then(function () {
+        if (window.UIWall && (tray || compares.length)) return UIWall.scripts();
       }).catch(function () {});
     }
     return livePromise;
   }
   UISite.ready = buildLive;
-  /* Built on demand, so the first screen (the hero) loads nothing it doesn't show: whichever comes first of
-     the first scroll / key / touch (then as a section comes within a screen), a deep link below the hero,
-     an idle moment after load, or 4s after the DOM is ready (load may never fire when a font host stalls). */
-  if (rows.length || compares.length) {
+  /* Built on demand, so the first screen loads nothing it doesn't show: whichever comes first of the first
+     scroll / key / touch (then as a section comes within a screen), a deep link below the hero, an idle
+     moment after load, or 4s after the DOM is ready (load may never fire when a font host stalls). */
+  if (tray || compares.length) {
     var kick = function () { buildLive(); };
     var near = "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
       if (es.some(function (e) { return e.isIntersecting; })) { near.disconnect(); kick(); }
@@ -389,114 +446,13 @@ window.UISite = window.UISite || {};
     var arm = function () {
       INTENT.forEach(function (type) { window.removeEventListener(type, arm, true); });
       if (!near) { kick(); return; }
-      [document.querySelector(".live"), document.getElementById("same")].forEach(function (el) { if (el) near.observe(el); });
+      [document.getElementById("live"), document.getElementById("same")].forEach(function (el) { if (el) near.observe(el); });
     };
     INTENT.forEach(function (type) { window.addEventListener(type, arm, { capture: true, passive: true }); });
     if (location.hash.length > 1) kick();
-    var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 300); };
-    window.addEventListener("load", function () { idle(kick, { timeout: 2000 }); });
+    var idleKick = window.requestIdleCallback || function (fn) { return setTimeout(fn, 300); };
+    window.addEventListener("load", function () { idleKick(kick, { timeout: 2000 }); });
     var fallback = function () { setTimeout(kick, 4000); };
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fallback); else fallback();
-  }
-
-  if (reduce) return;
-
-  /* Sections out of view pause their loops (wall, aurora, marquee, beam): nothing animates unseen. */
-  if ("IntersectionObserver" in window) {
-    var pio = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { e.target.classList.toggle("is-paused", !e.isIntersecting); });
-    }, { rootMargin: "120px 0px" });
-    document.querySelectorAll("[data-hero], .cw-hero, .live").forEach(function (el) { pio.observe(el); });
-  }
-
-  /* Hero: the page wall leans smoothly toward the pointer (rAF-damped, self-stopping, cached rects —
-     zero getBoundingClientRect() per pointermove and no CSS transition fighting inline transforms). */
-  var hero = document.querySelector("[data-hero]");
-  if (hero && window.matchMedia("(hover: hover)").matches) {
-    var plane = hero.querySelector(".wall__plane");
-    var glow = document.createElement("div"), light = document.createElement("i");
-    glow.className = "hero__glow"; glow.setAttribute("aria-hidden", "true");
-    glow.appendChild(light);
-    hero.insertBefore(glow, hero.firstChild);
-
-    var hr = null, gr = null;
-    var tx = 0, ty = 0, cx = 0, cy = 0, lx = 0, ly = 0, rafId = 0, lightDirty = false;
-    var clearRects = function () { hr = null; gr = null; };
-    window.addEventListener("resize", clearRects, { passive: true });
-    window.addEventListener("scroll", clearRects, { passive: true });
-
-    function stepHero() {
-      rafId = 0;
-      cx += (tx - cx) * 0.1;
-      cy += (ty - cy) * 0.1;
-      var moving = Math.abs(tx - cx) > 0.002 || Math.abs(ty - cy) > 0.002;
-      if (!moving) { cx = tx; cy = ty; }
-      if (plane) {
-        plane.style.transform =
-          "translate3d(calc(-48% + " + (cx * -18).toFixed(1) + "px)," + (cy * -12).toFixed(1) + "px,0) perspective(1800px) rotateX(" + (16 - cy * 5).toFixed(2) + "deg) rotateZ(" + (14 + cx * 4).toFixed(2) + "deg)";
-      }
-      if (lightDirty) {
-        lightDirty = false;
-        light.style.transform = "translate3d(" + lx + "px," + ly + "px,0)";
-      }
-      if (moving) rafId = requestAnimationFrame(stepHero);
-    }
-
-    hero.addEventListener("pointermove", function (e) {
-      if (!hr) { hr = hero.getBoundingClientRect(); gr = glow.getBoundingClientRect(); }
-      tx = Math.max(-1, Math.min(1, ((e.clientX - hr.left) / hr.width) * 2 - 1));
-      ty = Math.max(-1, Math.min(1, ((e.clientY - hr.top) / hr.height) * 2 - 1));
-      lx = Math.round(e.clientX - gr.left);
-      ly = Math.round(e.clientY - gr.top);
-      lightDirty = true;
-      glow.classList.add("is-on");
-      if (!rafId) rafId = requestAnimationFrame(stepHero);
-    }, { passive: true });
-
-    hero.addEventListener("pointerleave", function () {
-      tx = 0; ty = 0;
-      glow.classList.remove("is-on");
-      if (!rafId) rafId = requestAnimationFrame(stepHero);
-    });
-  }
-
-  /* Showcases: frames glide cleanly into place as they scroll in. Reads all rects first, then writes
-     only changed --p values, and settles cards cleanly to p=1 once scrolled past the top. */
-  var shows = Array.prototype.slice.call(document.querySelectorAll(".show")).map(function (m) {
-    return { el: m, parts: Array.prototype.slice.call(m.querySelectorAll(".show__media .frame, .show__body")), p: -1 };
-  });
-  var ticking = false;
-  function onScroll() {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(function () {
-      ticking = false;
-      var still = document.documentElement.hasAttribute("data-static");
-      var vh = window.innerHeight;
-      var updates = [];
-      for (var i = 0; i < shows.length; i++) {
-        var s = shows[i], p = 1;
-        if (!still) {
-          var r = s.el.getBoundingClientRect();
-          if (r.bottom < -120) p = 1;
-          else if (r.top > vh + 120) p = 0;
-          else {
-            p = Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.65)));
-            p = 1 - Math.pow(1 - p, 3);
-          }
-        }
-        p = Math.round(p * 1000) / 1000;
-        if (p !== s.p) { s.p = p; updates.push(s); }
-      }
-      for (var j = 0; j < updates.length; j++) {
-        var u = updates[j];
-        for (var k = 0; k < u.parts.length; k++) u.parts[k].style.setProperty("--p", u.p);
-      }
-    });
-  }
-  if (shows.length) {
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-    onScroll();
   }
 })();

@@ -45,7 +45,7 @@ Finish the `packs.json` entry: `summary` (used on the site and in AI prompts), `
 
 `--quick` skips the dark pass, `--skip=pages` skips a step; with no id it checks everything. For motion, sample positions over real time through the DevTools protocol (headless screenshots freeze transitions). When it passes: commit and push.
 
-Optional, for the homepage: a showcase section (`.show`) in `index.html`, and a "Same markup" card from `site/compare/<id>.html`.
+Optional, for the homepage (`index.html`): a book on the shelf (`.shelf > li` with a `.book--<id>` binding in `site/site.css`, colours taken from the pack's tokens), an entry in the language viewer (`[data-pick]` plus its `.show` panel), and a "Same markup" card from `site/compare/<id>.html`.
 
 ## Isolation rules
 

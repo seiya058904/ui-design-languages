@@ -9,10 +9,11 @@
   <link rel="icon" href="site/assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="site/assets/apple-touch-icon.png">
   <meta name="description" content="A wall of real, working components from nine design languages. Mix them all, or filter to one language to see it as a complete system. Every card hands over its complete source and an AI prompt.">
+  <meta name="theme-color" content="#C9C9C6">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&display=swap"></noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600&family=Funnel+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600&family=Funnel+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Archivo:wdth,wght@100..125,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Itim&family=Patrick+Hand&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&display=swap"></noscript>
   <!-- The nine languages, live on one page (every class and token is prefixed, so they coexist) -->
   <link rel="stylesheet" href="clay/css/clay.css">
   <link rel="stylesheet" href="lilac/css/lilac.css">
@@ -31,17 +32,15 @@
 <header class="top">
   <div class="wrap top__in">
     <a class="brand" href="./"><span class="brand__dots" aria-hidden="true"><i style="background:#A8E6CF"></i><i style="background:#7C55FF"></i><i style="background:#2F7BF5"></i><i style="background:#2C8C8F"></i><i style="background:#A9C7EC"></i><i style="background:#FF4F00"></i><i style="background:#38BDF8"></i><i style="background:#C8FF00"></i><i style="background:#C85A32"></i></span>UI Design Languages</a>
-    <nav aria-label="Site"><a href="./#styles">Styles</a><a href="components.html" aria-current="page">Components</a><a href="./#same">Compare</a><a href="./#use">Use</a></nav>
+    <nav aria-label="Site"><a href="./#styles">Languages</a><a href="components.html" aria-current="page">Components</a><a href="./#same">Compare</a><a href="./#use">Use</a></nav>
     <a class="pill pill--sm" href="https://github.com/seiya058904/ui-design-languages">GitHub</a>
   </div>
 </header>
 
 <main>
   <section class="wrap cw-hero" aria-labelledby="cw-title">
-    <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <span class="chip"><b data-total>96</b>live components · 9 languages</span>
-    <h1 id="cw-title" class="reveal-words">Every component, <span>in every language.</span></h1>
-    <p class="cw-hero__lede">Real, working components — press them, type in them. Mix all nine languages on one wall, or pick one and watch it gather into a complete system. Open any card for its full source: the markup, exactly the CSS and JS it needs, one file that runs on its own, and a prompt for your AI.</p>
+    <h1 id="cw-title">Every component, in every language.</h1>
+    <p class="cw-hero__lede"><span data-total>96</span> real, working components. Mix all nine languages on one wall, or pick one and watch it gather into a complete system. Open any card for its markup, exactly the CSS and JS it needs, one runnable file and a prompt for your AI.</p>
   </section>
 
   <div class="cw-bar" data-bar>
@@ -108,7 +107,10 @@
   </div>
 </aside>
 
-<footer class="wrap foot"><span>UI Design Languages · MIT</span><a href="./">Back to all styles</a></footer>
+<footer class="wrap foot">
+  <span>UI Design Languages. MIT licensed.</span>
+  <nav aria-label="Footer"><a href="./">All languages</a><a href="https://github.com/seiya058904/ui-design-languages/blob/main/docs/WORKFLOW.md">Workflow</a><a href="https://github.com/seiya058904/ui-design-languages">GitHub</a></nav>
+</footer>
 <script src="site/wall.js"></script>
 <script src="site/home.js"></script>
 <script src="site/source.js"></script>

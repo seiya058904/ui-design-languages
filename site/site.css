@@ -52,6 +52,8 @@ body::before { content: none; }
 /* Site-chrome focus ring only — never override border-radius or leak into live pack stages. */
 :focus-visible:not(.wstage, .wstage *, .same__inner, .same__inner *) { outline: 2px solid var(--ink); outline-offset: 3px; }
 .top nav a, .foot a, .colophon a { border-radius: 4px; }
+/* Sections and panels that in-page links move focus to (tabindex="-1") are landmarks, not controls: no ring. */
+:is(section, article)[tabindex="-1"]:focus-visible { outline: none; }
 ::selection { background: var(--ink); color: var(--bg); }
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
 .wrap { width: min(100% - 48px, 1312px); margin: 0 auto; }

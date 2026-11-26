@@ -112,8 +112,10 @@ html[data-theme="dark"] .wcard__spot i { background: radial-gradient(closest-sid
 .wcard__tag span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #B9B8B2; }
 .wcard__code { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 30px; min-width: 30px; padding: 0 10px; border: 0; border-radius: 999px; background: var(--tag-bg); color: #EDEDE9; font: 500 12px/1 var(--mono); text-decoration: none; cursor: pointer; opacity: .82; transition: opacity .25s, transform .3s var(--ease), background-color .2s; }
 .wcard__code svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.wcard:hover .wcard__code, .wcard:focus-within .wcard__code { opacity: 1; }
+body[data-wall-style="all"] .wcard:hover .wcard__in::after { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--glow, var(--ink)) 55%, rgba(0, 0, 0, 0.14)); }
+.wcard:hover .wcard__code, .wcard:focus-within .wcard__code { opacity: 1; background: var(--ink); color: var(--on-ink); border-color: var(--ink); }
 .wcard__tag:hover, .wcard__code:hover { background: var(--tag-hover); }
+.wcard:hover .wcard__code:hover { background: var(--ink-hover); border-color: var(--ink-hover); }
 .wcard__tag:focus-visible, .wcard__code:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 @media (hover: none) { .wcard__code { opacity: 1; } }
 /* Touch: ≥ 36px hit areas, same look. */
@@ -173,6 +175,7 @@ html[data-theme="dark"] .wcard__spot i { background: radial-gradient(closest-sid
 [data-site-theme="gallery"] .wcard__in::before { inset: 10% 4% -8%; border-radius: 50%; box-shadow: none; background: radial-gradient(closest-side, color-mix(in srgb, var(--glow) 55%, transparent), transparent); opacity: 0; }
 [data-site-theme="gallery"] .wcard:hover .wcard__in::before { opacity: .5; }
 [data-site-theme="gallery"] body[data-wall-style="all"] .wcard__in::after { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.075); }
+[data-site-theme="gallery"] body[data-wall-style="all"] .wcard:hover .wcard__in::after { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--glow, #ffffff) 48%, rgba(255, 255, 255, 0.16)); }
 [data-site-theme="gallery"] .wcard__tag, [data-site-theme="gallery"] .wcard__code { border: 1px solid rgba(255, 255, 255, 0.1); }
 [data-site-theme="gallery"] .src { box-shadow: inset 0 0 0 1px var(--line); }
 

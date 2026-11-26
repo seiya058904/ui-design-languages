@@ -251,6 +251,10 @@ html.is-wheel-scrolling .shelf > li:not(.is-open) .book:hover { transform: none;
 :where(.wstage) { border-radius: 10px; }
 .wstage { position: relative; display: flex; flex-wrap: wrap; align-items: center; align-content: center; justify-content: center; gap: 16px 20px; min-height: 220px; margin: 0; padding: 44px 28px 74px; overflow: hidden; }
 .wstage > * { position: relative; z-index: 1; }
+.wstage > .stage-spot { position: absolute; inset: 0; z-index: 0; overflow: hidden; border-radius: inherit; pointer-events: none; }
+.stage-spot i { position: absolute; left: 0; top: 0; width: 420px; height: 420px; margin: -210px 0 0 -210px; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--pc, #ffffff) 22%, rgba(255, 255, 255, 0.55)), transparent 72%); opacity: 0; transition: opacity .35s ease; }
+html[data-theme="dark"] .stage-spot i, [data-pack-stage="obsidian"] .stage-spot i { background: radial-gradient(closest-side, color-mix(in srgb, var(--pc, #ffffff) 20%, rgba(255, 255, 255, 0.12)), transparent 72%); }
+.tray__item:hover .stage-spot i, .same figure:hover .stage-spot i { opacity: 1; will-change: transform; }
 .wstage[data-comp="compare"] { flex-direction: column; align-items: stretch; }
 .wstage[data-comp="compare"] > article { width: min(100%, 360px); margin: 0 auto; }
 .wstage .spec { display: flex; flex-direction: column; gap: 16px; }
@@ -258,9 +262,9 @@ html.is-wheel-scrolling .shelf > li:not(.is-open) .book:hover { transform: none;
 .wstage .line--start { justify-content: flex-start; flex-wrap: wrap; }
 .is-offscreen *, .is-offscreen *::before, .is-offscreen *::after { animation-play-state: paused !important; }
 .tray { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-.tray__item { position: relative; display: flex; flex-direction: column; min-width: 0; border-radius: 10px; box-shadow: var(--edge), var(--lift); transition: box-shadow .32s var(--ease); }
+.tray__item { position: relative; display: flex; flex-direction: column; min-width: 0; border-radius: 10px; box-shadow: var(--edge), var(--lift); transition: transform .36s var(--ease), box-shadow .36s var(--ease); }
 .tray__item--wide { grid-column: span 2; }
-.tray__item:hover { box-shadow: 0 0 0 1px var(--line-hover), var(--lift); }
+.tray__item:hover { transform: translate3d(0, -4px, 0); box-shadow: 0 0 0 1px color-mix(in srgb, var(--pc, var(--ink)) 58%, var(--line-hover)), 0 28px 48px -28px rgba(0, 0, 0, 0.5), 0 0 32px -12px color-mix(in srgb, var(--pc, transparent) 44%, transparent); }
 .tray__stage { position: relative; flex: 1; min-width: 0; overflow: hidden; border-radius: inherit; }
 .tray__stage img { width: 100%; height: auto; }
 .tray__stage .wstage { width: 100%; height: 100%; min-height: 310px; }
@@ -270,10 +274,12 @@ html.is-wheel-scrolling .shelf > li:not(.is-open) .book:hover { transform: none;
 .tag i { width: 7px; height: 7px; flex: none; border-radius: 50%; }
 .tag b { font-size: 13.5px; }
 .tag span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #B9B8B2; }
+.tray__item:hover .tag { background: var(--tag-hover); }
 .tag:hover, .tray__code:hover { background: var(--tag-hover); }
 .tag:active, .tray__code:active { transform: scale(0.97); }
-.tray__code { display: inline-flex; align-items: center; justify-content: center; flex: none; height: 30px; padding: 0 11px; border-radius: 999px; background: var(--tag-bg); color: #EDEDE9; font: 500 12px/1 var(--mono); opacity: .86; transition: opacity .22s, background-color .2s; }
-.tray__item:hover .tray__code, .tray__item:focus-within .tray__code { opacity: 1; }
+.tray__code { display: inline-flex; align-items: center; justify-content: center; flex: none; height: 30px; padding: 0 11px; border-radius: 999px; background: var(--tag-bg); color: #EDEDE9; font: 500 12px/1 var(--mono); opacity: .86; transition: opacity .22s, background-color .22s, color .22s, transform .28s var(--ease); }
+.tray__item:hover .tray__code, .tray__item:focus-within .tray__code { opacity: 1; background: var(--ink); color: var(--on-ink); transform: translate3d(0, -1px, 0); }
+.tray__item:hover .tray__code:hover { background: var(--ink-hover); }
 .tray__bar a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .tray-foot { display: flex; justify-content: flex-end; margin-top: 22px; }
 
@@ -289,8 +295,8 @@ html.is-wheel-scrolling .shelf > li:not(.is-open) .book:hover { transform: none;
 .same-code__copy.is-copied { border-color: rgba(168, 230, 207, 0.5); color: #A8E6CF; }
 .same { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 16px; }
 .same figure { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.same__view { position: relative; display: flex; flex: 1; flex-direction: column; overflow: hidden; border-radius: 10px; background: var(--bg-sunk); box-shadow: var(--edge); transition: box-shadow .35s var(--ease); }
-.same figure:hover .same__view { box-shadow: 0 0 0 1px color-mix(in srgb, var(--pc) 55%, transparent), var(--lift); }
+.same__view { position: relative; display: flex; flex: 1; flex-direction: column; overflow: hidden; border-radius: 10px; background: var(--bg-sunk); box-shadow: var(--edge); transition: transform .36s var(--ease), box-shadow .36s var(--ease); }
+.same figure:hover .same__view { transform: translate3d(0, -5px, 0); box-shadow: 0 0 0 1px color-mix(in srgb, var(--pc, var(--ink)) 62%, var(--line-hover)), 0 28px 48px -28px rgba(0, 0, 0, 0.5), 0 0 36px -12px color-mix(in srgb, var(--pc, transparent) 44%, transparent); }
 .same__view img { width: 100%; height: auto; }
 .same__view .wstage { width: 100%; flex: 1; min-height: 410px; padding: 26px 20px; }
 .same__badge { position: absolute; top: 10px; right: 10px; z-index: 3; display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; background: rgba(15, 15, 17, 0.78); color: #E4E4E7; font: 500 11px/1 var(--text); opacity: 0; transform: translate3d(0, -4px, 0); transition: opacity .22s, transform .28s var(--ease); pointer-events: none; }
@@ -303,10 +309,14 @@ html.is-wheel-scrolling .shelf > li:not(.is-open) .book:hover { transform: none;
 .same__inner .line--start { justify-content: flex-start; flex-wrap: wrap; }
 .same figcaption { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 2px; font-size: 14px; }
 .same__id { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.same__id span { transition: color .2s; }
+.same figure:hover .same__id span { color: var(--ink); }
 .same figcaption code { font-size: 11.5px; color: var(--faint); }
-.same__open { display: inline-flex; align-items: center; flex: none; height: 26px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 999px; font: 500 12px/1 var(--mono); color: var(--muted); transition: color .2s, border-color .2s, background-color .2s; }
-.same__open:hover { color: var(--ink); border-color: color-mix(in srgb, var(--pc, var(--ink)) 55%, var(--line-hover)); background: var(--hover); }
+.same__open { display: inline-flex; align-items: center; flex: none; height: 26px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 999px; font: 500 12px/1 var(--mono); color: var(--muted); transition: color .2s, border-color .2s, background-color .2s, transform .28s var(--ease); }
+.same figure:hover .same__open, .same figure:focus-within .same__open { color: var(--on-ink); background: var(--ink); border-color: var(--ink); transform: translate3d(2px, 0, 0); }
+.same figure:hover .same__open:hover { background: var(--ink-hover); border-color: var(--ink-hover); }
 .same__open:active { transform: scale(0.96); }
+html.is-wheel-scrolling .tray__item:hover, html.is-wheel-scrolling .same figure:hover .same__view { transform: none; }
 
 /* ---------- Use ---------- */
 .ways { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; }
@@ -396,10 +406,16 @@ html.is-wheel-scrolling .shelf > li:not(.is-open) .book:hover { transform: none;
   .seg button::after { content: ""; position: absolute; inset: -6px -2px; }
 }
 
+@media (hover: none) {
+  .tray__item:hover, .same figure:hover .same__view { transform: none; }
+  .stage-spot { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .js .shelf:not(.is-set) .book { opacity: 1; transform: none; }
   .viewer.is-ready .show.is-active { animation: none; }
+  .tray__item:hover, .same figure:hover .same__view { transform: none; }
   /* Site chrome only: live pack stages keep their own reduced-motion rules. */
   :not(.wstage, .wstage *, .same__inner, .same__inner *) { transition: none !important; }
 }

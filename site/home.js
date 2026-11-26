@@ -442,12 +442,24 @@ window.UISite = window.UISite || {};
   if ((trayItems.length || cmpViews.length) && window.UIWall) {
     liveHomeReady = UIWall.ready().then(function () {
       var offscreenTargets = [];
+      function attachSpot(host, stage) {
+        var spot = document.createElement("span"), dot = document.createElement("i");
+        spot.className = "stage-spot";
+        spot.setAttribute("aria-hidden", "true");
+        spot.appendChild(dot);
+        stage.appendChild(spot);
+        host.__spotStage = stage;
+        host.__spotDot = dot;
+      }
       trayItems.forEach(function (li) {
         var pick = (li.getAttribute("data-pick") || "").split("/");
         var stageHost = li.querySelector(".tray__stage");
         if (pick.length !== 3 || !stageHost) return;
         var st = UIWall.stage(pick[0], pick[1], pick[2]);
         if (!st) return;
+        var pack = UIWall.byId && UIWall.byId[pick[0]];
+        if (pack && pack.dot) li.style.setProperty("--pc", pack.dot);
+        attachSpot(li, st);
         stageHost.innerHTML = "";
         stageHost.appendChild(st);
         offscreenTargets.push(li);
@@ -456,12 +468,36 @@ window.UISite = window.UISite || {};
         var packId = view.getAttribute("data-compare");
         var st = UIWall.stage(packId, "compare", "weekly-report");
         if (!st) return;
+        attachSpot(view.closest("figure") || view, st);
         var badge = view.querySelector(".same__badge");
         view.innerHTML = "";
         view.appendChild(st);
         if (badge) view.appendChild(badge);
         offscreenTargets.push(view);
       });
+      if (!reduce && window.matchMedia && window.matchMedia("(hover: hover)").matches) {
+        var spotHost = null, spotRect = null, spotEv = null, spotRaf = 0;
+        var clearSpotRect = function () { spotRect = null; };
+        window.addEventListener("scroll", clearSpotRect, { passive: true });
+        window.addEventListener("resize", clearSpotRect, { passive: true });
+        [document.querySelector("[data-tray]"), document.querySelector(".same")].forEach(function (container) {
+          if (!container) return;
+          container.addEventListener("pointermove", function (e) {
+            var host = e.target.closest && e.target.closest(".tray__item, .same figure");
+            if (!host || !host.__spotDot) return;
+            if (host !== spotHost) { spotHost = host; spotRect = null; }
+            spotEv = e;
+            if (spotRaf) return;
+            spotRaf = requestAnimationFrame(function () {
+              spotRaf = 0;
+              if (!spotHost || !spotEv || !spotHost.__spotStage) return;
+              if (!spotRect) spotRect = spotHost.__spotStage.getBoundingClientRect();
+              spotHost.__spotDot.style.transform = "translate3d(" + Math.round(spotEv.clientX - spotRect.left) + "px," + Math.round(spotEv.clientY - spotRect.top) + "px,0)";
+            });
+          }, { passive: true });
+          container.addEventListener("pointerleave", function () { spotHost = null; spotRect = null; });
+        });
+      }
       if ("IntersectionObserver" in window && offscreenTargets.length) {
         var offIo = new IntersectionObserver(function (es) {
           es.forEach(function (e) { e.target.classList.toggle("is-offscreen", !e.isIntersecting); });

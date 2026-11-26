@@ -33,16 +33,22 @@ window.UISite = window.UISite || {};
     }
     return Promise.resolve(legacyCopy(text));
   };
+  var CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg>';
   S.feedback = function (btn, result, okText) {
     var label = btn.querySelector("span") || btn;
+    var svg = btn.querySelector("svg");
     if (btn.__label == null) btn.__label = label.textContent;
+    if (svg && btn.__svg == null) btn.__svg = svg.outerHTML;
     clearTimeout(btn.__feedbackTimer);
     return Promise.resolve(result).then(function (ok) {
       label.textContent = ok ? okText || "Copied" : "Copy failed";
+      if (ok && svg && btn.__svg) svg.outerHTML = CHECK_SVG;
       btn.classList.toggle("is-copied", !!ok);
       btn.classList.toggle("is-failed", !ok);
       btn.__feedbackTimer = setTimeout(function () {
         label.textContent = btn.__label;
+        var curSvg = btn.querySelector("svg");
+        if (curSvg && btn.__svg) curSvg.outerHTML = btn.__svg;
         btn.classList.remove("is-copied", "is-failed");
       }, 1600);
       return ok;
@@ -87,27 +93,43 @@ window.UISite = window.UISite || {};
   var title = document.querySelector("[data-specimen]");
   var shelf = document.querySelector("[data-shelf]");
   var mobile = window.matchMedia ? window.matchMedia("(max-width: 760px)") : { matches: false };
-  function fitTitle() {
-    if (!title) return;
-    title.style.fontSize = "";
+  var fittedSizes = {};
+  function measureTitle(css) {
+    if (!title) return "";
+    title.setAttribute("style", css || "");
     var base = parseFloat(getComputedStyle(title).fontSize), w = title.clientWidth, ratio = 1;
     $$(":scope > span", title).forEach(function (line) { if (line.scrollWidth > 0) ratio = Math.min(ratio, w / line.scrollWidth); });
-    if (ratio < 1) title.style.fontSize = (base * ratio * 0.995).toFixed(2) + "px";
+    return ratio < 1 ? (base * ratio * 0.995).toFixed(2) + "px" : "";
+  }
+  function fitAllTitles() {
+    if (!title) return;
+    var activeCss = typeShown || "";
+    fittedSizes = {};
+    var specs = [""];
+    if (shelf) $$(":scope > li > a", shelf).forEach(function (a) { var t = a.getAttribute("data-type"); if (t && specs.indexOf(t) < 0) specs.push(t); });
+    specs.forEach(function (css) { fittedSizes[css] = measureTitle(css); });
+    title.setAttribute("style", activeCss);
+    if (fittedSizes[activeCss]) title.style.fontSize = fittedSizes[activeCss];
+  }
+  function applyFittedTitle(css) {
+    if (!title) return;
+    var key = css || "";
+    title.setAttribute("style", key);
+    if (fittedSizes[key]) title.style.fontSize = fittedSizes[key];
   }
   function refit() {
     if (!title) return;
-    title.setAttribute("style", title.style.cssText.replace(/font-size:[^;]+;?/g, ""));
-    fitTitle();
+    fitAllTitles();
   }
   var typeShown = null, swapTimer = 0;
   function setType(css) {
     if (!title || css === typeShown) return;
     typeShown = css;
-    var apply = function () { title.setAttribute("style", css || ""); fitTitle(); title.classList.remove("is-swapping"); };
+    var apply = function () { applyFittedTitle(css); title.classList.remove("is-swapping"); };
     clearTimeout(swapTimer);
     if (reduce) { apply(); return; }
     title.classList.add("is-swapping");
-    swapTimer = setTimeout(apply, 110);
+    swapTimer = setTimeout(apply, 95);
   }
   if (title) {
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
@@ -121,7 +143,11 @@ window.UISite = window.UISite || {};
     var loadCovers = function () {
       if (coversLoaded) return;
       coversLoaded = true;
-      covers.forEach(function (img) { img.src = img.getAttribute("data-src"); img.removeAttribute("data-src"); });
+      covers.forEach(function (img) {
+        img.src = img.getAttribute("data-src");
+        img.removeAttribute("data-src");
+        if (img.decode) img.decode().catch(function () {});
+      });
     };
     var openSlot = function (li) {
       clearTimeout(closeTimer);
@@ -138,53 +164,68 @@ window.UISite = window.UISite || {};
       if (shelf.classList.contains("is-set")) return;
       shelf.classList.add("is-set");
       shelfSet();
-      setTimeout(function () { shelf.classList.add("is-settled"); }, 1100);
+      setTimeout(function () { shelf.classList.add("is-settled"); }, 900);
     };
     if (reduce) settle();
     else Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise(function (r) { setTimeout(r, 400); })]).then(function () { requestAnimationFrame(settle); });
 
-    if (!mobile.matches) {
-      // Scrolling past the shelf with the pointer on it is not pointing at a book: a book opens only once
-      // the page is still (opening re-lays out the hero and re-sets the headline, never mid-scroll).
-      var lastScroll = -1e4;
-      window.addEventListener("scroll", function () { lastScroll = performance.now(); }, { passive: true });
-      var tryOpen = function (li) {
-        var still = performance.now() - lastScroll;
-        if (still < 200) { intentTimer = setTimeout(function () { tryOpen(li); }, 210 - still); return; }
-        if (li.matches(":hover")) openSlot(li);
-      };
-      slots.forEach(function (li) {
-        li.addEventListener("pointerenter", function (e) {
-          if (e.pointerType === "touch") return;
-          clearTimeout(intentTimer);
-          // A short intent delay: sweeping across the shelf doesn't fan every book open on the way.
-          intentTimer = setTimeout(function () { tryOpen(li); }, open ? 70 : 40);
-        });
-      });
-      shelf.addEventListener("pointerleave", function () {
+    // Scrolling past the shelf with the pointer on it is not pointing at a book: a book opens only once
+    // the page is still (opening re-lays out the hero and re-sets the headline, never mid-scroll).
+    var lastScroll = -1e4;
+    window.addEventListener("scroll", function () { lastScroll = performance.now(); }, { passive: true });
+    var tryOpen = function (li) {
+      if (mobile.matches) return;
+      var still = performance.now() - lastScroll;
+      if (still < 140) { intentTimer = setTimeout(function () { tryOpen(li); }, 150 - still); return; }
+      if (li.matches(":hover")) openSlot(li);
+    };
+    slots.forEach(function (li) {
+      li.addEventListener("pointerenter", function (e) {
+        if (mobile.matches || e.pointerType === "touch") return;
         clearTimeout(intentTimer);
-        closeTimer = setTimeout(function () { openSlot(null); }, 260);
+        intentTimer = setTimeout(function () { tryOpen(li); }, open ? 45 : 25);
       });
-    }
-    shelf.addEventListener("focusin", function (e) { var li = e.target.closest("li"); if (li) openSlot(li); });
+    });
+    shelf.addEventListener("pointerleave", function () {
+      if (mobile.matches) return;
+      clearTimeout(intentTimer);
+      closeTimer = setTimeout(function () { openSlot(null); }, 200);
+    });
+    shelf.addEventListener("focusin", function (e) { var li = e.target.closest("li"); if (li && !mobile.matches) openSlot(li); });
     shelf.addEventListener("focusout", function (e) { if (!shelf.contains(e.relatedTarget)) openSlot(null); });
-    // Covers arrive early when the page goes idle (they are small posters), or as soon as the shelf is used;
-    // never while the gallery theme hides the shelf.
+
+    // Covers arrive immediately whenever the booth is shown (or idle), so the first hover never pops in blank.
     var shelfShown = function () { return root.getAttribute("data-site-theme") !== "gallery"; };
-    var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 1200); };
-    window.addEventListener("load", function () { idle(function () { if (shelfShown()) loadCovers(); }, { timeout: 2500 }); });
-    themeHooks.push(function () { if (shelfShown() && mobile.matches) loadCovers(); });
-    if (mobile.matches) {
+    var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 600); };
+    window.addEventListener("load", function () { idle(function () { if (shelfShown()) loadCovers(); }, { timeout: 1200 }); });
+    themeHooks.push(function () {
+      if (!shelfShown()) return;
+      loadCovers();
+      if (!reduce) {
+        shelf.classList.remove("is-set", "is-settled");
+        void shelf.offsetWidth;
+        requestAnimationFrame(function () {
+          shelf.classList.add("is-set");
+          setTimeout(function () { shelf.classList.add("is-settled"); }, 900);
+        });
+      }
+    });
+    if (shelfShown()) loadCovers();
+
+    var ioMobile = null;
+    var setupMobileShelf = function () {
+      if (!mobile.matches) { if (ioMobile) { ioMobile.disconnect(); ioMobile = null; } return; }
       if (shelfShown()) loadCovers();
-      // On a phone the shelf is a row you swipe: the book in the middle sets the headline.
-      if ("IntersectionObserver" in window) {
-        var seen = new IntersectionObserver(function (es) {
+      if ("IntersectionObserver" in window && !ioMobile) {
+        ioMobile = new IntersectionObserver(function (es) {
           es.forEach(function (e) { if (e.isIntersecting) setType(e.target.firstElementChild.getAttribute("data-type")); });
         }, { root: shelf, rootMargin: "0px -45% 0px -45%" });
         var armed = false;
-        shelf.addEventListener("scroll", function () { if (armed) return; armed = true; slots.forEach(function (li) { seen.observe(li); }); }, { passive: true });
+        shelf.addEventListener("scroll", function () { if (armed || !ioMobile) return; armed = true; slots.forEach(function (li) { ioMobile.observe(li); }); }, { passive: true });
       }
-    }
+    };
+    setupMobileShelf();
+    if (mobile.addEventListener) mobile.addEventListener("change", function () { openSlot(null); setupMobileShelf(); });
   }
 
   /* ---------- Gallery hero: the moving wall ----------
@@ -251,8 +292,11 @@ window.UISite = window.UISite || {};
   }
   if (viewer && picks.length) {
     var list = viewer.querySelector("[data-viewer-index]");
+    var tablet = window.matchMedia ? window.matchMedia("(max-width: 1100px)") : { matches: false };
+    var syncOri = function () { list.setAttribute("aria-orientation", tablet.matches ? "horizontal" : "vertical"); };
     list.setAttribute("role", "tablist");
-    list.setAttribute("aria-orientation", "vertical");
+    syncOri();
+    if (tablet.addEventListener) tablet.addEventListener("change", syncOri);
     picks.forEach(function (a) {
       var id = a.getAttribute("data-pick");
       a.id = "tab-" + id;
@@ -264,6 +308,9 @@ window.UISite = window.UISite || {};
         e.preventDefault();
         select(id);
         if (history.replaceState) history.replaceState(null, "", "#" + id);
+        var r = viewer.getBoundingClientRect();
+        var topH = parseFloat(getComputedStyle(root).getPropertyValue("--top-h")) || 64;
+        if (r.top < topH + 12 && window.UIScroll) UIScroll.to(window.scrollY + r.top - topH - 20);
       });
     });
     list.addEventListener("keydown", function (e) {
@@ -275,7 +322,9 @@ window.UISite = window.UISite || {};
       else if (e.key === "End") j = picks.length - 1;
       if (j < 0) return;
       e.preventDefault();
-      select(picks[j].getAttribute("data-pick"), true);
+      var nextId = picks[j].getAttribute("data-pick");
+      select(nextId, true);
+      if (history.replaceState) history.replaceState(null, "", "#" + nextId);
     });
     viewer.classList.add("is-ready");
     var fromHash = function () { var h = decodeURIComponent(location.hash.slice(1)); return h && select(h); };
@@ -293,15 +342,49 @@ window.UISite = window.UISite || {};
   $$(".frame").forEach(function (frame) {
     var view = frame.querySelector(".frame__view"), shot = frame.querySelector(".frame__shot");
     var url = frame.querySelector(".frame__url"), openLink = frame.querySelector(".frame__open");
+    var hint = frame.querySelector(".frame__hint");
+    var showName = (frame.closest(".show") && frame.closest(".show").getAttribute("aria-label")) || "";
+    function thumbBase(src) { return "site/assets/thumbs/" + src.replace(/\//g, "-").replace(/\.html$/, ""); }
     $$(".seg button", frame).forEach(function (b) {
+      var warmAlt = function () {
+        var name = thumbBase(b.getAttribute("data-src"));
+        var pre = new Image();
+        pre.src = name + "-lg.jpg";
+      };
+      b.addEventListener("pointerenter", warmAlt, { once: true });
+      b.addEventListener("focus", warmAlt, { once: true });
       b.addEventListener("click", function () {
+        if (b.getAttribute("aria-pressed") === "true") return;
         $$(".seg button", frame).forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-        var src = b.getAttribute("data-src"), name = "site/assets/thumbs/" + src.replace(/\//g, "-").replace(/\.html$/, "");
-        shot.srcset = name + ".jpg 640w, " + name + "-lg.jpg 1280w";
+        var src = b.getAttribute("data-src"), name = thumbBase(src);
+        var isGuide = b.textContent.trim().toLowerCase() === "styleguide";
+        var nextSrcset = name + ".jpg 640w, " + name + "-lg.jpg 1280w";
+        if (!reduce) shot.classList.add("is-swapping");
+        var doneSwap = function () { shot.classList.remove("is-swapping"); };
+        shot.addEventListener("load", doneSwap, { once: true });
+        shot.addEventListener("error", doneSwap, { once: true });
+        shot.srcset = nextSrcset;
         shot.src = name + ".jpg";
+        if (shot.complete) doneSwap();
+        shot.alt = showName + (isGuide ? " styleguide" : " example page");
+        view.setAttribute("aria-label", "Open the " + showName + (isGuide ? " styleguide" : " example page"));
+        if (hint && hint.firstChild && hint.firstChild.nodeType === 3) hint.firstChild.textContent = isGuide ? "Open live styleguide " : "Open live example ";
         view.href = openLink.href = src;
         url.textContent = src;
       });
+    });
+  });
+
+  /* Clickable color swatches: copy the hex value on click with instant tooltip feedback. */
+  document.addEventListener("click", function (e) {
+    var sw = e.target.closest && e.target.closest(".swatches .swatch[data-hex]");
+    if (!sw) return;
+    var hex = sw.getAttribute("data-hex");
+    UISite.copy(hex).then(function (ok) {
+      if (!ok) return;
+      clearTimeout(sw.__copyTimer);
+      sw.classList.add("is-copied");
+      sw.__copyTimer = setTimeout(function () { sw.classList.remove("is-copied"); }, 1400);
     });
   });
 
@@ -325,9 +408,12 @@ window.UISite = window.UISite || {};
   /* ---------- "Same markup" ---------- */
   /* The code line above the cards follows the card you point at: same markup, another prefix. */
   var code = document.querySelector(".same-code");
+  var currentPrefix = "clay";
   if (code) {
     var showPrefix = function (fig) {
-      $$("[data-prefix]", code).forEach(function (b) { b.textContent = fig.getAttribute("data-prefix"); });
+      if (!fig) return;
+      currentPrefix = fig.getAttribute("data-prefix") || "clay";
+      $$("[data-prefix]", code).forEach(function (b) { b.textContent = currentPrefix; });
       code.style.setProperty("--pc", "color-mix(in srgb, " + fig.style.getPropertyValue("--pc") + " 72%, #fff)");
     };
     $$(".same figure").forEach(function (fig) {
@@ -335,12 +421,21 @@ window.UISite = window.UISite || {};
       fig.addEventListener("focusin", function () { showPrefix(fig); });
     });
     showPrefix(document.querySelector(".same figure"));
+    var sameCopy = code.querySelector("[data-same-copy]");
+    if (sameCopy) {
+      sameCopy.addEventListener("click", function () {
+        var snippet = '<button class="' + currentPrefix + '-btn ' + currentPrefix + '-btn--primary">Schedule</button>';
+        UISite.feedback(sameCopy, UISite.copy(snippet));
+      });
+    }
   }
   /* Light / dark swaps every card's still; languages without a dark theme keep theirs. */
+  var sameGrid = document.querySelector(".same");
   $$("[data-theme-pick]").forEach(function (b) {
     b.addEventListener("click", function () {
       var dark = b.getAttribute("data-theme-pick") === "dark";
       $$("[data-theme-pick]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      if (sameGrid) sameGrid.classList.toggle("is-dark", dark);
       $$(".same__view img[data-dark]").forEach(function (img) {
         if (!img.__light) img.__light = img.getAttribute("src");
         img.loading = "eager";
@@ -349,16 +444,36 @@ window.UISite = window.UISite || {};
     });
   });
 
+  /* ---------- Scroll-spy for homepage section nav links ---------- */
+  var spyLinks = $$('.top nav a[href^="#"]').map(function (a) {
+    var id = a.getAttribute("href").slice(1);
+    var sec = document.getElementById(id);
+    return sec ? { a: a, sec: sec } : null;
+  }).filter(Boolean);
+  if (spyLinks.length && "IntersectionObserver" in window) {
+    var visibleSecs = new Set();
+    var spyIo = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) visibleSecs.add(e.target); else visibleSecs.delete(e.target);
+      });
+      var hit = spyLinks.filter(function (x) { return visibleSecs.has(x.sec); })[0];
+      spyLinks.forEach(function (x) { x.a.classList.toggle("is-current", !!hit && x === hit); });
+    }, { rootMargin: "-25% 0px -55% 0px" });
+    spyLinks.forEach(function (x) { spyIo.observe(x.sec); });
+  }
+
   /* ---------- Site theme: booth ⇄ gallery ---------- */
   var KEY = "uidl-site-theme", meta = document.querySelector('meta[name="theme-color"]');
   function themeNow() { return root.getAttribute("data-site-theme") === "gallery" ? "gallery" : "booth"; }
   function syncTheme() {
     var dark = themeNow() === "gallery";
+    var label = dark ? "Switch to light studio theme" : "Switch to dark gallery theme";
     $$("[data-site-theme-toggle]").forEach(function (b) {
       b.setAttribute("aria-pressed", String(dark));
-      b.title = dark ? "Grey booth theme" : "Dark gallery theme";
+      b.setAttribute("aria-label", label);
+      b.title = label;
     });
-    if (meta) meta.setAttribute("content", dark ? "#0F0F11" : "#C9C9C6");
+    if (meta) meta.setAttribute("content", dark ? "#0F0F11" : "#E6E5E0");
   }
   function setTheme(name, save) {
     if (save) { try { localStorage.setItem(KEY, name); } catch (e) { /* storage blocked: this visit only */ } }

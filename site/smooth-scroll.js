@@ -15,7 +15,7 @@
   var reduceQuery = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
   if (reduceQuery && reduceQuery.matches) return;
 
-  var LAMBDA = 8.0;      // damping per second: responsive yet silky
+  var LAMBDA = 10.0;     // damping per second: responsive yet silky
   var MIN_BOX = 320;     // scroll boxes shorter than this stay native
   var root = document.scrollingElement || document.documentElement;
   var active = null;     // { el, current, target, anchor, writing }
@@ -64,7 +64,7 @@
       var el = path[i];
       if (!el || el.nodeType !== 1) continue;
       if (el === document.documentElement || el === document.body) break;
-      if (el.hasAttribute("data-native-scroll")) { resolved = null; break; }
+      if (el.hasAttribute("data-native-scroll") || el.classList.contains("drawer__panel")) { resolved = null; break; }
       var tag = el.tagName;
       if (tag === "PRE" && el.scrollHeight > el.clientHeight + 1) { resolved = null; break; } // keep code blocks crisp & native
       if (el.scrollHeight <= el.clientHeight + 1) continue;
@@ -97,7 +97,7 @@
   function frame(now) {
     raf = 0;
     if (!active) return;
-    var dt = Math.min((now - last) / 1000, 0.05);
+    var dt = Math.min((now - last) / 1000, 0.033);
     last = now;
     var a = active;
     if (a.anchor) {
@@ -106,13 +106,17 @@
       if (t >= 1) a.current = a.target;
     } else {
       a.current += (a.target - a.current) * (1 - Math.exp(-LAMBDA * dt));
-      if (Math.abs(a.target - a.current) < 0.5) a.current = a.target;
+      if (Math.abs(a.target - a.current) < 0.4) a.current = a.target;
     }
     a.expect = a.current;
     a.writing = true;
     write(a.el, a.current);
     a.writing = false;
-    if (a.current === a.target) { active = null; return; }
+    if (a.current === a.target) {
+      active = null;
+      document.documentElement.classList.remove("is-wheel-scrolling");
+      return;
+    }
     raf = requestAnimationFrame(frame);
   }
 
@@ -124,13 +128,26 @@
     active.target = Math.max(0, Math.min(maxScroll(el), target));
     active.anchor = anchor || null;
     if (anchor) anchor.from = active.current;
+    else document.documentElement.classList.add("is-wheel-scrolling");
     if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); }
   }
 
   function stop() {
     active = null;
+    document.documentElement.classList.remove("is-wheel-scrolling");
     if (raf) { cancelAnimationFrame(raf); raf = 0; }
   }
+
+  window.UIScroll = {
+    to: function (y, opts) {
+      var target = Math.max(0, Math.min(maxScroll(root), y));
+      if (reduceQuery && reduceQuery.matches) { stop(); write(root, target); return; }
+      var dist = Math.abs(target - root.scrollTop);
+      var dur = (opts && opts.duration) || Math.min(900, 360 + dist / 9);
+      run(root, target, { start: performance.now(), duration: dur });
+    },
+    stop: stop
+  };
 
   window.addEventListener("wheel", function (e) {
     if (e.defaultPrevented || e.ctrlKey || e.metaKey || (reduceQuery && reduceQuery.matches)) return;

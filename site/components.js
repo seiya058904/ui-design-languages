@@ -14,6 +14,7 @@
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var grid = $("[data-grid]"), stylesEl = $("[data-styles]"), catsEl = $("[data-cats]"), backdrops = $("[data-backdrops]"), note = $("[data-note]"), search = $("[data-search]"), searchClear = $("[data-search-clear]"), emptyBox = $("[data-empty]"), emptyText = $("[data-empty-text]"), resetBtn = $("[data-reset]");
+  var barCount = $("[data-bar-count]"), barReset = $("[data-bar-reset]"), backTop = $("[data-back-top]");
   var cwSection = $(".cw"), statusEl = $("[data-status]");
   var state = { style: "all", kind: "all", theme: "light", query: "" };
   var cards = [];
@@ -193,7 +194,7 @@
   function columns() {
     var width = grid.clientWidth;
     if (!width) return null;
-    var cols = width >= 1060 ? 3 : width >= 660 ? 2 : 1, gap = width >= 660 ? 20 : 16;
+    var cols = width >= 1100 ? 3 : width >= 860 ? 2 : 1, gap = width >= 860 ? 20 : 16;
     return { width: width, cols: cols, gap: gap, colW: (width - gap * (cols - 1)) / cols };
   }
   function placeBatch(list, cols, gap, colW) {
@@ -309,6 +310,11 @@
         ? n + " " + p.name + (one ? " component" : " components") + ", on " + p.name + "'s own canvas. Open " + (one ? "it" : "any of them") + " for its complete source."
         : n + (one ? " component" : " components") + " from " + L + (L === 1 ? " language" : " languages") + ", all live. Open " + (one ? "it" : "any card") + " for its complete source.";
     }
+    if (barCount) {
+      var filtered = state.style !== "all" || state.kind !== "all" || !!state.query;
+      barCount.textContent = filtered ? n + " / " + cards.length : n + " live";
+    }
+    if (barReset) barReset.hidden = state.style === "all" && state.kind === "all" && !state.query;
     /* One always-present live region announces the result (or the empty state), not the 96 live cards. */
     if (statusEl) {
       var msg = n === 0 && emptyText ? emptyText.textContent : note.textContent;
@@ -336,6 +342,8 @@
 
   /* ---------- drawer ---------- */
   var drawer = $("[data-drawer]"), frame = null, lastFocus = null, current = null, closeTimer = 0;
+  var drawerState = { theme: "light", vp: "full", attrs: {} };
+  var SWATCH_COLORS = { violet: "#7C55FF", cobalt: "#2F7BF5", cyan: "#38BDF8", green: "#10B981", emerald: "#10B981", orange: "#FF4F00", sand: "#EEE6D9", stone: "#D5D7DC" };
   /* Copy with the shared helper (site/home.js): Clipboard API first, a textarea when it refuses. */
   function copy(btn, text) { UISite.feedback(btn, UISite.copy(text)); }
   /* Source panel: HTML / CSS / JS / single file for the demo on show (site/source.js builds it). */
@@ -394,32 +402,107 @@
     });
   }
 
+  function syncDrawerTools(p) {
+    var darkBtn = $('[data-dr-wtheme="dark"]'), lightBtn = $('[data-dr-wtheme="light"]');
+    if (lightBtn && darkBtn) {
+      lightBtn.disabled = p.tone === "dark";
+      lightBtn.title = p.tone === "dark" ? p.name + " is dark-only" : "";
+      darkBtn.disabled = !p.dark;
+      darkBtn.title = !p.dark ? p.name + " is light-only" : "";
+      lightBtn.setAttribute("aria-pressed", String(drawerState.theme !== "dark"));
+      darkBtn.setAttribute("aria-pressed", String(drawerState.theme === "dark"));
+    }
+    document.querySelectorAll("[data-dr-vp] button").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-vp") === drawerState.vp));
+    });
+    var wrap = $(".drawer__frame-wrap");
+    if (wrap) wrap.classList.toggle("is-mobile", drawerState.vp === "mobile");
+  }
+
+  function renderDrawerVariants(p) {
+    var box = $("[data-dr-variants]");
+    if (!box) return;
+    box.innerHTML = "";
+    var attr = p.variants && p.variants.accent ? "accent" : p.variants && p.variants.tone ? "tone" : "";
+    var list = attr ? p.variants[attr] : [];
+    if (!list || list.length < 2) { box.hidden = true; return; }
+    box.hidden = false;
+    var defVal = list[0];
+    list.forEach(function (val) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "drawer__variant";
+      b.style.background = SWATCH_COLORS[val] || p.dot;
+      b.setAttribute("aria-label", attr + ": " + val);
+      b.title = val.charAt(0).toUpperCase() + val.slice(1);
+      var cur = drawerState.attrs[attr] || defVal;
+      b.setAttribute("aria-pressed", String(cur === val));
+      b.addEventListener("click", function () {
+        drawerState.attrs[attr] = val === defVal ? "" : val;
+        box.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        if (frame && frame.contentWindow) {
+          var payload = {};
+          payload[attr] = drawerState.attrs[attr];
+          frame.contentWindow.postMessage({ type: "demo-attrs", attrs: payload }, "*");
+        }
+      });
+      box.appendChild(b);
+    });
+  }
+
   function showDemo(packId, comp, dm) {
     current = { pack: packId, comp: comp, demo: dm };
     $("[data-dr-tabs]").querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-demo") === dm.id)); });
     var view = $("[data-dr-view]");
     view.innerHTML = "";
+    var wrap = document.createElement("div");
+    wrap.className = "drawer__frame-wrap" + (drawerState.vp === "mobile" ? " is-mobile" : "");
     frame = document.createElement("iframe");
     frame.className = "drawer__frame";
     frame.title = W.byId[packId].name + " " + comp.title + ": " + dm.label;
     var qs = new URLSearchParams({ p: packId, c: comp.id, d: dm.id });
-    if (state.theme === "dark" && W.byId[packId].dark) qs.set("theme", "dark");
+    if (drawerState.theme === "dark" && W.byId[packId].dark) qs.set("theme", "dark");
+    Object.keys(drawerState.attrs).forEach(function (k) { if (drawerState.attrs[k]) qs.set(k, drawerState.attrs[k]); });
     frame.onload = function () { frame.classList.add("is-ready"); };
     frame.src = "site/demo.html?" + qs.toString();
-    view.appendChild(frame);
+    wrap.appendChild(frame);
+    view.appendChild(wrap);
     loadSource(packId, comp, dm);
   }
-  function openDrawer(packId, compId, demoId, fromHash) {
+
+  function drawerList() {
+    var list = cards.filter(function (c) { return c.shown; });
+    return list.length ? list : cards;
+  }
+
+  function openDrawer(packId, compId, demoId, navMode) {
     var hit = W.demo(packId, compId, demoId);
     if (!hit) return;
     clearTimeout(closeTimer); // prevent a pending close timer from hiding a freshly reopened drawer
     var p = W.byId[packId], comp = hit.component;
     if (drawer.hidden) lastFocus = document.activeElement;
+    if (!current || current.pack !== packId || drawer.hidden) {
+      drawerState.attrs = {};
+      drawerState.theme = (p.tone === "dark" || (state.theme === "dark" && p.dark)) ? "dark" : "light";
+    }
     $("[data-dr-tag]").innerHTML = '<i style="background:' + p.dot + '"></i><b style="' + p.font + '"></b>';
     $("[data-dr-tag] b").textContent = p.name;
     $("[data-dr-title]").textContent = comp.title;
     $("[data-dr-sub]").textContent = comp.summary;
     $("[data-dr-open]").href = p.id + "/components.html#" + comp.id;
+    var list = drawerList(), idx = -1;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].pack === packId && list[i].comp === compId && (!demoId || list[i].demo === hit.demo.id)) { idx = i; break; }
+    }
+    if (idx < 0) {
+      for (var j = 0; j < list.length; j++) if (list[j].pack === packId && list[j].comp === compId) { idx = j; break; }
+    }
+    var posEl = $("[data-dr-pos]");
+    if (posEl) posEl.textContent = idx >= 0 ? (idx + 1) + " / " + list.length : "";
+    var prevBtn = $("[data-dr-prev]"), nextBtn = $("[data-dr-next]");
+    if (prevBtn) prevBtn.disabled = list.length < 2;
+    if (nextBtn) nextBtn.disabled = list.length < 2;
+
     var tabs = $("[data-dr-tabs]");
     tabs.innerHTML = "";
     comp.demos.forEach(function (dm) {
@@ -431,14 +514,18 @@
       tabs.appendChild(b);
     });
     tabs.hidden = comp.demos.length < 2;
+    renderDrawerVariants(p);
+    syncDrawerTools(p);
     showDemo(packId, comp, hit.demo);
     drawer.hidden = false;
     document.documentElement.classList.add("has-drawer");
     requestAnimationFrame(function () { drawer.classList.add("is-open"); });
-    $(".drawer__close").focus({ preventScroll: true });
-    if (!fromHash) history.replaceState(null, "", "#" + packId + "/" + compId);
+    if (navMode !== "replace") $(".drawer__close").focus({ preventScroll: true });
+    var targetHash = "#" + packId + "/" + compId + "/" + hit.demo.id;
+    if (navMode === "replace") history.replaceState(null, "", targetHash);
+    else if (!navMode && location.hash !== targetHash) history.pushState({ drawer: true }, "", targetHash);
   }
-  function closeDrawer() {
+  function closeDrawer(fromHash) {
     if (drawer.hidden) return;
     drawer.classList.remove("is-open");
     document.documentElement.classList.remove("has-drawer");
@@ -448,13 +535,61 @@
       $("[data-dr-view]").innerHTML = "";
       frame = null;
     }, 380);
-    history.replaceState(null, "", state.style === "all" ? location.pathname + location.search : "#" + state.style);
+    if (!fromHash) history.replaceState(null, "", state.style === "all" ? location.pathname + location.search : "#" + state.style);
     if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
   }
+  function stepDrawer(dir) {
+    if (!current) return;
+    var list = drawerList();
+    if (list.length < 2) return;
+    var idx = -1;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].pack === current.pack && list[i].comp === current.comp.id && list[i].demo === current.demo.id) { idx = i; break; }
+    }
+    if (idx < 0) for (var j = 0; j < list.length; j++) if (list[j].pack === current.pack && list[j].comp === current.comp.id) { idx = j; break; }
+    var next = list[(idx + dir + list.length) % list.length];
+    if (next) openDrawer(next.pack, next.comp, next.demo, "replace");
+  }
+  if ($("[data-dr-prev]")) $("[data-dr-prev]").addEventListener("click", function () { stepDrawer(-1); });
+  if ($("[data-dr-next]")) $("[data-dr-next]").addEventListener("click", function () { stepDrawer(1); });
+  if ($("[data-dr-replay]")) $("[data-dr-replay]").addEventListener("click", function () { if (current) showDemo(current.pack, current.comp, current.demo); });
+  if ($("[data-dr-share]")) {
+    $("[data-dr-share]").addEventListener("click", function () {
+      if (!current) return;
+      var url = location.origin + location.pathname + "#" + current.pack + "/" + current.comp.id + "/" + current.demo.id;
+      UISite.feedback(this, UISite.copy(url), "Copied");
+    });
+  }
+  document.querySelectorAll("[data-dr-wtheme]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (!current || b.disabled) return;
+      drawerState.theme = b.getAttribute("data-dr-wtheme");
+      syncDrawerTools(W.byId[current.pack]);
+      if (frame && frame.contentWindow && W.byId[current.pack].dark) {
+        frame.contentWindow.postMessage({ type: "demo-attrs", attrs: { theme: drawerState.theme === "dark" ? "dark" : "" } }, "*");
+      }
+    });
+  });
+  document.querySelectorAll("[data-dr-vp] button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (!current) return;
+      drawerState.vp = b.getAttribute("data-vp");
+      syncDrawerTools(W.byId[current.pack]);
+    });
+  });
+
   drawer.addEventListener("click", function (e) { if (e.target.closest("[data-close]")) closeDrawer(); });
   document.addEventListener("keydown", function (e) {
     if (drawer.hidden) return;
     if (e.key === "Escape") { closeDrawer(); return; }
+    if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      var act = document.activeElement;
+      if (!act || (!act.closest("[data-src-tabs]") && !act.closest(".src__code") && !/^(INPUT|TEXTAREA|SELECT)$/.test(act.tagName))) {
+        e.preventDefault();
+        stepDrawer(e.key === "ArrowRight" ? 1 : -1);
+        return;
+      }
+    }
     if (e.key === "Tab") {
       var panel = drawer.querySelector(".drawer__panel");
       var focusables = Array.prototype.filter.call(
@@ -498,28 +633,43 @@
       state.theme = b.getAttribute("data-wtheme");
       document.querySelectorAll("[data-wtheme]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
       W.setTheme(state.theme);
-      if (frame && frame.contentWindow && current && W.byId[current.pack].dark) frame.contentWindow.postMessage({ type: "demo-attrs", attrs: { theme: state.theme === "dark" ? "dark" : "" } }, "*");
+      if (!drawer.hidden && current) {
+        var pk = W.byId[current.pack];
+        drawerState.theme = (pk.tone === "dark" || (state.theme === "dark" && pk.dark)) ? "dark" : "light";
+        syncDrawerTools(pk);
+        if (frame && frame.contentWindow && pk.dark) frame.contentWindow.postMessage({ type: "demo-attrs", attrs: { theme: drawerState.theme === "dark" ? "dark" : "" } }, "*");
+      }
       setTimeout(relayout, 60);
     });
   });
 
   /* ---------- hash ----------
-     #clay              filters the wall to one language
-     #clay/button       opens that card's source drawer over the wall as it is (the filter doesn't change)
-     #all/clay/button   shows the whole wall and points at that card: it scrolls to the middle of the screen
-                        and is ringed for a moment; nothing opens (how the homepage links to a component) */
+     #clay                    filters the wall to one language
+     #clay/button[/demo]      opens that card's source drawer over the wall as it is
+     #all/clay/button[/demo]  shows the whole wall and points at that card */
   function fromHash() {
-    var parts = location.hash.replace(/^#\/?/, "").split("/");
-    if (parts[0] === "all" && W.byId[parts[1]] && parts[2]) { pointAt(parts[1], parts[2]); return; }
+    var parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+    if (!parts.length) {
+      if (!drawer.hidden) closeDrawer(true);
+      return;
+    }
+    if (parts[0] === "all" && W.byId[parts[1]] && parts[2]) {
+      if (!drawer.hidden) closeDrawer(true);
+      pointAt(parts[1], parts[2], parts[3]);
+      return;
+    }
     if (W.byId[parts[0]]) {
       if (parts[1]) {
-        var pick = W.byId[parts[0]].wall.filter(function (pk) { return pk[0] === parts[1]; })[0];
-        openDrawer(parts[0], parts[1], pick ? pick[1] : null, true);
-      } else if (state.style !== parts[0]) { state.style = parts[0]; syncFilters(true); apply(true); }
+        var pick = parts[2] ? null : W.byId[parts[0]].wall.filter(function (pk) { return pk[0] === parts[1]; })[0];
+        openDrawer(parts[0], parts[1], parts[2] || (pick ? pick[1] : null), true);
+      } else {
+        if (!drawer.hidden) closeDrawer(true);
+        if (state.style !== parts[0]) { state.style = parts[0]; syncFilters(true); apply(true); }
+      }
     }
   }
   var spotTimer = 0;
-  function pointAt(packId, compId) {
+  function pointAt(packId, compId, demoId) {
     if (state.style !== "all" || state.kind !== "all" || state.query) {
       state.style = "all"; state.kind = "all"; state.query = "";
       if (search) { search.value = ""; syncSearchUi(); }
@@ -527,16 +677,18 @@
     }
     // After the whole wall is in (its final masonry), bring the card to the middle of the screen.
     wallReady.then(function () {
-      var c = cards.filter(function (x) { return x.pack === packId && x.comp === compId; })[0];
+      var c = cards.filter(function (x) { return x.pack === packId && x.comp === compId && (!demoId || x.demo === demoId); })[0]
+        || cards.filter(function (x) { return x.pack === packId && x.comp === compId; })[0];
       if (!c || !c.el) return;
       requestAnimationFrame(function () { requestAnimationFrame(function () {
-        var r = c.el.getBoundingClientRect(), y = window.scrollY + r.top - Math.max(16, (window.innerHeight - r.height) / 2);
+        var r = c.el.getBoundingClientRect(), y = Math.max(0, window.scrollY + r.top - Math.max(16, (window.innerHeight - r.height) / 2));
         var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        window.scrollTo({ top: Math.max(0, y), behavior: still ? "auto" : "smooth" });
+        if (!still && window.UIScroll) UIScroll.to(y);
+        else window.scrollTo({ top: y, behavior: still ? "auto" : "smooth" });
         cards.forEach(function (x) { if (x.el) x.el.classList.remove("is-spot"); });
         c.el.classList.add("is-spot");
         clearTimeout(spotTimer);
-        spotTimer = setTimeout(function () { c.el.classList.remove("is-spot"); }, 2800);
+        spotTimer = setTimeout(function () { c.el.classList.remove("is-spot"); }, 3200);
       }); });
     });
   }
@@ -584,13 +736,22 @@
       search.select();
     });
   }
-  if (resetBtn) {
-    resetBtn.addEventListener("click", function () {
-      state.style = "all"; state.kind = "all"; state.query = "";
-      if (search) { search.value = ""; syncSearchUi(); }
-      if (location.hash) history.replaceState(null, "", location.pathname + location.search);
-      syncFilters(true);
-      apply(true);
+  function resetAll() {
+    state.style = "all"; state.kind = "all"; state.query = "";
+    if (search) { search.value = ""; syncSearchUi(); }
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    syncFilters(true);
+    apply(true);
+  }
+  if (resetBtn) resetBtn.addEventListener("click", resetAll);
+  if (barReset) barReset.addEventListener("click", resetAll);
+
+  var cwHero = $(".cw-hero");
+  if (backTop && cwHero && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (es) { backTop.hidden = es[0].isIntersecting; }).observe(cwHero);
+    backTop.addEventListener("click", function () {
+      if (window.UIScroll) UIScroll.to(0);
+      else window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
 
@@ -612,7 +773,7 @@
         barIo.observe(barSent);
       };
       watchBar();
-      var phone = window.matchMedia && window.matchMedia("(max-width: 720px)");
+      var phone = window.matchMedia && window.matchMedia("(max-width: 760px)");
       if (phone && phone.addEventListener) phone.addEventListener("change", watchBar);
     } else {
       var stuck = function () { bar.classList.toggle("is-stuck", bar.getBoundingClientRect().top <= topH() + 1); };

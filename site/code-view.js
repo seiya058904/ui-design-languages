@@ -72,15 +72,34 @@
     ":host{display:block;font:500 12px/1.4 ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;color:inherit;text-transform:none;letter-spacing:0}" +
     ":host([data-code-view=toggle]){display:inline-block;vertical-align:middle;margin-left:10px;line-height:0}" +
     "button{font:inherit;cursor:pointer}" +
-    ".toggle{display:inline-grid;place-items:center;width:26px;height:22px;padding:0;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;opacity:.28;font:600 11px/1 ui-monospace,Consolas,monospace;transition:opacity .2s}" +
-    ".toggle.near,.toggle:focus-visible{opacity:.7}.toggle:hover,.toggle[aria-expanded=true]{opacity:1}" +
+    ".toggle{display:inline-grid;place-items:center;width:28px;height:22px;padding:0;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;opacity:.45;font:600 11px/1 ui-monospace,Consolas,monospace;transition:opacity .2s,transform .15s}" +
+    ".toggle.near,.toggle:focus-visible{opacity:.85}.toggle:hover,.toggle[aria-expanded=true]{opacity:1}" +
+    ".toggle:active{transform:scale(0.93)}" +
     ".toggle:focus-visible,.copy:focus-visible{outline:2px solid #4c8dff;outline-offset:2px}" +
-    ".panel{margin-top:14px;border-radius:10px;background:#15171c;color:#e6e7ea;overflow:hidden;text-align:left}" +
+    ".panel{margin-top:14px;border-radius:10px;background:#15171c;color:#e6e7ea;overflow:hidden;text-align:left;box-shadow:0 8px 24px -10px rgba(0,0,0,0.4)}" +
     ".bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #2a2d35;color:#9aa0ab}" +
-    ".copy{padding:4px 10px;border:1px solid #3a3e48;border-radius:6px;background:#22252c;color:#e6e7ea}" +
+    ".copy{padding:4px 10px;border:1px solid #3a3e48;border-radius:6px;background:#22252c;color:#e6e7ea;transition:background-color .15s,border-color .15s,color .15s}" +
     ".copy:hover{background:#2c3039}" +
+    ".copy.is-copied{border-color:rgba(168,230,207,0.55);color:#A8E6CF}" +
     "pre{margin:0;padding:14px 16px;max-height:360px;overflow:auto;font:12.5px/1.55 ui-monospace,'SF Mono',Consolas,'Liberation Mono',monospace;white-space:pre;tab-size:2}" +
+    ".t-c{color:#7A7A74;font-style:italic}.t-t{color:#E6B673}.t-a{color:#9CC7F5}.t-s{color:#A8E6CF}.t-p{color:#85857F}" +
     "[hidden]{display:none!important}";
+
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function wrap(c, s) { return '<span class="t-' + c + '">' + esc(s) + "</span>"; }
+  function hlHtml(code) {
+    return code.replace(/(<!--[\s\S]*?-->)|(<\/?)([\w-]+)((?:\s+[^\s=>\/]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?)*)\s*(\/?>)|([^<]+)|([\s\S])/g,
+      function (all, com, open, tag, attrs, close, text, other) {
+        if (com) return wrap("c", com);
+        if (tag) {
+          var a = (attrs || "").replace(/(\s+)([^\s=>\/]+)(?:(\s*=\s*)("[^"]*"|'[^']*'|[^\s>]+))?/g, function (x, sp, name, eq, val) {
+            return sp + wrap("a", name) + (eq ? esc(eq) + wrap("s", val) : "");
+          });
+          return wrap("p", open) + wrap("t", tag) + a + wrap("p", close);
+        }
+        return esc(text || other);
+      });
+  }
 
   /* The toggle sits at the end of the specimen's title row (the data-skip element) so it costs no
      vertical space; the panel opens in flow at the end of the specimen. Without a title, both sit
@@ -127,7 +146,7 @@
         loadSource().then(function (doc) {
           var source = doc && doc.querySelectorAll(selector)[index];
           var node = clean((source || el).cloneNode(true));
-          code.textContent = dedent(node.innerHTML);
+          code.innerHTML = hlHtml(dedent(node.innerHTML));
         });
       }
     });
@@ -137,8 +156,9 @@
       var text = code.textContent;
       function done(ok) {
         copy.textContent = ok ? "Copied" : "Copy failed";
+        copy.classList.toggle("is-copied", !!ok);
         clearTimeout(copyTimer);
-        copyTimer = setTimeout(function () { copy.textContent = "Copy"; }, 1600);
+        copyTimer = setTimeout(function () { copy.textContent = "Copy"; copy.classList.remove("is-copied"); }, 1600);
       }
       if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(legacyCopy(text, copy)); });
       else done(legacyCopy(text, copy));

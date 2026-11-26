@@ -26,7 +26,7 @@
       var p = {
         id: pk.id, name: pk.name, summary: pk.summary || "", status: pk.status || "",
         fonts: (pk.fonts || []).map(function (f) { return f.url; }).filter(Boolean),
-        js: !!(pk.entry && pk.entry.js), dark: theme.indexOf("dark") >= 0,
+        js: !!(pk.entry && pk.entry.js), dark: theme.indexOf("dark") >= 0, variants: pk.variants || {},
         dot: s.dot || "#999", font: s.label || "", root: s.root || "", canvas: s.canvas || "", page: s.page || "",
         backdrop: s.backdrop || null, hooks: s.hooks || "", darkHint: s.darkHint || "", wall: s.wall || [], tone: s.tone || ""
       };

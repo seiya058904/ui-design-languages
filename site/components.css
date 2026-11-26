@@ -90,6 +90,9 @@ body[data-wall-style="all"] .wcard__in::after { content: ""; position: absolute;
 body:not([data-wall-style="all"]) .wcard__in::before { opacity: 0; }
 .wcard:hover .wcard__in::before { opacity: 1; }
 .wcard.is-in:hover .wcard__in { transform: translate3d(0, -3px, 0); transition-duration: .45s; }
+/* A card the homepage pointed at (#all/<pack>/<component>): ringed for a moment, then it lets go. */
+.wcard.is-spot .wcard__in { border-radius: 12px; outline: 2px solid var(--ink); outline-offset: 6px; animation: wcard-spot 2.8s var(--ease) both; }
+@keyframes wcard-spot { 0% { outline-offset: 22px; outline-color: transparent; } 18%, 70% { outline-offset: 6px; outline-color: var(--ink); } 100% { outline-offset: 6px; outline-color: transparent; } }
 
 /* Spotlight: only promoted to a GPU layer while hovered (no 96× 440×440 idle GPU textures). */
 .wstage > .wcard__spot { position: absolute; inset: 0; z-index: 0; overflow: hidden; border-radius: inherit; pointer-events: none; }

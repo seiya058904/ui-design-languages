@@ -301,7 +301,14 @@
     }
     if (n === 0) note.textContent = "";
     else if (state.query) note.textContent = n + (n === 1 ? " component matches" : " components match") + " “" + state.query + "”" + (p ? " in " + p.name : "") + ".";
-    else note.textContent = p ? n + " " + p.name + " components, on " + p.name + "'s own canvas. Open any of them for its complete source." : n + " components from " + W.packs.length + " languages, all live. Open any card for its complete source.";
+    else {
+      var langs = {};
+      cards.forEach(function (x) { if (x.shown) langs[x.pack] = true; });
+      var L = Object.keys(langs).length, one = n === 1;
+      note.textContent = p
+        ? n + " " + p.name + (one ? " component" : " components") + ", on " + p.name + "'s own canvas. Open " + (one ? "it" : "any of them") + " for its complete source."
+        : n + (one ? " component" : " components") + " from " + L + (L === 1 ? " language" : " languages") + ", all live. Open " + (one ? "it" : "any card") + " for its complete source.";
+    }
     /* One always-present live region announces the result (or the empty state), not the 96 live cards. */
     if (statusEl) {
       var msg = n === 0 && emptyText ? emptyText.textContent : note.textContent;
@@ -496,16 +503,42 @@
     });
   });
 
-  /* ---------- hash: #clay filters, #clay/button opens a card ---------- */
+  /* ---------- hash ----------
+     #clay              filters the wall to one language
+     #clay/button       opens that card's source drawer over the wall as it is (the filter doesn't change)
+     #all/clay/button   shows the whole wall and points at that card: it scrolls to the middle of the screen
+                        and is ringed for a moment; nothing opens (how the homepage links to a component) */
   function fromHash() {
     var parts = location.hash.replace(/^#\/?/, "").split("/");
+    if (parts[0] === "all" && W.byId[parts[1]] && parts[2]) { pointAt(parts[1], parts[2]); return; }
     if (W.byId[parts[0]]) {
-      if (state.style !== parts[0]) { state.style = parts[0]; syncFilters(true); apply(true); }
       if (parts[1]) {
         var pick = W.byId[parts[0]].wall.filter(function (pk) { return pk[0] === parts[1]; })[0];
         openDrawer(parts[0], parts[1], pick ? pick[1] : null, true);
-      }
+      } else if (state.style !== parts[0]) { state.style = parts[0]; syncFilters(true); apply(true); }
     }
+  }
+  var spotTimer = 0;
+  function pointAt(packId, compId) {
+    if (state.style !== "all" || state.kind !== "all" || state.query) {
+      state.style = "all"; state.kind = "all"; state.query = "";
+      if (search) { search.value = ""; syncSearchUi(); }
+      syncFilters(false); apply(false);
+    }
+    // After the whole wall is in (its final masonry), bring the card to the middle of the screen.
+    wallReady.then(function () {
+      var c = cards.filter(function (x) { return x.pack === packId && x.comp === compId; })[0];
+      if (!c || !c.el) return;
+      requestAnimationFrame(function () { requestAnimationFrame(function () {
+        var r = c.el.getBoundingClientRect(), y = window.scrollY + r.top - Math.max(16, (window.innerHeight - r.height) / 2);
+        var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.scrollTo({ top: Math.max(0, y), behavior: still ? "auto" : "smooth" });
+        cards.forEach(function (x) { if (x.el) x.el.classList.remove("is-spot"); });
+        c.el.classList.add("is-spot");
+        clearTimeout(spotTimer);
+        spotTimer = setTimeout(function () { c.el.classList.remove("is-spot"); }, 2800);
+      }); });
+    });
   }
 
   /* ---------- search: type to narrow the wall; "/" or ⌘K focuses it, Esc clears ---------- */
@@ -604,8 +637,8 @@
     var total = document.querySelector("[data-total]");
     if (total) total.textContent = cards.length;
     buildFilters();
-    var start = location.hash.replace(/^#\/?/, "").split("/")[0];
-    if (W.byId[start]) state.style = start;
+    var start = location.hash.replace(/^#\/?/, "").split("/");
+    if (W.byId[start[0]] && !start[1]) state.style = start[0]; // only a bare #clay filters; deep links keep the whole wall
     syncFilters(false);
 
     var io = reveal(), ro = null, byEl = new WeakMap();

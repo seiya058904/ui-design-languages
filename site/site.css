@@ -117,7 +117,7 @@ main { overflow-x: clip; }
 .hero { padding: 72px 0 34px; }
 .hero__head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 400px); gap: 44px; align-items: end; }
 /* The headline is a type specimen: pointing at a book sets it in that language's own type (home.js). */
-.hero__title { min-height: 1.84em; font: 500 clamp(46px, 6.5vw, 96px)/0.92 var(--display); letter-spacing: -0.045em; transition: opacity .12s ease; }
+.hero__title { --title-size: clamp(46px, 6.5vw, 96px); min-height: calc(var(--title-size) * 1.84); font: 500 var(--title-size)/0.92 var(--display); letter-spacing: -0.045em; transition: opacity .12s ease; }
 .hero__title > span { display: block; white-space: nowrap; }
 .hero__title > span + span { color: var(--title-2); }
 .hero__title.is-swapping { opacity: 0; }
@@ -176,7 +176,7 @@ main { overflow-x: clip; }
 .section__head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr); gap: 32px 48px; align-items: end; margin-bottom: 56px; }
 .section__head h2 { font: 500 clamp(36px, 4.4vw, 62px)/0.98 var(--display); letter-spacing: -0.04em; text-wrap: balance; }
 .section__head p { max-width: 50ch; color: var(--muted); font-size: 16.5px; }
-.section__tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; }
+.section__tools { display: flex; align-items: center; gap: 12px; margin-top: 20px; }
 
 /* ---------- Languages: index + live viewer ---------- */
 .viewer { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 48px; align-items: start; }
@@ -260,15 +260,14 @@ main { overflow-x: clip; }
 .tray-foot { display: flex; justify-content: flex-end; margin-top: 22px; }
 
 /* ---------- Same markup ---------- */
-.same-code { display: flex; align-items: center; gap: 12px; min-width: 0; height: 40px; padding: 0 16px; border-radius: 999px; background: var(--slate); color: var(--slate-muted); font: 13px/1 var(--mono); white-space: nowrap; overflow: hidden; }
+.same-code { display: flex; flex: 1 1 0; align-items: center; gap: 12px; min-width: 0; height: 40px; padding: 0 16px; border-radius: 999px; background: var(--slate); color: var(--slate-muted); font: 13px/1 var(--mono); white-space: nowrap; overflow: hidden; }
+.same-code > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .same-code b { font-weight: 500; color: var(--slate-ink); transition: color .25s; }
 .same-code [data-prefix] { color: var(--pc, #E7E6E1); }
 .same { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 14px; }
 .same figure { display: flex; flex-direction: column; gap: 10px; flex: 0 1 calc((100% - 4 * 14px) / 5); min-width: 0; }
-.same__view { position: relative; display: block; overflow: hidden; border-radius: 10px; background: var(--bg-sunk); box-shadow: var(--edge); transition: transform .45s var(--ease), box-shadow .45s var(--ease); }
-.same figure:hover .same__view { transform: translateY(-3px); box-shadow: var(--edge), var(--lift); }
+.same__view { position: relative; display: block; overflow: hidden; border-radius: 10px; background: var(--bg-sunk); box-shadow: var(--edge); }
 .same__view img { width: 100%; height: auto; }
-.same__view:focus-visible { outline-offset: 3px; }
 /* Live versions of the cards, rendered on site/capture.html for the stills */
 .same__inner { display: flex; flex-direction: column; justify-content: center; width: 360px; min-height: 456px; transform-origin: 0 0; }
 /* The compare pages' own layout helpers, scoped to the inline cards */
@@ -303,7 +302,6 @@ main { overflow-x: clip; }
 
 @media (max-width: 1100px) {
   .hero__head { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .hero__title { min-height: 0; }
   .viewer { grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .viewer__index { position: relative; top: 0; flex-direction: row; gap: 6px; margin: 0 -24px; padding: 2px 24px 6px; overflow-x: auto; border: 0; scrollbar-width: none; }
   .viewer__index::-webkit-scrollbar { display: none; }
@@ -328,7 +326,7 @@ main { overflow-x: clip; }
   .top nav a:focus-visible { outline-offset: -2px; }
   .top__end { margin-left: auto; }
   .hero { padding-top: 40px; }
-  .hero__title { font-size: clamp(36px, 10.4vw, 64px); }
+  .hero__title { --title-size: clamp(36px, 10.4vw, 64px); }
   .hero__lede { font-size: 16px; }
   /* Shelf → a row of open books you swipe through */
   .shelf { height: auto; margin: 40px -16px 0; padding: 0 12px 30px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
@@ -448,7 +446,7 @@ main { overflow-x: clip; }
 
 /* Gallery lighting (absent in the booth) */
 .aurora, .hero__glow, .pill__beam { display: none; }
-.hero, .cw-hero { position: relative; isolation: isolate; }
+.hero, .cw-hero, .hero-wall { position: relative; isolation: isolate; }
 [data-site-theme="gallery"] .aurora { position: absolute; inset: -120px -140px -100px; z-index: -1; display: block; overflow: hidden; pointer-events: none; opacity: 0.62; -webkit-mask-image: radial-gradient(closest-side at 50% 48%, #000 20%, transparent 100%); mask-image: radial-gradient(closest-side at 50% 48%, #000 20%, transparent 100%); }
 [data-site-theme="gallery"] .cw-hero .aurora { inset: -60px -80px -80px; }
 /* Each light is a soft radial gradient moved on the compositor: no blur filter, no blend mode. */
@@ -464,7 +462,8 @@ main { overflow-x: clip; }
 .aurora i:nth-child(9) { --c: #C85A32; width: 42%; right: -8%; top: 62%; opacity: .6; animation-duration: 30s; animation-delay: -12s; }
 @keyframes aurora { 0% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(14%, -10%, 0) scale(1.18); } 100% { transform: translate3d(-12%, 12%, 0) scale(0.88); } }
 /* A light that follows the pointer over the hero, full-bleed so it never clips at the gutter */
-[data-site-theme="gallery"] .hero__glow { position: absolute; top: -120px; bottom: -120px; left: 50%; z-index: -1; display: block; width: 100vw; overflow: hidden; transform: translateX(-50%); pointer-events: none; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent); mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent); }
+/* The hero is full-bleed, so the light spans it without 100vw (which counts the scrollbar and overflows) */
+[data-site-theme="gallery"] .hero__glow { position: absolute; top: -120px; bottom: -120px; left: 0; right: 0; z-index: -1; display: block; overflow: hidden; pointer-events: none; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent); mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent); }
 .hero__glow i { position: absolute; left: 0; top: 0; width: 960px; height: 960px; margin: -480px 0 0 -480px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.06), transparent); opacity: 0; transition: opacity .6s; }
 .hero__glow.is-on i { opacity: 1; will-change: transform; }
 /* A slow ring of the nine colours round the main call to action (one GPU rotation, no repaint) */
@@ -510,8 +509,8 @@ main { overflow-x: clip; }
   margin: -40px 0;
   overflow: hidden;
   contain: layout style paint;
-  -webkit-mask-image: radial-gradient(ellipse 68% 66% at 54% 50%, #000 50%, rgba(0, 0, 0, 0.72) 70%, transparent 98%);
-  mask-image: radial-gradient(ellipse 68% 66% at 54% 50%, #000 50%, rgba(0, 0, 0, 0.72) 70%, transparent 98%);
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 56%, rgba(0, 0, 0, 0.6) 80%, transparent 100%);
+  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 56%, rgba(0, 0, 0, 0.6) 80%, transparent 100%);
 }
 /* Each column holds two identical 8-card sets and translates by -50% for a mathematically seamless loop. */
 .wall__plane { position: absolute; left: 50%; top: -120px; display: grid; grid-template-columns: repeat(6, 168px); gap: 12px; transform-origin: 50% 470px; transform: translate3d(-48%, 0, 0) perspective(1800px) rotateX(16deg) rotateZ(14deg); will-change: transform; }

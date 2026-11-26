@@ -4,6 +4,8 @@
 //      and real Markdown links / images (and inline <a href> / <img src>) in every .md file
 //   2. a render-blocking Google Fonts stylesheet: every fonts.googleapis.com <link> must load without
 //      blocking the first paint (media="print" + onload swap, with a <noscript> fallback)
+//   3. 100vw in the site chrome (site/*.css): it counts the scrollbar, so it overflows sideways in a browser
+//      with classic scrollbars — and the page check runs Chrome with hidden scrollbars, so it can't see that
 // Zero dependencies.
 //
 // Usage: node scripts/check-static.mjs
@@ -51,6 +53,7 @@ function attrs(text, names) {
 
 for (const file of files) {
   const text = readFileSync(file, "utf8");
+  if (file.endsWith(".css") && rel(file).startsWith("site/") && /\b100vw\b/.test(text.replace(/\/\*[\s\S]*?\*\//g, ""))) problems.push(`${rel(file)}: uses 100vw (it includes the scrollbar and overflows sideways; size against a full-width ancestor instead)`);
   if (file.endsWith(".css")) {
     urls(text).forEach((t) => checkTarget(file, t));
   } else if (file.endsWith(".html")) {

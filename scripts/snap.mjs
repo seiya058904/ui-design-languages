@@ -407,6 +407,19 @@ try {
         if (!(await tab.evaluate(LIVE_READY))) guard.errors.push("live sections did not finish building within 15s");
         const missing = await tab.evaluate("(() => { const out = []; const cmp = document.querySelectorAll('[data-compare]').length; if (cmp && document.querySelectorAll('[data-compare] img').length !== cmp) out.push('a Same-markup card has no still'); const tray = document.querySelector('[data-tray]'); if (tray && tray.querySelectorAll('img').length !== tray.children.length) out.push('a tray tile has no still'); if (document.querySelector('[data-hero]')) { const live = document.querySelectorAll('iframe').length + [...document.querySelectorAll('link[rel=stylesheet]')].filter((l) => (l.getAttribute('href') || '').includes('/css/')).length; if (live) out.push('the homepage must stay static (stills and links only): it loads ' + live + ' iframe(s) or pack stylesheet(s)'); } const shelf = document.querySelector('[data-shelf]'); if (shelf && !shelf.classList.contains('is-set')) out.push('shelf books were never set'); const top = document.querySelector('.top'), topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')); if (top && topH && Math.abs(top.getBoundingClientRect().height - topH) > 1.5) out.push('sticky header is ' + Math.round(top.getBoundingClientRect().height) + 'px tall but --top-h is ' + topH + 'px (the sticky bar and anchors would slide under it)'); return out; })()");
         guard.errors.push(...missing);
+        // Pointing at something must never move the page: every hover handler is run and the layout compared.
+        const hoverShift = await tab.evaluate(`(() => {
+          const abs = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
+          const blocks = [...document.querySelectorAll("main > section, .section__head, .same, .tray, .viewer, .cw-grid")];
+          const sig = () => blocks.map(abs).join(",") + "|" + document.documentElement.scrollHeight;
+          const ref = sig(), out = [];
+          for (const el of document.querySelectorAll(".same figure, .tray__item, .names a, .viewer__index a, .wcard")) {
+            el.dispatchEvent(new PointerEvent("pointerover", { bubbles: true })); el.dispatchEvent(new PointerEvent("pointerenter"));
+            if (sig() !== ref) { out.push("pointing at " + (el.dataset.prefix || el.dataset.pick || el.getAttribute("href") || el.className) + " moves the layout"); break; }
+          }
+          return out;
+        })()`);
+        guard.errors.push(...(hoverShift || []));
         await tab.evaluate(SETTLE);
         await tab.evaluate(FONTS_READY);
         const overflow = await tab.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth");

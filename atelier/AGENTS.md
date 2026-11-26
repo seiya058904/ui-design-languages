@@ -1,55 +1,24 @@
-# AGENTS.md — rebuilding the Atelier look
+# Atelier — Design Language Guide
 
-Atelier is a tactile, precise product UI: cool frosted panels on a pale blue-grey canvas, one accent, bold semi-expanded uppercase section titles and an appearance panel whose settings really work. Reference: **ATELIER / PRODUCT UI SYSTEM**, with the appearance-settings idea also seen in the Settings sketch.
+Spec: `DESIGN.md` · Components: `components.html` / `README.md` · Tokens: `tokens/tokens.json`
 
-## 1. Use the system
+## 1. Setup & Hooks
+- Load Archivo with the `wdth` variable axis (`wdth,wght@100..125,400..800`); restore saved appearance via the inline `<head>` script in `README.md` before first paint to avoid flash.
+- `AtelierUI.setAppearance()` applies on the next frame when View Transitions cross-fade; listen for the `atelier:appearance` event to react to theme/accent changes.
 
-1. Link `css/atelier.css`; load **Archivo** with the width axis: `family=Archivo:wdth,wght@100..125,400..800`.
-2. Compose with `.atelier-*` classes (list in `README.md`). Page CSS is layout only.
-3. Include `js/atelier.js` for sliding indicators, sliders, dialogs and the appearance manager.
-4. Paste the one-line restore script from `README.md` into `<head>` of every page so stored appearance applies before first paint.
+## 2. Non-negotiable rules
 
-## 2. Appearance model
+| Do | Don't |
+| --- | --- |
+| Use Archivo for display with tight negative tracking (`-0.025em`) | Use Inter/Roboto for headings or loose tracking |
+| Keep the canvas pale warm grey (`--atelier-color-bg`) and cards pure white | Put grey cards on a white page or use pure `#000` ink |
+| Use `--atelier-color-accent` for one primary action per section | Scatter blue fills on every secondary button |
+| Give primary actions the top-to-bottom sheen gradient and double-layer shadow | Make primary buttons flat solid rectangles |
+| Use `border-radius: 9999px` (pill) on buttons, tabs, badges, and segmented tracks | Mix sharp 4px buttons with pill chips on the same row |
+| Keep cards at `20px` radius with a hairline border and layered shadow | Use harsh dark drop shadows or 2px borders |
+| Pair mono numbers/metrics with `font-variant-numeric: tabular-nums` | Let live counters jitter horizontally |
+| Keep dark mode ink-slate (`#0F1115`) with crisp specular top highlights | Invert light tokens directly into flat `#000` black |
+| Never hard-code tints — derive them with `color-mix()` from role tokens | Hard-code rgba tints that break across dark mode or accent presets |
 
-All of these compose freely because tints are derived with `color-mix()` from the accent and status colors:
-
-| Setting | How | Values |
-| --- | --- | --- |
-| Theme | `<html data-theme>` | light (default) · `dark` · `auto` |
-| Accent | `<html data-accent>` | cobalt (default) · `violet` · `cyan` · `green` · `orange` |
-| Density | `<html data-density>` | `cozy` · balanced (default) · `compact` — changes control heights, row height, panel padding and gaps |
-| Radius | `--atelier-radius-base` on `<html>` | 8–24px; `sm/md/lg/xl` are 0.5×/0.75×/1×/1.5× of it |
-| Motion | `<html data-motion="reduced">` | durations drop to 0 |
-| Contrast | `<html data-contrast="high">` | muted text becomes body text, borders become strong |
-
-Never hard-code a tint: if you need a soft version of a color, use `color-mix(in srgb, var(--atelier-color-…) N%, var(--atelier-color-surface))` so it survives dark mode and accent changes.
-
-## 3. Non-negotiable rules
-
-| Rule | Do | Don't |
-| --- | --- | --- |
-| Panels | Frosted: `--atelier-color-panel` + `backdrop-filter: blur(16px) saturate(140%)`, 1px bright rim, soft cool shadow, `--atelier-radius-lg` | Opaque grey cards, heavy borders, warm shadows |
-| Titles | Section titles are numbered, uppercase, weight 800, `font-stretch: 112%` ("01. FOUNDATIONS"); the number is the section's order | Numbering things that are not a sequence; uppercase body text |
-| Accent | One accent for primary buttons, selected tabs, current page, checked controls, progress | A second accent; colored text for emphasis |
-| Buttons | Pills. Primary = accent gradient + glow; Secondary = accent outline; Tertiary = neutral outline; Destructive = coral fill | Square buttons, more than one primary per area |
-| Selection | Pill tabs fill with the accent; segmented / theme switch uses a soft accent fill with an accent border; sidebar uses `--atelier-color-primary-soft` | Underlines for primary navigation |
-| Status | Soft tinted badges (`--teal`, `--amber`, `--danger`, `--violet`, `--soft`) and one filled `--primary` for "New" | Saturated status fills everywhere |
-| Data | Cards are white with 1px border and subtle shadow; kanban columns are sunken | Shadows heavier than `floating` outside overlays |
-| Motion | 160ms for color; presses 70ms in / 180ms out; overlays (menus, palette, tooltips, dialogs) snap in on `--atelier-motion-easing-snap` (180ms) and leave in `--atelier-motion-duration-exit` (110ms); indicators glide 340ms on `cubic-bezier(.32,.72,0,1)`; appearance changes cross-fade once via View Transitions | Bounces, decorative animation, global colour transitions on every element |
-
-## 4. Recipes
-
-- **Primary button**: `linear-gradient(180deg, primary-light, primary)`, shadow `inset 0 1px 0 rgba(255,255,255,.22), 0 1px 2px primary-strong@40%, 0 6px 16px -6px primary@65%`.
-- **Panel shadow**: `inset 0 1px 0 rgba(255,255,255,.8), 0 1px 2px rgba(28,35,51,.04), 0 12px 32px -14px rgba(28,35,51,.16)`.
-- **Focus**: `0 0 0 3px color-mix(in srgb, accent 30%, transparent)`.
-- **Specular rim**: `::before { inset: -1px; padding: 1px; border-radius: inherit; background: linear-gradient(180deg, var(--atelier-color-specular), transparent 46%); mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; }`.
-- **Overlay**: `--atelier-shadow-overlay`, panel `transform: translateY(-3px) scale(.97)` → none on `--atelier-motion-easing-snap`; `setAppearance()` applies on the next frame when it cross-fades — listen for `atelier:appearance`.
-- **Overlay surface**: `repeating-conic-gradient(checker 0 25%, surface 0 50%) 0 0 / 12px 12px`.
-
-## 5. Copy
-
-Plain, product-like, sentence case for UI text ("New task", "Delete project?", "This action cannot be undone."). Uppercase only for section titles and kickers.
-
-## 6. Working on Atelier
-
-Edit `tokens/tokens.json`, `tokens.dark.json` or a `tokens.<setting>-<value>.json` variant, then run `node scripts/build-tokens.mjs atelier` from the repo root. New components go into `css/components.css` with a usage comment and appear on `index.html`.
+## 3. Copy
+Short, calm, editorial. Title-case headings without trailing periods (`Visual System`, `Build with Precision`); concise 1-line helper text; numeric badges carry units (`12 ms`, `4.8 GB`).

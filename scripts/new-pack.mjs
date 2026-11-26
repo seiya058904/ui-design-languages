@@ -345,17 +345,11 @@ Primary reference: \`UI参考图/<file>\` (kept local, never committed). Facts a
 
 What exists, which variants and states, and anything unusual about them.
 `;
-const agentsMd = `# AGENTS.md — rebuilding the ${Name} look
+const agentsMd = `# ${Name} — Agent Rules
 
-For AI agents (and humans) building a screen in ${Name}. Read it fully, plus DESIGN.md, before writing UI code.
+Spec: \`DESIGN.md\` · Components: \`components.html\` / \`README.md\` · Tokens: \`tokens/tokens.json\` · Entry CSS: \`css/${p}.css\` (\`.${p}-*\`, \`var(--${p}-*)\`)
 
-## 1. Use the system
-
-1. Link \`css/${p}.css\` (it imports \`tokens/tokens.css\`, \`css/base.css\` and the components).
-2. Build with the \`.${p}-*\` classes shown in \`components.html\`. Page CSS is for layout only: every color, radius, shadow, size and duration comes from a \`var(--${p}-*)\` token.
-3. Outside the web, read the values from \`tokens/tokens.json\`.
-
-## 2. Non-negotiable rules
+## 1. Non-negotiable rules
 
 | Rule | Do | Don't |
 | --- | --- | --- |
@@ -366,18 +360,9 @@ For AI agents (and humans) building a screen in ${Name}. Read it fully, plus DES
 | Focus | A visible ring on every interactive element (\`--${p}-shadow-focus\`) | Removing focus styles |
 | Motion | | |
 
-## 3. Recipes
-
-Exact values for the signature pieces (shadows, gradients, borders) so they can be ported.
-
-## 4. Copy
+## 2. Copy
 
 Voice and casing for UI text.
-
-## 5. Working on ${Name}
-
-- Tokens: edit \`tokens/tokens.json\`, run \`node scripts/build-tokens.mjs ${p}\`; never hand-edit \`tokens.css\`.
-- Check: \`node scripts/check.mjs ${p}\` before every commit.
 `;
 const readme = `# ${Name}
 

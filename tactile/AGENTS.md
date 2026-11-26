@@ -1,43 +1,34 @@
-# AGENTS.md — rebuilding the Tactile look
+# Tactile — Design Language Guide
 
-Tactile is warm sand neumorphism: every piece is made of the same material as the page, and depth comes only from light. Primary reference: the **beige / deep-teal baseline-grid styleguide** (layers, elevation levels, controls, navigation, data display, feedback). Secondary reference: the **front-faced grey study** (grooved fields, state annotations, cool grey tone → `data-tone="stone"`).
+Spec: `DESIGN.md` · Components: `components.html` / `README.md` · Tokens: `tokens/tokens.json`
 
-## 1. Use the system
-
-1. Link `css/tactile.css`; load **Plus Jakarta Sans** 400–800.
-2. Compose with `.tactile-*` classes (list in `README.md`). Page CSS is layout only.
-3. Optional `js/tactile.js`: sliding indicators, slider bubble, selectable lists, dialogs, tone switch.
-4. Tone: sand (default) or `<html data-tone="stone">`.
+## 1. Variants
+- Surface tone: `data-tone="stone"`. Dark mode: `data-theme="dark"` or `data-theme="auto"`. Never hard-code light surfaces, white highlights, or text colors — all values must use `--tactile-*` tokens to survive dark and stone modes.
 
 ## 2. The material rules
 
-| State | Meaning | Recipe |
-| --- | --- | --- |
-| Base (level 1) | Resting, low importance | `-1px -1px 2px light, 1px 1px 3px dark-soft` |
-| Raised (level 3) | Pressable | `-6px -6px 14px light, 6px 6px 14px dark` |
-| Inset | Fillable (fields, tracks, wells) | `inset 3px 3px 7px dark, inset -3px -3px 7px light` on `--tactile-color-well` |
-| Pressed | Active / selected / busy | `inset 4px 4px 10px dark, inset -4px -4px 10px light` on `--tactile-color-surface-pressed` |
-| Disabled | Unavailable | no shadow, `--tactile-color-disabled` fill, low-contrast text |
+| State | Token |
+| --- | --- |
+| Subtle lift | `--tactile-shadow-level-1` |
+| Raised control / card | `--tactile-shadow-level-3` |
+| Recessed well / input | `--tactile-shadow-inset` |
+| Pressed / active control | `--tactile-shadow-pressed` |
+| Flat surface | `none` |
 
-- One light source, top-left. Every shadow pairs `--tactile-color-light` (up-left) with `--tactile-color-dark` (down-right). Never use a single grey drop shadow.
-- Background and pieces share `--tactile-color-surface`. Never put a white card on sand.
-- Five elevation levels (`--tactile-shadow-level-1…5`): flat, hover, raised, modal, popover.
+- Maintain one consistent top-left light source across every shadow.
+- Never place pure white cards on the sand canvas — controls are extruded from the same material as the canvas.
+- Use the 5 elevation levels deliberately; do not nest raised cards inside raised cards arbitrarily.
 
 ## 3. Non-negotiable rules
 
-| Rule | Do | Don't |
-| --- | --- | --- |
-| Accent | Deep teal for primary actions, on-states, current step / page, progress, badges, alert banner. Teal pieces cast a teal shadow (`--tactile-shadow-accent`) | Other accent hues; teal text on teal |
-| Shape | Buttons 12px, fields 8px, cards 16px, panels 24px, toggles and steps round | Pills for regular buttons (only in grooved fields) |
-| Type | Plus Jakarta Sans; section titles are small bold caps on a hairline rule with a spec note on the right ("CONTROLS … SPACING: 16PX"); specimen labels are 11px bold caps | Large decorative headings inside panels |
-| Contrast | Teal and ink carry information; sand shadows alone never do | Relying on shadow to show state without a color or position change |
-| Focus | Teal ring + glow on every interactive element | Removing focus to keep the soft look |
-| Motion | 180ms; the face colour moves with the shadow on the same curve; knobs sink with `--tactile-shadow-knob-pressed`; readouts catch up with a dragged control in `--tactile-motion-duration-follow`; indicators glide 360ms on `cubic-bezier(.32,.72,0,1)` | Springy overshoot, readouts glued to the pointer, a colour that snaps while its shadow eases |
+| Do | Don't |
+| --- | --- |
+| Always pair elevation/shadow changes with ink, accent, or position changes | Rely on sand shadows alone to convey state or information |
+| Keep interactive targets clearly bounded with sufficient contrast in light, dark, and stone tones | Let low-contrast embossed buttons blend invisibly into the background |
+| Keep press transitions physical: raised collapses smoothly into `--tactile-shadow-pressed` | Use instant flat color flashes with no depth transition |
+| Reserve accent color for active indicators, progress, and primary action | Wash large containers in saturated color |
+| Keep borders minimal or hairline-tinted, letting extrusion define form | Add heavy dark outlines around extruded surfaces |
+| Ensure `:focus-visible` uses a clear high-contrast ring outside the extruded shadow | Hide focus inside the soft shadow |
 
 ## 4. Copy
-
-Calm and concrete, sentence case: "Submit now", "Clear filters", "Start Away mode?". Errors name the fix: "Error: invalid email format".
-
-## 5. Working on Tactile
-
-Edit `tokens/tokens.json` (and `tokens.tone-stone.json` for the stone tone), then run `node scripts/build-tokens.mjs tactile` from the repo root. Because shadows reference the `light` / `dark` color tokens, a new tone only needs colors. The dark theme (`tokens.dark.json`, plus `tokens.dark.tone-stone.json` for stone) works the same way: never hard-code a light surface, white highlight or text color in components.
+Calm, tactile, uncluttered. Short noun/verb labels (`Volume`, `Timer`, `Hold to reset`), minimal punctuation, quiet descriptive hints.

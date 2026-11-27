@@ -47,7 +47,9 @@
   }
   function linkAssets(pk) {
     var head = document.head, chrome = head.querySelector('link[href$="site/site.css"]');
-    var css = pk.entry && pk.entry.css, sheet = css ? head.querySelector('link[href$="' + css + '"]') : null;
+    // <html data-wall-nocss>: the host page styles stages itself (or only needs the data): never link or wait for pack CSS.
+    var nocss = document.documentElement.hasAttribute("data-wall-nocss");
+    var css = !nocss && pk.entry && pk.entry.css, sheet = css ? head.querySelector('link[href$="' + css + '"]') : null;
     if (css && !sheet) {
       sheet = document.createElement("link");
       sheet.rel = "stylesheet"; sheet.href = css;
@@ -74,6 +76,25 @@
     lines.forEach(function (l) { if (l.trim()) min = Math.min(min, l.match(/^ */)[0].length); });
     if (!isFinite(min)) min = 0;
     return lines.map(function (l) { return l.slice(min); }).join("\n");
+  }
+
+  /* `html` is serialized + dedented on first read (a card is mounted, or source.js asks), not at parse time:
+     the catalogs' stage nodes stay in their parsed documents until then. Reads see an ordinary string field. */
+  function lazyHtml(o, read) {
+    var v = null;
+    Object.defineProperty(o, "html", {
+      enumerable: true,
+      get: function () { if (v === null) { v = dedent(read()); read = null; } return v; }
+    });
+    return o;
+  }
+
+  var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 120); };
+  function drainHtml(list) {
+    idle(function (dl) {
+      while (list.length && (!dl || dl.timeRemaining() > 2)) void list.shift().html;
+      if (list.length) drainHtml(list);
+    }, { timeout: 5000 });
   }
 
   var sprite = null;
@@ -103,11 +124,10 @@
     ]).then(function (pair) {
       var text = pair[0], cmpText = pair[1];
       // Serialize catalog DOMParser calls across macrotasks so 9 concurrent parses never pile into one long task.
-      var job = parseQueue.then(function () {
-        return new Promise(function (r) { setTimeout(r, 0); });
-      }).then(function () {
-        var doc = new DOMParser().parseFromString(text, "text/html");
-        var items = {}, order = [];
+      var tick = function () { return new Promise(function (r) { setTimeout(r, 0); }); };
+      var items = {}, order = [], doc;
+      var job = parseQueue.then(tick).then(function () {
+        doc = new DOMParser().parseFromString(text, "text/html");
         doc.querySelectorAll("[data-component]").forEach(function (sec) {
           var id = sec.getAttribute("data-component");
           var h = sec.querySelector("h2"), p = sec.querySelector(":scope > p");
@@ -118,16 +138,16 @@
             summary: p ? p.textContent.trim() : "",
             demos: Array.prototype.map.call(sec.querySelectorAll("[data-demo]"), function (dm) {
               var st = dm.querySelector(".demo__stage"), label = dm.querySelector("h3");
-              return {
+              return lazyHtml({
                 id: dm.getAttribute("data-demo"),
                 label: label ? label.textContent.trim() : "",
-                html: dedent(st.innerHTML),
                 classes: Array.prototype.filter.call(st.classList, function (c) { return c !== "demo__stage"; }),
                 dialog: dm.hasAttribute("data-open-dialog")
-              };
+              }, function () { return st.innerHTML; });
             })
           };
         });
+      }).then(function () { return cmpText ? tick() : null; }).then(function () {
         if (cmpText) {
           var cmpDoc = new DOMParser().parseFromString(cmpText, "text/html");
           var art = cmpDoc.querySelector("article");
@@ -137,20 +157,24 @@
               id: "compare",
               title: "Weekly report",
               summary: "Same composite card markup across all nine design languages: status badge, segmented frequency control, input, toggle switch and actions.",
-              demos: [{
+              demos: [lazyHtml({
                 id: "weekly-report",
                 label: "Weekly report",
-                html: dedent(art.outerHTML),
                 classes: packId === "clay" ? ["clay-board"] : [],
                 dialog: false
-              }]
+              }, function () { return art.outerHTML; })]
             };
           }
         }
+      }).then(tick).then(function () {
         var symbols = {};
         doc.querySelectorAll("symbol[id]").forEach(function (sym) { symbols[sym.id] = sym.outerHTML; });
         data[packId] = { items: items, order: order, symbols: symbols };
         addSymbols(packId, doc);
+        // Serialize the demos nobody has read yet in idle time, so the parsed catalog document can be released.
+        var rest = [];
+        Object.keys(items).forEach(function (cid) { rest.push.apply(rest, items[cid].demos); });
+        drainHtml(rest);
       });
       parseQueue = job.catch(function () {});
       return job;

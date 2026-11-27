@@ -3,37 +3,42 @@
 
 /* ---------- Hero: short, so the wall starts on the first screen ---------- */
 .cw-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 440px); gap: 24px 56px; align-items: end; padding: 64px 0 36px; }
+main:focus, .cw-hero h1:focus { outline: none; }
 .cw-hero h1 { font: 500 clamp(40px, 5.4vw, 80px)/0.94 var(--display); letter-spacing: -0.045em; text-wrap: balance; }
 .cw-hero__lede { color: var(--muted); font-size: 16.5px; line-height: 1.55; }
 .cw-hero__lede [data-total] { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 
 /* ---------- Filter bar (sticky under the header) ---------- */
-.cw-bar { position: sticky; top: var(--top-h); z-index: 40; padding: 10px 0; border-block: 1px solid transparent; transition: background-color .3s, border-color .3s; }
-.cw-bar.is-stuck { background: var(--top-bg); border-color: var(--line); -webkit-backdrop-filter: blur(16px) saturate(120%); backdrop-filter: blur(16px) saturate(120%); }
+.cw-bar { position: sticky; top: var(--top-h); z-index: 40; padding: 10px 0; border-block: 1px solid transparent; }
+/* Frosting fades in on its own layer (opacity only), once the bar sticks. */
+.cw-bar::before { content: ""; position: absolute; inset: -1px 0; z-index: -1; border-block: 1px solid var(--line); background: var(--top-bg); -webkit-backdrop-filter: blur(16px) saturate(120%); backdrop-filter: blur(16px) saturate(120%); opacity: 0; transition: opacity var(--dur-2) var(--ease-out); pointer-events: none; }
+.cw-bar.is-stuck::before { opacity: 1; }
 .cw-bar__in { display: flex; align-items: center; justify-content: space-between; gap: 10px 18px; flex-wrap: wrap; }
-.cw-bar__end { display: flex; flex: 1 1 auto; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cw-bar__end { display: flex; flex: 1 1 auto; align-items: center; gap: 10px; flex-wrap: wrap; min-height: 36px; }
+@media (min-width: 761px) { .cw-bar__end { flex-basis: 100%; } }
 .cw-bar__status { display: inline-flex; align-items: center; gap: 8px; font: 500 12.5px/1 var(--mono); color: var(--faint); white-space: nowrap; }
-.cw-bar__reset { height: 26px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 999px; background: transparent; color: var(--ink); font: 500 12px/1 var(--text); cursor: pointer; transition: background-color .2s, border-color .2s; }
+.cw-bar__reset { height: 26px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 999px; background: transparent; color: var(--ink); font: 500 12px/1 var(--text); cursor: pointer; }
 .cw-bar__reset:hover { background: var(--hover); border-color: var(--line-hover); }
 .cw-bar__theme { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; }
 .cw-bar__label { font: 500 12px/1 var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: 0.04em; }
 /* Languages: each name set in its own type; the selected one sits on an ink glider. */
-.cw-filter { position: relative; display: inline-flex; gap: 2px; max-width: 100%; padding: 4px; border: 1px solid var(--line-strong); border-radius: 999px; overflow-x: auto; scrollbar-width: none; }
+.cw-filter { position: relative; display: inline-flex; min-height: 46px; gap: 2px; max-width: 100%; padding: 4px; border: 1px solid var(--line-strong); border-radius: 999px; overflow-x: auto; scrollbar-width: none; }
 .cw-filter::-webkit-scrollbar { display: none; }
-.cw-filter__glider { position: absolute; top: 4px; bottom: 4px; left: 0; border-radius: 999px; background: var(--ink); transition: transform .42s var(--ease), width .42s var(--ease); pointer-events: none; }
-.cw-filter button { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: var(--ink); font-size: 15px; white-space: nowrap; cursor: pointer; transition: color .25s, background-color .2s, transform .2s var(--ease); }
+.cw-filter:empty { visibility: hidden; } /* reserved before the script builds it, so the bar never jumps */
+.cw-filter__glider { position: absolute; top: 4px; bottom: 4px; left: 0; border-radius: 999px; background: var(--ink); transition: transform var(--dur-3) var(--ease-out), width var(--dur-3) var(--ease-out); pointer-events: none; }
+.cw-filter button { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: var(--ink); font-size: 15px; white-space: nowrap; cursor: pointer; }
 .cw-filter button:hover:not([aria-pressed="true"]) { background: var(--hover); }
 .cw-filter button[aria-pressed="true"] { color: var(--on-ink); }
-.cw-filter button:active { transform: scale(0.97); }
 /* Inside a scroller an outside focus ring would be clipped: draw it inset. */
 .cw-filter button:focus-visible, .cw-cats button:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
 .cw-filter button[aria-pressed="true"]:focus-visible { outline-color: var(--on-ink); }
 .cw-filter button i { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12); }
 .cw-filter button b { font-weight: 500; }
-.cw-filter button small { font: 500 11px/1 var(--mono); opacity: .62; }
+.cw-filter button small { font: 500 11px/1 var(--mono); opacity: .85; }
 /* Search: narrows the wall as you type ("/" or ⌘K focuses it, Esc clears). Fixed width avoids shifting neighbour chips on focus. */
-.cw-search { position: relative; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px 0 13px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--muted); transition: border-color .2s, background-color .2s, box-shadow .3s var(--ease); }
+.cw-search { position: relative; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px 0 13px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--muted); transition: border-color var(--dur-2) var(--ease-out), background-color var(--dur-2) var(--ease-out), box-shadow var(--dur-3) var(--ease-out); }
 .cw-search:hover { border-color: var(--line-hover); }
+.cw-search:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: 2px; }
 .cw-search:focus-within { border-color: var(--ink); background: var(--bg-raise); box-shadow: 0 0 0 3px var(--hover); color: var(--ink); }
 .cw-search svg { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 .cw-search input { width: 180px; min-width: 0; height: 100%; padding: 0; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 14px; outline: none; }
@@ -41,28 +46,37 @@
 .cw-search input::-webkit-search-cancel-button { display: none; }
 .cw-search kbd { display: inline-grid; place-items: center; min-width: 20px; height: 20px; border: 1px solid var(--line-strong); border-radius: 6px; font: 500 11px/1 var(--mono); color: var(--faint); }
 .cw-search:focus-within kbd, .cw-search.has-value kbd { display: none; }
-.cw-search__clear { display: inline-grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; background: var(--hover); color: var(--muted); cursor: pointer; transition: background-color .2s, color .2s; }
+.cw-search__clear { display: inline-grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; background: var(--hover); color: var(--muted); cursor: pointer; }
 .cw-search__clear:hover { background: var(--line-strong); color: var(--ink); }
-.cw-search__clear:active { transform: scale(0.92); }
 .cw-search__clear:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
 .cw-search__clear svg { width: 12px; height: 12px; }
 @media (hover: none) { .cw-search kbd { display: none; } }
 .cw-cats { display: inline-flex; flex-wrap: wrap; gap: 6px; }
-.cw-cats button { height: 32px; padding: 0 13px; border: 1px solid var(--line-strong); border-radius: 999px; background: transparent; color: var(--muted); font-size: 13.5px; white-space: nowrap; cursor: pointer; transition: color .2s, border-color .2s, background-color .2s, transform .2s var(--ease); }
-.cw-cats button:hover:not(:disabled) { color: var(--ink); border-color: var(--line-hover); }
-.cw-cats button:active:not(:disabled) { transform: scale(0.96); }
+.cw-cats { min-height: 36px; }
+.cw-cats button { height: 36px; padding: 0 13px; border: 1px solid var(--line-strong); border-radius: 999px; background: transparent; color: var(--muted); font-size: 13.5px; white-space: nowrap; cursor: pointer; }
+.cw-cats button:hover:not(:disabled):not([aria-pressed="true"]) { color: var(--ink); border-color: var(--line-hover); }
 .cw-cats button[aria-pressed="true"] { color: var(--on-ink); background: var(--ink); border-color: var(--ink); }
 .cw-cats button[aria-pressed="true"]:focus-visible { outline-color: var(--on-ink); }
 .cw-cats button:disabled { opacity: .38; cursor: default; }
 
+/* Press / hover recipe: colour in --dur-1 on hover, out --dur-2; press is the independent `scale`, released on a spring. */
+.cw-filter button, .cw-cats button, .cw-bar__reset, .cw-search__clear, .wcard__tag, .wcard__code {
+  transition: color var(--dur-2) var(--ease-out), background-color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out), opacity var(--dur-2) var(--ease-out), scale var(--dur-3) var(--spring);
+}
+.cw-filter button:hover, .cw-cats button:hover:not(:disabled), .cw-bar__reset:hover, .cw-search__clear:hover, .wcard__tag:hover, .wcard__code:hover {
+  transition-duration: var(--dur-1), var(--dur-1), var(--dur-1), var(--dur-1), var(--dur-1), var(--dur-3);
+}
+.cw-filter button:active, .cw-cats button:active:not(:disabled), .cw-bar__reset:active, .wcard__tag:active, .wcard__code:active, .cw-top:active { scale: .97; transition-duration: var(--dur-press); transition-timing-function: var(--ease-out); }
+.cw-search__clear:active { scale: .94; transition-duration: var(--dur-press); transition-timing-function: var(--ease-out); }
+
 /* ---------- Wall ---------- */
-/* Padding switches cleanly once before masonry runs (no per-frame padding transition triggering 36+ ResizeObserver relayouts). */
-.cw { position: relative; margin-top: 24px; padding-bottom: 48px; }
-.cw.is-unified { padding: 40px 40px 72px; }
+/* Card geometry never changes with the filter: a language's canvas bleeds out around the grid by --cw-bleed
+   (set from the real page margin in components.js), and the room for the note below stays inside .cw. */
+.cw { --cw-bleed: 40px; position: relative; margin-top: 40px; padding-bottom: 72px; }
 .cw-backdrops { position: absolute; inset: 0; pointer-events: none; }
 /* Each language's canvas, laid on the booth like a sheet: class / style from packs.json → site.backdrop (default: site.page). */
-.cw-backdrop { position: absolute; inset: 0; border-radius: 20px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 40px 80px -50px rgba(0, 0, 0, 0.5); opacity: 0; transform: scale(0.985); transition: opacity .5s var(--ease), transform .65s var(--ease); visibility: hidden; }
-.cw-backdrop.is-on { opacity: 1; transform: none; visibility: visible; }
+.cw-backdrop { position: absolute; inset: calc(-1 * var(--cw-bleed)) calc(-1 * var(--cw-bleed)) 0; border-radius: 20px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 40px 80px -50px rgba(0, 0, 0, 0.5); opacity: 0; transform: scale(0.985); transition: opacity var(--dur-4) var(--ease-out), transform var(--dur-4) var(--ease-out), visibility 0s linear var(--dur-4); visibility: hidden; }
+.cw-backdrop.is-on { opacity: 1; transform: none; visibility: visible; transition-delay: 0s; }
 .cw-grid { position: relative; min-height: 400px; overflow: clip; overflow-clip-margin: 64px; } /* filtered-out cards keep their spot without stretching the page */
 .cw-grid.is-empty { min-height: 0; }
 .cw-empty { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; min-height: 240px; padding: 48px 20px; text-align: center; color: var(--muted); font-size: 15px; }
@@ -80,14 +94,17 @@ html[data-theme="dark"] .cw.is-unified:not(.is-light-only) .cw-note,
 /* Cards are absolutely positioned by the masonry script; they glide when the filter changes.
    .is-animating is removed once the glide finishes, so cards never sit permanently on GPU layers. */
 .wcard { position: absolute; top: 0; left: 0; contain: layout style; }
-.cw-grid.is-animating .wcard:not(.is-gone) { transition: transform .65s var(--ease); will-change: transform; }
-.wcard__in { position: relative; contain: layout style; container-type: inline-size; opacity: 0; transform: translate3d(0, 24px, 0); transition: opacity .65s var(--ease), transform .75s var(--ease); }
+.wcard:not(.is-laid) { transform: translate3d(0, -9999px, 0); } /* mounted, not yet measured and placed */
+/* Only cards that stay on show glide (.is-fly, set per card by the script); the rest land in place and fade in. */
+.wcard.is-fly:not(.is-gone) { transition: transform var(--dur-4) var(--ease-out); will-change: transform; }
+.wcard__in { position: relative; contain: layout style; container-type: inline-size; opacity: 0; transform: translate3d(0, 12px, 0); transition: opacity .4s var(--ease-out), transform .5s var(--ease-out); }
 .wcard.is-in .wcard__in { opacity: 1; transform: none; }
-.wcard.is-out .wcard__in { opacity: 0; transform: scale(0.96); transition-duration: .28s; }
+.wcard.is-fresh .wcard__in { transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out); transition-delay: calc(var(--i, 0) * 20ms); }
+.wcard.is-out .wcard__in { opacity: 0; transform: scale(0.98); transition: opacity var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out); }
 .wcard.is-out { pointer-events: none; }
 .wcard.is-gone { visibility: hidden; }
-.wcard.is-offscreen *, .wcard.is-offscreen *::before, .wcard.is-offscreen *::after,
-.wcard.is-out *, .wcard.is-out *::before, .wcard.is-out *::after { animation-play-state: paused !important; }
+.cw-grid.is-settled .wcard.is-gone { display: none; } /* once every pack script has initialised, filtered-out cards cost no layout */
+.wcard.is-offscreen *, .wcard.is-offscreen *::before, .wcard.is-offscreen *::after { animation-play-state: paused !important; }
 /* On the mixed wall each stage is a material sample on the booth: a hairline edge and a soft contact shadow. */
 .wcard__in::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 10px; box-shadow: 0 24px 40px -30px rgba(0, 0, 0, 0.6); opacity: .7; transition: opacity .45s var(--ease); pointer-events: none; }
 body[data-wall-style="all"] .wcard__in::after { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: 10px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.09); pointer-events: none; }
@@ -107,17 +124,16 @@ html[data-theme="dark"] .wcard__spot i { background: radial-gradient(closest-sid
 
 .wcard__bar { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; }
 .wcard__bar a { pointer-events: auto; }
-.wcard__tag { display: inline-flex; align-items: center; gap: 8px; min-width: 0; height: 30px; padding: 0 12px 0 10px; border: 0; border-radius: 999px; background: var(--tag-bg); color: #EDEDE9; font: 500 12.5px/1 var(--text); letter-spacing: 0; text-transform: none; text-decoration: none; cursor: pointer; transition: background-color .2s; }
+.wcard__tag { display: inline-flex; align-items: center; gap: 8px; min-width: 0; height: 30px; padding: 0 12px 0 10px; border: 0; border-radius: 999px; background: var(--stage-chip); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); color: var(--stage-chip-ink); font: 500 12.5px/1 var(--text); letter-spacing: 0; text-transform: none; text-decoration: none; cursor: pointer; }
 .wcard__tag i { width: 7px; height: 7px; flex: none; border-radius: 50%; }
 .wcard__tag b { font-size: 13.5px; }
 .wcard__tag span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #B9B8B2; }
-.wcard__code { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 30px; min-width: 30px; padding: 0 10px; border: 0; border-radius: 999px; background: var(--tag-bg); color: #EDEDE9; font: 500 12px/1 var(--mono); text-decoration: none; cursor: pointer; opacity: .82; transition: opacity .25s, transform .3s var(--ease), background-color .2s; }
+.wcard__code { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 30px; min-width: 30px; padding: 0 10px; border: 0; border-radius: 999px; background: var(--stage-chip); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); color: var(--stage-chip-ink); font: 500 12px/1 var(--mono); text-decoration: none; cursor: pointer; opacity: .82; }
 .wcard__code svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 body[data-wall-style="all"] .wcard:hover .wcard__in::after { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--glow, var(--ink)) 55%, rgba(0, 0, 0, 0.14)); }
-.wcard:hover .wcard__code, .wcard:focus-within .wcard__code { opacity: 1; background: var(--ink); color: var(--on-ink); border-color: var(--ink); }
-.wcard__tag:hover, .wcard__code:hover { background: var(--tag-hover); }
-.wcard:hover .wcard__code:hover { background: var(--ink-hover); border-color: var(--ink-hover); }
-.wcard__tag:focus-visible, .wcard__code:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.wcard:hover .wcard__code, .wcard:focus-within .wcard__code { opacity: 1; }
+.wcard__tag:hover, .wcard__code:hover, .wcard__tag:focus-visible, .wcard__code:focus-visible { background: var(--stage-chip-hover); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18); }
+.wcard__tag:focus-visible, .wcard__code:focus-visible { outline: 2px solid transparent; outline-offset: 2px; box-shadow: var(--ring-stage); }
 @media (hover: none) { .wcard__code { opacity: 1; } }
 /* Touch: ≥ 36px hit areas, same look. */
 @media (pointer: coarse) {
@@ -127,9 +143,11 @@ body[data-wall-style="all"] .wcard:hover .wcard__in::after { box-shadow: inset 0
 }
 @media (max-width: 1000px) { .wstage { padding: 38px 14px 68px; } }
 /* Floating Back to top button */
-.cw-top { position: fixed; right: 24px; bottom: 24px; z-index: 45; display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 14px 0 11px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--top-bg); color: var(--ink); font: 500 13px/1 var(--text); cursor: pointer; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: var(--lift); transition: opacity .25s, transform .3s var(--ease), background-color .2s, border-color .2s; }
-.cw-top:hover { background: var(--bg-raise); border-color: var(--line-hover); transform: translate3d(0, -2px, 0); }
-.cw-top:active { transform: scale(0.95); }
+.cw-top { position: fixed; right: 24px; bottom: 24px; z-index: 45; display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 14px 0 11px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--top-bg); color: var(--ink); font: 500 13px/1 var(--text); cursor: pointer; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: var(--lift);
+  opacity: 0; visibility: hidden; transform: translate3d(0, 6px, 0);
+  transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out), visibility 0s linear var(--dur-2), background-color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out), scale var(--dur-3) var(--spring); }
+.cw-top.is-shown { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+.cw-top.is-shown:hover { background: var(--bg-raise); border-color: var(--line-hover); transform: translate3d(0, -2px, 0); }
 .cw-top svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* Source: HTML / CSS / JS / single file — shared by component.html */
@@ -144,7 +162,7 @@ body[data-wall-style="all"] .wcard:hover .wcard__in::after { box-shadow: inset 0
 .src__tabs button:focus-visible, .src__copy:focus-visible, .src__code:focus-visible { outline: 2px solid var(--slate-ink); outline-offset: -2px; }
 .src__copy { display: inline-flex; align-items: center; gap: 7px; flex: none; height: 30px; padding: 0 12px 0 10px; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 8px; background: transparent; color: var(--slate-ink); font: 500 12.5px/1 var(--text); cursor: pointer; transition: color .2s, border-color .2s, background-color .2s; }
 .src__copy:hover { border-color: rgba(255, 255, 255, 0.32); background: rgba(255, 255, 255, 0.05); }
-.src__copy:active, .wcard__code:active, .wcard__tag:active { transform: scale(0.95); }
+.src__copy:active { transform: scale(0.95); }
 .src__copy.is-copied { color: #A8E6CF; border-color: rgba(168, 230, 207, 0.45); }
 .src__copy.is-failed { color: #FF8A80; border-color: rgba(255, 138, 128, 0.45); }
 .src__copy svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
@@ -169,30 +187,32 @@ body[data-wall-style="all"] .wcard:hover .wcard__in::after { box-shadow: inset 0
 [data-site-theme="gallery"] .cw-filter button { color: var(--muted); }
 [data-site-theme="gallery"] .cw-filter button:hover, [data-site-theme="gallery"] .cw-filter button[aria-pressed="true"] { color: var(--ink); }
 [data-site-theme="gallery"] .cw-filter button[aria-pressed="true"]:focus-visible { outline-color: var(--ink); }
+[data-site-theme="gallery"] .cw-hero .aurora i:nth-child(6), [data-site-theme="gallery"] .cw-hero .aurora i:nth-child(8) { opacity: .2; }
 [data-site-theme="gallery"] .cw-search:focus-within { background: rgba(255, 255, 255, 0.06); border-color: var(--line-strong); }
 [data-site-theme="gallery"] .cw-cats button[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); }
-[data-site-theme="gallery"] .cw-backdrop { border-radius: 36px; box-shadow: none; }
+[data-site-theme="gallery"] .cw-backdrop { box-shadow: none; }
 /* Hover: a soft halo in the language's own colour (a gradient, not a blur filter) */
 [data-site-theme="gallery"] .wcard__in::before { inset: 10% 4% -8%; border-radius: 50%; box-shadow: none; background: radial-gradient(closest-side, color-mix(in srgb, var(--glow) 55%, transparent), transparent); opacity: 0; }
 [data-site-theme="gallery"] .wcard:hover .wcard__in::before { opacity: .5; }
 [data-site-theme="gallery"] body[data-wall-style="all"] .wcard__in::after { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.075); }
 [data-site-theme="gallery"] body[data-wall-style="all"] .wcard:hover .wcard__in::after { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--glow, #ffffff) 48%, rgba(255, 255, 255, 0.16)); }
-[data-site-theme="gallery"] .wcard__tag, [data-site-theme="gallery"] .wcard__code { border: 1px solid rgba(255, 255, 255, 0.1); }
 [data-site-theme="gallery"] .src { box-shadow: inset 0 0 0 1px var(--line); }
 
 @media (max-width: 1080px) {
   .cw-bar__in { gap: 8px 12px; }
   .cw-search input { width: 140px; }
   .cw-cats { gap: 4px; }
-  .cw-cats button { height: 30px; padding: 0 11px; font-size: 13px; }
+  .cw-cats button { padding: 0 11px; font-size: 13px; }
 }
 @media (max-width: 900px) {
   .cw-hero { grid-template-columns: minmax(0, 1fr); padding: 44px 0 24px; }
 }
 @media (max-width: 760px) {
-  .cw-bar { padding: 10px 0; }
+  .cw-bar { padding: 10px 0; transition: transform var(--dur-3) var(--ease-out), visibility 0s; }
+  .cw-bar.is-tucked:not(:focus-within) { transform: translate3d(0, calc(-100% - 2px), 0); visibility: hidden; transition: transform var(--dur-3) var(--ease-out), visibility 0s linear var(--dur-3); }
+  .cw-bar__status:has([data-bar-reset][hidden]) { display: none; }
   .cw-bar__in { flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 10px; }
-  .cw-filter { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); padding-right: 24px; }
+  .cw-filter.is-scrollable { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
   .cw-bar__end { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
   .cw-search { order: 1; flex: 1 1 0; min-width: 0; }
   .cw-search input { width: 100%; }
@@ -202,12 +222,17 @@ body[data-wall-style="all"] .wcard:hover .wcard__in::after { box-shadow: inset 0
   .cw-bar__status { order: 4; margin-left: auto; }
   .cw-cats { order: 3; flex: 1 1 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; min-width: 0; padding-right: 24px; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent); }
   .cw-cats::-webkit-scrollbar { display: none; }
-  .cw.is-unified { padding: 18px 14px 56px; }
+  .cw { margin-top: 32px; padding-bottom: 56px; }
   .cw-backdrop { border-radius: 16px; }
   .cw-top { right: 14px; bottom: 14px; }
   .src__code { max-height: 60vh; }
 }
 @media (prefers-reduced-motion: reduce) {
   .wcard__in { opacity: 1; transform: none; }
-  .cw-grid.is-animating .wcard { transition: none; }
+  .wcard.is-out .wcard__in { opacity: 0; }
+  .wcard.is-fly { transition: none; }
+  .wcard__spot { display: none; }
+  .wcard.is-in:hover .wcard__in { transform: none; }
+  .cw-top, .cw-top.is-shown:hover { transform: none; transition-property: opacity, visibility; }
+  .cw-bar.is-tucked:not(:focus-within) { transition: none; }
 }

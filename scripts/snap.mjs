@@ -3,6 +3,8 @@
 // pages at desktop and mobile widths in a real (headless) Chrome, and flags horizontal overflow,
 // script errors, console.error, failed or 404 requests from this site, and empty live sections. After the
 // desktop capture it presses every control once (a fixed walk on the two site pages) and flags script errors.
+// The three site pages are also rendered in both site themes and guarded: header height vs --top-h, pressed /
+// current chrome keeping 4.5:1 contrast under hover, no tabbables in a closed off-canvas, no chrome clipped at the edge.
 // Zero dependencies: a tiny static server + the Chrome DevTools protocol over Node's WebSocket.
 //
 // Usage:
@@ -388,6 +390,105 @@ if (thumbs) {
   process.exit(0);
 }
 
+
+/* ---------- site guards (both site themes, no screenshots) ----------
+   Site pages are rendered in the grey booth and the dark gallery at every width and checked for what
+   the default capture cannot see: header height vs --top-h, pressed/current chrome losing contrast on
+   hover, tabbable elements inside a closed off-canvas, and chrome clipped at the viewport edge
+   (overflow-x: clip hides it from the scrollWidth test). Every failure names the element. */
+const SITE_THEMES = ["booth", "gallery"];
+const GUARD_JS = `(() => {
+  const out = [];
+  const vw = document.documentElement.clientWidth;
+  const desc = (el) => { let s = el.tagName.toLowerCase(); if (el.id) s += "#" + el.id; const c = (el.getAttribute("class") || "").trim(); if (c) s += "." + c.split(/\\s+/).slice(0, 3).join("."); const t = (el.getAttribute("aria-label") || el.textContent || "").trim().replace(/\\s+/g, " ").slice(0, 24); return s + (t ? ' "' + t + '"' : ""); };
+  const stage = (el) => !!el.closest(".wstage, [data-pack-stage], .tray__stage, .same__view, .hero-wall, .shelf, .viewer__stage, .cp-frame-wrap, iframe, .cw-backdrop");
+  const shown = (el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && (!el.checkVisibility || el.checkVisibility({ visibilityProperty: true, opacityProperty: true })); };
+  // I-01: sticky header height must equal --top-h
+  const top = document.querySelector(".top"), topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--top-h"));
+  if (top && topH && Math.abs(top.getBoundingClientRect().height - topH) > 1) out.push("[top-h] .top is " + Math.round(top.getBoundingClientRect().height) + "px tall but --top-h is " + topH + "px");
+  // Q-02: closed off-canvas targets must not leave tabbable descendants
+  for (const b of document.querySelectorAll("[aria-expanded=false][aria-controls]")) {
+    const t = document.getElementById(b.getAttribute("aria-controls")); if (!t) continue;
+    const q = t.getBoundingClientRect(), on = shown(t) && q.right > 1 && q.left < innerWidth - 1;
+    if (on) continue;
+    const bad = [...t.querySelectorAll('a[href], button, input:not([type="hidden"]), select, textarea, [tabindex]:not([tabindex="-1"])')].filter((f) => f.tabIndex >= 0 && !f.disabled && !f.closest("[inert]") && getComputedStyle(f).visibility !== "hidden");
+    if (bad.length) out.push("[closed-drawer] #" + t.id + " is closed but has " + bad.length + " tabbable element(s), first: " + desc(bad[0]));
+  }
+  // chrome clipped at the viewport edge (clip / hidden ancestors do not excuse it; scrollers do)
+  const inScroller = (el) => { for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) { const o = getComputedStyle(p).overflowX; if (o === "auto" || o === "scroll") return true; } return false; };
+  const seen = new Set();
+  for (const el of document.body.querySelectorAll("a, button, input, select, h1, h2, h3, p, label, summary, [role=tab]")) {
+    if (el.closest("svg, [aria-hidden=true], [inert], [hidden]") || stage(el) || !shown(el)) continue;
+    const r = el.getBoundingClientRect();
+    if ((r.right > vw + 1 || r.left < -1) && !inScroller(el)) { const k = desc(el); if (!seen.has(k) && seen.size < 6) { seen.add(k); out.push("[edge-clip] " + k + " spans " + Math.round(r.left) + ".." + Math.round(r.right) + "px of a " + vw + "px viewport"); } }
+  }
+  return out;
+})()`;
+// Candidates for the hover-contrast guard: pressed / selected / current chrome controls.
+const PRESSED_JS = `(() => {
+  const sel = '[aria-pressed="true"], [aria-selected="true"], [aria-current]:not([aria-current="false"]), .is-active, .is-selected';
+  const out = [];
+  document.querySelectorAll("[data-gd]").forEach((n) => n.removeAttribute("data-gd"));
+  for (const el of document.querySelectorAll(sel)) {
+    if (el.closest(".wstage, [data-pack-stage], .tray__stage, .same__view, .hero-wall, .shelf, iframe, [aria-hidden=true], [inert], [hidden]")) continue;
+    if (!el.matches("a, button, [role=tab], [role=option], li, summary") || !(el.textContent || "").trim()) continue;
+    const r = el.getBoundingClientRect(); if (!r.width || !r.height || (el.checkVisibility && !el.checkVisibility({ visibilityProperty: true }))) continue;
+    el.setAttribute("data-gd", String(out.length));
+    out.push(out.length);
+    if (out.length >= 14) break;
+  }
+  return out;
+})()`;
+const HOVER_CONTRAST_JS = (i) => `(() => {
+  const el = document.querySelector('[data-gd="${i}"]'); if (!el) return null;
+  const rgba = (s) => { const m = s.match(/rgba?\\(([^)]+)\\)/); if (!m) return { r: 0, g: 0, b: 0, a: 0 }; const v = m[1].split(/[ ,\\/]+/).filter(Boolean).map(Number); return { r: v[0], g: v[1], b: v[2], a: v[3] === undefined ? 1 : v[3] }; };
+  const over = (f, b) => ({ r: f.r * f.a + b.r * (1 - f.a), g: f.g * f.a + b.g * (1 - f.a), b: f.b * f.a + b.b * (1 - f.a), a: 1 });
+  const lum = (c) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b); };
+  const chain = []; let grad = false;
+  /* Positioned siblings under the label (sliding gliders, pills) paint its real background; hit-testing would miss
+     them (pointer-events: none), so find them by geometry, then walk the ancestors. */
+  const R = el.getBoundingClientRect(), cx = R.left + R.width / 2, cy = R.top + R.height / 2, under = [], up = [];
+  for (let a = el.parentElement, d = 0; a && d < 3; a = a.parentElement, d++) for (const c of a.children) { if (c === el || c.contains(el)) continue; const q = c.getBoundingClientRect(); if (q.left <= cx && cx <= q.right && q.top <= cy && cy <= q.bottom && getComputedStyle(c).position !== "static") under.push(c); }
+  for (let a = el.parentElement; a; a = a.parentElement) up.push(a);
+  for (const n of [el, ...under, ...up]) { const s = getComputedStyle(n); const c = rgba(s.backgroundColor); if (c.a > 0) chain.push(c); if (s.backgroundImage !== "none" && !/url\\(/.test(s.backgroundImage)) grad = true; if (c.a >= 0.99) break; }
+  let bg = { r: 255, g: 255, b: 255, a: 1 }; for (let k = chain.length - 1; k >= 0; k--) bg = over(chain[k], bg);
+  const cs = getComputedStyle(el), fg = rgba(cs.color); if (rgba(cs.webkitTextFillColor).a === 0 && cs.webkitTextFillColor !== cs.color) return null;
+  const f = over(fg, bg), L1 = lum(f), L2 = lum(bg), ratio = (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+  const size = parseFloat(cs.fontSize), need = size >= 24 || (size >= 18.66 && parseInt(cs.fontWeight, 10) >= 700) ? 3 : 4.5;
+  let s = el.tagName.toLowerCase(); if (el.id) s += "#" + el.id; const c = (el.getAttribute("class") || "").trim(); if (c) s += "." + c.split(/\\s+/).slice(0, 3).join(".");
+  return ratio < need && !(grad && ratio > 3) ? "[hover-contrast] " + s + ' "' + el.textContent.trim().replace(/\\s+/g, " ").slice(0, 24) + '" is ' + ratio.toFixed(2) + ":1 (needs " + need + ") while hovered" : null;
+})()`;
+
+async function siteGuards(tab, page, width, theme) {
+  const errs = [];
+  const { identifier } = await tab.send("Page.addScriptToEvaluateOnNewDocument", { source: `try{localStorage.setItem("uidl-site-theme","${theme}")}catch(e){}` });
+  try {
+    await tab.send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width < 600 });
+    const loaded = Promise.race([tab.nextEvent("Page.loadEventFired"), new Promise((r) => setTimeout(r, LOAD_TIMEOUT))]);
+    await tab.send("Page.navigate", { url: `${base}/${page.path}` });
+    await loaded;
+    await tab.evaluate(EAGER);
+    await tab.evaluate(LIVE_READY);
+    await tab.evaluate(FONTS_READY);
+    await tab.evaluate(SETTLE);
+    const got = await tab.evaluate(GUARD_JS);
+    errs.push(...(got || []));
+    const idx = await tab.evaluate(PRESSED_JS);
+    for (const i of idx || []) {
+      const c = await tab.evaluate(`(() => { const el = document.querySelector('[data-gd="${i}"]'); el.scrollIntoView({ block: "center", behavior: "instant" }); const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+      if (!c) continue;
+      await tab.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: c.x, y: c.y });
+      await new Promise((r) => setTimeout(r, 360));
+      const bad = await tab.evaluate(HOVER_CONTRAST_JS(i));
+      if (bad) errs.push(bad);
+    }
+    await tab.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: 0, y: 0 });
+  } finally {
+    await tab.send("Page.removeScriptToEvaluateOnNewDocument", { identifier }).catch(() => {});
+  }
+  return [...new Set(errs)].map((e) => `${e} [${theme}]`);
+}
+
 try {
   // Run worker tabs in isolated incognito browser contexts so localStorage mutations during packFuzz never bleed across pages.
   const nWorkers = Math.min(jobs, pages.length);
@@ -492,6 +593,15 @@ try {
           errs.forEach((e) => logs.push(`\t  ✗ ${e}`));
         }
         console.log(logs.join("\n"));
+      }
+      if (page.group === "_site") {
+        const gl = [];
+        for (const theme of SITE_THEMES) for (const width of widths) {
+          reset();
+          const errs = await siteGuards(tab, page, width, theme);
+          if (errs.length) { broken++; gl.push(`ERRORS\t${page.path} @${width} (guards, ${theme})`); errs.forEach((e) => gl.push(`\t  ✗ ${e}`)); }
+        }
+        if (gl.length) console.log(gl.join("\n"));
       }
     }
   }

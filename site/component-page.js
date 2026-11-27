@@ -24,6 +24,7 @@
   var side = $("[data-cp-side]"), scrim = $("[data-cp-scrim]"), menuBtn = $("[data-cp-menu]");
   var searchEl = $("[data-cp-search]"), clearEl = $("[data-cp-search-clear]");
   var langsEl = $("[data-cp-langs]"), navEl = $("[data-cp-nav]");
+  var viewEl = $("[data-cp-view]"), wrapEl = $("[data-cp-wrap]"), srcBox = $(".cp-source");
   var srcTabs = $("[data-src-tabs]"), srcCode = $("[data-src-code]"), srcMeta = $("[data-src-meta]"), srcPre = $(".src__code");
 
   var allItems = [];
@@ -31,22 +32,42 @@
   var dirState = { lang: "all", query: "" };
   var state = { pack: "clay", comp: "button", demo: "", theme: "light", vp: "full", attrs: {} };
   var src = { data: null, tab: "html", key: "" };
-  var frame = null, readyResolve = null;
+  var frame = null, early = null, readyResolve = null;
   var pageReady = new Promise(function (r) { readyResolve = r; });
   if (window.UISite) UISite.ready = function () { return pageReady; };
 
-  /* ---------- Sidebar mobile toggle ---------- */
+  /* ---------- Sidebar mobile toggle (a modal drawer ≤960) ---------- */
+  var mq = window.matchMedia ? window.matchMedia("(max-width: 960px)") : { matches: false };
+  var INERT = ".top, .cp-mobile-bar, .cp-main, .foot";
+  function reduced() { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
   function setSidebarOpen(open, restoreFocus) {
     if (!side) return;
+    open = !!open && mq.matches;
+    var was = side.classList.contains("is-open");
     side.classList.toggle("is-open", open);
-    if (scrim) scrim.hidden = !open;
+    if (scrim) scrim.classList.toggle("is-open", open);
     if (menuBtn) menuBtn.setAttribute("aria-expanded", String(open));
     document.documentElement.classList.toggle("has-drawer", open);
-    if (!open && restoreFocus && menuBtn) menuBtn.focus();
+    if (open) { side.setAttribute("role", "dialog"); side.setAttribute("aria-modal", "true"); side.setAttribute("aria-label", "Component directory"); }
+    else { side.removeAttribute("role"); side.removeAttribute("aria-modal"); }
+    $$(INERT).forEach(function (n) { n.inert = open; });
+    if (open && !was && searchEl) searchEl.focus({ preventScroll: true });
+    if (!open && was && restoreFocus && menuBtn) menuBtn.focus({ preventScroll: true });
   }
   if (menuBtn) menuBtn.addEventListener("click", function () { setSidebarOpen(!side.classList.contains("is-open")); });
   if (scrim) scrim.addEventListener("click", function () { setSidebarOpen(false, true); });
   if ($("[data-cp-side-close]")) $("[data-cp-side-close]").addEventListener("click", function () { setSidebarOpen(false, true); });
+  if (mq.addEventListener) mq.addEventListener("change", function () { setSidebarOpen(false); });
+
+  /* After an in-page navigation: bring the title into view when it is above the fold; optionally move focus to it. */
+  function settleView(focusTitle) {
+    var h = $("[data-cp-title]");
+    var top = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--top-h")) || 64;
+    if (h.getBoundingClientRect().top < top) {
+      if (window.UIScroll && !reduced()) UIScroll.to(0); else window.scrollTo(0, 0);
+    }
+    if (focusTitle) h.focus({ preventScroll: true });
+  }
 
   /* ---------- Directory index ---------- */
   function buildIndex() {
@@ -136,8 +157,10 @@
         a.addEventListener("click", function (e) {
           if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
           e.preventDefault();
+          var wasOpen = side.classList.contains("is-open");
           setSidebarOpen(false);
           selectComponent(it.pack, it.comp, null, "push");
+          settleView(wasOpen);
         });
         ul.appendChild(a);
       });
@@ -168,30 +191,26 @@
   }
 
   function updatePager() {
-    var list = filteredItems.length ? filteredItems : allItems;
     var pager = $(".cp-pager"), prevEl = $("[data-cp-prev]"), nextEl = $("[data-cp-next]");
     if (!prevEl || !nextEl) return;
+    function at(l) { for (var i = 0; i < l.length; i++) if (l[i].pack === state.pack && l[i].comp === state.comp) return i; return -1; }
+    // The neighbours come from the filtered list; when the current component is filtered out, from everything.
+    var list = filteredItems.length > 1 && at(filteredItems) >= 0 ? filteredItems : allItems;
     if (pager) pager.hidden = list.length <= 1;
     if (list.length <= 1) return;
-    var idx = -1;
-    for (var i = 0; i < list.length; i++) if (list[i].pack === state.pack && list[i].comp === state.comp) { idx = i; break; }
-    if (idx < 0) idx = 0;
-    var prev = list[(idx - 1 + list.length) % list.length];
-    var next = list[(idx + 1) % list.length];
-    prevEl.href = "?p=" + encodeURIComponent(prev.pack) + "&c=" + encodeURIComponent(prev.comp);
-    $("[data-cp-prev-title]").textContent = prev.packName + " · " + prev.title;
-    prevEl.onclick = function (e) {
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-      e.preventDefault(); selectComponent(prev.pack, prev.comp, null, "push");
-      if (window.UIScroll) UIScroll.to(0); else window.scrollTo({ top: 0, behavior: "smooth" });
-    };
-    nextEl.href = "?p=" + encodeURIComponent(next.pack) + "&c=" + encodeURIComponent(next.comp);
-    $("[data-cp-next-title]").textContent = next.packName + " · " + next.title;
-    nextEl.onclick = function (e) {
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-      e.preventDefault(); selectComponent(next.pack, next.comp, null, "push");
-      if (window.UIScroll) UIScroll.to(0); else window.scrollTo({ top: 0, behavior: "smooth" });
-    };
+    var idx = Math.max(0, at(list));
+    function wire(el, titleSel, it) {
+      el.href = "?p=" + encodeURIComponent(it.pack) + "&c=" + encodeURIComponent(it.comp);
+      $(titleSel).textContent = it.packName + " · " + it.title;
+      el.onclick = function (e) {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        e.preventDefault();
+        selectComponent(it.pack, it.comp, null, "push");
+        settleView(true);
+      };
+    }
+    wire(prevEl, "[data-cp-prev-title]", list[(idx - 1 + list.length) % list.length]);
+    wire(nextEl, "[data-cp-next-title]", list[(idx + 1) % list.length]);
   }
 
   /* ---------- Source code viewer ---------- */
@@ -202,8 +221,9 @@
       b.setAttribute("aria-selected", String(on));
       b.tabIndex = on ? 0 : -1;
       b.disabled = !!d && t === "js" && !d.js;
-      b.title = b.disabled ? "This demo needs no JavaScript" : "";
+      if (t === "js") b.textContent = b.disabled ? "No JS" : "JS";
     });
+    srcPre.setAttribute("aria-labelledby", "cp-tab-" + src.tab);
     if (!d) { srcCode.textContent = "Collecting the source…"; srcMeta.textContent = ""; return; }
     var i = d.info, t = src.tab;
     srcCode.innerHTML = S.highlight(d[t] || "", t);
@@ -235,17 +255,20 @@
 
   function loadSource(packId, comp, dm) {
     var key = packId + "/" + comp.id + "/" + dm.id;
-    src.key = key; src.data = null;
-    if (src.tab === "js") src.tab = "html";
-    renderSource();
+    src.key = key;
+    // Keep the old code on screen, dimmed, until the new one arrives (no blank flash between demos).
+    if (src.data) srcBox.classList.add("is-stale"); else renderSource();
     return S.build(packId, comp.id, dm.id).then(function (d) {
       if (src.key !== key) return d;
+      srcBox.classList.remove("is-stale");
+      if (src.data === d) return d;
       src.data = d;
       if (src.tab === "js" && !d.js) src.tab = "html";
       renderSource();
       return d;
     }, function () {
       if (src.key !== key) return;
+      srcBox.classList.remove("is-stale");
       srcCode.textContent = "The source files could not be loaded. Open this page over http (GitHub Pages or a local server).";
     });
   }
@@ -264,11 +287,11 @@
     $$("[data-cp-vp] button").forEach(function (b) {
       b.setAttribute("aria-pressed", String(b.getAttribute("data-vp") === state.vp));
     });
-    var wrap = $(".cp-frame-wrap");
-    if (wrap) {
-      wrap.classList.toggle("is-tablet", state.vp === "tablet");
-      wrap.classList.toggle("is-mobile", state.vp === "mobile");
-    }
+    [wrapEl, viewEl].forEach(function (n) {
+      if (!n) return;
+      n.classList.toggle("is-tablet", state.vp === "tablet");
+      n.classList.toggle("is-mobile", state.vp === "mobile");
+    });
   }
 
   function renderVariants(p) {
@@ -312,33 +335,46 @@
     iso.href = "site/demo.html?" + qs.toString();
   }
 
+  /* One iframe per mount. A new one is laid over the old and revealed on its first size report (so it is never
+     blank), then the old ones go; the wrapper's pixel height is the only thing that animates. */
+  function mountFrame(srcUrl, title) {
+    $$(".cp-frame:not(.is-ready)", wrapEl).forEach(function (f) { f.remove(); });
+    var f = document.createElement("iframe"), shown = false, resolveDone;
+    var done = new Promise(function (r) { resolveDone = r; });
+    f.className = "cp-frame";
+    f.title = title;
+    f.reveal = function () {
+      if (shown || !f.isConnected) return;
+      shown = true; clearTimeout(timer);
+      f.classList.add("is-ready");
+      setTimeout(function () { while (f.previousElementSibling) f.previousElementSibling.remove(); }, 220);
+      resolveDone();
+    };
+    var timer = setTimeout(f.reveal, 3500);
+    f.src = srcUrl;
+    wrapEl.appendChild(f);
+    frame = f;
+    return { frame: f, done: done, src: srcUrl };
+  }
+
   function showDemo(packId, comp, dm, historyMode) {
     state.demo = dm.id;
     $$("[data-cp-demos] button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-demo") === dm.id)); });
-    var view = $("[data-cp-view]");
-    view.innerHTML = "";
-    var wrap = document.createElement("div");
-    wrap.className = "cp-frame-wrap" + (state.vp === "tablet" ? " is-tablet" : state.vp === "mobile" ? " is-mobile" : "");
-    frame = document.createElement("iframe");
-    frame.className = "cp-frame";
-    frame.title = W.byId[packId].name + " " + comp.title + ": " + dm.label;
     var qs = new URLSearchParams({ p: packId, c: comp.id, d: dm.id });
     if (state.theme === "dark" && W.byId[packId].dark) qs.set("theme", "dark");
     Object.keys(state.attrs).forEach(function (k) { if (state.attrs[k]) qs.set(k, state.attrs[k]); });
-    var frameDone = new Promise(function (res) {
-      var t = setTimeout(function () { frame.classList.add("is-ready"); res(); }, 3500);
-      frame.onload = function () { clearTimeout(t); frame.classList.add("is-ready"); res(); };
-    });
-    frame.src = "site/demo.html?" + qs.toString();
-    wrap.appendChild(frame);
-    view.appendChild(wrap);
+    var srcUrl = "site/demo.html?" + qs.toString(), title = W.byId[packId].name + " " + comp.title + ": " + dm.label;
+    // The frame started straight from the URL before the directory arrived is reused when it matches.
+    var m = early && early.frame.isConnected && early.src === srcUrl ? early : mountFrame(srcUrl, title);
+    early = null;
+    frame = m.frame; frame.title = title;
     syncIsolatedUrl();
 
     var url = "?p=" + encodeURIComponent(packId) + "&c=" + encodeURIComponent(comp.id) + "&d=" + encodeURIComponent(dm.id);
     if (historyMode === "push" && location.search !== url) history.pushState({ p: packId, c: comp.id, d: dm.id }, "", url);
     else if (historyMode === "replace") history.replaceState({ p: packId, c: comp.id, d: dm.id }, "", url);
 
-    return Promise.all([frameDone, loadSource(packId, comp, dm)]);
+    return Promise.all([m.done, loadSource(packId, comp, dm)]);
   }
 
   function renderSiblings(compId) {
@@ -358,18 +394,25 @@
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
         e.preventDefault();
         selectComponent(p.id, compId, null, "push");
+        settleView(false);
+        var cur = $('[data-cp-siblings] [aria-current="page"]');
+        if (cur) cur.focus({ preventScroll: true });
       });
       box.appendChild(a);
     });
   }
 
   function selectComponent(packId, compId, demoId, historyMode) {
-    var hit = W.demo(packId, compId, demoId);
+    // An unknown pack / component / demo falls back step by step instead of dumping you on the default.
+    var hit = W.demo(packId, compId, demoId), fell = false;
     if (!hit) {
-      packId = W.packs[0].id;
-      compId = "button";
+      fell = true;
       hit = W.demo(packId, compId, null);
+      var pk = W.data[packId];
+      if (!hit && pk) for (var i = 0; i < pk.order.length && !hit; i++) hit = W.demo(packId, pk.order[i], null);
+      if (!hit) { packId = W.packs[0].id; hit = W.demo(packId, "button", null); }
     }
+    compId = hit.component.id;
     var p = W.byId[packId], comp = hit.component, packChanged = state.pack !== packId;
     state.pack = packId;
     state.comp = comp.id;
@@ -406,7 +449,7 @@
     syncNavCurrent();
     updatePager();
     var statusEl = $("[data-cp-status]");
-    if (statusEl) statusEl.textContent = p.name + " " + comp.title;
+    if (statusEl) statusEl.textContent = fell ? "Showing " + p.name + " · " + comp.title : p.name + " " + comp.title;
 
     return showDemo(packId, comp, hit.demo, historyMode);
   }
@@ -457,8 +500,9 @@
 
   window.addEventListener("message", function (e) {
     if (!frame || e.source !== frame.contentWindow || !e.data || e.data.type !== "demo-size") return;
-    frame.style.height = Math.max(180, e.data.h) + "px";
-    frame.classList.add("is-ready");
+    // The wrapper's min-height holds the floor; its height transition glides between demos.
+    wrapEl.style.height = Math.max(0, e.data.h) + "px";
+    frame.reveal();
   });
 
   /* ---------- Directory Search & Shortcuts ---------- */
@@ -484,6 +528,9 @@
       });
     }
     searchEl.addEventListener("keydown", function (e) {
+      var first = $(".cp-nav__item", navEl);
+      if (first && e.key === "ArrowDown") { e.preventDefault(); first.focus(); return; }
+      if (first && e.key === "Enter") { e.preventDefault(); first.click(); return; }
       if (e.key === "Escape" && searchEl.value) {
         searchEl.value = "";
         dirState.query = "";
@@ -505,11 +552,27 @@
     });
   }
 
+  if (navEl) navEl.addEventListener("keydown", function (e) {
+    var a = e.target.closest && e.target.closest(".cp-nav__item");
+    if (!a || (e.key !== "ArrowDown" && e.key !== "ArrowUp")) return;
+    e.preventDefault();
+    var items = $$(".cp-nav__item", navEl), n = items.indexOf(a) + (e.key === "ArrowDown" ? 1 : -1);
+    if (n < 0) searchEl.focus(); else if (n < items.length) items[n].focus();
+  });
+
   /* ---------- Boot & History ---------- */
   function parseQuery() {
     var q = new URLSearchParams(location.search);
     return { p: q.get("p") || "clay", c: q.get("c") || "button", d: q.get("d") || "" };
   }
+  // Start the preview iframe straight from the URL; the directory data only reconciles it afterwards.
+  (function () {
+    var q = parseQuery(), id = /^[a-z0-9_-]+$/i;
+    if (/^[a-z]+$/.test(q.p) && id.test(q.c) && id.test(q.d)) {
+      var u = "site/demo.html?" + new URLSearchParams({ p: q.p, c: q.c, d: q.d }).toString();
+      early = mountFrame(u, "Component preview");
+    }
+  })();
   W.ready().then(function () {
     buildIndex();
     buildLangFilter();
@@ -518,8 +581,10 @@
     renderNav();
     return selectComponent(init.p, init.c, init.d, "replace");
   }).then(function () {
+    document.body.classList.remove("cp-loading");
     readyResolve();
   }).catch(function () {
+    document.body.classList.remove("cp-loading");
     $("[data-cp-title]").textContent = "Component could not be loaded";
     $("[data-cp-sub]").textContent = "Open this site over http (GitHub Pages or a local server), not file://.";
     readyResolve();

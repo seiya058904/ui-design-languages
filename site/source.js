@@ -247,12 +247,15 @@
   function kb(text) { return (new Blob([text]).size / 1024).toFixed(1) + " KB"; }
   function lines(text) { return text.split("\n").length; }
 
-  var built = {};
+  // A built source holds the pack's CSS + JS text; keep the last dozen so a long browse stays light.
+  var built = {}, order = [];
   function build(p, c, d) {
     var hit = W.demo(p, c, d);
     if (!hit) return Promise.reject(new Error("unknown demo"));
     var key = p + "/" + c + "/" + hit.demo.id;
-    if (built[key]) return built[key];
+    if (built[key]) { order.splice(order.indexOf(key), 1); order.push(key); return built[key]; }
+    order.push(key);
+    if (order.length > 12) delete built[order.shift()];
     built[key] = packFiles(p).then(function (pk) {
       var pack = W.byId[p], comp = hit.component, dm = hit.demo;
       var html = dm.html;

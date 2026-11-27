@@ -14,7 +14,9 @@
   var reportRaf = 0;
   function reportNow() {
     reportRaf = 0;
-    var h = Math.ceil(document.body.getBoundingClientRect().height);
+    // The centred stage fills the frame, so measure the stage itself (+ the 16px body padding) or the frame could never shrink.
+    var st = !isCompare && document.querySelector("body > .demo__stage");
+    var h = Math.ceil((st || document.body).getBoundingClientRect().height + (st ? 32 : 0));
     parent.postMessage({ type: "demo-size", h: h }, "*");
   }
   function report() {
@@ -51,7 +53,7 @@
     var frameCss = document.createElement("style");
     frameCss.textContent = isCompare
       ? "html,body{margin:0;min-height:0!important}body{display:grid;place-items:center;padding:16px!important;overflow:hidden}.demo__stage{margin:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:18px 22px;width:min(100%,760px);padding:40px 28px}.spec{display:flex;flex-direction:column;gap:16px}.line{display:flex;align-items:center;justify-content:space-between;gap:12px}.line--start{justify-content:flex-start;flex-wrap:wrap}.demo__stage>article{width:min(100%,360px)}"
-      : "html,body{margin:0;min-height:0!important}body{padding:16px!important;overflow:hidden}.demo__stage{margin:0}";
+      : "html,body{margin:0;height:100%;min-height:0!important}body{box-sizing:border-box;display:grid!important;align-content:center;align-content:safe center;padding:16px!important;overflow:hidden}body>svg{position:absolute;width:0;height:0}.demo__stage{margin:0}";
     document.head.appendChild(frameCss);
 
     var symbol = doc.body.querySelector("svg symbol");
@@ -88,7 +90,7 @@
       s.onload = function () { ATTRS.forEach(function (a) { if (q.get(a)) root.setAttribute("data-" + a, q.get(a)); }); };
       document.body.appendChild(s);
     }
-    if ("ResizeObserver" in window) new ResizeObserver(report).observe(document.body);
+    if ("ResizeObserver" in window) new ResizeObserver(report).observe(isCompare ? document.body : stage);
     report();
     if (document.fonts) document.fonts.ready.then(report);
   }).catch(function () {

@@ -1,9 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-wall-nocss>
 <head>
   <meta charset="utf-8">
   <script>/* Site theme before first paint: a saved choice, else the dark gallery (the other one is the grey booth) */(function(d){d.classList.add("js");var t;try{t=localStorage.getItem("uidl-site-theme")}catch(e){}if(t!=="booth")t="gallery";d.setAttribute("data-site-theme",t)})(document.documentElement)</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Cross-page view transitions opt in before any stylesheet loads (see index.html; site.css repeats it) -->
+  <style>@view-transition { navigation: auto; }</style>
   <title>Component · UI Design Languages</title>
   <link rel="icon" href="site/assets/favicon-32.png" sizes="32x32" type="image/png">
   <link rel="icon" href="site/assets/favicon.svg" type="image/svg+xml">
@@ -18,12 +20,13 @@
   <link rel="stylesheet" href="site/components.css">
   <link rel="stylesheet" href="site/component-page.css">
 </head>
-<body class="cp-page">
+<body class="cp-page cp-loading">
+<a class="skip" href="#cp-title">Skip to component</a>
 <header class="top">
   <div class="wrap top__in">
     <a class="brand" href="./"><span class="brand__dots" aria-hidden="true"><i style="background:#A8E6CF"></i><i style="background:#7C55FF"></i><i style="background:#2F7BF5"></i><i style="background:#2C8C8F"></i><i style="background:#A9C7EC"></i><i style="background:#FF4F00"></i><i style="background:#38BDF8"></i><i style="background:#C8FF00"></i><i style="background:#C85A32"></i></span>UI Design Languages</a>
     <nav aria-label="Site"><a href="./#styles">Languages</a><a href="components.html" aria-current="page">Components</a><a href="./#same">Compare</a><a href="./#use">Use</a></nav>
-    <div class="top__end"><button class="theme-toggle" type="button" aria-pressed="true" aria-label="Switch to light studio theme" title="Switch to light studio theme" data-site-theme-toggle><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg></button><a class="pill pill--sm" href="https://github.com/seiya058904/ui-design-languages">GitHub</a></div>
+    <div class="top__end"><button class="theme-toggle" type="button" aria-pressed="true" aria-label="Dark theme" title="Switch to grey theme" data-site-theme-toggle><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg></button><a class="pill pill--sm" href="https://github.com/seiya058904/ui-design-languages">GitHub</a></div>
   </div>
 </header>
 
@@ -34,7 +37,7 @@
   </div>
 </div>
 
-<div class="cp-scrim" data-cp-scrim hidden></div>
+<div class="cp-scrim" data-cp-scrim aria-hidden="true"></div>
 
 <main class="wrap cp-shell">
   <aside class="cp-side" id="cp-sidebar" aria-label="Component directory" data-cp-side>
@@ -48,7 +51,7 @@
       <button class="cp-side__close" type="button" data-cp-side-close aria-label="Close directory"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     </div>
     <div class="cp-langs" role="group" aria-label="Filter directory by language" data-cp-langs></div>
-    <nav class="cp-nav" aria-label="Components" data-cp-nav></nav>
+    <nav class="cp-nav" aria-label="Components" data-cp-nav data-native-scroll></nav>
   </aside>
 
   <article class="cp-main" aria-labelledby="cp-title">
@@ -64,7 +67,7 @@
     </div>
 
     <header class="cp-head">
-      <h1 id="cp-title" data-cp-title>Loading component…</h1>
+      <h1 id="cp-title" tabindex="-1" data-cp-title>Loading component…</h1>
       <p class="cp-sub" data-cp-sub></p>
       <div class="cp-actions">
         <button class="pill pill--solid pill--sm" type="button" data-cp-ai><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy for AI</span></button>
@@ -98,24 +101,24 @@
           <a class="cp-icon-btn" href="site/demo.html" target="_blank" rel="noopener" data-cp-isolated aria-label="Open isolated preview" title="Open isolated preview in new tab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         </div>
       </div>
-      <div class="cp-stage__view" data-cp-view></div>
+      <div class="cp-stage__view" data-cp-view><div class="cp-frame-wrap" data-cp-wrap></div></div>
     </section>
 
     <section class="src cp-source" aria-label="Source code">
       <div class="src__bar">
         <div class="src__tabs" role="tablist" aria-label="Source" data-src-tabs>
-          <button type="button" role="tab" data-src="html">HTML</button>
-          <button type="button" role="tab" data-src="css">CSS</button>
-          <button type="button" role="tab" data-src="js">JS</button>
-          <button type="button" role="tab" data-src="file">Single file</button>
+          <button type="button" role="tab" id="cp-tab-html" aria-controls="cp-src-panel" data-src="html">HTML</button>
+          <button type="button" role="tab" id="cp-tab-css" aria-controls="cp-src-panel" data-src="css">CSS</button>
+          <button type="button" role="tab" id="cp-tab-js" aria-controls="cp-src-panel" data-src="js">JS</button>
+          <button type="button" role="tab" id="cp-tab-file" aria-controls="cp-src-panel" data-src="file">Single file</button>
         </div>
         <button class="src__copy" type="button" data-src-copy><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="3"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Copy</span></button>
       </div>
-      <pre class="src__code" role="tabpanel" tabindex="0"><code data-src-code></code></pre>
+      <pre class="src__code" id="cp-src-panel" role="tabpanel" aria-labelledby="cp-tab-html" tabindex="0"><code data-src-code></code></pre>
       <p class="src__meta" data-src-meta></p>
     </section>
 
-    <nav class="cp-pager" aria-label="Adjacent components">
+    <nav class="cp-pager" aria-label="Adjacent components" hidden>
       <a class="cp-pager__link" href="components.html" data-cp-prev>
         <small>← Previous</small>
         <strong data-cp-prev-title></strong>

@@ -167,7 +167,7 @@
         "dot": "#7C55FF",
         "label": "font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:0.04em;text-transform:uppercase",
         "root": "font-family:var(--lilac-font-family-sans);color:var(--lilac-color-text);font-size:var(--lilac-font-size-body);line-height:1.5",
-        "canvas": "",
+        "canvas": "background:var(--lilac-color-canvas)",
         "page": "background:var(--lilac-color-canvas)",
         "hooks": ".lilac-segmented, .lilac-tabs, .lilac-nav, .lilac-bottom-nav, input[type=range], .lilac-chip[aria-pressed], [data-lilac-open], [data-lilac-close], [data-accent-set], [data-theme-set], [data-theme-toggle], .lilac-timer, .lilac-deck",
         "wall": [
@@ -477,7 +477,7 @@
         "dot": "#A9C7EC",
         "label": "font-family:Itim,sans-serif;font-weight:400;letter-spacing:0",
         "root": "font-family:var(--sketch-font-family-hand);color:var(--sketch-color-ink);font-size:var(--sketch-font-size-body);line-height:1.4",
-        "canvas": "",
+        "canvas": "background:var(--sketch-paper-grain),var(--sketch-color-paper)",
         "page": "background:var(--sketch-paper-grain),var(--sketch-color-paper)",
         "hooks": ".sketch-tabs, .sketch-pills, .sketch-segmented, .sketch-nav, .sketch-range, input[type=range], .sketch-stepper, .sketch-chip[aria-pressed], [data-pick-group], [data-sketch-open], [data-sketch-close], .sketch-sticky__pin, .sketch-flow, .sketch-doodle",
         "wall": [

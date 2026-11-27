@@ -607,14 +607,15 @@ html.is-wheel-scrolling .tray__item:hover > :is(.tray__stage, .tray__bar), html.
 .hero-wall { display: none; container-type: inline-size; } /* cqw: the wall bleeds to the edge without 100vw */
 [data-site-theme="gallery"] .hero { display: none; }
 [data-site-theme="gallery"] .hero-wall { display: block; }
-.hero-wall__in { position: relative; display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 32px; align-items: center; min-height: 680px; padding: 36px 0 56px; }
+.hero-wall__in { position: relative; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 40px; align-items: center; min-height: 680px; padding: 36px 0 56px; }
 .hero-wall__copy { position: relative; isolation: isolate; }
 /* The wall's room is held before its template is cloned, and it hangs from the row's top: when the web font
    reflows the copy beside it, the wall stays where it is. */
 .wall-slot { align-self: start; min-width: 0; min-height: 620px; }
 .chip { display: inline-flex; align-items: center; gap: 10px; height: 30px; padding: 0 12px 0 6px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: 13px; color: var(--muted); }
 .chip b { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; background: var(--ink); color: var(--on-ink); font-size: 11.5px; font-weight: 600; }
-.hero-wall h1 { margin: 22px 0 20px; font-size: clamp(46px, 6.6vw, 88px); line-height: 0.96; letter-spacing: -0.045em; font-weight: 600; }
+/* Two lines beside the wall: the size follows the copy column so "Take the whole system." stays one line */
+.hero-wall h1 { margin: 22px 0 20px; font-size: clamp(46px, 4.6vw, 68px); line-height: 0.96; letter-spacing: -0.045em; font-weight: 600; }
 .hero-wall h1 > span:not(.w) { display: block; color: var(--muted); text-wrap: balance; }
 .hero-wall__lede { max-width: 34em; color: var(--muted); font-size: 17px; line-height: 1.55; } /* em, not ch: the same lines in Geist and in its fallback */
 .hero-wall__cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
@@ -633,15 +634,17 @@ html.is-wheel-scrolling .tray__item:hover > :is(.tray__stage, .tray__bar), html.
   position: relative;
   pointer-events: none;
   height: 700px;
-  margin: -40px calc(-1 * var(--bleed)) -40px 0;
+  /* It steps a little past the grid, never to the viewport edge on wide screens, and fades out on every side:
+     a window onto the wall that balances the copy instead of a slab pinned to the right. */
+  margin: -40px calc(-1 * min(var(--bleed), 88px)) -40px calc(-1 * clamp(64px, 8cqw, 128px)); /* its faded left edge reaches under the copy's side */
   overflow: hidden;
   contain: layout style paint;
-  -webkit-mask-image: radial-gradient(100% 50% at 100% 50%, #000 42%, rgba(0, 0, 0, 0.55) 70%, transparent 100%);
-  mask-image: radial-gradient(100% 50% at 100% 50%, #000 42%, rgba(0, 0, 0, 0.55) 70%, transparent 100%);
+  -webkit-mask-image: radial-gradient(50% 46% at 54% 50%, #000 20%, rgba(0, 0, 0, 0.72) 44%, rgba(0, 0, 0, 0.3) 66%, rgba(0, 0, 0, 0.08) 84%, transparent 96%);
+  mask-image: radial-gradient(50% 46% at 54% 50%, #000 20%, rgba(0, 0, 0, 0.72) 44%, rgba(0, 0, 0, 0.3) 66%, rgba(0, 0, 0, 0.08) 84%, transparent 96%);
 }
 /* Each column holds two identical 8-card sets and translates by -50% for a mathematically seamless loop
    (start-aligned, and the bottom padding repeats the gap, so half the column is exactly one set). */
-.wall__plane { position: absolute; left: 50%; top: -120px; display: grid; grid-template-columns: repeat(6, 168px); gap: 12px; transform-origin: 50% 470px; transform: translate3d(-48%, 0, 0) perspective(1800px) rotateX(16deg) rotateZ(14deg); will-change: transform; }
+.wall__plane { position: absolute; left: 50%; top: -120px; display: grid; grid-template-columns: repeat(6, 152px); gap: 12px; transform-origin: 50% 470px; transform: translate3d(-48%, 0, 0) perspective(1800px) rotateX(16deg) rotateZ(14deg); will-change: transform; }
 .wall__col { display: flex; flex-direction: column; align-self: start; gap: 12px; padding-bottom: 12px; contain: layout style paint; animation: wall-up 74s linear infinite; will-change: transform; }
 .wall__col:nth-child(2) { animation-name: wall-down; animation-duration: 60s; margin-top: -60px; }
 .wall__col:nth-child(3) { animation-duration: 54s; margin-top: -30px; }
@@ -665,6 +668,7 @@ html.is-wheel-scrolling .tray__item:hover > :is(.tray__stage, .tray__bar), html.
 .js .hero-wall .rise.is-in { opacity: 1; transform: none; }
 @media (max-width: 1100px) {
   .hero-wall__in { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .hero-wall h1 { font-size: clamp(46px, 6.6vw, 88px); }
   .wall-slot { min-height: 300px; }
   .names__br { display: none; }
   /* A full-bleed band under the copy, fading out at its top and bottom edges */

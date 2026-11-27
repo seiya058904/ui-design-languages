@@ -442,6 +442,7 @@ select.atelier-input {
 }
 .atelier-card--interactive { cursor: pointer; transition: box-shadow var(--atelier-motion-duration), transform var(--atelier-motion-duration), border-color var(--atelier-motion-duration); }
 .atelier-card--interactive:hover { transform: translateY(-1px); border-color: var(--atelier-color-border-strong); box-shadow: var(--atelier-shadow-floating); }
+.atelier-card--interactive:focus-visible { outline: none; border-color: var(--atelier-color-primary); box-shadow: var(--atelier-shadow-focus); }
 .atelier-card__title { font-size: var(--atelier-font-size-body); font-weight: var(--atelier-font-weight-semibold); color: var(--atelier-color-ink); }
 .atelier-card__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: var(--atelier-font-size-caption); color: var(--atelier-color-text-muted); }
 .atelier-card__meta span { display: inline-flex; align-items: center; gap: 5px; }

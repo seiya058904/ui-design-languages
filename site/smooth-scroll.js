@@ -5,21 +5,33 @@
    native scrolling). In-page anchor links glide too.
    Left native on purpose: touch, keyboard, scrollbar drag, horizontal / pinch gestures, small
    scroll boxes (code panels, menus), scroll-snap containers, modal dialogs, pages shown inside
-   an iframe (so wheel chaining from homepage previews keeps working), reduced motion, and any
-   element marked [data-native-scroll].
+   an iframe (so wheel chaining from homepage previews keeps working), and any element marked
+   [data-native-scroll]. Trackpad / precision input (fractional or rapid small deltas) is native
+   too; only discrete wheel notches glide. Elements with a non-auto overscroll-behavior keep
+   native handling at their edge. Anchor links and UIScroll.to share one eased glide
+   (easeInOutCubic, 320-720ms). Under reduced motion nothing glides, but window.UIScroll still
+   exists and jumps instantly so callers never fall back to smooth scrolling.
 
    Not part of any Style Pack: delete the <script> tag when copying a pack folder.
    <script src="../site/smooth-scroll.js" defer></script> */
 (function () {
   if (window.self !== window.top) return;
   var reduceQuery = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
-  if (reduceQuery && reduceQuery.matches) return;
+  var rootEl = document.scrollingElement || document.documentElement;
+  if (reduceQuery && reduceQuery.matches) {
+    window.UIScroll = {
+      to: function (y) { try { rootEl.scrollTo({ top: Math.max(0, y), behavior: "instant" }); } catch (err) { rootEl.scrollTop = y; } },
+      stop: function () {}
+    };
+    return;
+  }
 
-  var LAMBDA = 10.0;     // damping per second: responsive yet silky
+  var LAMBDA = 14.0;     // damping per second: responsive yet silky
   var MIN_BOX = 320;     // scroll boxes shorter than this stay native
   var root = document.scrollingElement || document.documentElement;
   var active = null;     // { el, current, target, anchor, writing }
   var last = 0;
+  var lastWheelT = -1e3;
   var raf = 0;
   var dialogs = document.getElementsByTagName("dialog"); // live O(1) HTMLCollection
 
@@ -70,7 +82,10 @@
       if (el.scrollHeight <= el.clientHeight + 1) continue;
       var oy = overflowY(el);
       if (tag !== "TEXTAREA" && tag !== "SELECT" && oy !== "auto" && oy !== "scroll" && oy !== "overlay") continue;
-      if (!canMove(el, dy)) continue;            // at its edge: chain to the parent
+      if (!canMove(el, dy)) {                     // at its edge: chain to the parent...
+        if (getComputedStyle(el).overscrollBehaviorY !== "auto") { resolved = null; break; } // ...unless it contains scroll
+        continue;
+      }
       if (tag === "TEXTAREA" || tag === "SELECT" || el.clientHeight < MIN_BOX) { resolved = null; break; }
       var snap = getComputedStyle(el).scrollSnapType;
       if (snap && snap !== "none") { resolved = null; break; }
@@ -97,16 +112,21 @@
   function frame(now) {
     raf = 0;
     if (!active) return;
-    var dt = Math.min((now - last) / 1000, 0.033);
+    var dt = Math.max(0, Math.min((now - last) / 1000, 0.033)) || 1 / 60;
     last = now;
     var a = active;
+    if (a.moved) {                       // a scroll event we did not write: compare here, not per event
+      a.moved = false;
+      if (Math.abs(a.el.scrollTop - a.expect) > 3) { stop(); return; }
+    }
     if (a.anchor) {
-      var t = Math.min(1, (now - a.anchor.start) / a.anchor.duration);
-      a.current = a.anchor.from + (a.target - a.anchor.from) * (1 - Math.pow(2, -10 * t)) / (1 - Math.pow(2, -10));
+      var t = Math.max(0, Math.min(1, (now - a.anchor.start) / a.anchor.duration));
+      var k = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      a.current = a.anchor.from + (a.target - a.anchor.from) * k;
       if (t >= 1) a.current = a.target;
     } else {
       a.current += (a.target - a.current) * (1 - Math.exp(-LAMBDA * dt));
-      if (Math.abs(a.target - a.current) < 0.4) a.current = a.target;
+      if (Math.abs(a.target - a.current) < 0.5) a.current = a.target;
     }
     a.expect = a.current;
     a.writing = true;
@@ -138,14 +158,17 @@
     if (raf) { cancelAnimationFrame(raf); raf = 0; }
   }
 
+  /* The one glide: easeInOutCubic, 320ms + 0.07ms/px, capped at 720ms. */
+  function glide(y, duration) {
+    var target = Math.max(0, Math.min(maxScroll(root), y));
+    if (reduceQuery && reduceQuery.matches) { stop(); write(root, target); return; }
+    var dist = Math.abs(target - root.scrollTop);
+    var dur = duration || Math.max(320, Math.min(720, 320 + 0.07 * dist));
+    run(root, target, { start: performance.now(), duration: dur });
+  }
+
   window.UIScroll = {
-    to: function (y, opts) {
-      var target = Math.max(0, Math.min(maxScroll(root), y));
-      if (reduceQuery && reduceQuery.matches) { stop(); write(root, target); return; }
-      var dist = Math.abs(target - root.scrollTop);
-      var dur = (opts && opts.duration) || Math.min(900, 360 + dist / 9);
-      run(root, target, { start: performance.now(), duration: dur });
-    },
+    to: function (y, opts) { glide(y, opts && opts.duration); },
     stop: stop
   };
 
@@ -155,6 +178,12 @@
     if (e.deltaMode === 1) dy *= 16;
     else if (e.deltaMode === 2) dy *= window.innerHeight;
     if (!dy || Math.abs(e.deltaX) > Math.abs(dy)) return;          // horizontal gesture
+    var precise = e.deltaMode === 0 && ((dy % 1 !== 0 && Math.abs(dy) < 50) || (e.timeStamp - lastWheelT < 30 && Math.abs(dy) < 60));
+    lastWheelT = e.timeStamp;
+    if (precise) {                                                 // trackpad: already smooth, stay native
+      if (active) { if (!active.anchor) write(active.el, active.target); stop(); } // land the burst's first step, then hand over
+      return;
+    }
     if (hasOpenModal()) return;
     var el = pick(e, dy);
     if (!el) return;
@@ -168,7 +197,7 @@
     if (!active || active.writing) return;
     var el = e.target === document ? root : e.target;
     if (el !== active.el) return;
-    if (Math.abs(el.scrollTop - active.expect) > 3) stop();
+    active.moved = true;
   }, { capture: true, passive: true });
   window.addEventListener("pointerdown", function (e) {
     if (active && e.target === document.documentElement) stop();    // grabbing the page scrollbar
@@ -189,12 +218,7 @@
     e.preventDefault();
     var margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
     var y = target.getBoundingClientRect().top + root.scrollTop - margin;
-    if (reduceQuery && reduceQuery.matches) {
-      write(root, y);
-    } else {
-      var distance = Math.abs(y - root.scrollTop);
-      run(root, y, { start: performance.now(), duration: Math.min(1200, 520 + distance / 7) });
-    }
+    glide(y);
     if (history.pushState) history.pushState(null, "", hash);
     if (!target.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(target.tagName)) target.setAttribute("tabindex", "-1");
     target.focus({ preventScroll: true });
